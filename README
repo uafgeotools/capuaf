@@ -1,0 +1,60 @@
+# 	Information for the CAP package
+#               @(#)README      1.0 5/29/2010
+
+        Copyright (c) 1996-2010, L. Zhu (lupei@eas.slu.edu)
+
+Permission to use, copy, modify, and distribute this package and supporting
+documentation for any purpose without fee is hereby granted, provided
+that the above copyright notice appear in all copies, that both that
+copyright notice and this permission notice appear in supporting
+documentation.
+
+In case that you modify any codes in this package, you have to
+change the name of the modified code. You are welcome to send me a note
+about your modification and any suggestion.
+
+In case that you redistribute this package to others, please send me
+the contacting info (email addr. preferred) so that future updates
+of this package can be sent to them.
+
+
+1. Content of the Package
+
+The CAP package contains following main codes:
+
+  cap.c		Cut-and-Paste (CAP) full moment-tensor inversion code.
+
+  cap.pl	A Perl script to simplify the use of cap and to plot waveform fits.
+
+  depth.pl	A perl script to read in the outputs of cap for different
+		source depths and estimate the best source depth.
+
+
+2. Installation
+
+To compile the codes see Makefile. It requires that the Numerical Recipes
+Package and SAC have been installed. Set environment variables NR_HOME and
+SAC_HOME to point to where they are installed accordingly.
+
+
+3. Usage
+
+For usage and examples, run cap.pl without argument.
+
+
+4. Reference
+
+   Zhu and Helmberger, 1996, BSSA 86, 1645-1641
+
+
+5. Revision History
+
+   1995-2008		LZ	Numerious modifications.
+   Mar. 11, 2010 	LZ	Correct a bug when computing Mw using interpolation.
+                                Change to no interpolation of FM untill the correct
+				Mw is found to aoid unstable interpolation in some cases.
+   Mar. 12, 2010	LZ	Add isotropic moment tensor in the inversion.
+   June 10, 2010	LZ	Correct a bug introduced in Jan. 2008 which deleted
+				distance compensation and Pnl weighting of the
+				Greens functions.
+   Nov.  5, 2012	LZ	Add CLVD moment tensor.
