@@ -25,7 +25,7 @@ $cmd = "cap";
 #$green = "/store/wf/FK_synthetics";     # standard models at UAF
 $green = "$caprun/models";               # user testing
 
-repeat = 0;
+$repeat = 0;
 $bootstrap = 0;
 $fm_thr = 0.01;
 $dirct='';

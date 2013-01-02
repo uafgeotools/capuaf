@@ -19,6 +19,7 @@ sub plot {
   open(FFF,"$mdl.out");
   @rslt = <FFF>;
   close(FFF);
+  system("gmtset MEASURE_UNIT inch");
   @meca = split('\s+',shift(@rslt));
   @variance = split('\s+',shift(@rslt));
   @tensor = split('\s+',$rslt[0]);
@@ -26,8 +27,13 @@ sub plot {
   @rslt=grep(!/^#/,@rslt);
   
   $outps = "$mdl.ps";
-  if ($am>0.) {$am = "$am/-1";} else {$am=-$am;}
-  $plt1 = "| pssac -JX$width/$hight -R0/$tt/0/$nn -Y0.2 -Ent-2 -M$am -K >> $outps";
+
+  #if ($am>0.) {$stam = "$am/-1";} else {$stam=-$am;} # original line (with pssac, not pssac2)
+  $stam = "$am/0";                                   # overwrite for absolute amplitudes (to match default plotting)
+  print "\namplitude scaling am = $am";
+  print "\npssac2 amplitude scaling stam = $stam\n";
+
+  $plt1 = "| pssac2 -JX$width/$hight -R0/$tt/0/$nn -Y0.2 -Ent-2 -M$stam -K -P >> $outps";
   $plt2 = "| pstext -JX -R -O -K -N >> $outps";
   $plt3 = "| psmeca -JX1/1 -R-1/1/-1/1 -Sa5 -G100 -Y9.5 -X-0.7 -O -K >> $outps";
   $plt3 = "| psmeca -JX1/1 -R-1/1/-1/1 -Sm8 -G100 -Y9.5 -X-0.7 -O -K >> $outps" if $tensor[1] eq "tensor";
