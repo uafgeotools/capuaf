@@ -10,13 +10,22 @@
 #
 
 # these are the only things one need to change based on the site installation
-$home = $ENV{HOME};			# my home directory
-require "$home/Src/cap/cap_plt.pl";	# include plot script
+$home = $ENV{HOME};                        # my home directory
+$sutil = $ENV{SUTIL};                      # seismo utilities directory
+$caprun = $ENV{CAPRUN};                    # run directory
+
+#require "$home/Src/cap/cap_plt.pl";       # include plot script
+require "$sutil/grp-utils/cap/cap_plt.pl"; # include plot script
 
 #================defaults======================================
 $cmd = "cap";
-$green = "$home/data/models/Glib";	#green's function location
-$repeat = 0;
+
+# green's function location
+#$green = "$home/data/models/Glib";  # original
+#$green = "/store/wf/FK_synthetics";     # standard models at UAF
+$green = "$caprun/models";               # user testing
+
+repeat = 0;
 $bootstrap = 0;
 $fm_thr = 0.01;
 $dirct='';
