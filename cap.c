@@ -122,6 +122,11 @@ int main (int argc, char **argv) {
   strcpy(dep,argv[2]);
 
   /****** input control parameters *************/
+  char mod_dep[]="-999";         /* 20130102 calvizuri - for renaming .out file */
+  char model[128];
+  int depth=-999;
+  scanf("%s %d",model, &depth);  /* 20130102 calvizuri - end */
+
   scanf("%f%f%f%f%d%d%f%f",&x1,&y1,&x,&y,&repeat,&bootstrap,&fm_thr,&tie);
   if (repeat) for(j=0;j<NCP;j++) scanf("%f",rms_cut+4-j);
   scanf("%f%f%f",&vp,&vs1,&vs2);
@@ -439,9 +444,11 @@ int main (int argc, char **argv) {
   //grid.n[0]=grid.n[1]=grid.n[2]=1;
   //grid.x0[0]=sol.meca.stk; grid.x0[1]=sol.meca.dip; grid.x0[2]=sol.meca.rak;
   //sol = error(nda,obs0,nfm,fm0,max_shft,m0,grid,fm_thr,tie);
-  strcat(strcat(strcat(strcpy(tmp,eve),"/"),dep),".out");
+  sprintf(mod_dep,"%s_%03d",model,depth);                     // 20120723 calvizuri - rename .out file
+  strcat(strcat(strcat(strcpy(tmp,eve),"/"),mod_dep),".out"); // 20130102 calvizuri - end rename .out
+//  strcat(strcat(strcat(strcpy(tmp,eve),"/"),dep),".out");   // 20130102 calvizuri - original
   f_out=fopen(tmp,"w");
-  fprintf(f_out,"Event %s Model %s FM %3d %2d %3d Mw %4.2f rms %9.3e %5d ERR %3d %3d %3d ISO %3.2f %3.2f CLVD %3.2f %3.2f\n",eve,dep,
+  fprintf(f_out,"Event %s Model %s FM %3d %2d %3d Mw %4.2f rms %9.3e %5d ERR %3d %3d %3d ISO %3.2f %3.2f CLVD %3.2f %3.2f\n",eve,mod_dep,
 	(int) rint(sol.meca.stk), (int) rint(sol.meca.dip), (int) rint(sol.meca.rak),
 	mt[0].par, sol.err, dof,
 	(int) rint(rad[0]), (int) rint(rad[1]), (int) rint(rad[2]),
