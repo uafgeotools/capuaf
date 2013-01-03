@@ -3,7 +3,7 @@
 sub plot {
 
 #  local($mdl, $t1, $t2, $am, $num_com, $sec_per_inch) = @_; # original
-  local($mdl, $t1, $t2, $am, $num_com, $sec_per_inch, $filterBand) = @_;
+  local($mdl, $t1, $t2, $am, $num_com, $sec_per_inch, $filterBand, $fmt_flag) = @_;
   local($nn,$tt,$plt1,$plt2,$plt3,$plt4,$i,$nam,$com1,$com2,$j,$x,$y,@aa,$rslt,@name,@aztk);
   local $keepBad = 0;
   
@@ -72,6 +72,7 @@ sub plot {
   print "\npssac2 amplitude scaling stam = $stam\n";
 #  $outps = "$mdl.ps";   # original
   $outps = sprintf("%s_%03d.ps",@dum[0],int(@dum[1])); # reformatted filename
+  $outps = sprintf("%s_%03d_fmt.ps",@dum[0],int(@dum[1])) if $fmt_flag eq "true";
 
   # (1) plot cut seismograms with scaled amplitudes (first command: no -O appears)
   $plt1 = "| pssac2 -JX${width}i/${height}i -R0/$tt/0/$nn -Y0.2i -Ent-2 -M$stam -K -P >> $outps";
@@ -83,7 +84,6 @@ sub plot {
   $dY = ${pheight_in} - 1.8;
   $plt3 = "| psmeca -JX5i/1i -R-1/9/-1/1 -Sa5i -Y${dY}i -X-0.7i -O -K >> $outps";
   $plt3 = "| psmeca -JX5i/1i -R-1/9/-1/1 -Sm8i -Y${dY}i -X-0.7i -O -K >> $outps" if $tensor[1] eq "tensor";
-  printf "plt3=$plt3\n";
 
   # (4) plot markers on beachball
   # note: -JPa is a basemap for polar coordinates, clockwise from north
@@ -103,6 +103,7 @@ sub plot {
 
 #  $outps2 = "${mdl}_beach.ps"; # original
   $outps2 = sprintf("%s_%03d_beach.ps",@dum[0],int(@dum[1]));   # 20130102 calvizuri - revised filename
+  $outps2 = sprintf("%s_%03d_beach_fmt.ps",@dum[0],int(@dum[1])) if $fmt_flag eq "true";
 
   $fac = 6.5;
   $fac2 = 8.2*$fac;   # original: 5*$fac

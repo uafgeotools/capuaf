@@ -32,6 +32,7 @@ $dirct='';
 $disp=0;
 $mltp=0;
 $weight="weight.dat";
+$fmt_flag="false";
 
 # plotting
 $plot = 0;
@@ -209,6 +210,7 @@ foreach (grep(/^-/,@ARGV)) {
      $diso  = $value[1] if $value[1];
      $clvd  = $value[2] if $value[2];
      $dclvd = $value[3] if $value[3];
+     $fmt_flag="true";     # used later for renaming output figures with fmt
    } elsif ($opt eq "L") {
      $dura = join('/',@value);
    } elsif ($opt eq "M") {
@@ -315,7 +317,7 @@ foreach $eve (@event) {
   if ( $plot > 0 && ($? >> 8) == 0 ) {
      chdir($eve);
 #     &plot($md_dep, $m1, $m2, $amplify, $ncom, $sec_per_inch); # 20130102 calvizuri - original
-     &plot($md_dep, $m1, $m2, $amplify, $ncom, $sec_per_inch, $filterBand); # 20130102 calvizuri - added filter freq bands
+     &plot($md_dep, $m1, $m2, $amplify, $ncom, $sec_per_inch, $filterBand, $fmt_flag); # 20130102 calvizuri - added filter freq bands
      unlink(<${md_dep}_*.?>) unless $keep;
      chdir("../");
   }
