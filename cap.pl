@@ -15,15 +15,15 @@ $sutil = $ENV{SUTIL};                      # seismo utilities directory
 $caprun = $ENV{CAPRUN};                    # run directory
 
 #require "$home/Src/cap/cap_plt.pl";       # include plot script
-require "$sutil/grp-utils/cap/cap_plt.pl"; # include plot script
+require "./cap_plt.pl"; # include plot script
 
 #================defaults======================================
 $cmd = "cap";
 
 # green's function location
 #$green = "$home/data/models/Glib";  # original
-#$green = "/store/wf/FK_synthetics";     # standard models at UAF
-$green = "$caprun/models";               # user testing
+$green = "/store/wf/FK_synthetics";     # standard models at UAF
+#$green = "$caprun/models";               # user testing
 
 $repeat = 0;
 $bootstrap = 0;
@@ -285,6 +285,7 @@ foreach $eve (@event) {
 
   open(SRC, "| $cmd") || die "can not run $cmd\n";
   print SRC "$pVel $sVel $riseTime $dura $rupDir\n",$riseTime if $dirct eq "_dir";
+  print SRC "$model $depth\n";  # 20120723 calvizuri
   print SRC "$m1 $m2 $max_shft1 $max_shft2 $repeat $bootstrap $fm_thr $tie\n";
   print SRC "@thrshd\n" if $repeat;
   print SRC "$vp $love $rayleigh\n";
@@ -304,10 +305,17 @@ foreach $eve (@event) {
   close(SRC);
   print STDERR "inversion done\n";
 
+  # 20130102 calvizuri -- report period ranges for filters (get from frequencies)
+  $Tf1 = 1/$f1_pnl;
+  $Tf2 = 1/$f2_pnl;
+  $Tf3 = 1/$f1_sw;
+  $Tf4 = 1/$f2_sw;
+  $filterBand = sprintf("Body:%.2f-%.2f. Surf:%.2f-%.2f",$Tf2,$Tf1,$Tf4,$Tf3);
   plot:
   if ( $plot > 0 && ($? >> 8) == 0 ) {
      chdir($eve);
-     &plot($md_dep, $m1, $m2, $amplify, $ncom, $sec_per_inch);
+#     &plot($md_dep, $m1, $m2, $amplify, $ncom, $sec_per_inch); # 20130102 calvizuri - original
+     &plot($md_dep, $m1, $m2, $amplify, $ncom, $sec_per_inch, $filterBand); # 20130102 calvizuri - added filter freq bands
      unlink(<${md_dep}_*.?>) unless $keep;
      chdir("../");
   }

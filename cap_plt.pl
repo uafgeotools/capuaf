@@ -18,13 +18,12 @@ sub plot {
   # set GMT defaults
   # for all options (such as PAPER_MEDIA): http://gmt.soest.hawaii.edu/gmt/html/man/gmtdefaults.html
   # to check defaults, e.g.: gmtdefaults -L | grep MEASURE_UNIT
-
-#  @dum = split('_', $mdl);  # split mdl string
-#  $outfile = sprintf("%s_%03d.out",@dum[0],int(@dum[1]));
+  @dum = split('_', $mdl);  # split mdl string
+  $outfile = sprintf("%s_%03d.out",@dum[0],int(@dum[1]));
 
   # read in the output file results
-  open(FFF,"$mdl.out"); # original
-#  open(FFF,$outfile);    # 20120723 
+#  open(FFF,"$mdl.out"); # original
+  open(FFF,$outfile);    # 20130102 calvizuri - new file name
   @rslt = <FFF>;
   close(FFF);
   @meca = split('\s+',shift(@rslt));
@@ -71,8 +70,8 @@ sub plot {
   $stam = "$am/0";                                   # overwrite for absolute amplitudes (to match default plotting)
   print "\namplitude scaling am = $am";
   print "\npssac2 amplitude scaling stam = $stam\n";
-  $outps = "$mdl.ps";   # original
-#  $outps = sprintf("%s_%03d.ps",@dum[0],int(@dum[1])); # reformat filename
+#  $outps = "$mdl.ps";   # original
+  $outps = sprintf("%s_%03d.ps",@dum[0],int(@dum[1])); # reformatted filename
 
   # (1) plot cut seismograms with scaled amplitudes (first command: no -O appears)
   $plt1 = "| pssac2 -JX${width}i/${height}i -R0/$tt/0/$nn -Y0.2i -Ent-2 -M$stam -K -P >> $outps";
@@ -103,14 +102,16 @@ sub plot {
 #--------------------------
 
 #  $outps2 = "${mdl}_beach.ps"; # original
-  $outps2 = sprintf("%s_%03d_beach.ps",@dum[0],int(@dum[1]));
+  $outps2 = sprintf("%s_%03d_beach.ps",@dum[0],int(@dum[1]));   # 20130102 calvizuri - revised filename
 
   $fac = 6.5;
-  $fac2 = 5*$fac;
+  $fac2 = 8.2*$fac;   # original: 5*$fac
   $JP = "-JPa${fac}i";
 
   # plot beachball
-  $xplt3 = "| psmeca -JX${fac}i/${fac}i -R-1/1/-1/1 -N -G200 -W2p,0/0/0 -Sa${fac2}i -X1i -Y2i -K -P >> $outps2";
+# $xplt3 = "| psmeca -JX${fac}i/${fac}i -R-1/1/-1/1 -N -G200 -W2p,0/0/0 -Sm${fac2}i -X1i -Y2i -K -P >> $outps2";
+  $xplt3 = "| psmeca -JX${fac}i/${fac}i -R-1/1/-1/1 -N -G200 -W2p,0/0/0 -Sa${fac}i -X1i -Y2i -K -P >> $outps2";
+  $xplt3 = "| psmeca -JX${fac}i/${fac}i -R-1/1/-1/1 -N -G200 -W2p,0/0/0 -Sm${fac2}i -X1i -Y2i -K -P >> $outps2" if $tensor[1] eq "tensor";
 
   # plot markers on beachball
   # note: -JPa is a basemap for polar coordinates, clockwise from north
@@ -135,19 +136,12 @@ sub plot {
 #--------------------------
 # FIGURE 1: waveform fits with moment tensor
 
-  # note: @rslt is loaded from output file above
-#  @meca = split('\s+',shift(@rslt));
-#  @variance = split('\s+',shift(@rslt));
-#  @tensor = split('\s+',$rslt[0]);
-#  @others = grep(/^#/,@rslt);
-#  @rslt=grep(!/^#/,@rslt);
-
   # uncomment output for debugging purposes
   print "\n-------------------";
-  print "\nmeca: @meca";
+  print "\nmeca:\n@meca";
   print "\nvariance:\n@variance";
   print "\ntensor:\n@tensor";
-  print "\nothers: @others";
+  print "\nothers:\n@others";
   print "\nrslt:\n@rslt";
   print "\n-------------------\n";
 
@@ -240,7 +234,7 @@ sub plot {
     printf PLT "$x $y 12 0 0 0 @variance[1..3]\n" if $variance[1] eq "Variance";
 #    printf PLT "%f %f 10 0 0 0 @meca\n",0.5*$sec_per_inch,$nn-0.4;  # full title    # original
 #    printf PLT "%f %f 10 0 0 0 @meca\n",0.5*$sec_per_inch,$nn-0.2;  # full title
-#    printf PLT "%f %f 10 0 0 0 $filterBand.\n",0.5*$sec_per_inch,$nn-0.4;  # 20120719 - filter bands
+    printf PLT "%f %f 12 0 0 0 $filterBand.\n",0.5*$sec_per_inch,$nn-1.1;  # 20120719 - filter bands
     $x = 0.2*$sec_per_inch;
     for($j=0;$j<5;$j+=$inc) {
       printf PLT "%f %f 12 0 0 1 $name[$j]\n",$x,$nn-1.5;
@@ -282,8 +276,6 @@ sub plot {
     
   }  # while (@rslt) {
 
-die("EXITING HERE");
-
 #---------------------------------
 # FIGURE 2: big moment tensor with station names at piercing points
 
@@ -298,7 +290,13 @@ die("EXITING HERE");
     @aaaa = splice(@rslt,0,$nn-2);
     
     open(XPLT, $xplt3);
-    printf XPLT "0 0 0 @meca[5,6,7] 1\n";#0.5*$sec_per_inch,$nn-1;
+#    printf XPLT "0 0 0 @meca[5,6,7] 1\n";#0.5*$sec_per_inch,$nn-1;
+#    close(XPLT);
+    if ($tensor[1] eq "tensor") {
+     printf XPLT "0 0 0 @tensor[9,4,7,6] %f %f 17\n",-$tensor[8],-$tensor[5];
+    } else {
+     printf XPLT "0 0 0 @meca[5,6,7] 1\n";#0.5*$sec_per_inch,$nn-1;
+    }
     close(XPLT);
 
     # plot station azimuths beachballs (see staz above)
@@ -345,7 +343,9 @@ die("EXITING HERE");
 
     # TITLE
     open(XPLT, $xplt6);
-    printf XPLT "0 0 12 0 0 0 @meca\n",0,0;
+#    printf XPLT "0 0 12 0 0 0 @meca\n",0,0; # 20130102 calvizuri - original
+    printf XPLT "0 0 18 0 0 0 @meca[0..9]\n",0,0;
+    printf XPLT "0 -0.05 18 0 0 0 @meca[10..22]\n",0,0;
     close(XPLT);
 
   }  # while (@rslt) {
