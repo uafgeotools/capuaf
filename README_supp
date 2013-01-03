@@ -102,14 +102,12 @@ pssac2 amplitude scaling stam = 0.3/-1
 -------------------------------------------------
 CAP CHANGES MADE ("svn log" for details)
 
-0. Information:
-   cap.pl >& cap_usage
-
-1. changed path in cap.pl:
+1. cap.pl -- changed:
 
    require "$home/seismo/grp-utils/cap/cap_plt.pl";   # include plot script
 
-2. changed the Makefile; the command "diff Makefile Makefile_orig" gives:
+2. Makefile -- changed: the command "diff Makefile Makefile_orig" gives *:
+[*20130102 calvizuri- current Makefile_orig: /usr/local/seismo_uncompiled/grp-utils/cap/Makefile]
 
 1,6d0
 < CC=gcc
@@ -118,31 +116,36 @@ CAP CHANGES MADE ("svn log" for details)
 < NR_LIB=$(NRHOME_C)
 < SAC_LIB=$(SACHOME)/lib
 < 
-8c2
+8c2,6
 < CFLAGS = ${FFLAGS} -I$(NR_LIB)/includes
 ---
-> CFLAGS = ${FFLAGS} -I$(NR)/NRC_includes
-17c11
-<       $(CC) $(CFLAGS) -o $@ $^ -L$(SAC_LIB) -lsac -lsacio -L$(NR_LIB) -lcrecipes -lm
+> FC = gfortran
+> #CFLAGS = ${FFLAGS} -I$(NR)/NRC_includes
+> #NRLIB = $(MY_BIN)
+> NRLIB = $(NRHOME_C)
+> CFLAGS = ${FFLAGS} -I$(NRLIB)/includes
+10c8
+< CAP  = cap cap_dir cap_iso
 ---
->       $(LINK.f) -o $@ $^ -L$(SAC_LIB) -lsac -lsacio -L$(NR_LIB) -lnr
-20c14
-<       $(CC) $(CFLAGS) -DDIRECTIVITY -c -o $@ $<
+> CAP  = cap cap_dir
+12c10
+< SUBS = cap_sub.o fft.o Complex.o radiats.o grid3d.o futterman.o sacio.o
 ---
->       $(COMPILE.c) -DDIRECTIVITY -o $@ $<
+> SUBS = fft.o Complex.o radiats.o grid3d.o futterman.o sacio.o trap.o
+16,17c14,17
+< $(CAP): %:%.o $(SUBS)
+<   $(CC) $(CFLAGS) -o $@ $^ -L$(SAC_LIB) -lsac -lsacio -L$(NR_LIB) -lcrecipes -lm
+---
+> cap cap_dir: %:%.o $(SUBS) cap_sub.o
+>   $(LINK.f) -o $@ $^ -L$(SACHOME)/lib -lsac -lsacio -L$(NRLIB) -lcrecipes
+> #cap cap_dir: %:%.o $(SUBS) cap_sub.o
+> # $(LINK.f) -o $@ $^ -L$(SACHOME)/lib -lsac -lsacio -L$(NRLIB) -lnr
+20c20
+<   $(CC) $(CFLAGS) -DDIRECTIVITY -c -o $@ $<
+---
+>   $(COMPILE.c) -DDIRECTIVITY -o $@ $<
+:wq
 
-3. modify sac files (advice from Lupei):
-
-   > cd 20080418093700/
-   > sacswap *.z *.r *.t
-   > mv_files.pl -x "*.z.swap" "*.z"
-   > mv_files.pl -x "*.r.swap" "*.r"
-   > mv_files.pl -x "*.t.swap" "*.t"
-
-4. (If no "cus" model is available, use the "hk" model from the fk.pl example.)
-   In cap.pl modify the path for $green, e.g.:
-
-   $green = "/home/carltape/PROJECTS/CAP/models";
 
 5. cap_plt.pl
 
@@ -150,8 +153,8 @@ CAP CHANGES MADE ("svn log" for details)
    (Make sure that pssac2 was compiled on your own computer.)
 
    added "-P" for plotting in portrait mode
-   added "i" multiple times for explicit units of inches.
-   added command to set GMTDEFAULTS, including the paper size
+   added perl command: system("gmtset MEASURE_UNIT inch") for explicit use of inches
+   added command to set GMTDEFAULTS, including the paper size   <-- 20130102 calvizuri - start here
       this allows to plot any number of seismograms on a single page
    added station azimuths marks just outside the beachball
    added station azimuth label below station label
