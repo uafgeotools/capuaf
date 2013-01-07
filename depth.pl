@@ -52,6 +52,8 @@ foreach $eve (@aa){     # eve = current aa = event id
   }
    $jj=1;
   foreach (grep(/tensor/,@data_fmt)) {
+    # compare with this line from cap_plt.pl
+    # printf PLT "0 0 0 @tensor[9,4,7,6] %f %f 17\n",-$tensor[8],-$tensor[5];
     chop; # example input to chop: # tensor = 5.696e+23  0.838 -0.564 -0.335 -0.259  0.409 -0.185
     @kk=split;
     @dummy = split('\+',$kk[3]);    # get only the exponent--needed for scaling beachballs on plot

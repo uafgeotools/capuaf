@@ -243,6 +243,8 @@ sub plot {
     }
     close(PLT);
     
+    # plot beachball
+    # note that the magnitude scale is "fixed" at 1e17 for psmeca -Sm and 1 for psmeca -Sa
     open(PLT, $plt3);
     if ($tensor[1] eq "tensor") {
         printf PLT "0 0 0 @tensor[9,4,7,6] %f %f 17\n",-$tensor[8],-$tensor[5];
