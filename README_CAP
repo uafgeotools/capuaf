@@ -59,10 +59,14 @@ This requires computing Green's functions for the depths used in the grid search
 > fk.pl -Mcus/25 -N512/0.4/2 140 145 205 230 260 275 295
 > fk.pl -Mcus/30 -N512/0.4/2 140 145 205 230 260 275 295
 
-Then perform the grid search over depth.
+Then run cap for each depth. One output (.out) file should be generated for each depth.
 
-> cd $CAPRUN/inv/cus
+From each output file extract+append the "Event" and "tensor" lines into separate files. E.g.:
+> grep -h "Event" 20080418093700/cus*.out > out.depth-event 
+> grep -h "tensor" 20080418093700/cus*.out > out.depth-fmt
 
-THIS NEEDS TO BE UPDATED WITH A NEW SCRIPT: depth_cap.pl
+Run depth.pl
+> depth.pl out.depth-event out.depth-fmt 20080418093700 > out.ps
 
 -----------
+
