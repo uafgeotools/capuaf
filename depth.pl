@@ -3,13 +3,16 @@
 # find best depth from CAP output and
 # plot the misfit error and source mechanism
 # as function of depth for each event
-# Usage plt_aa.pl result_file event_dir_names ...
+# Usage depth.pl result_file event_dir_names ...
 #
 ## 20130103 calvizuri - changed code to plot full moment tensors instead of
 #                       pure double couples
 
-$minDep = 0;
-$maxDep = 50;
+$ballsize = 0.2;   # controls default beachball size (psmeca)
+$min0 = 1.0e+19;   # impossibly large misfit value
+$Bscale = "-Ba5f1:\"Depth, km\":/a20f5:\"Misfit\":";
+
+#------------
 
 #($rsl,@event) = @ARGV;     # original
 ($rsl,$rsl2,@event) = @ARGV;    # input Event and Tensor lines from files cus_NNN.out, and event id
@@ -29,43 +32,44 @@ while(@event) {
 #print STDERR "debug. aa=@aa event=@event\n";
 $i=0;
 #$xx = "-K -Ba50f5/a20f5WSne";   # original <-- not enough ticks+labeling
-$xx = "-K -Ba5f1:Depth,km:/a20f5WSne:Misfit: -P";
+$xx = "-K ${Bscale}WSne -P";
 foreach $eve (@aa){     # eve = current aa = event id
   $ii=1;
   $best=1;
-  $min=1.0e+19;
+  $min=$min0;
   foreach (grep(/$eve/,@aaa)) {
     chop;   
 # 20130103 calvizuri - example input to chop:
 # Event 20080418093700 Model cus_001 FM 291 51 -13 Mw 5.10 rms 3.748e-02   110 ERR   2   5   8 ISO 0.16 0.11 CLVD 0.14 0.08
     $line[$ii]=$_;
     @bb=split;
-    ($aa,$dep[$ii])=split('_',$bb[3]);  # split cus_001 to get depth (= 001km)
+    ($aa,$dep[$ii])=split('_',$bb[3]);  # split cus_001 to get depth (= 001km) -- $dep is used for y-axis range
 #    $strike[$ii]=$bb[5];    # not needed
 #    $dip[$ii]=$bb[6];       # not needed
 #    $rake[$ii]=$bb[7];      # not needed
-    $mo[$ii]=$bb[9];    # original. Note: mo is Mw here
-#    printf STDERR "debug. mo[$ii]=%lf\n",$mo[$ii];
+    $mw[$ii]=$bb[9];
+#    printf STDERR "debug. mw[$ii]=%lf\n",$mw[$ii];
     $rms[$ii]=$bb[11];
     if ($min>$rms[$ii]) {$best=$ii;$min=$rms[$ii]}
     $ii++;
   }
    $jj=1;
   foreach (grep(/tensor/,@data_fmt)) {
-    # compare with this line from cap_plt.pl
+    # We will go for consistency with cap_plt.pl, which has this line:
     # printf PLT "0 0 0 @tensor[9,4,7,6] %f %f 17\n",-$tensor[8],-$tensor[5];
     chop; # example input to chop: # tensor = 5.696e+23  0.838 -0.564 -0.335 -0.259  0.409 -0.185
     @kk=split;
     @dummy = split('\+',$kk[3]);    # get only the exponent--needed for scaling beachballs on plot
-    $M0_floor="1E+$dummy[1]";
+    #$M0_floor="1E+$dummy[1]";
     #printf STDERR "debug. M0_floor=%e\n",2*$M0_floor;
-    $M0_exp[$jj] = $dummy[1];
-    $mrr[$jj] = $kk[9]*$M0_floor;  # mrr=m33 -- eg box 8.3, p.351 (L&W95)
-    $mtt[$jj] = $kk[4]*$M0_floor;  # m11
-    $mff[$jj] = $kk[7]*$M0_floor;  # m22
-    $mrt[$jj] = $kk[6]*$M0_floor;  # m13
-    $mrf[$jj] =-$kk[8]*$M0_floor; # -m23
-    $mtf[$jj] =-$kk[5]*$M0_floor; # -m12
+    #$M0_exp[$jj] = $dummy[1];
+    $M0_exp[$jj] = 17;   # see cap_plt.pl
+    $mrr[$jj] = $kk[9];  # mrr=m33 -- eg box 8.3, p.351 (L&W95)
+    $mtt[$jj] = $kk[4];  # m11
+    $mff[$jj] = $kk[7];  # m22
+    $mrt[$jj] = $kk[6];  # m13
+    $mrf[$jj] =-$kk[8];  # -m23
+    $mtf[$jj] =-$kk[5];  # -m12
 #    printf STDERR "debug. MT components: %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f M0_exp=%f\n",
 #        $mrr[$jj], $mtt[$jj], $mff[$jj], $mrt[$jj], $mrf[$jj], $mtf[$jj],$M0_exp[$jj];
     $jj++;
@@ -93,20 +97,20 @@ foreach $eve (@aa){     # eve = current aa = event id
   open(PLT, "| psxy -JX16/16 -R$dep[0]/$dep[$ii]/-10/100 $xx");    # portrait mode, larger+square plot
   for($l=$dep[0];$l<$dep[$ii];$l+=0.2) {
     $aa = ($l-$depth)/$sigma;
-    printf PLT "%6.3f %6.3f\n",$l,$aa*$aa;      # plot parabola -- why doesn't it match MT locations?
+    printf PLT "%6.3f %6.3f\n",$l,$aa*$aa;      # plot parabola -- note: (depth) misfit function is not necessarily quadratic
   }
   close(PLT);
 #  open(PLT, "| psmeca -JX -R -O -K -Sa0.3");   # original
-  open(PLT, "| psmeca -JX -R -O -K -Sm0.2 -Wthickest");    # plot Moment tensors
+  open(PLT, "| psmeca -JX -R -O -K -Sm${ballsize} -Wthickest");    # plot Moment tensors
   for($l=1;$l<$ii;$l++) {
       $coordx=$dep[$l];                        # x-coord
       $coordy=($rms[$l]-$min)/($min/$dof);     # y-coord for moment tensor
-#   printf PLT "%6.1f %6.1f 0 %s %s %s %s 0 0 %s\n",$dep[$l],($rms[$l]-$min)/($min/$dof),$strike[$l],$dip[$l],$rake[$l],$mo[$l],$mo[$l];   # original
+#   printf PLT "%6.1f %6.1f 0 %s %s %s %s 0 0 %s\n",$dep[$l],($rms[$l]-$min)/($min/$dof),$strike[$l],$dip[$l],$rake[$l],$mw[$l],$mw[$l];   # original
     printf PLT "%6.1f %6.1f 0.0 %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %f 0.0 0.0 %4.2f\n",
-        $coordx,$coordy,$mrr[$l], $mtt[$l], $mff[$l], $mrt[$l], $mrf[$l], $mtf[$l], $M0_exp[$l], $mo[$l];
+        $coordx,$coordy,$mrr[$l], $mtt[$l], $mff[$l], $mrt[$l], $mrf[$l], $mtf[$l], $M0_exp[$l], $mw[$l];
     # output values to screen
     printf STDERR "%6.1f %6.1f 0.0 %12.5e %12.5e %12.5e %12.5e %12.5e %12.5e %f 0.0 0.0 %4.2f\n",
-        $coordx,$coordy,$mrr[$l], $mtt[$l], $mff[$l], $mrt[$l], $mrf[$l], $mtf[$l], $M0_exp[$l], $mo[$l];
+        $coordx,$coordy,$mrr[$l], $mtt[$l], $mff[$l], $mrt[$l], $mrf[$l], $mtf[$l], $M0_exp[$l], $mw[$l];
   }
   close(PLT);
 
@@ -116,10 +120,12 @@ foreach $eve (@aa){     # eve = current aa = event id
 #  printf PLT "%f 92 10 0 0 1 %s h=%4.1f %4.1f\n",$dep[0]+2,$eve,$depth,$sigma; # original
   printf PLT "%f -8 15 0 0 1 %s h=%4.1f %4.1f\n",$dep[0]+0.5,$eve,$depth,$sigma;
   close(PLT);
-  $xx = "-O -K -Y2 -Ba50f5/a20f5Wsne";
+  #$xx = "-O -K -Y2 -Ba50f5/a20f5Wsne";
+  $xx = "-O -K -Y2 ${Bscale}Wsne";
   $i++;
   if ($i == 5) {
-    $xx = "-X3.5 -O -K -Y-8 -Ba50f5/a20f5WSne";
+    #$xx = "-X3.5 -O -K -Y-8 -Ba50f5/a20f5WSne";
+    $xx = "-X3.5 -O -K -Y-8 ${Bscale}WSne";
   }
 
 }
