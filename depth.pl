@@ -8,7 +8,7 @@
 ## 20130103 calvizuri - changed code to plot full moment tensors instead of
 #                       pure double couples
 
-$ballsize = 0.2;   # controls default beachball size (psmeca)
+$ballsize = 7;   # controls default beachball size (psmeca)
 $min0 = 1.0e+19;   # impossibly large misfit value
 $Bscale = "-Ba5f1:\"Depth, km\":/a20f5:\"Misfit\":";
 
@@ -116,9 +116,9 @@ foreach $eve (@aa){     # eve = current aa = event id
 
   # plot event id, best depth, misfit value
   if ($i<$#aa) { open(PLT, "| pstext -JX -R -O -K");}   # 20130103 calvizuri - when is this executed??
-  else  { open(PLT, "| pstext -JX -R -O -S2p,white");}
+  else  { open(PLT, "| pstext -JX -R -O -S2p,white -N");}
 #  printf PLT "%f 92 10 0 0 1 %s h=%4.1f %4.1f\n",$dep[0]+2,$eve,$depth,$sigma; # original
-  printf PLT "%f -8 15 0 0 1 %s h=%4.1f %4.1f\n",$dep[0]+0.5,$eve,$depth,$sigma;
+  printf PLT "%f 105 20 0 0 1 %s h=%4.1f pm %.1f km\n",$dep[0]+0.5,$eve,$depth,$sigma;
   close(PLT);
   #$xx = "-O -K -Y2 -Ba50f5/a20f5Wsne";
   $xx = "-O -K -Y2 ${Bscale}Wsne";
