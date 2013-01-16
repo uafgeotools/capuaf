@@ -80,6 +80,7 @@
 ****************************************************************/
 #include "cap.h"
 
+int loop=0;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx;
   int	ns, mltp, nup, up[3], total_n, n_shft, nqP, nqS;
@@ -102,7 +103,7 @@ int main (int argc, char **argv) {
   FM	*fm, *fm0;
   SOLN	sol;
   SACHEAD hd[NRC];
-  FILE 	*f_out;
+  FILE 	*f_out, *log ;
   float tau0, riseTime, *src;
   char type[2] = {'B','P'}, proto[2] = {'B','U'};
   double f1_pnl, f2_pnl, f1_sw, f2_sw;
@@ -422,6 +423,9 @@ int main (int argc, char **argv) {
   }
 
   /************grid-search for full moment tensor***********/
+  log = fopen("log_diff","w");
+  fclose(log);
+
   INVERSION:
   sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap);
 
@@ -533,7 +537,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		int		interp,
 		int		bootstrap
 	) {
-  int	i, j, k, l, m, k1, kc, z0, z1, z2, debug=0;
+  int	i, j, k, l, m, k1, kc, z0, z1, z2, debug=1;
   int	i_stk, i_dip, i_rak;
   float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9];
   float	*f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err;
@@ -541,6 +545,16 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   DATA	*obs;
   COMP	*spt;
   SOLN	sol, sol1, sol2, best_sol;
+  FILE *log;
+  char logfile[16];
+
+  if (debug) {
+    sprintf(logfile,"%s_%03d","log",loop);
+    log = fopen(logfile,"w");
+    fclose(log);
+  }
+
+  fprintf(stderr, "loop=%d ",loop);
 
   if ( npar ) {	// line-search for mw, iso, and clvd ================================
 
@@ -673,9 +687,26 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	  *grd_err++ = sol.err;		/*error for this solution*/
 	  if (best_sol.err>sol.err) best_sol = sol;
 
+	  if (debug) { 
+	    log = fopen(logfile,"a");
+	    fprintf(log,"%f\t%f\t%f\t%e\t%f\t%f\t%f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err,  mt[0].par, mt[1].par, mt[2].par,amp*1.0e20,mtensor[0][0],mtensor[0][1],mtensor[0][2],mtensor[1][1],mtensor[1][2],mtensor[2][2] );
+	    fclose(log);	  
+	  }
        }
     }
+     if (sol.meca.stk==360 &&  sol.meca.dip==90 &&  sol.meca.rak==90){
+       loop++;
+       if (debug) {
+	 sprintf(logfile,"%s_%03d","log",loop);
+	 log = fopen(logfile,"a");
+	 fclose(log);
+       }
+       log = fopen("log_diff","a");
+       fprintf(log,"%d\t%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
+       fclose(log);
+     }
   }
+
   if (debug) fprintf(stderr, "Mw=%5.2f  iso=%5.2f clvd=%5.2f misfit = %9.3e\n", mt[0].par, mt[1].par, mt[2].par, best_sol.err);
   if (interp == 0) return(best_sol);
   /* do interpolation */
