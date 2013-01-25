@@ -109,13 +109,17 @@ void	mt_radiat(float az, float m[3][3], float rad[4][3]) {
 void nmtensor(float iso, float clvd, float str, float dip, float rake, float tensor[3][3]) {
   float cstr,cdip,crak,sstr,sdip,srak,sstr2,cstr2,sdip2,cdip2,dum;
   float n[3], v[3], N[3];
-  dum = 0.8164966*iso;
+  // ISOTROPIC PART
+  dum = 0.8164966*iso;                                // sqrt(2/3) = 0.08165
   tensor[0][0] = tensor[1][1] = tensor[2][2] = dum;
   tensor[0][1] = tensor[0][2] = tensor[1][2] = 0.;
-  dum = (1-iso*iso)/(1-2*clvd+4*clvd*clvd);
+  dum = (1-iso*iso)/(1-2*clvd+4*clvd*clvd);           // related to eigenvalues
   if (dum>0.) {
-     dum = sqrt(dum)*(1-clvd);
+     dum = sqrt(dum)*(1-clvd);                        // related to eigenvalues
      str  *= DEG2RAD; dip  *= DEG2RAD; rake *= DEG2RAD;
+     // ADD DOUBLE COUPLE PART
+     // orientation (basis U) from strike, dip, rake
+     // dum is a scale factor (related to magnitude)
      sstr=sin(str);cstr=cos(str);sstr2=2*sstr*cstr;cstr2=1-2*sstr*sstr;
      sdip=sin(dip);cdip=cos(dip);sdip2=2*sdip*cdip;cdip2=1-2*sdip*sdip;
      crak=cos(rake);srak=sin(rake);
@@ -125,6 +129,7 @@ void nmtensor(float iso, float clvd, float str, float dip, float rake, float ten
      tensor[1][1] +=  dum*(sdip*crak*sstr2-sdip2*srak*cstr*cstr);
      tensor[1][2] +=  dum*(cdip2*srak*cstr-cdip*crak*sstr);
      tensor[2][2] +=  dum*sdip2*srak;
+     // ADD CLVD PART
      if (clvd>0.0001 || clvd<-0.0001) {
         n[0] = -sdip*sstr; n[1] = sdip*cstr; n[2] = -cdip;
         v[0] =  crak*cstr+srak*cdip*sstr; v[1] = crak*sstr-srak*cdip*cstr; v[2] = -srak*sdip;
@@ -138,6 +143,7 @@ void nmtensor(float iso, float clvd, float str, float dip, float rake, float ten
         tensor[1][2] += dum*(n[1]*n[2]+v[1]*v[2]-2*N[1]*N[2]);
         tensor[2][2] += dum*(n[2]*n[2]+v[2]*v[2]-2*N[2]*N[2]);
      }
+     // symmetric matrix
      tensor[1][0] = tensor[0][1];
      tensor[2][0] = tensor[0][2];
      tensor[2][1] = tensor[1][2];
