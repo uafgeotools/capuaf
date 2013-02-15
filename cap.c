@@ -449,7 +449,8 @@ int main (int argc, char **argv) {
   if (full_mt_search) {
   rad[0]=0.0;
   rad[1]=0.0;
-  rad[2]=0.0;}
+  rad[2]=0.0;
+  sol.ms = 1;}
   //grid.n[0]=grid.n[1]=grid.n[2]=1;
   //grid.x0[0]=sol.meca.stk; grid.x0[1]=sol.meca.dip; grid.x0[2]=sol.meca.rak;
   //sol = error(nda,obs0,nfm,fm0,max_shft,m0,grid,fm_thr,tie);
@@ -466,6 +467,7 @@ int main (int argc, char **argv) {
   amp=pow(10.,1.5*mt[0].par+16.1-20);
   nmtensor(mt[1].par,mt[2].par,sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor);
   fprintf(f_out,"# tensor = %8.3e %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f\n",amp*1.0e20,mtensor[0][0],mtensor[0][1],mtensor[0][2],mtensor[1][1],mtensor[1][2],mtensor[2][2]);
+  fprintf(stderr,"%d",sol.ms);
   for(i=1;i<sol.ms;i++) {
      j = sol.others[i];
      if (grid.err[j]-grid.err[sol.others[0]]<mltp*x2) {
