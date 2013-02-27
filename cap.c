@@ -574,8 +574,8 @@ if (full_mt_search){
 
   //--------newly added section-------------
 fprintf(stderr,"Mw=%f\n",mt[0].par);
-mt[0].max = mt[0].par+0.1;
-mt[0].min = mt[0].par-0.1;
+mt[0].max = mt[0].par+1.0;
+mt[0].min = mt[0].par-1.0;
 temp[1] = mt[1].min;
 temp[2] = mt[2].min;
 
