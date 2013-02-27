@@ -80,6 +80,8 @@
 ****************************************************************/
 #include "cap.h"
 
+int tt2cmt(float gamma, float delta, float m0, float kappa, float theta, float sigma, float mtensor[3][3]);
+
 int loop=0,start=0,debug=0,full_mt_search=1;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx;
@@ -171,8 +173,10 @@ int main (int argc, char **argv) {
 
   /** input grid-search range **/
   scanf("%f%f",&(mt[0].par),&(mt[0].dd)); mt[0].min =  1.;  mt[0].max = 10.;
-  scanf("%f%f",&(mt[1].par),&(mt[1].dd)); mt[1].min = -1.;  mt[1].max = 1.;
-  scanf("%f%f",&(mt[2].par),&(mt[2].dd)); mt[2].min = -0.5; mt[2].max = 0.25;
+//  scanf("%f%f",&(mt[1].par),&(mt[1].dd)); mt[1].min = -1.;  mt[1].max = 1.; // original
+//  scanf("%f%f",&(mt[2].par),&(mt[2].dd)); mt[2].min = -0.5; mt[2].max = 0.25; // original
+  scanf("%f%f",&(mt[1].par),&(mt[1].dd)); mt[1].min = -90.; mt[1].max = 90.; // delta
+  scanf("%f%f",&(mt[2].par),&(mt[2].dd)); mt[2].min = -30.; mt[2].max = 30.; // gamma
   for(j=0;j<3;j++) {
     scanf("%f%f%f",&x1,&x2,&grid.step[j]);
     grid.n[j] = rint((x2-x1)/grid.step[j]) + 1;
@@ -465,7 +469,9 @@ int main (int argc, char **argv) {
         mt[1].par, sqrt(mt[1].sigma*x2),mt[2].par, sqrt(mt[2].sigma*x2));
   fprintf(f_out,"# Variance reduction %4.1f\n",100*(1.-sol.err/rec2));
   amp=pow(10.,1.5*mt[0].par+16.1-20);
-  nmtensor(mt[1].par,mt[2].par,sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor);
+//  nmtensor(mt[1].par,mt[2].par,sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor); //original
+
+  tt2cmt(mt[2].par, mt[1].par, 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
   fprintf(f_out,"# tensor = %8.3e %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f\n",amp*1.0e20,mtensor[0][0],mtensor[0][1],mtensor[0][2],mtensor[1][1],mtensor[1][2],mtensor[2][2]);
   fprintf(stderr,"%d",sol.ms);
   for(i=1;i<sol.ms;i++) {
@@ -568,8 +574,8 @@ if (full_mt_search){
 
   //--------newly added section-------------
 fprintf(stderr,"Mw=%f\n",mt[0].par);
-mt[0].max = mt[0].par+1;
-mt[0].min = mt[0].par-1;
+mt[0].max = mt[0].par+0.1;
+mt[0].min = mt[0].par-0.1;
 temp[1] = mt[1].min;
 temp[2] = mt[2].min;
 
@@ -593,7 +599,8 @@ best_sol.err = FLT_MAX;
        for(i_stk=0; i_stk<grid.n[0]; i_stk++) {
           sol.meca.stk=grid.x0[0]+i_stk*grid.step[1];
           //nmtensor(mt[1].par,mt[2].par,sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor);
-	  nmtensor(temp[1],temp[2],sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor);
+//	  nmtensor(temp[1],temp[2],sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor); // vipul's version
+	  tt2cmt(temp[2], temp[1], 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
 	  if (check_first_motion(mtensor,fm,nfm,fm_thr)<0) {
 		*grd_err++ = sol.err = FLT_MAX;
 		continue;
