@@ -7,7 +7,7 @@ CFLAGS = ${FFLAGS} -I$(NRLIB)/includes
 
 CAP  = cap cap_dir
 
-SUBS = fft.o Complex.o radiats.o grid3d.o futterman.o sacio.o trap.o
+SUBS = fft.o Complex.o radiats.o grid3d.o futterman.o sacio.o trap.o sub_tt2cmt.o
 
 all: $(CAP)
 
