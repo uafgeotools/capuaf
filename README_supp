@@ -25,9 +25,9 @@ CAP INSTRUCTIONS (SEE "CAP CHANGES MADE" BELOW FIRST)
 
 2. check that you have set $SUTIL in your .bashrc file (echo $SUTIL)
 
-   OR modify your path to cap_plt.pl in cap.pl:
+   OR modify your path to cap_plt.pl in cap.pl (echo $CAPHOME):
 
-   require "$home/seismo/grp-utils/cap/cap_plt.pl";   # include plot script
+   require "$caphome/cap_plt.pl";   # include plot script
 
 3. modify the Makefile, or ensure the environment variables ($NRHOME_C, $SACHOME) are present for you
 

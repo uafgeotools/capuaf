@@ -42,7 +42,7 @@ check paths
 4. run cap
 
 > cd $CAPRUN/inv/cus
-> rsync -av $SUTIL/grp-utils/cap/20080418093700 .
+> rsync -av $CAPHOME/20080418093700 .
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700
 > gv 20080418093700/cus_015.ps
 
