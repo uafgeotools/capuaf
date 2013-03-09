@@ -82,16 +82,16 @@
 
 int tt2cmt(float gamma, float delta, float m0, float kappa, float theta, float sigma, float mtensor[3][3]);
 
-int loop=0,start=0,debug=0,full_mt_search=1;
+int loop=0,start=0,debug=0,full_mt_search=0;
 int main (int argc, char **argv) {
-  int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx;
+  int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN];
   int	ns, mltp, nup, up[3], total_n, n_shft, nqP, nqS;
   int	n1,n2,mm[2],n[NCP],max_shft[NCP],npts[NRC];
   int	repeat, bootstrap;
   char	tmp[128],glib[128],dep[32],dst[16],eve[32],*c_pt;
   float	x,x1,x2,y,y1,amp,dt,rad[6],arad[4][3],fm_thr,tie,mtensor[3][3],rec2=0.;
   float	rms_cut[NCP], t0[NCP], tb[NRC], t1, t2, t3, t4, srcDelay;
-  float	con_shft[STN], s_shft, shft0[STN][NCP];
+  float	con_shft[STN], s_shft, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN];
   float	tstarP, tstarS, attnP[NFFT], attnS[NFFT];
   float *data[NRC], *green[NGR];
   float	bs_body,bs_surf,bs[NCP],weight,nof_per_samp;
@@ -105,7 +105,7 @@ int main (int argc, char **argv) {
   FM	*fm, *fm0;
   SOLN	sol;
   SACHEAD hd[NRC];
-  FILE 	*f_out, *log ;
+  FILE 	*f_out, *log, *wt, *wt2 ;
   float tau0, riseTime, *src;
   char type[2] = {'B','P'}, proto[2] = {'B','U'};
   double f1_pnl, f2_pnl, f1_sw, f2_sw;
@@ -218,7 +218,9 @@ int main (int argc, char **argv) {
        scanf("%d",&obs->com[4-j].on_off);
        nup += obs->com[4-j].on_off;
     }
-    scanf("%f%f",&x1,&s_shft);
+    scanf("%f%f%f%f%f",&x1,&Pnl_win,&ts,&surf_win,&s_shft);
+
+    tsurf[i]=ts;
     tele = 0;
     bs[0] = bs[1] = bs[2] = bs_surf;
     bs[3] = bs[4] = bs_body;
@@ -255,11 +257,14 @@ int main (int argc, char **argv) {
     obs->tele = tele;
     if (x1<=0.) x1 = hd[2].a;
     x1 -= hd[2].o;
+    ts -= hd[2].o;
     if (tele && s_shft>0.) s_shft -= hd[0].o;
     t1 = hd[2].t1-hd[2].o;
     t2 = hd[2].t2-hd[2].o;
     t3 = hd[0].t3-hd[0].o;
     t4 = hd[0].t4-hd[0].o;
+    if (dst[0]=='0' && dst[1]=='\0')
+      snprintf(dst,10,"%1.0f", rint(obs->dist));     /*if 0 distance given use the distance from header files*/
 
     /**************compute source time function***********/
 #ifdef DIRECTIVITY
@@ -326,20 +331,32 @@ int main (int argc, char **argv) {
 	 t1 = hd[2].t1;					/* use tp as t1 */
       t1 = t1 - 0.2*mm[0]*dt + con_shft[i];
       t2 = hd[0].t2 + 0.2*mm[0]*dt + con_shft[i];	/* ts plus some delay */
+      if (Pnl_win != 0)                                 /* for specific length of time window */
+	t2 = t1 + Pnl_win;
     }
 
     /* do the same for the s/surface wave portion */
+    if (ts<=0)                                          /*if S wave arrical is not specified */
+      ts= hd[0].t2;
     if (t3 < 0 || t4 < 0 ) {
       if (!tele && vs1>0. && vs2> 0.) {
 	 t3 = sqrt(distance*distance+depSqr)/vs1 - 0.3*mm[1]*dt;
 	 t4 = sqrt(distance*distance+depSqr)/vs2 + 0.7*mm[1]*dt;
       }
       else {
-         t3 = hd[0].t2 - 0.3*mm[1]*dt;
+         t3 = ts - 0.3*mm[1]*dt;
          t4 = t3+mm[1]*dt;
       }
-      t3 += con_shft[i] + s_shft;
-      t4 += con_shft[i] + s_shft;
+      if (ts > 0){                                      /* if surface wave arrival time is given */
+	t3 += s_shft;
+        t4 += s_shft;
+      }
+      else{
+	t3 += con_shft[i] + s_shft;              /* add con_shft only if surf arrival time is not specified*/
+	t4 += con_shft[i] + s_shft;
+      }
+      if (surf_win != 0)                                /* for specific length of time window */
+	t4 = t3 + surf_win;
     }
 
     /*calculate the time windows */
@@ -347,6 +364,14 @@ int main (int argc, char **argv) {
     n2 = rint((t4 - t3)/dt);	/*PSV/SH*/
     if (n1>mm[0]) n1=mm[0];
     if (n2>mm[1]) n2=mm[1];
+
+    /* storing in array so that later it could saved in weight_cap.dat ouput file */
+    P_pick[i] = t1;
+    P_win[i] = n1*dt;
+    S_pick[i] = t3;
+    S_win[i] = n2*dt;
+    S_shft[i] = s_shft;
+    dis[i]=atoi(dst);
 
     /***window data+Greens, do correlation and L2 norms **/
     t0[0]=t3;			/* love wave */
@@ -532,6 +557,17 @@ int main (int argc, char **argv) {
       (*c_pt)++;
     }
   }
+
+/**********ouput weight file -vipul**********/
+  wt = fopen(strcat(strcat(strcpy(tmp,eve),"/"),"weight_capout.dat"),"w");
+  wt2 = fopen(strcat(strcat(strcpy(tmp,eve),"/"),"weight_capin.dat"),"w");
+  for(obs=obs0,i=0;i<nda;i++,obs++){
+    fprintf(wt,"%s\t %d\t %d\t %d\t %d\t %d\t %d\t %3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n",obs->stn, dis[i], obs->com[4].on_off, obs->com[3].on_off, obs->com[2].on_off, obs->com[1].on_off, obs->com[0].on_off, P_pick[i], P_win[i], S_pick[i], S_win[i], S_shft[i]);
+    fprintf(wt2,"%s\t %d\t %d\t %d\t %d\t %d\t %d\t %3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n",obs->stn, dis[i], obs->com[4].on_off, obs->com[3].on_off, obs->com[2].on_off, obs->com[1].on_off, obs->com[0].on_off, P_pick[i]+0.2*mm[0]*dt, P_win[i], S_pick[i]+0.3*mm[1]*dt, S_win[i], S_shft[i]);
+}
+  fclose(wt);
+  fclose(wt2);
+
   return 0;
 }
 
