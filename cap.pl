@@ -14,16 +14,15 @@ $home = $ENV{HOME};                        # my home directory
 $caphome = $ENV{CAPHOME};                  # CAP home directory
 $caprun = $ENV{CAPRUN};                    # run directory
 
-#require "$home/Src/cap/cap_plt.pl";       # include plot script
-require "$caphome/cap_plt.pl"; # include plot script
+require "$caphome/cap_plt.pl";             # include plot script
 
 #================defaults======================================
 $cmd = "cap";
 
 # green's function location
-#$green = "$home/data/models/Glib";       # original
-#$green = "/store/wf/FK_synthetics";      # standard models at UAF
-$green = "$caprun/models";               # user testing
+#$green = "$home/data/models/Glib";        # original
+#$green = "/store/wf/FK_synthetics";       # standard models at UAF
+$green = "$caprun/models";                # user testing
 
 $repeat = 0;
 $bootstrap = 0;
@@ -154,7 +153,7 @@ $usage =
     -X  output other local minimums whose misfit-min<n*sigma ($mltp).
     -Z  specify a different weight file name ($weight).
 
-Examples 1:
+Examples:
 > cap.pl -H0.2 -P0.3 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700
   which finds the best focal mechanism and moment magnitude of tbe 2008/4/18 Southern Illinois earthquake
   20080418093700 using the central US crustal velocity model cus with the earthquake at a depth of 15 km.
@@ -178,20 +177,7 @@ Event 20080418093700 Model cus_15 FM 115 90  -2 Mw 5.19 rms 1.341e-02   110 ERR 
 
   To include isotropic and CLVD in the inversion, use the -J option to specify the starting iso0, clvd0, and search steps. It requires
   that the Green's function library includes the explosion source components (.a, .b, .c).
-----------------------------------------------------------------------------
-Examples 2:
-To run in full moment tensor range open cap.c and set full_mt_search=1. You can also run in debug mode by setting debug=1. Both parameters are in the first line of code.
-When running in full_mt_search mode, you need to enter the starting point Mw and the search will take place in Mw-1 to Mw+1 range. The search range can be changed in cap.c (by changing mt[0].max and mt[0].min) under the full_mt_search block in error function. Intial search point and search increment can be changed using -M and -I flag respectively in the input cap command.
-ISO and CLVD will be searched for in their general range (-1<ISO<+1 ; -0.5<CLVD<0.25). However you can change this by using -J flag in the input command line.
 
-Step by step instruction
-1. Open cap.c
-2. Set full_mt_search=1; Keep debug=0 for intial testing. (In debug mode it will print multiple log files and hence time consuming).
-3. Save 
-4. make all (it is preferred to use 'make all' everytime instead of just using 'make cap', however both works)
-5. cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/.2/0/0.2 20080418093700
-   Here intial Mw=5.0 (-Mcus_15/5.0). Mw_increment=0.2 (-I10/.2). Therefore search range 4<Mw<6. 
-   Iso_increment=0.2 and clvd_incerement (-J0/.2/0/0.2)
 
 ";
 

@@ -1,0 +1,109 @@
+README_EXAMPLE
+
+Test examples for CAP.
+The default example should always be run, prior to committing any changes to the code.
+
+============================================
+STARTUP INSTRUCTIONS
+
+0. if on UAF cluster, check modules (GMT, netcdf, gfortran)
+
+> module purge
+> module load PrgEnv-gnu/4.5.1 gmt/4.5.7
+> module list
+
+load environment variables
+
+> source $EUTIL/seismo_bashrc
+
+1. check paths (see .bashrc)
+
+> echo $FKHOME
+> echo $CAPHOME
+> echo $CAPRUN
+> echo $NRHOME_C
+> echo $GMTHOME
+
+2. set up directories
+
+> echo $CAPRUN
+> cd $CAPRUN
+> mkdir -p models inv
+> mkdir -p models/cus inv/cus
+
+3. compile cap.c
+
+> make all >& make.log
+
+4. check path to utilities
+
+> which cap fk pssac2 cap.pl cap_plt.pl
+
+============================================
+DEFAULT EXAMPLE: ILLINOIS EVENT, DOUBLE COUPLE
+
+1. run fk (this uses the "cus" 1D model for "central U.S."
+
+> cd $CAPRUN/models/cus
+> cp $SUTIL/grp-utils/fk3.0/cus .
+> fk.pl -Mcus/15 -N512/0.4/2 140 145 205 230 260 275 295
+
+NOTE: You do not need to run fk if you have a pre-computed library of Green's functions.
+
+2. run cap
+
+> cd $CAPRUN/inv/cus
+> rsync -av $CAPHOME/20080418093700 .
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700
+> gv 20080418093700/cus_015.ps
+
+You should see a reasonable output for a moment tensor inversion.
+
+3. check the output files in 20080418093700: cus_15.out and cus_15.ps 
+   compare with the same files in 20080418093700_check
+
+4. perform the depth test
+
+This requires computing Green's functions for the depths used in the grid search.
+
+> cd $CAPRUN/models/cus
+> fk.pl -Mcus/5 -N512/0.4/2 140 145 205 230 260 275 295
+> fk.pl -Mcus/10 -N512/0.4/2 140 145 205 230 260 275 295
+> fk.pl -Mcus/20 -N512/0.4/2 140 145 205 230 260 275 295
+> fk.pl -Mcus/25 -N512/0.4/2 140 145 205 230 260 275 295
+> fk.pl -Mcus/30 -N512/0.4/2 140 145 205 230 260 275 295
+
+Then run cap for each depth. One output (.out) file should be generated for each depth.
+
+From each output file extract+append the "Event" and "tensor" lines into separate files, e.g.:
+> grep -h "Event" 20080418093700/cus*.out > out.depth-event 
+> grep -h "tensor" 20080418093700/cus*.out > out.depth-fmt
+
+Run depth.pl
+> depth.pl out.depth-event out.depth-fmt 20080418093700 > out.ps
+
+============================================
+EXAMPLE 2: ILLINOIS EVENT, FMT with Zhu line search
+
+VIPUL -- PLEASE UPDATE THIS
+
+Examples 2:
+To run in full moment tensor range open cap.c and set full_mt_search=1. You can also run in debug mode by setting debug=1. Both parameters are in the first line of code.
+When running in full_mt_search mode, you need to enter the starting point Mw and the search will take place in Mw-1 to Mw+1 range. The search range can be changed in cap.c (by changing mt[0].max and mt[0].min) under the full_mt_search block in error function. Intial search point and search increment can be changed using -M and -I flag respectively in the input cap command.
+ISO and CLVD will be searched for in their general range (-1<ISO<+1 ; -0.5<CLVD<0.25). However you can change this by using -J flag in the input command line.
+
+Step by step instruction
+1. Open cap.c
+2. Set full_mt_search=1; Keep debug=0 for intial testing. (In debug mode it will print multiple log files and hence time consuming).
+3. Save 
+4. make all (it is preferred to use 'make all' everytime instead of just using 'make cap', however both works)
+5. cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/.2/0/0.2 20080418093700
+   Here intial Mw=5.0 (-Mcus_15/5.0). Mw_increment=0.2 (-I10/.2). Therefore search range 4<Mw<6. 
+   Iso_increment=0.2 and clvd_incerement (-J0/.2/0/0.2)
+
+============================================
+EXAMPLE 3: ILLINOIS EVENT, FMT with lune parameterization, full grid search
+
+
+
+=======================

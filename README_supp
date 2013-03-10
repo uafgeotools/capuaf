@@ -2,49 +2,15 @@
 10-June-2011 (08-April-2010)
 
 Supplemental notes and instructions for compiling and running CAP from Lupei Zhu.
+See README_EXAMPLE first to test the code.
 
 -------------------------------------------------
-FK INSTRUCTIONS
-
-0. ensure that the FK package is working to produce the Green's functions (as sac files)
-
-   Running the default example in cap.pl requires that you have pre-computed Green's functions
-   in the directory specified by $green in cap.pl.
-
-   Using the "cus" model from Lupei Zhu (02-June-2011)
-
-   Go to the directory $green/cus/ and run the example:
-   > cd $green/cus/
-   > cp /seismo/grp-utils/fk3.0/cus .
-   > fk.pl -Mcus/15 -N512/0.4/2 140 145 205 230 260 275 295
+At UAF, type "svn log" to see the changes made.
+The initial code is cap2.0, sent from Lupei Zhu, 12/2012
+Many changes can be identified using diff, e.g., "diff cap_orig.pl cap.pl"
 
 -------------------------------------------------
-CAP INSTRUCTIONS (SEE "CAP CHANGES MADE" BELOW FIRST)
-
-1. information: cap_usage, README
-
-2. check that you have set $SUTIL in your .bashrc file (echo $SUTIL)
-
-   OR modify your path to cap_plt.pl in cap.pl (echo $CAPHOME):
-
-   require "$caphome/cap_plt.pl";   # include plot script
-
-3. modify the Makefile, or ensure the environment variables ($NRHOME_C, $SACHOME) are present for you
-
-4. compile cap.c
-
-   > make all >& make.log
-
-5. check that you have set $CAPRUN in your .bashrc file (echo $CAPRUN)
-
-   OR modify your the path for $green in cap.pl, e.g.:
-
-   $green = "$home/PROJECTS/CAP/models";
-
-   (If no "cus" model is available, use the "hk" model from the fk.pl example.)
-
-6. run the example listed in cap.pl (note: change "cus_15" to "hk_15" if using hk)
-   note: see point 8 to run cap from a directory other than grp-utils/cap/
+NOTES ON PSSAC2
 
    We list four options that have different scaling for the seismograms (pssac2 options).
 
@@ -86,116 +52,5 @@ seconds per inch = 40
 amplitude scaling am = 0.3
 pssac2 amplitude scaling stam = 0.3/-1
 --
-
-7. check the output files in 20080418093700: cus_15.out and cus_15.ps 
-   compare with the same files in 20080418093700_check
-
-8. NOTE: to run cap.pl from another directory, first check that the executables are in your path:
-
-   > cd [rundir]
-   > which cap.pl cap_plt.pl cap cap_iso cap_dir depth.pl
-
-   Then copy the input directory to your run directory:
-
-   > rsync -av /home/carltape/seismo/grp-utils/cap/20080418093700 .
-
--------------------------------------------------
-CAP CHANGES MADE ("svn log" for details)
-
-1. cap.pl -- changed:
-
-   require "$home/seismo/grp-utils/cap/cap_plt.pl";   # include plot script
-
-2. Makefile -- changed: the command "diff Makefile Makefile_orig" gives *:
-[*20130102 calvizuri- current Makefile_orig: /usr/local/seismo_uncompiled/grp-utils/cap/Makefile]
-
-1,6d0
-< CC=gcc
-< FC=gfortran
-< 
-< NR_LIB=$(NRHOME_C)
-< SAC_LIB=$(SACHOME)/lib
-< 
-8c2,6
-< CFLAGS = ${FFLAGS} -I$(NR_LIB)/includes
----
-> FC = gfortran
-> #CFLAGS = ${FFLAGS} -I$(NR)/NRC_includes
-> #NRLIB = $(MY_BIN)
-> NRLIB = $(NRHOME_C)
-> CFLAGS = ${FFLAGS} -I$(NRLIB)/includes
-10c8
-< CAP  = cap cap_dir cap_iso
----
-> CAP  = cap cap_dir
-12c10
-< SUBS = cap_sub.o fft.o Complex.o radiats.o grid3d.o futterman.o sacio.o
----
-> SUBS = fft.o Complex.o radiats.o grid3d.o futterman.o sacio.o trap.o
-16,17c14,17
-< $(CAP): %:%.o $(SUBS)
-<   $(CC) $(CFLAGS) -o $@ $^ -L$(SAC_LIB) -lsac -lsacio -L$(NR_LIB) -lcrecipes -lm
----
-> cap cap_dir: %:%.o $(SUBS) cap_sub.o
->   $(LINK.f) -o $@ $^ -L$(SACHOME)/lib -lsac -lsacio -L$(NRLIB) -lcrecipes
-> #cap cap_dir: %:%.o $(SUBS) cap_sub.o
-> # $(LINK.f) -o $@ $^ -L$(SACHOME)/lib -lsac -lsacio -L$(NRLIB) -lnr
-20c20
-<   $(CC) $(CFLAGS) -DDIRECTIVITY -c -o $@ $<
----
->   $(COMPILE.c) -DDIRECTIVITY -o $@ $<
-:wq
-
-
-5. cap_plt.pl
-
-   changed "pssac" to "pssac2"
-   (Make sure that pssac2 was compiled on your own computer.)
-
-   added "-P" for plotting in portrait mode
-   added perl command: system("gmtset MEASURE_UNIT inch") for explicit use of inches
-   added command to set GMTDEFAULTS, including the paper size   <-- 20130102 calvizuri - start here
-      this allows to plot any number of seismograms on a single page
-   added station azimuths marks just outside the beachball
-   added station azimuth label below station label
-   uncommented the line "next if $aa[2] == 0;"
-   added a `o' mark for the upper hemisphere piercing point
-
-   added new plot: BIG beachball with stations labeled
-
-7. moved output files into 20080418093700/output/ so that we don't overwrite them
-
-8. linked all executables to /seismo/bin/
-
-   > cd /home/carltape/seismo/bin
-   > ln -s $capdir/cap.pl
-   > ln -s $capdir/cap_plt.pl
-   > ln -s $capdir/cap
-   > ln -s $capdir/cap_iso
-   > ln -s $capdir/cap_dir
-   > ln -s $capdir/depth.pl
-
-9. modified depth.pl to display GMT figure at a reasonable scale
-
-10. added bandpass on output ps plot
-
-11. changed file format from scak_1, scak_2, to scak_001, scak_002, etc
-
-12. IMPORTANT: CHANGED THE FORMAT OF THE INPUT FILE TO ALLOW MANUAL PICKING OF TIME WINDOWS
-
-13. IMPORTANT: changed option in weights file such that an entry of 0 for
-               the distance will prompt CAP to get the distance from the sac header;
-               otherwise the input distance will over-ride the sac header
-
-14. IMPORTANT: changed the output time shifts such that they will be the same,
-               whether or not a user manually enters the P or Surf start times
-               (was this a bug in the original version?)
-
--------------------------------------------------
-CURRENT STATUS:
-1. test run works
-2. plot matches default plot if absolute amplitudes are plotted;
-   this requires using -MA/0 in pssac2, where A is the absolute scaling
-   (original default command assumes pssac is being used)
 
 -------------------------------------------------
