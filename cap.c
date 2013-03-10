@@ -757,7 +757,7 @@ best_sol.err = FLT_MAX;
        fclose(log);
      }
   }
-  if (debug) fprintf(stderr,"Mw=%2.1f \t iso=%2.2f \t clvd=%2.2f \n",temp[0],temp[1],temp[2]);
+  if (1) fprintf(stderr,"Mw=%2.1f \t iso=%2.2f \t clvd=%2.2f \n",temp[0],temp[1],temp[2]);
        }
    }
  }
