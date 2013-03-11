@@ -85,21 +85,97 @@ Run depth.pl
 ============================================
 EXAMPLE 2: ILLINOIS EVENT, FMT with Zhu line search
 
-VIPUL -- PLEASE UPDATE THIS
+1. run fk (this uses the "cus" 1D model for "central U.S."
 
-Examples 2:
+> cd $CAPRUN/models/cus
+> cp $SUTIL/grp-utils/fk3.0/cus .
+> fk.pl -Mcus/15 -N512/0.4/2 140 145 205 230 260 275 295
+This is for generating 9 green's function. In the directory $CAPRUN/models/cus files of the form dist.grn.(0-8) will be generated. eg: 140.grn.0, 140.grn.1, .. 140.grn.8
+
+2. run fk again to generate isotropic components
+
+> cd $CAPRUN/models/cus
+> fk.pl -Mcus/15 -N512/0.4/2 -S0 140 145 205 230 260 275 295
+ This will create 3 additional green functions for each distance of the form dist.grn.(a-c), eg: 140.grn.a, 140.grn.b, 140.grn.c.
+
+3. 
+> cd 20080418093700
+Check that you have new weight.dat file with 12 columns (3 extra for Pnl_window, surf_pick, surf_window). Old weight file is under the name weight_orig.dat
+
+4. open cap.c
+
+> cd $HOME/GEOTOOLS/tomo_util/cap
+> xe cap.c
+> check that full_mt_search=0 (and preferably debug=0 so that it do not generate numerous output files)
+> save 
+> make all
+
+
+5. run cap
+cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/.2/0/0.2 20080418093700
+
+6. view output plot
+> gv 20080418093700/cus_015_fmt.ps
+
+7. check the output files in 20080418093700: cus_15_fmt.out and cus_15_fmt.ps 
+   compare with the same files in 20080418093700_check
+
+8. perform the depth test
+
+This requires computing Green's functions for the depths used in the grid search.
+
+> cd $CAPRUN/models/cus
+> fk.pl -Mcus/5 -N512/0.4/2 -S0 140 145 205 230 260 275 295
+> fk.pl -Mcus/10 -N512/0.4/2 -S0 140 145 205 230 260 275 295
+> fk.pl -Mcus/20 -N512/0.4/2 -S0 140 145 205 230 260 275 295
+> fk.pl -Mcus/25 -N512/0.4/2 -S0 140 145 205 230 260 275 295
+> fk.pl -Mcus/30 -N512/0.4/2 -S0 140 145 205 230 260 275 295
+
+Then run cap for each depth. One output (.out) file should be generated for each depth.
+
+From each output file extract+append the "Event" and "tensor" lines into separate files, e.g.:
+> grep -h "Event" 20080418093700/cus*.out > out.depth-event 
+> grep -h "tensor" 20080418093700/cus*.out > out.depth-fmt
+
+Run depth.pl
+> depth.pl out.depth-event out.depth-fmt 20080418093700 > out.ps
+
+----------------------------------
+ISO and CLVD will be searched for in their general range (-1<ISO<+1 ; -0.5<CLVD<0.25). However you can change the increament by using -J flag in the input command line.
+
+====================================================================================
+EXAMPLE 2: ILLINOIS EVENT, FMT (grid search over all six parameters)
+
+1. Follow same steps 1 to 3 of EXAMPLE 2
+
+2.  open cap.c
+
+> cd $HOME/GEOTOOLS/tomo_util/cap
+> xe cap.c
+> check that full_mt_search=1 (and preferably debug=0 so that it do not generate numerous output files)
+> save 
+> make all
+
+3.  run cap
+cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/5/0/5 20080418093700
+
+4. Same as steps 6 to 8 of EXAMPLE 2
+
+
+Examples 3:
 To run in full moment tensor range open cap.c and set full_mt_search=1. You can also run in debug mode by setting debug=1. Both parameters are in the first line of code.
 When running in full_mt_search mode, you need to enter the starting point Mw and the search will take place in Mw-1 to Mw+1 range. The search range can be changed in cap.c (by changing mt[0].max and mt[0].min) under the full_mt_search block in error function. Intial search point and search increment can be changed using -M and -I flag respectively in the input cap command.
-ISO and CLVD will be searched for in their general range (-1<ISO<+1 ; -0.5<CLVD<0.25). However you can change this by using -J flag in the input command line.
+OLD CODE: ISO and CLVD will be searched for in their general range (-1<ISO<+1 ; -0.5<CLVD<0.25). However you can change the increament by using -J flag in the input command line.
+UPDATED version: ISO and CLVD will be searched for in their general range (-90ISO<90 ; -30<CLVD<30). However you can change the increment by using -J flag in the input command line. Using tt2cmt routine instead.
 
 Step by step instruction
 1. Open cap.c
 2. Set full_mt_search=1; Keep debug=0 for intial testing. (In debug mode it will print multiple log files and hence time consuming).
 3. Save 
 4. make all (it is preferred to use 'make all' everytime instead of just using 'make cap', however both works)
-5. cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/.2/0/0.2 20080418093700
+5. cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/5/0/5 20080418093700
    Here intial Mw=5.0 (-Mcus_15/5.0). Mw_increment=0.2 (-I10/.2). Therefore search range 4<Mw<6. 
-   Iso_increment=0.2 and clvd_incerement (-J0/.2/0/0.2)
+   Iso_increment=5 and clvd_incerement (-J0/5/0/5)
 
 ============================================
 EXAMPLE 3: ILLINOIS EVENT, FMT with lune parameterization, full grid search
