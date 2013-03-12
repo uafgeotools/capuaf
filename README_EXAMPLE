@@ -40,7 +40,7 @@ load environment variables
 > which cap fk pssac2 cap.pl cap_plt.pl
 
 ============================================
-DEFAULT EXAMPLE: ILLINOIS EVENT, DOUBLE COUPLE
+DEFAULT EXAMPLE 1: ILLINOIS EVENT, DOUBLE COUPLE
 
 1. run fk (this uses the "cus" 1D model for "central U.S."
 
@@ -50,7 +50,17 @@ DEFAULT EXAMPLE: ILLINOIS EVENT, DOUBLE COUPLE
 
 NOTE: You do not need to run fk if you have a pre-computed library of Green's functions.
 
-2. run cap
+2. run fk again to generate isotropic components
+
+> cd $CAPRUN/models/cus
+> fk.pl -Mcus/15 -N512/0.4/2 -S0 140 145 205 230 260 275 295
+ This will create 3 additional green functions for each distance of the form dist.grn.(a-c), eg: 140.grn.a, 140.grn.b, 140.grn.c.
+
+3. 
+> cd 20080418093700
+Check that you have new weight.dat file with 12 columns (3 extra for Pnl_window, surf_pick, surf_window). Old weight file is under the name weight_orig.dat
+
+4. run cap
 
 > cd $CAPRUN/inv/cus
 > rsync -av $CAPHOME/20080418093700 .
@@ -59,10 +69,10 @@ NOTE: You do not need to run fk if you have a pre-computed library of Green's fu
 
 You should see a reasonable output for a moment tensor inversion.
 
-3. check the output files in 20080418093700: cus_15.out and cus_15.ps 
+5. check the output files in 20080418093700: cus_15.out and cus_15.ps 
    compare with the same files in 20080418093700_check
 
-4. perform the depth test
+6. perform the depth test
 
 This requires computing Green's functions for the depths used in the grid search.
 
@@ -85,22 +95,9 @@ Run depth.pl
 ============================================
 EXAMPLE 2: ILLINOIS EVENT, FMT with Zhu line search
 
-1. run fk (this uses the "cus" 1D model for "central U.S."
-
-> cd $CAPRUN/models/cus
-> cp $SUTIL/grp-utils/fk3.0/cus .
-> fk.pl -Mcus/15 -N512/0.4/2 140 145 205 230 260 275 295
-This is for generating 9 green's function. In the directory $CAPRUN/models/cus files of the form dist.grn.(0-8) will be generated. eg: 140.grn.0, 140.grn.1, .. 140.grn.8
-
-2. run fk again to generate isotropic components
-
-> cd $CAPRUN/models/cus
-> fk.pl -Mcus/15 -N512/0.4/2 -S0 140 145 205 230 260 275 295
- This will create 3 additional green functions for each distance of the form dist.grn.(a-c), eg: 140.grn.a, 140.grn.b, 140.grn.c.
-
-3. 
-> cd 20080418093700
-Check that you have new weight.dat file with 12 columns (3 extra for Pnl_window, surf_pick, surf_window). Old weight file is under the name weight_orig.dat
+1. Follow same step 1 EXAMPLE 1
+2. Follow same step 2 EXAMPLE 1
+3. Follow same step 3 EXAMPLE 1
 
 4. open cap.c
 
@@ -109,7 +106,6 @@ Check that you have new weight.dat file with 12 columns (3 extra for Pnl_window,
 > check that full_mt_search=0 (and preferably debug=0 so that it do not generate numerous output files)
 > save 
 > make all
-
 
 5. run cap
 cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/.2/0/0.2 20080418093700
@@ -120,35 +116,17 @@ cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 
 7. check the output files in 20080418093700: cus_15_fmt.out and cus_15_fmt.ps 
    compare with the same files in 20080418093700_check
 
-8. perform the depth test
-
-This requires computing Green's functions for the depths used in the grid search.
-
-> cd $CAPRUN/models/cus
-> fk.pl -Mcus/5 -N512/0.4/2 -S0 140 145 205 230 260 275 295
-> fk.pl -Mcus/10 -N512/0.4/2 -S0 140 145 205 230 260 275 295
-> fk.pl -Mcus/20 -N512/0.4/2 -S0 140 145 205 230 260 275 295
-> fk.pl -Mcus/25 -N512/0.4/2 -S0 140 145 205 230 260 275 295
-> fk.pl -Mcus/30 -N512/0.4/2 -S0 140 145 205 230 260 275 295
-
-Then run cap for each depth. One output (.out) file should be generated for each depth.
-
-From each output file extract+append the "Event" and "tensor" lines into separate files, e.g.:
-> grep -h "Event" 20080418093700/cus*.out > out.depth-event 
-> grep -h "tensor" 20080418093700/cus*.out > out.depth-fmt
-
-Run depth.pl
-> depth.pl out.depth-event out.depth-fmt 20080418093700 > out.ps
-
 ----------------------------------
 ISO and CLVD will be searched for in their general range (-1<ISO<+1 ; -0.5<CLVD<0.25). However you can change the increament by using -J flag in the input command line.
 
 ====================================================================================
-EXAMPLE 2: ILLINOIS EVENT, FMT (grid search over all six parameters)
+EXAMPLE 3: ILLINOIS EVENT, FMT with lune parameterization, full grid search
 
-1. Follow same steps 1 to 3 of EXAMPLE 2
+1. Follow same step 1 EXAMPLE 1
+2. Follow same step 2 EXAMPLE 1
+3. Follow same step 3 EXAMPLE 1
 
-2.  open cap.c
+4.  open cap.c
 
 > cd $HOME/GEOTOOLS/tomo_util/cap
 > xe cap.c
@@ -156,11 +134,10 @@ EXAMPLE 2: ILLINOIS EVENT, FMT (grid search over all six parameters)
 > save 
 > make all
 
-3.  run cap
+5.  run cap
 cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/5/0/5 20080418093700
 
-4. Same as steps 6 to 8 of EXAMPLE 2
-
+6. Same as steps 6 to 7 of EXAMPLE 2
 
 Examples 3:
 To run in full moment tensor range open cap.c and set full_mt_search=1. You can also run in debug mode by setting debug=1. Both parameters are in the first line of code.
@@ -176,10 +153,5 @@ Step by step instruction
 5. cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/5/0/5 20080418093700
    Here intial Mw=5.0 (-Mcus_15/5.0). Mw_increment=0.2 (-I10/.2). Therefore search range 4<Mw<6. 
    Iso_increment=5 and clvd_incerement (-J0/5/0/5)
-
-============================================
-EXAMPLE 3: ILLINOIS EVENT, FMT with lune parameterization, full grid search
-
-
 
 =======================
