@@ -346,7 +346,7 @@ int main (int argc, char **argv) {
 	 t4 = sqrt(distance*distance+depSqr)/vs2 + 0.7*mm[1]*dt;
       }
       else {
-         t3 = ts - 0.3*mm[1]*dt;
+         t3 = hd[0].t2 - 0.3*mm[1]*dt;
          t4 = t3+mm[1]*dt;
       }
       if (ts > 0){                                      /* if surface wave arrival time is given */
