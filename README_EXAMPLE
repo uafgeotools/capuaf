@@ -20,13 +20,22 @@ load environment variables
 
 1. check paths (see .bashrc)
 
-> echo $FKHOME
-> echo $CAPHOME
-> echo $CAPRUN
-> echo $NRHOME_C
-> echo $GMTHOME
+> echo $CAPHOME ;  echo $CAPRUN ; echo $NRHOME_C ; echo $GMTHOME
 
-2. set up directories
+Make sure that none of these is empty.
+
+note: by default at UAF you can set this in your .bashrc:
+
+export GEOTOOLS=$HOME/GEOTOOLS
+export SUTIL=/usr/local/seismo
+export NRHOME_C=$SUTIL/grp-utils/nr/NR_C302/legacy/nr2/C_211_mod
+export NRHOME_F90=$SUTIL/grp-utils/nr/recipes_f-90
+export CAPHOME=$GEOTOOLS/tomo_util/cap
+export PATH=$CAPHOME:$PATH
+export CAPRUN=$HOME/PROJECTS/CAP
+export PATH=$PATH:$SUTIL/bin:$HOME/bin:.
+
+2. set up directories that are consistent with $CAPRUN (above)
 
 > echo $CAPRUN
 > cd $CAPRUN
@@ -35,11 +44,14 @@ load environment variables
 
 3. compile cap.c
 
+> cd $CAPHOME
 > make all >& make.log
 
 4. check path to utilities
 
 > which cap fk pssac2 cap.pl cap_plt.pl
+
+Make sure that none of these is missing.
 
 ============================================
 DEFAULT EXAMPLE 1: ILLINOIS EVENT, DOUBLE COUPLE
@@ -54,25 +66,32 @@ NOTE: You do not need to run fk if you have a pre-computed library of Green's fu
 
 2. run fk again to generate isotropic components
 
-> cd $CAPRUN/models/cus
 > fk.pl -Mcus/15 -N512/0.4/2 -S0 140 145 205 230 260 275 295
- This will create 3 additional green functions for each distance of the form dist.grn.(a-c), eg: 140.grn.a, 140.grn.b, 140.grn.c.
 
-3. 
+ This will create 3 additional green functions for each distance of the form dist.grn.(a-c),
+ e.g., 140.grn.a, 140.grn.b, 140.grn.c.
+
+3. prepare data directory
+
+> cd $CAPRUN/inv/cus
+> rsync -av $CAPHOME/20080418093700 .
 > cd 20080418093700
-Check that you have new weight.dat file with 12 columns (3 extra for Pnl_window, surf_pick, surf_window). Old weight file is under the name weight_orig.dat
+
+Check that you have new weight.dat file with 12 columns (3 extra for Pnl_window, surf_pick, surf_window).
+The old weight file is under the name weight_orig.dat
 
 4. run cap
 
 > cd $CAPRUN/inv/cus
-> rsync -av $CAPHOME/20080418093700 .
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700
-> gv 20080418093700/cus_015.ps
+> gv 20080418093700/cus_015.ps &
 
 You should see a reasonable output for a moment tensor inversion.
 
 5. check the output files in 20080418093700: cus_15.out and cus_15.ps 
    compare with the same files in 20080418093700_check
+
+> gv $CAPHOME/20080418093700_check/cus_15.ps &
 
 6. perform the depth test
 
