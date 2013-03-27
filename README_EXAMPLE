@@ -20,7 +20,7 @@ load environment variables
 
 1. check paths (see .bashrc)
 
-> echo $CAPHOME ;  echo $CAPRUN ; echo $NRHOME_C ; echo $GMTHOME
+> echo "CAPHOME =" $CAPHOME ;  echo "CAPRUN =" $CAPRUN ; echo "NRHOME_C =" $NRHOME_C ; echo "GMTHOME =" $GMTHOME
 
 Make sure that none of these is empty.
 
@@ -98,20 +98,30 @@ You should see a reasonable output for a moment tensor inversion.
 This requires computing Green's functions for the depths used in the grid search.
 
 > cd $CAPRUN/models/cus
-> fk.pl -Mcus/5 -N512/0.4/2 140 145 205 230 260 275 295
-> fk.pl -Mcus/10 -N512/0.4/2 140 145 205 230 260 275 295
-> fk.pl -Mcus/20 -N512/0.4/2 140 145 205 230 260 275 295
-> fk.pl -Mcus/25 -N512/0.4/2 140 145 205 230 260 275 295
-> fk.pl -Mcus/30 -N512/0.4/2 140 145 205 230 260 275 295
+> fk.pl -Mcus/5  -N512/0.4/2 140 145 205 230 260 275 295 ; fk.pl -Mcus/5  -N512/0.4/2 -S0 140 145 205 230 260 275 295
+> fk.pl -Mcus/10 -N512/0.4/2 140 145 205 230 260 275 295 ; fk.pl -Mcus/10 -N512/0.4/2 -S0 140 145 205 230 260 275 295
+> fk.pl -Mcus/20 -N512/0.4/2 140 145 205 230 260 275 295 ; fk.pl -Mcus/20 -N512/0.4/2 -S0 140 145 205 230 260 275 295
+> fk.pl -Mcus/25 -N512/0.4/2 140 145 205 230 260 275 295 ; fk.pl -Mcus/25 -N512/0.4/2 -S0 140 145 205 230 260 275 295
+> fk.pl -Mcus/30 -N512/0.4/2 140 145 205 230 260 275 295 ; fk.pl -Mcus/30 -N512/0.4/2 -S0 140 145 205 230 260 275 295
 
 Then run cap for each depth. One output (.out) file should be generated for each depth.
 
-From each output file extract+append the "Event" and "tensor" lines into separate files, e.g.:
+> cd $CAPRUN/inv/cus
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_5/5.0 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_10/5.0 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_20/5.0 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_25/5.0 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_30/5.0 20080418093700
+
+From each output file extract and append the "Event" and "tensor" lines into separate files.
+
 > grep -h "Event" 20080418093700/cus*.out > out.depth-event 
 > grep -h "tensor" 20080418093700/cus*.out > out.depth-fmt
 
 Run depth.pl
-> depth.pl out.depth-event out.depth-fmt 20080418093700 > out.ps
+
+> depth.pl out.depth-event out.depth-fmt 20080418093700 > depth.ps
+> gv depth.ps &
 
 ============================================
 EXAMPLE 2: ILLINOIS EVENT, FMT with Zhu line search

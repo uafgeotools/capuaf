@@ -82,8 +82,8 @@ sub plot {
 
   # (3) plot beachballs (solution, followed by possible local minima)
   $dY = ${pheight_in} - 1.8;
-  $plt3 = "| psmeca -JX5i/1i -R-1/9/-1/1 -Sa5i -Y${dY}i -X-0.7i -O -K >> $outps";
-  $plt3 = "| psmeca -JX5i/1i -R-1/9/-1/1 -Sm8i -Y${dY}i -X-0.7i -O -K >> $outps" if $tensor[1] eq "tensor";
+  $plt3 = "| psmeca -JX5i/1i -R-1/9/-1/1 -Sa5i -G100 -Y${dY}i -X-0.7i -O -K >> $outps";
+  $plt3 = "| psmeca -JX5i/1i -R-1/9/-1/1 -Sm8i -G100 -Y${dY}i -X-0.7i -O -K >> $outps" if $tensor[1] eq "tensor";
 
   # (4) plot markers on beachball
   # note: -JPa is a basemap for polar coordinates, clockwise from north
