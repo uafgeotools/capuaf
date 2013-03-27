@@ -130,22 +130,18 @@ EXAMPLE 2: ILLINOIS EVENT, FMT with Zhu line search
 2. Follow same step 2 EXAMPLE 1
 3. Follow same step 3 EXAMPLE 1
 
-4. open cap.c
+4. run cap with the -J flag
 
-> cd $HOME/GEOTOOLS/tomo_util/cap
-> xe cap.c
-> check that full_mt_search=0 (and preferably debug=0 so that it do not generate numerous output files)
-> save 
-> make all
-
-5. run cap
-cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/.2/0/0.2 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/.2/0/0.2 20080418093700
 
 6. view output plot
-> gv 20080418093700/cus_015_fmt.ps
+
+> gv 20080418093700/cus_015_fmt.ps &
 
 7. check the output files in 20080418093700: cus_15_fmt.out and cus_15_fmt.ps 
    compare with the same files in 20080418093700_check
+
+> gv $CAPHOME/20080418093700_check/cus_015_fmt_uaf.ps &
 
 ----------------------------------
 ISO and CLVD will be searched for in their general range (-1<ISO<+1 ; -0.5<CLVD<0.25). However you can change the increament by using -J flag in the input command line.
@@ -159,7 +155,7 @@ EXAMPLE 3: ILLINOIS EVENT, FMT with lune parameterization, full grid search
 
 4.  open cap.c
 
-> cd $HOME/GEOTOOLS/tomo_util/cap
+> cd $CAPHOME
 > xe cap.c
 > check that full_mt_search=1 (and preferably debug=0 so that it do not generate numerous output files)
 > save 
