@@ -258,6 +258,7 @@ int main (int argc, char **argv) {
     obs->dist = distance = hd->dist;
     obs->tele = tele;
     if (x1<=0.) x1 = hd[2].a;
+    if (ts<=0.) ts = hd[2].a;
     x1 -= hd[2].o;
     ts -= hd[2].o;
     if (tele && s_shft>0.) s_shft -= hd[0].o;
@@ -338,7 +339,7 @@ int main (int argc, char **argv) {
     }
 
     /* do the same for the s/surface wave portion */
-    if (ts<=0)                                          /*if S wave arrical is not specified */
+    if (ts<=0.)                                          /*if S wave arrical is not specified */
       ts= hd[0].t2;
     if (t3 < 0 || t4 < 0 ) {
       if (!tele && vs1>0. && vs2> 0.) {
@@ -346,16 +347,17 @@ int main (int argc, char **argv) {
 	 t4 = sqrt(distance*distance+depSqr)/vs2 + 0.7*mm[1]*dt;
       }
       else {
-         t3 = hd[0].t2 - 0.3*mm[1]*dt;
+         t3 = ts - 0.3*mm[1]*dt;
          t4 = t3+mm[1]*dt;
       }
-      if (ts > 0){                                      /* if surface wave arrival time is given */
+      if (ts > 0.){                                      /* if surface wave arrival time is given */
 	t3 += s_shft;
         t4 += s_shft;
       }
       else{
 	t3 += con_shft[i] + s_shft;              /* add con_shft only if surf arrival time is not specified*/
 	t4 += con_shft[i] + s_shft;
+	fprintf(stderr,"%f %f %f %f\n",t3,t4,hd[0].t2,con_shft[i]);
       }
       if (surf_win != 0)                                /* for specific length of time window */
 	t4 = t3 + surf_win;
@@ -470,7 +472,7 @@ int main (int argc, char **argv) {
 
 
   /**************output the results***********************/
-  if (sol.flag) fprintf(stderr,"Warning: flag=%d => the minimum %5.1f/%4.1f/%5.1f is at boundary\n",sol.flag,sol.meca.stk,sol.meca.dip,sol.meca.rak);
+  if (sol.flag) fprintf(stderr,"\nWarning: flag=%d => the minimum %5.1f/%4.1f/%5.1f is at boundary\n",sol.flag,sol.meca.stk,sol.meca.dip,sol.meca.rak);
   else principal_values(&(sol.dev[0]));
   for(i=0; i<3; i++) rad[i] = sqrt(2*x2/sol.dev[i]);
   if (sol.meca.dip>90.) {
@@ -504,7 +506,6 @@ int main (int argc, char **argv) {
       nmtensor(mt[1].par,mt[2].par,sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor); //original
   }
   fprintf(f_out,"# tensor = %8.3e %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f\n",amp*1.0e20,mtensor[0][0],mtensor[0][1],mtensor[0][2],mtensor[1][1],mtensor[1][2],mtensor[2][2]);
-  fprintf(stderr,"%d",sol.ms);
   for(i=1;i<sol.ms;i++) {
      j = sol.others[i];
      if (grid.err[j]-grid.err[sol.others[0]]<mltp*x2) {
