@@ -23,16 +23,22 @@ close(RSL);
 #-----------
 # GMT plot settings
 
+# default misfit
 #$xtick1 = 50; $xtick2 = 5;
 $xtick1 = 4; $xtick2 = 1;
 $ytick1 = 20; $ytick2 = 5;
 $B = "-Ba${xtick1}f${xtick2}:\"Depth, km\":/a${ytick1}f${ytick2}:\"Misfit relative to minimum\":WSne";
 
+# actual misfit function
+$xtick1 = 4; $xtick2 = 1;
+$ytick1 = 20; $ytick2 = 5;
+$B2 = "-Ba${xtick1}f${xtick2}:\" \":/a${ytick1}f${ytick2}:\"Misfit\":wsnE";
+
+# size of plot
 $zoom=3;
 $magpsx=2.0*$zoom;
 $magpsy=1.8*$zoom;
-$magpsme=1.0*$zoom;
-$magpstx=1.0*$zoom;
+$J = "-JX$magpsx/$magpsy";
 
 $pwidth_in = 8.5;		# width of paper
 $pheight_in = 11;		# height of paper
@@ -122,13 +128,13 @@ while (@event) {
   $ymin = -10; $ymax = 100;
   $R = "-R$xmin/$xmax/$ymin/$ymax";
 
+  # define $R2
+
 #-------------------------------
 
     # plot the misfit curve
     $xinc = 0.2;
-    #  open(PLT, "| psxy -JX3/1.8 -R$dep[0]/$dep[$ii]/-10/100 $xx");    #original
-    #open(PLT, "| psxy -JX16/16 $R $xx"); # portrait mode, larger+square plot
-    open(PLT, "| psxy -JX$magpsx/$magpsy $R $xx");
+    open(PLT, "| psxy $J $R $xx");     # key command that sets the scale (J) and region (R)
     for ($l=$dep[0];$l<$dep[$ii];$l+=$xinc) {
       $aa = ($l-$depth)/$sigma;
       printf PLT "%6.3f %6.3f\n",$l,$aa*$aa; # plot parabola -- note: (depth) misfit function is not necessarily quadratic
@@ -138,10 +144,9 @@ while (@event) {
     # plot the beach balls
     #  open(PLT, "| psmeca -JX -R -O -K -Sa0.3");   # original
     open(PLT, "| psmeca -JX -R -O -K -Sm${ballsize} -G100 -W0.5p,0"); # plot Moment tensors
-    for ($l=1;$l<$ii;$l++) {
-      $coordx=$dep[$l];		# x-coord
-      $coordy=($rms[$l]-$min)/($min/$dof); # y-coord for moment tensor
-      #   printf PLT "%6.1f %6.1f 0 %s %s %s %s 0 0 %s\n",$dep[$l],($rms[$l]-$min)/($min/$dof),$strike[$l],$dip[$l],$rake[$l],$mw[$l],$mw[$l];   # original
+    for ($l=1; $l<$ii; $l++) {
+      $coordx=$dep[$l];		            # x-coord for moment tensor
+      $coordy=($rms[$l]-$min)/($min/$dof);  # y-coord for moment tensor
       printf PLT "%6.1f %6.1f 0.0 %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %f 0.0 0.0 %4.2f\n",
         $coordx,$coordy,$mrr[$l], $mtt[$l], $mff[$l], $mrt[$l], $mrf[$l], $mtf[$l], $M0_exp[$l], $mw[$l];
       # output values to screen
@@ -151,11 +156,11 @@ while (@event) {
     close(PLT);
 
     # plot event id, best depth, misfit value
-    if ($i<$#aa) {
-      open(PLT, "| pstext -N -JX -R -O -K");
+    if ($i < $#aa) {
+      open(PLT, "| pstext -JX -R -N -O -K");
     }			# when is this executed?
     else {
-      open(PLT, "| pstext -JX -N -R -O -S2p,white -N");
+      open(PLT, "| pstext -JX -R -N -O -S2p,white -N");
     }
 
     # plot the title
