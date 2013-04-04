@@ -49,7 +49,7 @@ export PATH=$PATH:$SUTIL/bin:$HOME/bin:.
 
 4. check path to utilities
 
-> which cap fk pssac2 cap.pl cap_plt.pl
+> which cap fk pssac2 cap.pl cap_plt.pl depth.pl depth_test
 
 Make sure that none of these is missing.
 
@@ -84,6 +84,9 @@ The old weight file is under the name weight_orig.dat
 
 > cd $CAPRUN/inv/cus
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700
+
+VIPUL, THIS ENTERS INTO AN INFINITE LOOP, IT SEEMS
+
 > gv 20080418093700/cus_015.ps &
 
 You should see a reasonable output for a moment tensor inversion.
