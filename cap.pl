@@ -283,6 +283,7 @@ unless ($depth) {
 if ($dep_inc==0) {
   $dep_min=$depth;
   $dep_max=$depth;
+  $dep_inc=1;
 }
 
 for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
