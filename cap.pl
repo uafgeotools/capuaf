@@ -71,6 +71,9 @@ $dt = 0.1;
 # rms thresholds for discarding bad traces
 @thrshd = (10., 10., 10., 10., 10.);
 
+# paramters for running cap for multiple depths
+$dep_inc = 0;
+
 # command line input, [] means optional, see () for default value
 $usage = 
 " ===== CAP source inversion using seismic waveforms ====
@@ -117,6 +120,7 @@ $usage =
     (see the -T options below).
 
   Usage: cap.pl -Mmodel_depth/mag [-B] [-C<f1_pnl/f2_pnl/f1_sw/f2_sw>] [-D<w1/p1/p2>] [-F<thr>] [-Ggreen] [-Hdt] [-Idd[/dm]] [-J[iso[/diso[/clvd[/dclvd]]]]] [-L<tau>] [-N<n>] [-O] [-P[<Yscale[/Xscale[/k]]]>] [-Qnof] [-R<strike1/strike2/dip1/dip2/rake1/rake2>] [-S<s1/s2[/tie]>] [-T<m1/m2>] [-V<vp/vl/vr>] [-Udirct] [-Wi] [-Xn] [-Zstring] event_dirs
+    -A  run cap for different depths. ($dep_min/$dep_max/$dep_inc). 
     -B  output misfit errors of all solutions for bootstrapping late ($bootrap).
     -C  filters for Pnl and surface waves, specified by the corner
 	frequencies of the band-pass filter. ($f1_pnl/$f2_pnl/$f1_sw/$f2_sw).
@@ -246,6 +250,10 @@ foreach (grep(/^-/,@ARGV)) {
      $mltp = $value[0];
    } elsif ($opt eq "Z") {
      $weight = $value[0];
+   } elsif ($opt eq "A") {
+     $dep_min = $value[0];
+     $dep_max = $value[1];
+     $dep_inc = $value[2];
    } else {
      printf STDERR $usage;
      exit(0);
@@ -272,54 +280,61 @@ unless ($depth) {
   $depth = 1;
 }
 
-foreach $eve (@event) {
+if ($dep_inc==0) {
+  $dep_min=$depth;
+  $dep_max=$depth;
+}
 
-  next unless -d $eve;
-  print STDERR "$eve $depth $dura\n";
+for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
+  foreach $eve (@event) {
 
-  open(WEI, "$eve/$weight") || next;
-  @wwf=<WEI>;
-  close(WEI);
-  $ncom = 2 if $wwf[0] =~ / -1 /;
+    $md_dep = $model.'_'.$dep;
+    next unless -d $eve;
+    print STDERR "$eve $dep $dura\n";
 
-  $cmd = "cap$dirct $eve $md_dep" unless $cmd eq "cat";
+    open(WEI, "$eve/$weight") || next;
+    @wwf=<WEI>;
+    close(WEI);
+    $ncom = 2 if $wwf[0] =~ / -1 /;
 
-  open(SRC, "| $cmd") || die "can not run $cmd\n";
-  print SRC "$pVel $sVel $riseTime $dura $rupDir\n",$riseTime if $dirct eq "_dir";
-  print SRC "$model $depth\n";  # 20120723 calvizuri
-  print SRC "$m1 $m2 $max_shft1 $max_shft2 $repeat $bootstrap $fm_thr $tie\n";
-  print SRC "@thrshd\n" if $repeat;
-  print SRC "$vp $love $rayleigh\n";
-  print SRC "$power_of_body $power_of_surf $weight_of_pnl $nof\n";
-  print SRC "$plot\n";
-  print SRC "$disp $mltp\n";
-  print SRC "$green/$model/\n";
-  print SRC "$dt $dura $riseTime\n";
-  print SRC "$f1_pnl $f2_pnl $f1_sw $f2_sw\n";
-  print SRC "$mg $dm\n";
-  print SRC "$iso\n$diso\n$clvd\n$dclvd\n";
-  print SRC "$str1 $str2 $deg\n";
-  print SRC "$dip1 $dip2 $deg\n";
-  print SRC "$rak1 $rak2 $deg\n";
-  printf SRC "%d\n",$#wwf + 1;
-  print SRC @wwf;
-  close(SRC);
-  print STDERR "inversion done\n";
-
-  # 20130102 calvizuri -- report period ranges for filters (get from frequencies)
-  $Tf1 = 1/$f1_pnl;
-  $Tf2 = 1/$f2_pnl;
-  $Tf3 = 1/$f1_sw;
-  $Tf4 = 1/$f2_sw;
-  $filterBand = sprintf("Body:%.2f-%.2f. Surf:%.2f-%.2f",$Tf2,$Tf1,$Tf4,$Tf3);
+    $cmd = "cap$dirct $eve $md_dep" unless $cmd eq "cat";
+    
+    open(SRC, "| $cmd") || die "can not run $cmd\n";
+    print SRC "$pVel $sVel $riseTime $dura $rupDir\n",$riseTime if $dirct eq "_dir";
+    print SRC "$model $dep\n";  # 20120723 calvizuri
+    print SRC "$m1 $m2 $max_shft1 $max_shft2 $repeat $bootstrap $fm_thr $tie\n";
+    print SRC "@thrshd\n" if $repeat;
+    print SRC "$vp $love $rayleigh\n";
+    print SRC "$power_of_body $power_of_surf $weight_of_pnl $nof\n";
+    print SRC "$plot\n";
+    print SRC "$disp $mltp\n";
+    print SRC "$green/$model/\n";
+    print SRC "$dt $dura $riseTime\n";
+    print SRC "$f1_pnl $f2_pnl $f1_sw $f2_sw\n";
+    print SRC "$mg $dm\n";
+    print SRC "$iso\n$diso\n$clvd\n$dclvd\n";
+    print SRC "$str1 $str2 $deg\n";
+    print SRC "$dip1 $dip2 $deg\n";
+    print SRC "$rak1 $rak2 $deg\n";
+    printf SRC "%d\n",$#wwf + 1;
+    print SRC @wwf;
+    close(SRC);
+    print STDERR "inversion done\n";
+    
+    # 20130102 calvizuri -- report period ranges for filters (get from frequencies)
+    $Tf1 = 1/$f1_pnl;
+    $Tf2 = 1/$f2_pnl;
+    $Tf3 = 1/$f1_sw;
+    $Tf4 = 1/$f2_sw;
+    $filterBand = sprintf("Body:%.2f-%.2f. Surf:%.2f-%.2f",$Tf2,$Tf1,$Tf4,$Tf3);
   plot:
-  if ( $plot > 0 && ($? >> 8) == 0 ) {
-     chdir($eve);
-#     &plot($md_dep, $m1, $m2, $amplify, $ncom, $sec_per_inch); # 20130102 calvizuri - original
-     &plot($md_dep, $m1, $m2, $amplify, $ncom, $sec_per_inch, $filterBand, $fmt_flag); # 20130102 calvizuri - added filter freq bands
-     unlink(<${md_dep}_*.?>) unless $keep;
-     chdir("../");
-  }
-
+    if ( $plot > 0 && ($? >> 8) == 0 ) {
+      chdir($eve);
+      #     &plot($md_dep, $m1, $m2, $amplify, $ncom, $sec_per_inch); # 20130102 calvizuri - original
+      &plot($md_dep, $m1, $m2, $amplify, $ncom, $sec_per_inch, $filterBand, $fmt_flag); # 20130102 calvizuri - added filter freq bands
+      unlink(<${md_dep}_*.?>) unless $keep;
+      chdir("../");
+    }
+  } 
 }
 exit(0);
