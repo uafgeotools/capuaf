@@ -106,24 +106,19 @@ This requires computing Green's functions for the depths used in the grid search
 > fk.pl -Mcus/25 -N512/0.4/2 140 145 205 230 260 275 295 ; fk.pl -Mcus/25 -N512/0.4/2 -S0 140 145 205 230 260 275 295
 > fk.pl -Mcus/30 -N512/0.4/2 140 145 205 230 260 275 295 ; fk.pl -Mcus/30 -N512/0.4/2 -S0 140 145 205 230 260 275 295
 
-Then run cap for each depth. One output (.out) file should be generated for each depth.
+Run cap for different depths by setting the range and increment for which you want to run depth test using -A flag (-Adep_min/dep_max/dep_inc). One output (.out) file should be generated for each depth.
 
-> cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_5/5.0 20080418093700
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_10/5.0 20080418093700
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_20/5.0 20080418093700
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_25/5.0 20080418093700
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_30/5.0 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -A5/30/5 20080418093700
 
-From each output file extract and append the "Event" and "tensor" lines into separate files.
+Run depth_test (script for calling depth.pl)
+> depth_test 20080418093700 cus 
+> gv dep_20080418093700.ps &
 
-> grep -h "Event" 20080418093700/cus*.out > out.depth-event 
-> grep -h "tensor" 20080418093700/cus*.out > out.depth-fmt
+5. check the depth test
 
-Run depth.pl
-
-> depth.pl out.depth-event out.depth-fmt 20080418093700 > depth.ps
-> gv depth.ps &
+> diff junk1.out 20080418093700_uaf_check/junk1_dc.out
+> diff junk2.out 20080418093700_uaf_check/junk2_dc.out
+> gv 20080418093700_uaf_check/depth_dc.ps
 
 ============================================
 EXAMPLE 2: ILLINOIS EVENT, FMT with Zhu line search
@@ -134,7 +129,7 @@ EXAMPLE 2: ILLINOIS EVENT, FMT with Zhu line search
 
 4. run cap with the -J flag
 
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/.2/0/0.2 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -J0/0.1/0/0.1 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 5. check the output files
@@ -142,29 +137,23 @@ EXAMPLE 2: ILLINOIS EVENT, FMT with Zhu line search
 > gv $CAPHOME/20080418093700_uaf_check/cus_015_fmt_line.ps &
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_uaf_check/cus_015_fmt_line.out
 
-THIS CHECK DOES NOT CURRENTLY WORK (CARL, 02-APRIL-2013)
-
 (The output from the last command should be blank.)
 
 6. perform the depth test (Green's functions already computed)
 
-> cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_5/5.0  -I10/.2 -J0/.2/0/0.2 20080418093700
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_10/5.0 -I10/.2 -J0/.2/0/0.2 20080418093700
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_20/5.0 -I10/.2 -J0/.2/0/0.2 20080418093700
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_25/5.0 -I10/.2 -J0/.2/0/0.2 20080418093700
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_30/5.0 -I10/.2 -J0/.2/0/0.2 20080418093700
+Run cap for different depths by setting the range and increment for which you want to run depth test using -A flag (-Adep_min/dep_max/dep_inc). One output (.out) file should be generated for each depth.
 
-From each output file extract and append the "Event" and "tensor" lines into separate files.
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -J0/0.1/0/0.1 -A5/30/5 20080418093700
 
-> grep -h "Event" 20080418093700/cus*.out > out.depth-event 
-> grep -h "tensor" 20080418093700/cus*.out > out.depth-fmt
+Run depth_test (script for calling depth.pl)
+> depth_test 20080418093700 cus 
+> gv dep_20080418093700.ps &
 
-Run depth.pl
+5. check the depth test
 
-> depth.pl out.depth-event out.depth-fmt 20080418093700 > depth_fmt_line.ps
-> gv depth_fmt_line.ps &
-
+> diff junk1.out 20080418093700_uaf_check/junk1_fmt_line.out
+> diff junk2.out 20080418093700_uaf_check/junk2_fmt_line.out
+> gv 20080418093700_uaf_check/depth_fmt_line.ps
 ----------------------------------
 ISO and CLVD will be searched for in their general range (-1<ISO<+1 ; -0.5<CLVD<0.25). However you can change the increament by using -J flag in the input command line.
 
@@ -180,28 +169,24 @@ EXAMPLE 3: ILLINOIS EVENT, FMT with lune parameterization, full grid search
 > cd $CAPHOME
 
 open cap.c, set full_mt_search=1 (and preferably debug=0 so that it do not generate numerous output files), then save
-
 > make all
 
 5.  run cap
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/5/0/5 -A5/30/5 20080418093700
+
+6. check the output files
+
+> gv $CAPHOME/20080418093700_uaf_check/cus_015_fmt_grid.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_uaf_check/cus_015_fmt_grid.out
+
+(The output from the last command should be blank.)
+
+7. perform the depth test (Computationaly extensive!)
 
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/5/0/5 20080418093700
+> depth_test 20080418093700 cus 
+> gv dep_20080418093700.ps &
 
-6. Same as steps 6 to 7 of EXAMPLE 2
-
-Examples 3:
-To run in full moment tensor range open cap.c and set full_mt_search=1. You can also run in debug mode by setting debug=1. Both parameters are in the first line of code.
-When running in full_mt_search mode, you need to enter the starting point Mw and the search will take place in Mw-1 to Mw+1 range. The search range can be changed in cap.c (by changing mt[0].max and mt[0].min) under the full_mt_search block in error function. Intial search point and search increment can be changed using -M and -I flag respectively in the input cap command.
-OLD CODE: ISO and CLVD will be searched for in their general range (-1<ISO<+1 ; -0.5<CLVD<0.25). However you can change the increament by using -J flag in the input command line.
-UPDATED version: ISO and CLVD will be searched for in their general range (-90ISO<90 ; -30<CLVD<30). However you can change the increment by using -J flag in the input command line. Using tt2cmt routine instead.
-
-Step by step instruction
-1. Open cap.c
-2. Set full_mt_search=1; Keep debug=0 for intial testing. (In debug mode it will print multiple log files and hence time consuming).
-3. Save 
-4. make all (it is preferred to use 'make all' everytime instead of just using 'make cap', however both works)
-5. cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/5/0/5 20080418093700
-   Here intial Mw=5.0 (-Mcus_15/5.0). Mw_increment=0.2 (-I10/.2). Therefore search range 4<Mw<6. 
-   Iso_increment=5 and clvd_incerement (-J0/5/0/5)
-
-=======================
+----------------------------------
+ISO and CLVD will be searched for in their general range (-90<ISO<+90 ; -30<CLVD<+30) (lune parameters). However you can change the increament by using -J flag in the input command line.
+====================================================================================
