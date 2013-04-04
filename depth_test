@@ -4,7 +4,7 @@
 # dep_test evt_name model
 # evt_name = event folder name 
 # model = velocity model name
-# eg: dep_test 20080418093700 cus
+# eg: depth_test 20080418093700 cus
 
 eve=$1;
 model=$2;
