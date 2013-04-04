@@ -254,6 +254,11 @@ foreach (grep(/^-/,@ARGV)) {
      $dep_min = $value[0];
      $dep_max = $value[1];
      $dep_inc = $value[2];
+     if ($#value ==2){
+       printf STDERR "Running cap for multiple depths: $dep_min to $dep_max at $dep_inc km increment\nWarning: overwriting -Mdepth\n";
+     } else {
+       $dep_inc=0;
+       printf STDERR "Depth run flag -A not specified correctly\nUsing -Mdepth instead\n---------------------\n"; }
    } else {
      printf STDERR $usage;
      exit(0);
