@@ -39,8 +39,7 @@ export PATH=$PATH:$SUTIL/bin:$HOME/bin:.
 
 > echo $CAPRUN
 > cd $CAPRUN
-> mkdir -p models inv
-> mkdir -p models/cus inv/cus
+> mkdir -p models inv ; mkdir -p models/cus inv/cus
 
 3. compile cap.c
 
@@ -75,17 +74,15 @@ NOTE: You do not need to run fk if you have a pre-computed library of Green's fu
 
 > cd $CAPRUN/inv/cus
 > rsync -av $CAPHOME/20080418093700 .
-> cd 20080418093700
 
 Check that you have new weight.dat file with 12 columns (3 extra for Pnl_window, surf_pick, surf_window).
 The old weight file is under the name weight_orig.dat
 
+> more 20080418093700/weight.dat
+
 4. run cap
 
-> cd $CAPRUN/inv/cus
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700
-
-VIPUL, THIS ENTERS INTO AN INFINITE LOOP, IT SEEMS
 
 > gv 20080418093700/cus_015.ps &
 
@@ -111,6 +108,7 @@ This requires computing Green's functions for the depths used in the grid search
 
 Run cap for different depths by setting the range and increment for which you want to run depth test using -A flag (-Adep_min/dep_max/dep_inc). One output (.out) file should be generated for each depth.
 
+> cd $CAPRUN/inv/cus
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -A5/30/5 20080418093700
 
 Run depth_test (script for calling depth.pl)
@@ -119,9 +117,9 @@ Run depth_test (script for calling depth.pl)
 
 5. check the depth test
 
-> diff junk1.out 20080418093700_uaf_check/junk1_dc.out
-> diff junk2.out 20080418093700_uaf_check/junk2_dc.out
-> gv 20080418093700_uaf_check/depth_dc.ps
+> diff junk1.out $CAPHOME/20080418093700_uaf_check/junk1_dc.out
+> diff junk2.out $CAPHOME/20080418093700_uaf_check/junk2_dc.out
+> gv $CAPHOME/20080418093700_uaf_check/depth_dc.ps &
 
 ============================================
 EXAMPLE 2: ILLINOIS EVENT, FMT with Zhu line search
@@ -131,7 +129,10 @@ EXAMPLE 2: ILLINOIS EVENT, FMT with Zhu line search
 3. Follow same step 3 EXAMPLE 1
 
 4. run cap with the -J flag
+ISO and CLVD will be searched for in their general range (-1<ISO<+1 ; -0.5<CLVD<0.25).
+However you can change the increament by using -J flag in the input command line.
 
+> cd $CAPRUN/inv/cus
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -J0/0.1/0/0.1 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
@@ -154,14 +155,15 @@ Run depth_test (script for calling depth.pl)
 
 5. check the depth test
 
-> diff junk1.out 20080418093700_uaf_check/junk1_fmt_line.out
-> diff junk2.out 20080418093700_uaf_check/junk2_fmt_line.out
-> gv 20080418093700_uaf_check/depth_fmt_line.ps
-----------------------------------
-ISO and CLVD will be searched for in their general range (-1<ISO<+1 ; -0.5<CLVD<0.25). However you can change the increament by using -J flag in the input command line.
+> diff junk1.out $CAPHOME/20080418093700_uaf_check/junk1_fmt_line.out
+> diff junk2.out $CAPHOME/20080418093700_uaf_check/junk2_fmt_line.out
+> gv $CAPHOME/20080418093700_uaf_check/depth_fmt_line.ps &
 
 ====================================================================================
-EXAMPLE 3: ILLINOIS EVENT, FMT with lune parameterization, full grid search
+EXAMPLE 3: ILLINOIS EVENT, DC, full grid search
+
+This is like EXAMPLE 1, but here we use a single grid search with no line searches or refined grid searches.
+This is aimed at performing a secondary analysis of uncertainties outside of CAP.
 
 1. Follow same step 1 EXAMPLE 1
 2. Follow same step 2 EXAMPLE 1
@@ -171,11 +173,44 @@ EXAMPLE 3: ILLINOIS EVENT, FMT with lune parameterization, full grid search
 
 > cd $CAPHOME
 
-open cap.c, set full_mt_search=1 (and preferably debug=0 so that it do not generate numerous output files), then save
+open cap.c, set full_mt_search=1 (and preferably debug=0 so that it do not generate numerous output files), then save, then compile:
+
 > make all
 
 5.  run cap
 
+VIPUL: PLEASE CORRECT THE COMMAND BELOW TO RUN DC ONLY IN FULL GRID SEARCH
+AND HOW DOES THE -I COMMAND FIT IN?
+
+> cd $CAPRUN/inv/cus
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700
+> gv 20080418093700/cus_015_fmt.ps &
+
+6. check the output files
+
+> gv $CAPHOME/20080418093700_uaf_check/cus_015_fmt_grid.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_uaf_check/cus_015_fmt_grid.out
+
+====================================================================================
+EXAMPLE 4: ILLINOIS EVENT, FMT with lune parameterization, full grid search
+
+1. Follow same step 1 EXAMPLE 1
+2. Follow same step 2 EXAMPLE 1
+3. Follow same step 3 EXAMPLE 1
+
+4. modify cap.c for full grid search
+
+> cd $CAPHOME
+
+open cap.c, set full_mt_search=1 (and preferably debug=0 so that it do not generate numerous output files), then save, then compile:
+
+> make all
+
+5.  run cap
+ISO and CLVD will be searched for in their general range (-90<ISO<+90 ; -30<CLVD<+30) (lune parameters).
+However you can change the increament by using -J flag in the input command line.
+
+> cd $CAPRUN/inv/cus
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/5/0/5 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
@@ -184,14 +219,4 @@ open cap.c, set full_mt_search=1 (and preferably debug=0 so that it do not gener
 > gv $CAPHOME/20080418093700_uaf_check/cus_015_fmt_grid.ps &
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_uaf_check/cus_015_fmt_grid.out
 
-(The output from the last command should be blank.)
-
-7. perform the depth test (Computationaly extensive!)
-
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/5/0/5 -A5/30/5 20080418093700
-> depth_test 20080418093700 cus 
-> gv dep_20080418093700.ps &
-
-----------------------------------
-ISO and CLVD will be searched for in their general range (-90<ISO<+90 ; -30<CLVD<+30) (lune parameters). However you can change the increament by using -J flag in the input command line.
 ====================================================================================
