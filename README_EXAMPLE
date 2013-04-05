@@ -190,8 +190,8 @@ note: -I here will use a coarser sampling of Mw
 
 6. check the output files
 
-> gv $CAPHOME/20080418093700_uaf_check/cus_015_fmt_grid.ps &
-> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_uaf_check/cus_015_fmt_grid.out
+> gv $CAPHOME/20080418093700_uaf_check/cus_015_dc_grid.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_uaf_check/cus_015_dc_grid.out
 
 ====================================================================================
 EXAMPLE 4: ILLINOIS EVENT, FMT with lune parameterization, full grid search
