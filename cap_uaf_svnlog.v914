@@ -1,0 +1,356 @@
+------------------------------------------------------------------------
+r914 | carltape | 2013-04-05 22:15:27 -0800 (Fri, 05 Apr 2013) | 2 lines
+
+minor edits in README_EXAMPLE
+
+------------------------------------------------------------------------
+r913 | carltape | 2013-04-05 21:55:34 -0800 (Fri, 05 Apr 2013) | 2 lines
+
+rename check directories
+
+------------------------------------------------------------------------
+r912 | carltape | 2013-04-05 21:54:54 -0800 (Fri, 05 Apr 2013) | 2 lines
+
+rename check directories
+
+------------------------------------------------------------------------
+r911 | vipul | 2013-04-05 15:14:58 -0800 (Fri, 05 Apr 2013) | 2 lines
+
+set default full_mt_search=0
+
+------------------------------------------------------------------------
+r909 | vipul | 2013-04-05 14:37:22 -0800 (Fri, 05 Apr 2013) | 2 lines
+
+Modified example 3
+
+------------------------------------------------------------------------
+r908 | vipul | 2013-04-05 14:36:50 -0800 (Fri, 05 Apr 2013) | 2 lines
+
+Added the capability to perform DC grid search at the specified iso and clvd value
+
+------------------------------------------------------------------------
+r907 | vipul | 2013-04-05 14:35:55 -0800 (Fri, 05 Apr 2013) | 2 lines
+
+Checked in example output files for double-couple grid search
+
+------------------------------------------------------------------------
+r905 | carltape | 2013-04-05 12:00:21 -0800 (Fri, 05 Apr 2013) | 2 lines
+
+updates to README_EXAMPLE
+
+------------------------------------------------------------------------
+r904 | carltape | 2013-04-05 11:52:03 -0800 (Fri, 05 Apr 2013) | 2 lines
+
+updated README_EXAMPLE
+
+------------------------------------------------------------------------
+r903 | carltape | 2013-04-05 09:39:30 -0800 (Fri, 05 Apr 2013) | 2 lines
+
+updated README_EXAMPLE -- still one example needs fixing
+
+------------------------------------------------------------------------
+r901 | vipul | 2013-04-04 11:13:32 -0800 (Thu, 04 Apr 2013) | 2 lines
+
+Added warning messages for wrong input of -A flag
+
+------------------------------------------------------------------------
+r900 | vipul | 2013-04-04 10:30:40 -0800 (Thu, 04 Apr 2013) | 2 lines
+
+Updated example 3
+
+------------------------------------------------------------------------
+r899 | vipul | 2013-04-04 10:23:53 -0800 (Thu, 04 Apr 2013) | 2 lines
+
+removed the bug which led to infinite lopp for Example 1
+
+------------------------------------------------------------------------
+r898 | carltape | 2013-04-03 22:10:36 -0800 (Wed, 03 Apr 2013) | 2 lines
+
+CAP example 1 does not work -- infinite loop?
+
+------------------------------------------------------------------------
+r897 | vipul | 2013-04-03 17:16:24 -0800 (Wed, 03 Apr 2013) | 2 lines
+
+modified the command in usage
+
+------------------------------------------------------------------------
+r896 | carltape | 2013-04-03 17:00:30 -0800 (Wed, 03 Apr 2013) | 2 lines
+
+renamed dep_test to depth_test
+
+------------------------------------------------------------------------
+r895 | vipul | 2013-04-03 16:59:51 -0800 (Wed, 03 Apr 2013) | 2 lines
+
+Renamed some files so that they make better sense
+
+------------------------------------------------------------------------
+r892 | vipul | 2013-04-03 16:37:53 -0800 (Wed, 03 Apr 2013) | 2 lines
+
+Renamed and added few test files. deleted depth.ps (same as depth_dc)
+
+------------------------------------------------------------------------
+r891 | vipul | 2013-04-03 16:29:53 -0800 (Wed, 03 Apr 2013) | 2 lines
+
+cleaned the examples. Made changes for running depth test.
+
+------------------------------------------------------------------------
+r890 | vipul | 2013-04-03 16:28:33 -0800 (Wed, 03 Apr 2013) | 2 lines
+
+script for running depth test. No need of grepping 'Event' and 'tensor'. (Usage: dep_test evt_name model)
+
+------------------------------------------------------------------------
+r889 | vipul | 2013-04-03 16:20:30 -0800 (Wed, 03 Apr 2013) | 2 lines
+
+Added the flag -A for running cap at different depths (usage: -A/dep_min/dep_max/dep_inc).
+
+------------------------------------------------------------------------
+r885 | carltape | 2013-04-02 20:36:34 -0800 (Tue, 02 Apr 2013) | 2 lines
+
+updated uaf figures and README_EXAMPLE
+
+------------------------------------------------------------------------
+r877 | carltape | 2013-03-29 17:02:57 -0800 (Fri, 29 Mar 2013) | 2 lines
+
+minor updates for depth.pl in preparation for adding the actual misfit function curve
+
+------------------------------------------------------------------------
+r876 | vipul | 2013-03-28 19:51:37 -0800 (Thu, 28 Mar 2013) | 2 lines
+
+Finalized checking file (updated)
+
+------------------------------------------------------------------------
+r875 | vipul | 2013-03-28 19:45:13 -0800 (Thu, 28 Mar 2013) | 2 lines
+
+Final folder for checking the results
+
+------------------------------------------------------------------------
+r874 | vipul | 2013-03-28 19:43:39 -0800 (Thu, 28 Mar 2013) | 2 lines
+
+Made minor changes
+
+------------------------------------------------------------------------
+r864 | carltape | 2013-03-26 16:52:13 -0800 (Tue, 26 Mar 2013) | 2 lines
+
+updated CAP README_EXAMPLE
+
+------------------------------------------------------------------------
+r863 | carltape | 2013-03-26 16:37:20 -0800 (Tue, 26 Mar 2013) | 2 lines
+
+added back in our old changes for depth.pl (gmtset, etc); restored beachballs to gray (not black); updated example
+
+------------------------------------------------------------------------
+r862 | vipul | 2013-03-26 15:47:24 -0800 (Tue, 26 Mar 2013) | 2 lines
+
+removed a bug which came due to adding of additional columns for more control over time-shifts
+
+------------------------------------------------------------------------
+r861 | carltape | 2013-03-26 15:18:24 -0800 (Tue, 26 Mar 2013) | 2 lines
+
+updated example instructions for CAP
+
+------------------------------------------------------------------------
+r827 | carltape | 2013-03-11 16:17:24 -0800 (Mon, 11 Mar 2013) | 2 lines
+
+added comment to README_EXAMPLE
+
+------------------------------------------------------------------------
+r826 | carltape | 2013-03-11 16:15:35 -0800 (Mon, 11 Mar 2013) | 2 lines
+
+updates README_EXAMPLE
+
+------------------------------------------------------------------------
+r824 | vipul | 2013-03-11 14:52:07 -0800 (Mon, 11 Mar 2013) | 2 lines
+
+updated for example 2 and 3
+
+------------------------------------------------------------------------
+r822 | carltape | 2013-03-09 20:06:56 -0900 (Sat, 09 Mar 2013) | 2 lines
+
+started the process of cleaning up the default example instructions -- much of README_supp was deleted; README_CAP renamed README_EXAMPLE
+
+------------------------------------------------------------------------
+r821 | vipul | 2013-03-09 19:47:02 -0900 (Sat, 09 Mar 2013) | 2 lines
+
+print parameter values in each iteration (in case of full grid search)
+
+------------------------------------------------------------------------
+r820 | alvizuri | 2013-03-09 18:12:51 -0900 (Sat, 09 Mar 2013) | 2 lines
+
+Added function declaration for tt2cmt (moved from cap.c)
+
+------------------------------------------------------------------------
+r819 | alvizuri | 2013-03-09 18:12:03 -0900 (Sat, 09 Mar 2013) | 4 lines
+
+(1) Added code so CAP uses original code (nmtensor) when full_mt_search=0, but it
+uses tt2cmt and lune parameters when full_mt_search=1. (2) Moved tt2cmt function
+declaration to cap.h
+
+------------------------------------------------------------------------
+r815 | vipul | 2013-03-08 17:26:43 -0900 (Fri, 08 Mar 2013) | 2 lines
+
+updated weight files with columns for "p_pick, pick_length, s_pick, s_length, s_shft"
+
+------------------------------------------------------------------------
+r814 | vipul | 2013-03-08 17:21:18 -0900 (Fri, 08 Mar 2013) | 2 lines
+
+update for weight files with columns for P and surf wave arrival times and window length
+
+------------------------------------------------------------------------
+r802 | carltape | 2013-02-27 15:20:40 -0900 (Wed, 27 Feb 2013) | 2 lines
+
+restored variable settings that were changed in r 698; set $CAPHOME ; README_supp example does not work currently
+
+------------------------------------------------------------------------
+r801 | alvizuri | 2013-02-27 14:35:49 -0900 (Wed, 27 Feb 2013) | 2 lines
+
+Changed  from +/-0.1 to +/-1.0 for mt[0].par (limits for magnitude search)
+
+------------------------------------------------------------------------
+r800 | alvizuri | 2013-02-27 14:30:45 -0900 (Wed, 27 Feb 2013) | 4 lines
+
+This function generates moment tensor elements given gamma, delta
+strike/dip/rake (see Tape and Tape, 2012).
+
+
+------------------------------------------------------------------------
+r799 | alvizuri | 2013-02-27 14:25:24 -0900 (Wed, 27 Feb 2013) | 2 lines
+
+Added code to compile sub_tt2cmt.c
+
+------------------------------------------------------------------------
+r798 | alvizuri | 2013-02-27 14:24:38 -0900 (Wed, 27 Feb 2013) | 4 lines
+
+Replaced nmtensor with tt2cmt in the main code and in the error function. The
+original nmtensor still in place when running cap in line-search mode.
+
+
+------------------------------------------------------------------------
+r768 | vipul | 2013-02-14 16:19:03 -0900 (Thu, 14 Feb 2013) | 2 lines
+
+Corrected for the bug while plotting in full_mt_search mode.
+
+------------------------------------------------------------------------
+r767 | vipul | 2013-02-14 16:18:17 -0900 (Thu, 14 Feb 2013) | 2 lines
+
+Added comments for running cap in full_mt_search mode. Type cap.pl and read example2.
+
+------------------------------------------------------------------------
+r733 | carltape | 2013-01-24 15:25:55 -0900 (Thu, 24 Jan 2013) | 2 lines
+
+added comments for nmtensor subroutine
+
+------------------------------------------------------------------------
+r731 | vipul | 2013-01-23 18:09:19 -0900 (Wed, 23 Jan 2013) | 2 lines
+
+added two flags at the top of code; debug=1 for generating the log files and full_mt_search=1 for searching in full moment tensor search. If full_mt_search=0, it works as normal CAP line search for Mw,iso and clvd.
+
+------------------------------------------------------------------------
+r721 | vipul | 2013-01-15 16:49:41 -0900 (Tue, 15 Jan 2013) | 2 lines
+
+output seperate log files for each iteration(when debug==1), as well as a complete summary log file (even if debug==0)
+
+------------------------------------------------------------------------
+r707 | alvizuri | 2013-01-07 13:15:17 -0900 (Mon, 07 Jan 2013) | 2 lines
+
+Updated with instructions to run depth.pl
+
+------------------------------------------------------------------------
+r706 | alvizuri | 2013-01-07 12:52:45 -0900 (Mon, 07 Jan 2013) | 2 lines
+
+Fixed location of title and ballsize
+
+------------------------------------------------------------------------
+r705 | carltape | 2013-01-07 12:40:51 -0900 (Mon, 07 Jan 2013) | 2 lines
+
+changed beachball scaling to match cap_plt.pl
+
+------------------------------------------------------------------------
+r704 | carltape | 2013-01-06 20:17:58 -0900 (Sun, 06 Jan 2013) | 2 lines
+
+moved depth_uaf.ps into 20080418093700_check
+
+------------------------------------------------------------------------
+r703 | carltape | 2013-01-06 20:12:30 -0900 (Sun, 06 Jan 2013) | 2 lines
+
+added a couple comments regarding the magnitude plotting for psmeca
+
+------------------------------------------------------------------------
+r702 | alvizuri | 2013-01-06 16:41:15 -0900 (Sun, 06 Jan 2013) | 2 lines
+
+Baseline depth-misfit plot for moment tensor solutions.
+
+------------------------------------------------------------------------
+r701 | alvizuri | 2013-01-06 16:38:04 -0900 (Sun, 06 Jan 2013) | 3 lines
+
+Added code to plot full moment tensors instead of pure double couple.
+Now requires two input files ("Event" and "Tensor" files).
+
+------------------------------------------------------------------------
+r700 | alvizuri | 2013-01-03 17:40:17 -0900 (Thu, 03 Jan 2013) | 3 lines
+
+Base figures (Illinois event) from revised cap, cap.pl, and cap_plt.pl.
+Figures now reflect DC or DC+ISO+CLVD components.
+
+------------------------------------------------------------------------
+r699 | alvizuri | 2013-01-03 12:23:33 -0900 (Thu, 03 Jan 2013) | 2 lines
+
+Added code to append fmt (full moment tensor) to output figures if -J flag is called in cap
+
+------------------------------------------------------------------------
+r698 | alvizuri | 2013-01-03 10:13:29 -0900 (Thu, 03 Jan 2013) | 4 lines
+
+added code to (1) output results with 3-digit depths, (2) use UAF library of greens functions, 
+(3) print filter periods in output results, (4) plot large beach ball on separate page, 
+(5) use pssac2 instead of pssac.
+
+------------------------------------------------------------------------
+r697 | alvizuri | 2013-01-03 09:59:00 -0900 (Thu, 03 Jan 2013) | 2 lines
+
+added code to output 3-digit depths (ddd) for use in output files.
+
+------------------------------------------------------------------------
+r696 | alvizuri | 2013-01-03 09:40:24 -0900 (Thu, 03 Jan 2013) | 2 lines
+
+added depth_orig.pl in anticipation of changes
+
+------------------------------------------------------------------------
+r695 | alvizuri | 2013-01-03 09:36:45 -0900 (Thu, 03 Jan 2013) | 2 lines
+
+moved output files into 20080418093700_check
+
+------------------------------------------------------------------------
+r693 | alvizuri | 2013-01-02 17:04:10 -0900 (Wed, 02 Jan 2013) | 2 lines
+
+Added old cap_plt.pl revisions -- BB plot (Figure 2) currently not working.
+
+------------------------------------------------------------------------
+r692 | alvizuri | 2013-01-02 11:49:36 -0900 (Wed, 02 Jan 2013) | 2 lines
+
+added cap_plt_lupeidiff to show the modifications that Lupei made to cap_plt.pl to cap 2.0
+
+------------------------------------------------------------------------
+r691 | alvizuri | 2013-01-02 11:40:43 -0900 (Wed, 02 Jan 2013) | 2 lines
+
+copied README_CAP and README_supp from previously modified CAP version -- these will need updating for CAP 2.0
+
+------------------------------------------------------------------------
+r690 | alvizuri | 2013-01-02 11:37:14 -0900 (Wed, 02 Jan 2013) | 2 lines
+
+Adapted cap_plt.pl for pssac2, portrait plot and gmtset
+
+------------------------------------------------------------------------
+r689 | alvizuri | 2013-01-02 11:16:15 -0900 (Wed, 02 Jan 2013) | 2 lines
+
+modified Makefile & added ENV variables in cap.pl
+
+------------------------------------------------------------------------
+r688 | alvizuri | 2013-01-02 11:00:48 -0900 (Wed, 02 Jan 2013) | 2 lines
+
+created orig versions of files in advance of modifications
+
+------------------------------------------------------------------------
+r682 | carltape | 2012-12-27 22:03:12 -0900 (Thu, 27 Dec 2012) | 2 lines
+
+added cap v2.0 from Lupei Zhu 12/2012
+
+------------------------------------------------------------------------
