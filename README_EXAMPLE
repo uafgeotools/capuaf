@@ -164,7 +164,7 @@ Run depth_test (script for calling depth.pl)
 ====================================================================================
 EXAMPLE 3: ILLINOIS EVENT, DC, full grid search
 
-This is like EXAMPLE 1, but here we use a single grid search with no line searches or refined grid searches.
+This is like EXAMPLE 1, but here we use a single, uniform grid search with no line searches or refined grid searches.
 This is aimed at performing a secondary analysis of uncertainties outside of CAP.
 
 1. Follow same step 1 EXAMPLE 1
@@ -186,7 +186,7 @@ open cap.c, set full_mt_search=1 (and preferably debug=0 so that it do not gener
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: -J0/0/0/0 means fixed ISO and CLVD components
-note: -I here will use a coarser sampling of Mw
+note: -I here will use a coarser sampling of Mw (0.2 instead of 0.1)
 
 6. check the output files
 
@@ -201,7 +201,7 @@ EXAMPLE 4: ILLINOIS EVENT, FMT with lune parameterization, full grid search
 3. Follow same step 3 EXAMPLE 3
 4. Follow same step 4 EXAMPLE 3
 
-5.  run cap
+5.  run cap (this will take a couple minutes)
 ISO and CLVD will be searched for in their general range (-90<ISO<+90 ; -30<CLVD<+30) (lune parameters).
 However you can change the increament by using -J flag in the input command line.
 
@@ -209,7 +209,7 @@ However you can change the increament by using -J flag in the input command line
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.2 -J0/5/0/5 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
-note: -J0/5/0/5 means 5 deg increment in ISO (delta) and 5 deg increment in CLVD (longitude); the 0's are ignored
+note: -J0/5/0/5 means 5 deg increment in ISO (delta) and 5 deg increment in CLVD (longitude); the 0's are ignored in this mode
 
 6. check the output files
 
