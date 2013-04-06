@@ -3,7 +3,7 @@ README_EXAMPLE
 Test examples for CAP.
 The default example should always be run, prior to committing any changes to the code.
 
-Figures to check are in the directory 20080418093700_check
+Figures to check are in the directory 20080418093700_check_orig
 
 ============================================
 START-UP INSTRUCTIONS
@@ -90,8 +90,8 @@ You should see a reasonable output for a moment tensor inversion.
 
 5. check the output files
 
-> gv $CAPHOME/20080418093700_uaf_check/cus_015.ps &
-> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_uaf_check/cus_015.out
+> gv $CAPHOME/20080418093700_check/cus_015.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015.out
 
 (The output from the last command should be blank.)
 
@@ -117,9 +117,9 @@ Run depth_test (script for calling depth.pl)
 
 5. check the depth test
 
-> diff junk1.out $CAPHOME/20080418093700_uaf_check/junk1_dc.out
-> diff junk2.out $CAPHOME/20080418093700_uaf_check/junk2_dc.out
-> gv $CAPHOME/20080418093700_uaf_check/depth_dc.ps &
+> diff junk1.out $CAPHOME/20080418093700_check/junk1_dc.out
+> diff junk2.out $CAPHOME/20080418093700_check/junk2_dc.out
+> gv $CAPHOME/20080418093700_check/depth_dc.ps &
 
 ============================================
 EXAMPLE 2: ILLINOIS EVENT, FMT with Zhu line search
@@ -138,8 +138,8 @@ However you can change the increament by using -J flag in the input command line
 
 5. check the output files
 
-> gv $CAPHOME/20080418093700_uaf_check/cus_015_fmt_line.ps &
-> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_uaf_check/cus_015_fmt_line.out
+> gv $CAPHOME/20080418093700_check/cus_015_fmt_line.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_line.out
 
 (The output from the last command should be blank.)
 
@@ -157,9 +157,9 @@ Run depth_test (script for calling depth.pl)
 
 5. check the depth test
 
-> diff junk1.out $CAPHOME/20080418093700_uaf_check/junk1_fmt_line.out
-> diff junk2.out $CAPHOME/20080418093700_uaf_check/junk2_fmt_line.out
-> gv $CAPHOME/20080418093700_uaf_check/depth_fmt_line.ps &
+> diff junk1.out $CAPHOME/20080418093700_check/junk1_fmt_line.out
+> diff junk2.out $CAPHOME/20080418093700_check/junk2_fmt_line.out
+> gv $CAPHOME/20080418093700_check/depth_fmt_line.ps &
 
 ====================================================================================
 EXAMPLE 3: ILLINOIS EVENT, DC, full grid search
@@ -190,8 +190,8 @@ note: -I here will use a coarser sampling of Mw
 
 6. check the output files
 
-> gv $CAPHOME/20080418093700_uaf_check/cus_015_dc_grid.ps &
-> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_uaf_check/cus_015_dc_grid.out
+> gv $CAPHOME/20080418093700_check/cus_015_dc_grid.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_dc_grid.out
 
 ====================================================================================
 EXAMPLE 4: ILLINOIS EVENT, FMT with lune parameterization, full grid search
@@ -213,7 +213,7 @@ note: -J0/5/0/5 means 5 deg increment in ISO (delta) and 5 deg increment in CLVD
 
 6. check the output files
 
-> gv $CAPHOME/20080418093700_uaf_check/cus_015_fmt_grid.ps &
-> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_uaf_check/cus_015_fmt_grid.out
+> gv $CAPHOME/20080418093700_check/cus_015_fmt_grid.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_grid.out
 
 ====================================================================================
