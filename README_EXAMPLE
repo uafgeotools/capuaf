@@ -8,7 +8,9 @@ Figures to check are in the directory 20080418093700_check_orig
 ============================================
 START-UP INSTRUCTIONS
 
-0. if on UAF cluster, check modules (GMT, netcdf, gfortran)
+0. By default, do not run cap on a cluster (skip this step).
+
+BUT: if on UAF cluster, check modules (GMT, netcdf, gfortran)
 
 > module purge
 > module load PrgEnv-gnu/4.5.1 gmt/4.5.7
@@ -35,9 +37,14 @@ export PATH=$CAPHOME:$PATH
 export CAPRUN=$HOME/PROJECTS/CAP
 export PATH=$PATH:$SUTIL/bin:$HOME/bin:.
 
+source the file after making changes
+
+> source ~/.bashrc
+
 2. set up directories within $CAPRUN
 
 > echo $CAPRUN
+> mkdir -p $CAPRUN
 > cd $CAPRUN
 > mkdir -p models inv ; mkdir -p models/cus inv/cus
 
@@ -48,20 +55,21 @@ export PATH=$PATH:$SUTIL/bin:$HOME/bin:.
 
 4. check path to utilities
 
-> which cap fk pssac2 cap.pl cap_plt.pl depth.pl depth_test
+> which fk pssac2 cap cap.pl cap_plt.pl depth.pl depth_test
 
 Make sure that none of these is missing.
 
 ============================================
 DEFAULT EXAMPLE 1: ILLINOIS EVENT, DOUBLE COUPLE
 
-1. run fk (this uses the "cus" 1D model for "central U.S."
+1. run the frequency-wavenumber code fk
 
 > cd $CAPRUN/models/cus
 > cp $SUTIL/grp-utils/fk3.0/cus .
 > fk.pl -Mcus/15 -N512/0.4/2 140 145 205 230 260 275 295
 
-NOTE: You do not need to run fk if you have a pre-computed library of Green's functions.
+note: this uses the "cus" 1D model for "central U.S."
+note: You do not need to run fk if you have a pre-computed library of Green's functions.
 
 2. run fk again to generate isotropic components
 
