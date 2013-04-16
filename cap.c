@@ -80,7 +80,7 @@
 ****************************************************************/
 #include "cap.h"
 
-int loop=0,start=0,debug=0,full_mt_search=0;
+int loop=0,start=0,debug=0,full_mt_search=1;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN];
   int	ns, mltp, nup, up[3], total_n, n_shft, nqP, nqS;
@@ -604,7 +604,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		) {
   int	i, j, k, l, m, k1, kc, z0, z1, z2;
   int	i_stk, i_dip, i_rak;
-  float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3];
+  float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3], mw_ran;
   float	*f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err;
   float dx, mtensor[3][3], *r_iso, *z_iso;
   DATA	*obs;
@@ -625,16 +625,23 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   if (full_mt_search){
 
     //--------newly added section-------------
-    mt[0].max = mt[0].par+1.0;
-    mt[0].min = mt[0].par-1.0;
+    mw_ran = 1.0;
+    mt[0].max = mt[0].par+mw_ran;
+    mt[0].min = mt[0].par-mw_ran;
  
     if (mt[1].dd==0 && mt[2].dd==0){
       mt[1].min=mt[1].par;
       mt[2].min=mt[2].par;
       mt[1].max=mt[1].par;
       mt[2].max=mt[2].par;
-      mt[1].dd=1;
-      mt[2].dd=1;
+      mt[1].dd=1.0;
+      mt[2].dd=1.0;
+    }
+    
+    if (mt[0].dd==0){
+      mt[0].max = mt[0].par;
+      mt[0].min = mt[0].par;
+      mt[0].dd=1.0;
     }
 
     best_sol.err = FLT_MAX;

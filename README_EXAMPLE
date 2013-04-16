@@ -225,3 +225,16 @@ note: -J0/5/0/5 means 5 deg increment in ISO (delta) and 5 deg increment in CLVD
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_grid.out
 
 ====================================================================================
+EXAMPLE 5: ILLINOIS EVENT, DC search at a particular magnitude
+
+1. Follow same step 1 EXAMPLE 3
+2. Follow same step 2 EXAMPLE 3
+3. Follow same step 3 EXAMPLE 3
+4. Follow same step 4 EXAMPLE 3
+
+5. Run cap
+> cd $CAPRUN/inv/cus
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0 -J0/0/0/0 20080418093700
+
+
+====================================================================================
