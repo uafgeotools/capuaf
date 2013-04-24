@@ -183,7 +183,7 @@ This is aimed at performing a secondary analysis of uncertainties outside of CAP
 
 > cd $CAPHOME
 
-open cap.c, set full_mt_search=1 (and preferably debug=0 so that it do not generate numerous output files), then save, then compile:
+open cap.c, set search=1 (and preferably debug=0 so that it do not generate numerous output files), then save, then compile:
 
 > make all
 
@@ -238,3 +238,40 @@ EXAMPLE 5: ILLINOIS EVENT, DC search at a particular magnitude
 
 
 ====================================================================================
+EXAMPLE 6: ILLINOIS EVENT, random samples
+
+1. Follow same step 1 EXAMPLE 3
+2. Follow same step 2 EXAMPLE 3
+3. Follow same step 3 EXAMPLE 3
+
+4. modify cap.c for random search of parameters
+
+> cd $CAPHOME
+
+open cap.c, set search=2 (and preferably debug=0 so that it do not generate numerous output files), then save, then compile:
+
+> make all
+5. Run cap
+> cd $CAPRUN/inv/cus
+
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0  20080418093700
+Set full_mt_search to 2
+If running for many samples keep orientation increment (-I) to be small.
+If running only at one particular magnitude set -I magnitude increment to 0.
+
+%====================================================================================
+
+EXAMPLE 7: ILLINOIS EVENT, Grid search in full space with modified spacing (sin(iso) and cos(dip))
+
+ISO will be gridded by considering equal spacing inc sin(iso) space
+DIP will be gridded by considering equal spacing inc cos(dip) space
+
+Search works only for full space search (not a subset or random points search (search==2))
+1. Follow same step 1 EXAMPLE 3
+2. Follow same step 2 EXAMPLE 3
+3. Follow same step 3 EXAMPLE 3
+4. Follow same step 4 EXAMPLE 3
+
+5. Run cap
+> cd $CAPRUN/inv/cus
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -J0/10/0/10 20080418093700
