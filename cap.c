@@ -80,7 +80,7 @@
 ****************************************************************/
 #include "cap.h"
 
-int loop=0,start=0,debug=0,full_mt_search=1;
+int loop=0,start=0,debug=1,search=1;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN];
   int	ns, mltp, nup, up[3], total_n, n_shft, nqP, nqS;
@@ -171,7 +171,7 @@ int main (int argc, char **argv) {
 
   /** input grid-search range **/
   scanf("%f%f",&(mt[0].par),&(mt[0].dd)); mt[0].min =  1.;  mt[0].max = 10.;
-  if(full_mt_search) {      // use ranges for lune parameters
+  if(search) {      // use ranges for lune parameters
     scanf("%f%f",&(mt[1].par),&(mt[1].dd)); mt[1].min = -90.; mt[1].max = 90.; // -1 to 1
     scanf("%f%f",&(mt[2].par),&(mt[2].dd)); mt[2].min = -30.; mt[2].max = 30.; // -0.5 to 0.25
   }
@@ -459,7 +459,7 @@ int main (int argc, char **argv) {
   log = fopen("log_diff","w");
   fclose(log);
 
-  if (full_mt_search==0){
+  if (search==0){
     if (mt[1].dd>=1 || mt[2].dd>=1)
       fprintf(stderr,"Warning: Possible error = Expecting grid-search\n(set full_mt_search=1) or reduce the search increment (-J flag)\n");
     fprintf(stderr,"----------starting line-search-----------\n");}
@@ -488,7 +488,7 @@ int main (int argc, char **argv) {
     fprintf(stderr,"Warning: dip corrected by %f\n",sol.meca.dip-90);
     sol.meca.dip = 90.;
   }
-  if (full_mt_search) {
+  if (search) {
     rad[0]=0.0;
     rad[1]=0.0;
     rad[2]=0.0;
@@ -508,7 +508,7 @@ int main (int argc, char **argv) {
   fprintf(f_out,"# Variance reduction %4.1f\n",100*(1.-sol.err/rec2));
   amp=pow(10.,1.5*mt[0].par+16.1-20);
 
-  if(full_mt_search) {
+  if(search) {
     tt2cmt(mt[2].par, mt[1].par, 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
   }
   else {
@@ -602,10 +602,10 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		int		interp,
 		int		bootstrap
 		) {
-  int	i, j, k, l, m, k1, kc, z0, z1, z2;
-  int	i_stk, i_dip, i_rak;
-  float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3], mw_ran;
-  float	*f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err;
+  int	i, j, k, l, m, k1, kc, z0, z1, z2, mw_ran,ii, N, iso_len;
+  int	i_stk, i_dip, i_rak, i_iso;
+  float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3];
+  float	*f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err, *rnd_stk, *rnd_dip, *rnd_rak;
   float dx, mtensor[3][3], *r_iso, *z_iso;
   DATA	*obs;
   COMP	*spt;
@@ -621,33 +621,221 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
   if (debug) fprintf(stderr, "loop=%d start=%d \n",loop,start);
   start++;
-  
-  if (full_mt_search){
+
+  if (search==2){
 
     //--------newly added section-------------
-    mw_ran = 1.0;
+    fprintf(stderr,"Mw=%f\n",mt[0].par);
+    mw_ran=0.0;
     mt[0].max = mt[0].par+mw_ran;
-    mt[0].min = mt[0].par-mw_ran;
- 
+    mt[0].min = mt[0].par-mw_ran;;
+
     if (mt[1].dd==0 && mt[2].dd==0){
       mt[1].min=mt[1].par;
       mt[2].min=mt[2].par;
       mt[1].max=mt[1].par;
       mt[2].max=mt[2].par;
-      mt[1].dd=1.0;
-      mt[2].dd=1.0;
+      mt[1].dd=1;
+      mt[2].dd=1;
     }
-    
+
     if (mt[0].dd==0){
       mt[0].max = mt[0].par;
       mt[0].min = mt[0].par;
       mt[0].dd=1.0;
     }
 
+    N=10000;
+    rnd_stk = (float*)malloc(sizeof(int) * N*sizeof(float));
+    rnd_dip = (float*)malloc(sizeof(int) * N*sizeof(float));
+    rnd_rak = (float*)malloc(sizeof(int) * N*sizeof(float));
+    if (rnd_stk==NULL || rnd_stk==NULL || rnd_stk==NULL){
+      fprintf(stderr,"Cannot allocate space for random number generation");}
+
+    for(i=0;i<N;i++){
+      rnd_stk[i]=0.0+360.0*drand48();
+      rnd_dip[i]=0.0+1.0*drand48();
+      rnd_rak[i]=-90.0+180.0*drand48();
+    }
+
     best_sol.err = FLT_MAX;
 
     for(temp[0]=mt[0].min;temp[0]<=mt[0].max;temp[0]=temp[0]+mt[0].dd){
+      fprintf(stderr,"Mw=%f, iso=%f clvd=%f\n",temp[0],temp[1],temp[2]);
       for(temp[1]=mt[1].min;temp[1]<=mt[1].max;temp[1]=temp[1]+mt[1].dd){
+	for(temp[2]=mt[2].min;temp[2]<=mt[2].max;temp[2]=temp[2]+mt[2].dd){
+
+	  //--------newly added section ends here-------------
+
+	  //==== the base case: grid-search for strike, dip, and rake =============
+	  amp = pow(10.,1.5*temp[0]+16.1-20);
+	  grd_err = grid.err;
+
+	  //--------------random search loop-------------------------------------
+	  for(ii=0; ii<N; ii++) {
+	    sol.meca.rak=rnd_rak[ii];
+	    sol.meca.dip=acos(rnd_dip[ii])*(180/PI);
+	    sol.meca.stk=rnd_stk[ii];
+	    fprintf(stderr, "%d %f %f %f\n",ii,sol.meca.rak,sol.meca.dip,sol.meca.stk);
+
+	    //nmtensor(mt[1].par,mt[2].par,sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor);
+	    //nmtensor(temp[1],temp[2],sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor);
+	    tt2cmt(temp[2], temp[1], 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
+	    if (check_first_motion(mtensor,fm,nfm,fm_thr)<0) {
+	      *grd_err++ = sol.err = FLT_MAX;
+	      continue;
+	    }
+	    if (bootstrap && interp==0) fprintf(stderr,"BOOTSTRAPPING %5.2f %5.2f %5.2f %5.1f %5.1f %5.1f\n", mt[0].par, mt[1].par, mt[2].par, sol.meca.stk, sol.meca.dip, sol.meca.rak);
+	    for(obs=obs0,sol.err=0.,i=0;i<nda;i++,obs++){
+	      mt_radiat(obs->az,mtensor,arad);
+	      rad[0]=amp*arad[3][0];
+	      for(k=1;k<4;k++) rad[k]=amp*arad[3-k][0];
+	      for(k=4;k<6;k++) rad[k]=amp*arad[6-k][2];
+	    
+	      /*******find the time shift*************/
+	      /**SH surface wave**/
+	      spt = obs->com;
+	      f_pt0 = spt->crl[0];
+	      f_pt1 = spt->crl[1];
+	      z0 = spt->on_off>0?1:0;
+	      /**PSV surface wave**/
+	      spt++;
+	      r_pt0 = spt->crl[1];
+	      r_pt1 = spt->crl[2];
+	      r_pt  = spt->crl[3];
+	      r_iso = spt->crl[0];
+	      z1 = spt->on_off>0?1:0;
+	      spt++;
+	      z_pt0 = spt->crl[1];
+	      z_pt1 = spt->crl[2];
+	      z_pt  = spt->crl[3];
+	      z_iso = spt->crl[0];
+	      z2 = spt->on_off>0?1:0;
+	      for(y1=y2=-FLT_MAX,l=0;l<=max_shft[1];l++) {
+		x =rad[4]*(*f_pt0++)+rad[5]*(*f_pt1++);
+		x1=rad[1]*(*r_pt0++)+rad[2]*(*r_pt1++)+rad[3]*(*r_pt++)+rad[0]*(*r_iso++);
+		x2=rad[1]*(*z_pt0++)+rad[2]*(*z_pt1++)+rad[3]*(*z_pt++)+rad[0]*(*z_iso++);
+		y = (1-tie)*z0*x + tie*(z1*x1 + z2*x2);
+		if (y>y2) {y2=y;cfg[0]=x;sol.shft[i][0]=l;}
+		y = tie*z0*x + (1-tie)*(z1*x1 + z2*x2);
+		if (y>y1) {y1=y;cfg[1]=x1;cfg[2]=x2;m=l;}
+	      }
+	      sol.shft[i][1]=sol.shft[i][2]=m;
+	      /**Pnl*/
+	      spt++;
+	      r_pt0 = spt->crl[1];
+	      r_pt1 = spt->crl[2];
+	      r_pt  = spt->crl[3];
+	      r_iso = spt->crl[0];
+	      z1 = spt->on_off>0?1:0;
+	      spt++;
+	      z_pt0 = spt->crl[1];
+	      z_pt1 = spt->crl[2];
+	      z_pt  = spt->crl[3];
+	      z_iso = spt->crl[0];
+	      z2 = spt->on_off>0?1:0;
+	      for(y1=-FLT_MAX,l=0;l<=max_shft[3];l++) {
+		x1=rad[1]*(*r_pt0++)+rad[2]*(*r_pt1++)+rad[3]*(*r_pt++)+rad[0]*(*r_iso++);
+		x2=rad[1]*(*z_pt0++)+rad[2]*(*z_pt1++)+rad[3]*(*z_pt++)+rad[0]*(*z_iso++);
+		y = z1*x1 + z2*x2;
+		if (y>y1) {y1=y;cfg[3]=x1;cfg[4]=x2;m=l;}
+	      }
+	      sol.shft[i][3]=sol.shft[i][4]=m;
+	      spt -= NCP - 1;
+	    
+	      /***error calculation*****/
+	      for(kc=2,f_pt1=rad+NRF,j=0;j<NCP;j++,spt++,kc=NRF,f_pt1=rad) {
+
+		/* compute the L2 norm of syn */
+		for(x2=0.,f_pt0=spt->syn2,k=0;k<kc;k++)
+		  for(k1=k;k1>=0;k1--)
+		    x2+=f_pt1[k]*f_pt1[k1]*(*f_pt0++);
+
+		y1 = 1.;
+		/* find out the scaling factor for teleseismic distances */
+		if (obs->tele && spt->on_off) {
+		  if (cfg[j]>0.) y1 = cfg[j]/x2;
+		  else y1 = 0.;
+		}
+		sol.scl[i][j] = y1;
+
+		x1 = spt->rec2+x2*y1*y1-2.*cfg[j]*y1;
+		sol.error[i][j] = x1;	/*L2 error for this com.*/
+		sol.cfg[i][j] = 100*cfg[j]/sqrt(spt->rec2*x2);
+		sol.err += spt->on_off*sol.error[i][j];
+		if (bootstrap && interp==0) fprintf(stderr,"BOOTSTRAPPING %-10s %d %d %9.3e\n", obs->stn, j, spt->on_off, x1);
+
+	      }
+
+	    } /*-------------------------end of all stations*/
+	    *grd_err++ = sol.err;		/*error for this solution*/
+	    if (best_sol.err>sol.err) {best_sol = sol;
+	      if (debug) fprintf(stderr,"misfit for best sol = %f; stk=%3.1f, dip=%3.1f, rak=%3.1f \n",best_sol.err,sol.meca.stk, sol.meca.dip, sol.meca.rak);
+	      mt[0].par=temp[0];
+	      mt[1].par=temp[1];
+	      mt[2].par=temp[2];
+	    }
+
+	    if (debug) { 
+	      log = fopen(logfile,"a");                 // output log file
+	      fprintf(log,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err,  temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
+	      fclose(log);
+	    }
+
+	    if (1){
+	      loop++;
+	      if (debug) {
+		sprintf(logfile,"%s_000","log");  // changes the log file name for next sext search
+		log = fopen(logfile,"a");
+		fclose(log);
+	      }
+	      log = fopen("log_diff","a"); /*fprintf(stderr,"completed stk,dip,rake loop\n");        //summary log file*/
+	      fprintf(log,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
+	      fclose(log);
+	    }
+	  }fprintf(stderr,"Mw==========================================================");
+	  if (debug) fprintf(stderr,"Mw=%2.1f \t iso=%2.2f \t clvd=%2.2f \n",temp[0],temp[1],temp[2]);
+	}
+      }
+    }
+
+    if (debug) fprintf(stderr, "Mw=%5.2f  iso=%5.2f clvd=%5.2f misfit = %9.3e\n", mt[0].par, mt[1].par, mt[2].par, best_sol.err);
+    if (interp=1) return(best_sol);
+    /* do interpolation */
+    best_sol.err = grid3d(grid.err,&(grid.n[0]),s3d,&(best_sol.flag),&(best_sol.ms),best_sol.others);
+    if (debug) fprintf(stderr, " interpolation  misfit = %9.3e\n", best_sol.err);
+    best_sol.meca.stk = grid.x0[0]+s3d[0]*grid.step[0];
+    best_sol.meca.dip = grid.x0[1]+s3d[1]*grid.step[1];
+    best_sol.meca.rak = grid.x0[2]+s3d[2]*grid.step[2];
+    for(i=0;i<3;i++) best_sol.dev[i]  = s3d[3+i]/(grid.step[i]*grid.step[i]);
+    best_sol.dev[3] = s3d[6]/(grid.step[0]*grid.step[1]);
+    best_sol.dev[4] = s3d[7]/(grid.step[0]*grid.step[2]);
+    best_sol.dev[5] = s3d[8]/(grid.step[1]*grid.step[2]);
+    fprintf(stderr,"=======================");
+    return(best_sol);
+
+  }
+
+  if (search==1){
+
+    //--------newly added section-------------
+    mw_ran = 1.0;
+    mt[0].max = mt[0].par+mw_ran;
+    mt[0].min = mt[0].par-mw_ran;
+ 
+    for (ii=0; ii<3; ii++){
+    if (mt[ii].dd==0){
+      mt[ii].max = mt[ii].par;
+      mt[ii].min = mt[ii].par;
+      mt[ii].dd=1.0;
+    }}
+    iso_len = (mt[1].max - mt[1].min)/mt[1].dd;
+
+    best_sol.err = FLT_MAX;
+
+    for(temp[0]=mt[0].min;temp[0]<=mt[0].max;temp[0]=temp[0]+mt[0].dd){
+      for(temp[1]=mt[1].min, i_iso=0;temp[1]<=mt[1].max, i_iso<=iso_len;i_iso++){
+	temp[1] = asin(-1.0+i_iso*(2.0/iso_len))*(180.0/PI);
 	for(temp[2]=mt[2].min;temp[2]<=mt[2].max;temp[2]=temp[2]+mt[2].dd)
 
 	  //--------newly added section ends here-------------
@@ -659,7 +847,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	    for(i_rak=0; i_rak<grid.n[2]; i_rak++) {
 	      sol.meca.rak=grid.x0[2]+i_rak*grid.step[2];
 	      for(i_dip=0; i_dip<grid.n[1]; i_dip++) {
-		sol.meca.dip=grid.x0[1]+i_dip*grid.step[1];
+		sol.meca.dip=acos(1.0-(i_dip*(1.0/(grid.n[1]-1))))*(180.0/PI);   //dip from -1 to 1
+		//sol.meca.dip=grid.x0[1]+i_dip*grid.step[1];
 		for(i_stk=0; i_stk<grid.n[0]; i_stk++) {
 		  sol.meca.stk=grid.x0[0]+i_stk*grid.step[1];
 		  //nmtensor(mt[1].par,mt[2].par,sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor);
@@ -754,7 +943,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		  } /*-------------------------end of all stations*/
 		  *grd_err++ = sol.err;		/*error for this solution*/
 		  if (best_sol.err>sol.err) {best_sol = sol;
-		    if (debug) fprintf(stderr,"misfit for best sol = %f; stk=%3.1f, dip=%3.1f, rak=%3.1f \n",best_sol.err,sol.meca.stk, sol.meca.dip, sol.meca.rak);
+		    if (0) fprintf(stderr,"misfit for best sol = %f; stk=%3.1f, dip=%3.1f, rak=%3.1f \n",best_sol.err,sol.meca.stk, sol.meca.dip, sol.meca.rak);
 		    mt[0].par=temp[0];
 		    mt[1].par=temp[1];
 		    mt[2].par=temp[2];
