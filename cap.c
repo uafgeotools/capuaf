@@ -604,7 +604,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		) {
   int	i, j, k, l, m, k1, kc, z0, z1, z2, mw_ran,ii, N, iso_len;
   int	i_stk, i_dip, i_rak, i_iso;
-  float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3];
+  float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3], iso_prev;
   float	*f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err, *rnd_stk, *rnd_dip, *rnd_rak;
   float dx, mtensor[3][3], *r_iso, *z_iso;
   DATA	*obs;
@@ -777,7 +777,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	    }
 
 	    if (debug) { 
-	      log = fopen(logfile,"a");                 // output log file
+	      log = fopen(logfile,"w");                 // output log file
 	      fprintf(log,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err,  temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
 	      fclose(log);
 	    }
@@ -786,7 +786,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	      loop++;
 	      if (debug) {
 		sprintf(logfile,"%s_000","log");  // changes the log file name for next sext search
-		log = fopen(logfile,"a");
+		log = fopen(logfile,"w");
 		fclose(log);
 	      }
 	      log = fopen("log_diff","a"); /*fprintf(stderr,"completed stk,dip,rake loop\n");        //summary log file*/
@@ -829,13 +829,25 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       mt[ii].min = mt[ii].par;
       mt[ii].dd=1.0;
     }}
-    iso_len = (mt[1].max - mt[1].min)/mt[1].dd;
+    iso_len = (mt[1].max - mt[1].min)/mt[1].dd + 1;
+    iso_prev=-90;
 
     best_sol.err = FLT_MAX;
 
     for(temp[0]=mt[0].min;temp[0]<=mt[0].max;temp[0]=temp[0]+mt[0].dd){
-      for(temp[1]=mt[1].min, i_iso=0;temp[1]<=mt[1].max, i_iso<=iso_len;i_iso++){
-	temp[1] = asin(-1.0+i_iso*(2.0/iso_len))*(180.0/PI);
+      for(temp[1]=mt[1].min, i_iso=0;temp[1]<=mt[1].max, i_iso<iso_len;i_iso++){
+	temp[1] = asin(-1.0+(i_iso)*(2.0/iso_len))*(180.0/PI);
+	if (iso_len==1)
+	  temp[1]=0;
+	if (temp[1]==-90)
+	  continue;
+	if (temp[1]==90)
+	  continue;
+	if (iso_prev<0 && temp[1]>0){
+	  temp[1] = 0;
+	  i_iso--;
+	}
+	iso_prev = temp[1];
 	for(temp[2]=mt[2].min;temp[2]<=mt[2].max;temp[2]=temp[2]+mt[2].dd)
 
 	  //--------newly added section ends here-------------
@@ -848,6 +860,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	      sol.meca.rak=grid.x0[2]+i_rak*grid.step[2];
 	      for(i_dip=0; i_dip<grid.n[1]; i_dip++) {
 		sol.meca.dip=acos(1.0-(i_dip*(1.0/(grid.n[1]-1))))*(180.0/PI);   //dip from -1 to 1
+		if (sol.meca.dip==0)
+		  continue;
 		//sol.meca.dip=grid.x0[1]+i_dip*grid.step[1];
 		for(i_stk=0; i_stk<grid.n[0]; i_stk++) {
 		  sol.meca.stk=grid.x0[0]+i_stk*grid.step[1];
@@ -952,14 +966,16 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		  if (debug) { 
 		    log = fopen(logfile,"a");                 // output log file
 		    fprintf(log,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err,  temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
+		    //fprintf(stderr,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err,  temp[0], temp[1], temp[2]);
 		    fclose(log);	  
 		  }
 		}
 	      }
+	    
 	      if (sol.meca.stk==360 &&  sol.meca.dip==90 &&  sol.meca.rak==90){
 		loop++;
 		if (debug) {
-		  sprintf(logfile,"%s_%03d","log",loop);  // changes the log file name for next sext search
+		  sprintf(logfile,"%s_%03d","log",loop);  // changes the log file name for next sext search (for multiple log files - search over stk,dip and rake only)
 		  log = fopen(logfile,"a");
 		  fclose(log);
 		}

@@ -189,8 +189,6 @@ open cap.c, set search=1 (and preferably debug=0 so that it do not generate nume
 
 5.  run cap
 
-THIS ISN'T WORKING RIGHT NOW
-
 > cd $CAPRUN/inv/cus
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.1 -J0/0/0/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
@@ -273,3 +271,5 @@ EXAMPLE 7: ILLINOIS EVENT, FMT-fixed-magnitude with random sample search
 
 
 ====================================================================================
+P.S.
+1. If running in debug mode, remember to remove all the log files otherwise they will be appended (not overwritten!!)
