@@ -138,7 +138,7 @@ EXAMPLE 2: ILLINOIS EVENT, FMT with Zhu line search
 
 4. run cap with the -J flag
 ISO and CLVD will be searched for in their general range (-1<ISO<+1 ; -0.5<CLVD<0.25).
-However you can change the increament by using -J flag in the input command line.
+However you can change the increment by using -J flag in the input command line.
 
 > cd $CAPRUN/inv/cus
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -J0/0.1/0/0.1 20080418093700
@@ -170,7 +170,7 @@ Run depth_test (script for calling depth.pl)
 > gv $CAPHOME/20080418093700_check/depth_fmt_line.ps &
 
 ====================================================================================
-EXAMPLE 3: ILLINOIS EVENT, DC, full grid search
+EXAMPLE 3: ILLINOIS EVENT, DC, full grid search (no line search)
 
 This is like EXAMPLE 1, but here we use a single, uniform grid search with no line searches or refined grid searches.
 This is aimed at performing a secondary analysis of uncertainties outside of CAP.
@@ -189,6 +189,8 @@ open cap.c, set search=1 (and preferably debug=0 so that it do not generate nume
 
 5.  run cap
 
+THIS ISN'T WORKING RIGHT NOW
+
 > cd $CAPRUN/inv/cus
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/.1 -J0/0/0/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
@@ -202,7 +204,22 @@ note: -I here will use a coarser sampling of Mw (0.2 instead of 0.1)
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_dc_grid.out
 
 ====================================================================================
-EXAMPLE 4: ILLINOIS EVENT, FMT with lune parameterization, full grid search
+EXAMPLE 4: same as EXAMPLE 3 but with fixed magnitude
+
+1. Follow same step 1 EXAMPLE 3
+2. Follow same step 2 EXAMPLE 3
+3. Follow same step 3 EXAMPLE 3
+4. Follow same step 4 EXAMPLE 3
+
+5. Run cap
+> cd $CAPRUN/inv/cus
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0 -J0/0/0/0 20080418093700
+
+====================================================================================
+EXAMPLE 5: ILLINOIS EVENT, FMT with lune parameterization, full grid search (no line search)
+
+ISO will be gridded by considering equal spacing inc sin(iso) space
+DIP will be gridded by considering equal spacing inc cos(dip) space
 
 1. Follow same step 1 EXAMPLE 3
 2. Follow same step 2 EXAMPLE 3
@@ -225,20 +242,7 @@ note: -J0/5/0/5 means 5 deg increment in ISO (delta) and 5 deg increment in CLVD
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_grid.out
 
 ====================================================================================
-EXAMPLE 5: ILLINOIS EVENT, DC search at a particular magnitude
-
-1. Follow same step 1 EXAMPLE 3
-2. Follow same step 2 EXAMPLE 3
-3. Follow same step 3 EXAMPLE 3
-4. Follow same step 4 EXAMPLE 3
-
-5. Run cap
-> cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0 -J0/0/0/0 20080418093700
-
-
-====================================================================================
-EXAMPLE 6: ILLINOIS EVENT, random samples
+EXAMPLE 6: ILLINOIS EVENT, DC with random sample search
 
 1. Follow same step 1 EXAMPLE 3
 2. Follow same step 2 EXAMPLE 3
@@ -251,27 +255,21 @@ EXAMPLE 6: ILLINOIS EVENT, random samples
 open cap.c, set search=2 (and preferably debug=0 so that it do not generate numerous output files), then save, then compile:
 
 > make all
+
 5. Run cap
 > cd $CAPRUN/inv/cus
 
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0  20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0 20080418093700
 Set full_mt_search to 2
 If running for many samples keep orientation increment (-I) to be small.
 If running only at one particular magnitude set -I magnitude increment to 0.
 
-%====================================================================================
+CARL
+output lots of number
 
-EXAMPLE 7: ILLINOIS EVENT, Grid search in full space with modified spacing (sin(iso) and cos(dip))
+====================================================================================
+EXAMPLE 7: ILLINOIS EVENT, FMT-fixed-magnitude with random sample search
 
-ISO will be gridded by considering equal spacing inc sin(iso) space
-DIP will be gridded by considering equal spacing inc cos(dip) space
 
-Search works only for full space search (not a subset or random points search (search==2))
-1. Follow same step 1 EXAMPLE 3
-2. Follow same step 2 EXAMPLE 3
-3. Follow same step 3 EXAMPLE 3
-4. Follow same step 4 EXAMPLE 3
 
-5. Run cap
-> cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -J0/10/0/10 20080418093700
+====================================================================================
