@@ -605,7 +605,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   int	i, j, k, l, m, k1, kc, z0, z1, z2, mw_ran,ii, N, iso_len;
   int	i_stk, i_dip, i_rak, i_iso;
   float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3], iso_prev;
-  float	*f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err, *rnd_stk, *rnd_dip, *rnd_rak;
+  float	*f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err, *rnd_stk, *rnd_dip, *rnd_rak, *rnd_iso, *rnd_clvd;
   float dx, mtensor[3][3], *r_iso, *z_iso;
   DATA	*obs;
   COMP	*spt;
@@ -626,18 +626,9 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
     //--------newly added section-------------
     fprintf(stderr,"Mw=%f\n",mt[0].par);
-    mw_ran=0.0;
+    mw_ran=1.0;
     mt[0].max = mt[0].par+mw_ran;
     mt[0].min = mt[0].par-mw_ran;;
-
-    if (mt[1].dd==0 && mt[2].dd==0){
-      mt[1].min=mt[1].par;
-      mt[2].min=mt[2].par;
-      mt[1].max=mt[1].par;
-      mt[2].max=mt[2].par;
-      mt[1].dd=1;
-      mt[2].dd=1;
-    }
 
     if (mt[0].dd==0){
       mt[0].max = mt[0].par;
@@ -649,6 +640,9 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     rnd_stk = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_dip = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_rak = (float*)malloc(sizeof(int) * N*sizeof(float));
+    rnd_iso = (float*)malloc(sizeof(int) * N*sizeof(float));
+    rnd_clvd = (float*)malloc(sizeof(int) * N*sizeof(float));
+    
     if (rnd_stk==NULL || rnd_stk==NULL || rnd_stk==NULL){
       fprintf(stderr,"Cannot allocate space for random number generation");}
 
@@ -656,14 +650,19 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       rnd_stk[i]=0.0+360.0*drand48();
       rnd_dip[i]=0.0+1.0*drand48();
       rnd_rak[i]=-90.0+180.0*drand48();
+      if (mt[1].dd==0)
+	rnd_iso[i]=sin(mt[1].par*(PI/180.0));
+      else
+	rnd_iso[i]=-1.0+2.0*drand48();
+      if (mt[2].dd==0)
+	rnd_clvd[i]=mt[2].par;
+      else
+	rnd_clvd[i]=-30.0+60.0*drand48();
     }
 
     best_sol.err = FLT_MAX;
 
-    for(temp[0]=mt[0].min;temp[0]<=mt[0].max;temp[0]=temp[0]+mt[0].dd){
-      fprintf(stderr,"Mw=%f, iso=%f clvd=%f\n",temp[0],temp[1],temp[2]);
-      for(temp[1]=mt[1].min;temp[1]<=mt[1].max;temp[1]=temp[1]+mt[1].dd){
-	for(temp[2]=mt[2].min;temp[2]<=mt[2].max;temp[2]=temp[2]+mt[2].dd){
+     for(temp[0]=mt[0].min;temp[0]<=mt[0].max;temp[0]=temp[0]+mt[0].dd){ 
 
 	  //--------newly added section ends here-------------
 
@@ -673,10 +672,11 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
 	  //--------------random search loop-------------------------------------
 	  for(ii=0; ii<N; ii++) {
+	    temp[1]=asin(rnd_iso[ii])*(180.0/PI);
+	    temp[2]=rnd_clvd[ii];
 	    sol.meca.rak=rnd_rak[ii];
-	    sol.meca.dip=acos(rnd_dip[ii])*(180/PI);
+	    sol.meca.dip=acos(rnd_dip[ii])*(180.0/PI);
 	    sol.meca.stk=rnd_stk[ii];
-	    fprintf(stderr, "%d %f %f %f\n",ii,sol.meca.rak,sol.meca.dip,sol.meca.stk);
 
 	    //nmtensor(mt[1].par,mt[2].par,sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor);
 	    //nmtensor(temp[1],temp[2],sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor);
@@ -793,11 +793,14 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	      fprintf(log,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
 	      fclose(log);
 	    }
-	  }fprintf(stderr,"Mw==========================================================");
-	  if (debug) fprintf(stderr,"Mw=%2.1f \t iso=%2.2f \t clvd=%2.2f \n",temp[0],temp[1],temp[2]);
-	}
-      }
-    }
+	    fprintf(stderr, "%d\t%3.2f\t%3.2f\t%3.2f\t%2.1f\t%2.1f\t%2.2f\n",ii+1,sol.meca.stk, sol.meca.dip,sol.meca.rak,temp[0],temp[1],temp[2]);
+	  }
+	  fprintf(stderr,"========================Minimum==================================");
+	  fprintf(stderr, "%3.2f\t%3.2f\t%3.2f\t%2.1f\t%2.1f\t%2.2f\n",best_sol.meca.stk, best_sol.meca.dip,best_sol.meca.rak,temp[0],mt[1].par,mt[2].par);
+     }
+     // }
+     //}
+  
 
     if (debug) fprintf(stderr, "Mw=%5.2f  iso=%5.2f clvd=%5.2f misfit = %9.3e\n", mt[0].par, mt[1].par, mt[2].par, best_sol.err);
     if (interp=1) return(best_sol);
