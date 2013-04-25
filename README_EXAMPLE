@@ -240,7 +240,7 @@ note: -J0/5/0/5 means 5 deg increment in ISO (delta) and 5 deg increment in CLVD
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_grid.out
 
 ====================================================================================
-EXAMPLE 6: ILLINOIS EVENT, DC with random sample search
+EXAMPLE 6: ILLINOIS EVENT, DC with random sample search (optional: grid-search over Mw)
 
 1. Follow same step 1 EXAMPLE 3
 2. Follow same step 2 EXAMPLE 3
@@ -256,20 +256,33 @@ open cap.c, set search=2 (and preferably debug=0 so that it do not generate nume
 
 5. Run cap
 > cd $CAPRUN/inv/cus
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0 -J0/0/0/0 20080418093700
 
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0 20080418093700
 Set full_mt_search to 2
 If running for many samples keep orientation increment (-I) to be small.
 If running only at one particular magnitude set -I magnitude increment to 0.
+For anyother ISO or CLVD value set it using -J flag. Just remember to keep the increment=0. example(-J10/0/10/0)
+To search over magnitude too, set -I magnitude_increment to nonzero.
 
 CARL
 output lots of number
 
 ====================================================================================
-EXAMPLE 7: ILLINOIS EVENT, FMT-fixed-magnitude with random sample search
+EXAMPLE 7: ILLINOIS EVENT, FMT-fixed-magnitude with random sample search (optional: grid-search over Mw)
+1. Follow same step 1 EXAMPLE 6
+2. Follow same step 2 EXAMPLE 6
+3. Follow same step 3 EXAMPLE 6
+4. Follow same step 3 EXAMPLE 
 
+5. Run cap
+> cd $CAPRUN/inv/cus
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0 -J0/1/0/1 20080418093700
 
+Just need to set the ISO and CLVD increment to "any" non-zero number.  (example: -J10/1/10/2 would perform the same task)
+To search over magnitude too, set -I magnitude_increment to nonzero.
 
 ====================================================================================
+
 P.S.
 1. If running in debug mode, remember to remove all the log files otherwise they will be appended (not overwritten!!)
+2. When running in random seach mode and it doesn't go create as many sample points as specified, then retry by giving reduced orientation increment (example: if -I5/0 doesn't work, try -I2/0)
