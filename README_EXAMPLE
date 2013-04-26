@@ -201,8 +201,6 @@ note: -I here will use a 0.1 interval of Mw
 > gv $CAPHOME/20080418093700_check/cus_015_dc_grid.ps &
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_dc_grid.out
 
-DIFF DOES NOT CHECK FOR CARL
-
 ====================================================================================
 EXAMPLE 4: same as EXAMPLE 3 but with fixed magnitude
 
@@ -213,7 +211,7 @@ EXAMPLE 4: same as EXAMPLE 3 but with fixed magnitude
 
 5. Run cap
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0 -J0/0/0/0 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -J0/0/0/0 20080418093700
 
 ====================================================================================
 EXAMPLE 5: ILLINOIS EVENT, FMT with lune parameterization, full grid search (no line search)
@@ -231,7 +229,7 @@ ISO and CLVD will be searched for in their general range (-90 < ISO < +90 ; -30 
 However you can change the increament by using -J flag in the input command line.
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.2 -J0/5/0/5 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.2 -J0/10/0/10 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: -J0/5/0/5 means 5 deg increment in ISO (delta) and 5 deg increment in CLVD (longitude); the 0's are ignored in this mode
@@ -241,8 +239,6 @@ note: -I here will use a 0.2 interval of Mw
 
 > gv $CAPHOME/20080418093700_check/cus_015_fmt_grid.ps &
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_grid.out
-
-DIFF DOES NOT CHECK FOR CARL
 
 ====================================================================================
 EXAMPLE 6: ILLINOIS EVENT, DC with random sample search (optional: grid-search over Mw)
