@@ -80,7 +80,7 @@
 ****************************************************************/
 #include "cap.h"
 
-int loop=0,start=0,debug=1,search=1;
+int loop=0,start=0,debug=0,search=1;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN];
   int	ns, mltp, nup, up[3], total_n, n_shft, nqP, nqS;
@@ -463,10 +463,12 @@ int main (int argc, char **argv) {
     if (mt[1].dd>=1 || mt[2].dd>=1)
       fprintf(stderr,"Warning: Possible error = Expecting grid-search\n(set full_mt_search=1) or reduce the search increment (-J flag)\n");
     fprintf(stderr,"----------starting line-search-----------\n");}
-  else{
+  if (search==1){
     if ((mt[1].dd<=1&&mt[1].dd!=0) || (mt[2].dd<=1&&mt[2].dd!=0))
       fprintf(stderr,"Warning: Very fine grid-search = Expecting line-search\n(set full_mt_search=0) or increase search increment (-J flag)\n");
     fprintf(stderr,"----------starting grid-search-----------\n");}
+  if (search==2)
+     fprintf(stderr,"----------starting random-search-----------\n");
 
  INVERSION:
   sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap);
@@ -604,7 +606,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		) {
   int	i, j, k, l, m, k1, kc, z0, z1, z2, mw_ran,ii, N, iso_len;
   int	i_stk, i_dip, i_rak, i_iso;
-  float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3];
+  float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3], m_par;
   float	*f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err, *rnd_stk, *rnd_dip, *rnd_rak, *rnd_iso, *rnd_clvd, *iso;
   float dx, mtensor[3][3], *r_iso, *z_iso;
   DATA	*obs;
@@ -844,6 +846,32 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	iso[ii+iso_len-1]=(float)ii/iso_len;
     }
     
+    //Output search ranges
+    fprintf(stderr,"=========GRID-SEARCH RANGE===========\n");
+    for (ii=0; ii<3; ii++){
+      if (ii==0)
+	fprintf(stderr,"---------Mw--------\n");
+      if (ii==1)
+	fprintf(stderr,"---------sin(ISO)--------\n");
+      if (ii==2)
+	fprintf(stderr,"---------CLVD--------\n");      
+      for(m_par = mt[ii].min; m_par<=mt[ii].max; m_par=m_par+mt[ii].dd){
+	fprintf(stderr,"%f\n",m_par);
+      }
+    }
+
+    for (ii=0; ii<3; ii++){
+      if (ii==0)
+	fprintf(stderr,"---------STK--------\n");
+      if (ii==1)
+	fprintf(stderr,"---------cos(DIP)--------\n");
+      if (ii==2)
+	fprintf(stderr,"---------RAK--------\n");      
+      for(m_par = grid.x0[ii]; m_par<(grid.x0[ii]+(grid.n[ii])*grid.step[ii]); m_par=m_par+grid.step[ii]){
+	fprintf(stderr,"%f\n",m_par);
+      }
+    }
+
     best_sol.err = FLT_MAX;
 
     for(temp[0]=mt[0].min;temp[0]<=mt[0].max;temp[0]=temp[0]+mt[0].dd){
