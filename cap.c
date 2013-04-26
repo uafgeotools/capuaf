@@ -80,7 +80,7 @@
 ****************************************************************/
 #include "cap.h"
 
-int loop=0,start=0,debug=0,search=0;
+int loop=0,start=0,debug=0,search=2;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN];
   int	ns, mltp, nup, up[3], total_n, n_shft, nqP, nqS;
@@ -605,7 +605,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   int	i, j, k, l, m, k1, kc, z0, z1, z2, mw_ran,ii, N, iso_len;
   int	i_stk, i_dip, i_rak, i_iso;
   float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3], iso_prev;
-  float	*f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err, *rnd_stk, *rnd_dip, *rnd_rak, *rnd_iso, *rnd_clvd;
+  float	*f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err, *rnd_stk, *rnd_dip, *rnd_rak, *rnd_iso, *rnd_clvd, *iso;
   float dx, mtensor[3][3], *r_iso, *z_iso;
   DATA	*obs;
   COMP	*spt;
@@ -795,7 +795,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	    }
 	    fprintf(stderr, "%d\t%3.2f\t%3.2f\t%3.2f\t%2.1f\t%2.1f\t%2.2f\n",ii+1,sol.meca.stk, sol.meca.dip,sol.meca.rak,temp[0],temp[1],temp[2]);
 	  }
-	  fprintf(stderr,"========================Minimum==================================");
+	  fprintf(stderr,"========================Minimum==================================\n");
 	  fprintf(stderr, "%3.2f\t%3.2f\t%3.2f\t%2.1f\t%2.1f\t%2.2f\n",best_sol.meca.stk, best_sol.meca.dip,best_sol.meca.rak,temp[0],mt[1].par,mt[2].par);
      }
      // }
@@ -832,25 +832,26 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       mt[ii].min = mt[ii].par;
       mt[ii].dd=1.0;
     }}
-    iso_len = (mt[1].max - mt[1].min)/mt[1].dd + 1;
+    iso_len = ceil((mt[1].max - mt[1].min)/(2*mt[1].dd) + 1);
+    iso = (float*)malloc(sizeof(int) * (2*iso_len)*sizeof(float));
+
+    if (iso_len==1){
+      iso[0]=0;}
+    else{
+      for (ii=0;ii<iso_len;ii++)
+	iso[ii]=-(iso_len-1.0-ii)/iso_len;
+      for (ii=0;ii<iso_len;ii++)
+	iso[ii+iso_len-1]=(float)ii/iso_len;
+    }
+
     iso_prev=-90;
 
     best_sol.err = FLT_MAX;
 
     for(temp[0]=mt[0].min;temp[0]<=mt[0].max;temp[0]=temp[0]+mt[0].dd){
-      for(temp[1]=mt[1].min, i_iso=0;temp[1]<=mt[1].max, i_iso<iso_len;i_iso++){
-	temp[1] = asin(-1.0+(i_iso)*(2.0/iso_len))*(180.0/PI);
-	if (iso_len==1)
-	  temp[1]=0;
-	if (temp[1]==-90)
-	  continue;
-	if (temp[1]==90)
-	  continue;
-	if (iso_prev<0 && temp[1]>0){
-	  temp[1] = 0;
-	  i_iso--;
-	}
-	iso_prev = temp[1];
+      for(i_iso=0; i_iso<2*iso_len-1; i_iso++){
+	temp[1]=asin(iso[i_iso])*(180.0/PI);
+	fprintf(stderr,"%d======================================",iso_len);
 	for(temp[2]=mt[2].min;temp[2]<=mt[2].max;temp[2]=temp[2]+mt[2].dd)
 
 	  //--------newly added section ends here-------------
