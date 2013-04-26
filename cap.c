@@ -80,7 +80,7 @@
 ****************************************************************/
 #include "cap.h"
 
-int loop=0,start=0,debug=0,search=2;
+int loop=0,start=0,debug=1,search=1;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN];
   int	ns, mltp, nup, up[3], total_n, n_shft, nqP, nqS;
@@ -604,7 +604,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		) {
   int	i, j, k, l, m, k1, kc, z0, z1, z2, mw_ran,ii, N, iso_len;
   int	i_stk, i_dip, i_rak, i_iso;
-  float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3], iso_prev;
+  float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3];
   float	*f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err, *rnd_stk, *rnd_dip, *rnd_rak, *rnd_iso, *rnd_clvd, *iso;
   float dx, mtensor[3][3], *r_iso, *z_iso;
   DATA	*obs;
@@ -843,15 +843,13 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       for (ii=0;ii<iso_len;ii++)
 	iso[ii+iso_len-1]=(float)ii/iso_len;
     }
-
-    iso_prev=-90;
-
+    
     best_sol.err = FLT_MAX;
 
     for(temp[0]=mt[0].min;temp[0]<=mt[0].max;temp[0]=temp[0]+mt[0].dd){
       for(i_iso=0; i_iso<2*iso_len-1; i_iso++){
 	temp[1]=asin(iso[i_iso])*(180.0/PI);
-	fprintf(stderr,"%d======================================",iso_len);
+	fprintf(stderr,"-----------------------------------------------\n");
 	for(temp[2]=mt[2].min;temp[2]<=mt[2].max;temp[2]=temp[2]+mt[2].dd)
 
 	  //--------newly added section ends here-------------
@@ -863,7 +861,9 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	    for(i_rak=0; i_rak<grid.n[2]; i_rak++) {
 	      sol.meca.rak=grid.x0[2]+i_rak*grid.step[2];
 	      for(i_dip=0; i_dip<grid.n[1]; i_dip++) {
-		sol.meca.dip=acos(1.0-(i_dip*(1.0/(grid.n[1]-1))))*(180.0/PI);   //dip from -1 to 1
+		sol.meca.dip=acos(cos(grid.x0[1]*PI/180.0)-(i_dip*(cos(grid.x0[1]*PI/180.0)-cos((grid.x0[1]+(grid.n[1]-1)*grid.step[1])*PI/180.0))/(grid.n[1]-1)))*(180.0/PI);   //dip from -1 to 1
+		//sol.meca.dip=acos(cos(grid.x0[1]*PI/180.0)-(i_dip/grid.n[1]))*(180.0/PI);   //dip from -1 to 1
+		//sol.meca.dip=acos(1.0-(i_dip*(1.0/(grid.n[1]-1))))*(180.0/PI);   //dip from -1 to 1
 		if (sol.meca.dip==0)
 		  continue;
 		//sol.meca.dip=grid.x0[1]+i_dip*grid.step[1];
@@ -976,7 +976,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		}
 	      }
 	    
-	      if (sol.meca.stk==360 &&  sol.meca.dip==90 &&  sol.meca.rak==90){
+	      if (sol.meca.stk==(grid.x0[0]+(grid.n[0]-1)*grid.step[0]) &&  sol.meca.dip==(grid.x0[1]+(grid.n[1]-1)*grid.step[1]) &&  sol.meca.rak==(grid.x0[2]+(grid.n[2]-1)*grid.step[2])){
 		loop++;
 		if (debug) {
 		  sprintf(logfile,"%s_%03d","log",loop);  // changes the log file name for next sext search (for multiple log files - search over stk,dip and rake only)
