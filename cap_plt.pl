@@ -81,9 +81,10 @@ sub plot {
   $plt2 = "| pstext -JX -R -O -K -N >> $outps";
 
   # (3) plot beachballs (solution, followed by possible local minima)
+  $ballcolor = "150";
   $dY = ${pheight_in} - 1.8;
-  $plt3 = "| psmeca -JX5i/1i -R-1/9/-1/1 -Sa5i -G100 -Y${dY}i -X-0.7i -O -K >> $outps";
-  $plt3 = "| psmeca -JX5i/1i -R-1/9/-1/1 -Sm8i -G100 -Y${dY}i -X-0.7i -O -K >> $outps" if $tensor[1] eq "tensor";
+  $plt3 = "| psmeca -JX5i/1i -R-1/9/-1/1 -Sa5i -G$ballcolor -Y${dY}i -X-0.7i -O -K >> $outps";
+  $plt3 = "| psmeca -JX5i/1i -R-1/9/-1/1 -Sm8i -G$ballcolor -Y${dY}i -X-0.7i -O -K >> $outps" if $tensor[1] eq "tensor";
 
   # (4) plot markers on beachball
   # note: -JPa is a basemap for polar coordinates, clockwise from north
@@ -110,9 +111,9 @@ sub plot {
   $JP = "-JPa${fac}i";
 
   # plot beachball
-# $xplt3 = "| psmeca -JX${fac}i/${fac}i -R-1/1/-1/1 -N -G200 -W2p,0/0/0 -Sm${fac2}i -X1i -Y2i -K -P >> $outps2";
-  $xplt3 = "| psmeca -JX${fac}i/${fac}i -R-1/1/-1/1 -N -G200 -W2p,0/0/0 -Sa${fac}i -X1i -Y2i -K -P >> $outps2";
-  $xplt3 = "| psmeca -JX${fac}i/${fac}i -R-1/1/-1/1 -N -G200 -W2p,0/0/0 -Sm${fac2}i -X1i -Y2i -K -P >> $outps2" if $tensor[1] eq "tensor";
+# $xplt3 = "| psmeca -JX${fac}i/${fac}i -R-1/1/-1/1 -N -G$ballcolor -W2p,0/0/0 -Sm${fac2}i -X1i -Y2i -K -P >> $outps2";
+  $xplt3 = "| psmeca -JX${fac}i/${fac}i -R-1/1/-1/1 -N -G$ballcolor -W2p,0/0/0 -Sa${fac}i -X1i -Y2i -K -P >> $outps2";
+  $xplt3 = "| psmeca -JX${fac}i/${fac}i -R-1/1/-1/1 -N -G$ballcolor -W2p,0/0/0 -Sm${fac2}i -X1i -Y2i -K -P >> $outps2" if $tensor[1] eq "tensor";
 
   # plot markers on beachball
   # note: -JPa is a basemap for polar coordinates, clockwise from north
@@ -244,12 +245,13 @@ sub plot {
     close(PLT);
     
     # plot beachball
-    # note that the magnitude scale is "fixed" at 1e17 for psmeca -Sm and 1 for psmeca -Sa
+    # note 1: magnitude scale is "fixed" at 1e17 for psmeca -Sm and 1 for psmeca -Sa
+    # note 2: moment tensor is converted from AkiRichads basis to GCMT basis, which is required for psmeca
     open(PLT, $plt3);
     if ($tensor[1] eq "tensor") {
         printf PLT "0 0 0 @tensor[9,4,7,6] %f %f 17\n",-$tensor[8],-$tensor[5];
     } else {
-        printf PLT "0 0 0 @meca[5,6,7] 1\n";#0.5*$sec_per_inch,$nn-1;
+        printf PLT "0 0 0 @meca[5,6,7] 1\n";  # 0.5*$sec_per_inch,$nn-1;
     }
 #    $x = 2;
 #    foreach (@others) {
@@ -280,7 +282,7 @@ sub plot {
   }  # while (@rslt) {
 
 #---------------------------------
-# FIGURE 2: big moment tensor with station names at piercing points
+# FIGURE 2: big moment tensor with station names at lower-hemisphere piercing points
 
   $pwidth_in = 8.5;  # width of paper
   $pheight_in = 11;  # height of paper
@@ -292,13 +294,12 @@ sub plot {
   while (@rslt) {
     @aaaa = splice(@rslt,0,$nn-2);
     
+    # plot beachball (see notes above)
     open(XPLT, $xplt3);
-#    printf XPLT "0 0 0 @meca[5,6,7] 1\n";#0.5*$sec_per_inch,$nn-1;
-#    close(XPLT);
     if ($tensor[1] eq "tensor") {
      printf XPLT "0 0 0 @tensor[9,4,7,6] %f %f 17\n",-$tensor[8],-$tensor[5];
     } else {
-     printf XPLT "0 0 0 @meca[5,6,7] 1\n";#0.5*$sec_per_inch,$nn-1;
+     printf XPLT "0 0 0 @meca[5,6,7] 1\n"; #0.5*$sec_per_inch,$nn-1;
     }
     close(XPLT);
 
@@ -346,7 +347,6 @@ sub plot {
 
     # TITLE
     open(XPLT, $xplt6);
-#    printf XPLT "0 0 12 0 0 0 @meca\n",0,0; # 20130102 calvizuri - original
     printf XPLT "0 0 18 0 0 0 @meca[0..9]\n",0,0;
     printf XPLT "0 -0.05 18 0 0 0 @meca[10..22]\n",0,0;
     close(XPLT);
