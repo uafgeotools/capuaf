@@ -80,10 +80,10 @@
 ****************************************************************/
 #include "cap.h"
 
-int loop=0,start=0,debug=0,search=0;
+int total_n,loop=0,start=0,debug=0,search=0;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN];
-  int	ns, mltp, nup, up[3], total_n, n_shft, nqP, nqS;
+  int	ns, mltp, nup, up[3], n_shft, nqP, nqS;
   int	n1,n2,mm[2],n[NCP],max_shft[NCP],npts[NRC];
   int	repeat, bootstrap;
   char	tmp[128],glib[128],dep[32],dst[16],eve[32],*c_pt;
@@ -475,6 +475,7 @@ int main (int argc, char **argv) {
 
   dof = nof_per_samp*total_n;
   x2 = sol.err/dof;		/* data variance */
+  fprintf(stderr,"\n=========total_n=%d \t dof=%d \t error=%f\t nof=%f===========\n",total_n,dof,sol.err, nof_per_samp);
   /* repeat grid search if needed */
   if ( repeat && discard_bad_data(nda,obs0,sol,x2,rms_cut) ) {
     repeat--;
@@ -507,7 +508,7 @@ int main (int argc, char **argv) {
 	  mt[0].par, sol.err, dof,
 	  (int) rint(rad[0]), (int) rint(rad[1]), (int) rint(rad[2]),
 	  mt[1].par, sqrt(mt[1].sigma*x2),mt[2].par, sqrt(mt[2].sigma*x2));
-  fprintf(f_out,"# Variance reduction %4.1f\n",100*(1.-sol.err/rec2));
+  fprintf(f_out,"# Variance reduction %4.1f\n",100*(1.-sol.err/rec2*total_n));
   amp=pow(10.,1.5*mt[0].par+16.1-20);
 
   if(search) {
@@ -638,7 +639,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       mt[0].dd=1.0;
     }
 
-    N=10000;
+    N=50000;
     rnd_stk = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_dip = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_rak = (float*)malloc(sizeof(int) * N*sizeof(float));
@@ -761,7 +762,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		}
 		sol.scl[i][j] = y1;
 
-		x1 = spt->rec2+x2*y1*y1-2.*cfg[j]*y1;
+		x1 = (spt->rec2+x2*y1*y1-2.*cfg[j]*y1)/total_n;
 		sol.error[i][j] = x1;	/*L2 error for this com.*/
 		sol.cfg[i][j] = 100*cfg[j]/sqrt(spt->rec2*x2);
 		sol.err += spt->on_off*sol.error[i][j];
@@ -779,7 +780,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	    }
 
 	    if (debug) { 
-	      log = fopen(logfile,"w");                 // output log file
+	      log = fopen(logfile,"a");                 // output log file
 	      fprintf(log,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err,  temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
 	      fclose(log);
 	    }
@@ -788,7 +789,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	      loop++;
 	      if (debug) {
 		sprintf(logfile,"%s_000","log");  // changes the log file name for next sext search
-		log = fopen(logfile,"w");
+		log = fopen(logfile,"a");
 		fclose(log);
 	      }
 	      log = fopen("log_diff","a"); /*fprintf(stderr,"completed stk,dip,rake loop\n");        //summary log file*/
@@ -978,7 +979,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		      }
 		      sol.scl[i][j] = y1;
 		   
-		      x1 = spt->rec2+x2*y1*y1-2.*cfg[j]*y1;
+		      x1 = (spt->rec2+x2*y1*y1-2.*cfg[j]*y1)/total_n;
 		      sol.error[i][j] = x1;	/*L2 error for this com.*/
 		      sol.cfg[i][j] = 100*cfg[j]/sqrt(spt->rec2*x2);
 		      sol.err += spt->on_off*x1;
@@ -1158,7 +1159,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		}
 		sol.scl[i][j] = y1;
 
-		x1 = spt->rec2+x2*y1*y1-2.*cfg[j]*y1;
+		x1 = (spt->rec2+x2*y1*y1-2.*cfg[j]*y1)/total_n;
 		sol.error[i][j] = x1;	/*L2 error for this com.*/
 		sol.cfg[i][j] = 100*cfg[j]/sqrt(spt->rec2*x2);
 		sol.err += spt->on_off*x1;
