@@ -475,7 +475,7 @@ int main (int argc, char **argv) {
 
   dof = nof_per_samp*total_n;
   x2 = sol.err/dof;		/* data variance */
-  fprintf(stderr,"\n=========total_n=%d \t dof=%d \t error=%f\t nof=%f===========\n",total_n,dof,sol.err, nof_per_samp);
+  //fprintf(stderr,"\n=========total_n=%d \t dof=%d \t error=%f\t nof=%f===========\n",total_n,dof,sol.err, nof_per_samp);
   /* repeat grid search if needed */
   if ( repeat && discard_bad_data(nda,obs0,sol,x2,rms_cut) ) {
     repeat--;
@@ -639,7 +639,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       mt[0].dd=1.0;
     }
 
-    N=50000;
+    N=10000;
     rnd_stk = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_dip = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_rak = (float*)malloc(sizeof(int) * N*sizeof(float));
