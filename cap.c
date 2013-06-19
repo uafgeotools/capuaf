@@ -461,11 +461,11 @@ int main (int argc, char **argv) {
 
   if (search==0){
     if (mt[1].dd>=1 || mt[2].dd>=1)
-      fprintf(stderr,"Warning: Possible error = Expecting grid-search\n(set full_mt_search=1) or reduce the search increment (-J flag)\n");
+      fprintf(stderr,"Warning: Possible error = Expecting grid-search\n(set search=1) or reduce the search increment (-J flag)\n");
     fprintf(stderr,"----------starting line-search-----------\n");}
   if (search==1){
     if ((mt[1].dd<=1&&mt[1].dd!=0) || (mt[2].dd<=1&&mt[2].dd!=0))
-      fprintf(stderr,"Warning: Very fine grid-search = Expecting line-search\n(set full_mt_search=0) or increase search increment (-J flag)\n");
+      fprintf(stderr,"Warning: Very fine grid-search = Expecting line-search\n(set search=0) or increase search increment (-J flag)\n");
     fprintf(stderr,"----------starting grid-search-----------\n");}
   if (search==2)
      fprintf(stderr,"----------starting random-search-----------\n");
