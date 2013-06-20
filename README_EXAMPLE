@@ -299,6 +299,29 @@ NOTES
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_rand.out
 
 ====================================================================================
+EXAMPLE 8 Illinois event. Default DC grid search with P wave polarities in
+weight file
+
+1. Run CAP and point it to the weight file with polarity measurements.
+> cd $CAPRUN/inv/cus
+
+2a. Run cap with all available polarities
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -I10/0.1 -J0/0/0/0 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat 
+
+2b. run cap with all polarities but one flipped: BLO
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -I10/0.1 -J0/0/0/0 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
+
+2c. run cap with all polarities but one flipped: PVMO
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -I10/0.1 -J0/0/0/0 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+
+2d. run cap with all polarities but one flipped: WVT
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -I10/0.1 -J0/0/0/0 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
+
+2e. run cap with only one polarity measurement
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -I10/0.1 -J0/0/0/0 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
+
+
+====================================================================================
 TIPS
 
 1. If running in debug mode, remember to remove all the log files otherwise they will be appended (not overwritten!).
