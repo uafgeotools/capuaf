@@ -46,12 +46,14 @@ source the file after making changes
 > echo $CAPRUN
 > mkdir -p $CAPRUN
 > cd $CAPRUN
-> mkdir -p models inv ; mkdir -p models/cus inv/cus
+> mkdir -p models/cus inv/cus
 
 3. compile cap.c
 
 > cd $CAPHOME
 > make all >& make.log
+
+note: "make clean" before compilation if you have a previously compiled cap
 
 4. check path to utilities
 
@@ -60,7 +62,7 @@ source the file after making changes
 Make sure that none of these is missing.
 
 ============================================
-DEFAULT EXAMPLE 1: ILLINOIS EVENT, DOUBLE COUPLE
+DEFAULT EXAMPLE 1: Illinois event, double couple (DC)
 
 1. run the frequency-wavenumber code fk
 
@@ -130,8 +132,32 @@ Run depth_test (script for calling depth.pl)
 > diff junk2.out $CAPHOME/20080418093700_check/junk2_dc.out
 > gv $CAPHOME/20080418093700_check/depth_dc.ps &
 
+====================================================================================
+EXAMPLE P: Illinois event, DC with P wave polarities in weight file
+
+1. Follow same step 1 EXAMPLE 1
+2. Follow same step 2 EXAMPLE 1
+3. Follow same step 3 EXAMPLE 1
+
+Pa. Run cap with all available polarities
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat 
+
+Pb. run cap with all polarities but one flipped: BLO
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
+
+Pc. run cap with all polarities but one flipped: PVMO
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+
+Pd. run cap with all polarities but one flipped: WVT
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
+
+Pe. run cap with only one polarity measurement
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
+
+note: the command "-I10/0.1 -J0/0/0/0" could be added but will not affect the results
+
 ============================================
-EXAMPLE 2: ILLINOIS EVENT, FMT with Zhu line search
+EXAMPLE 2: Illinois event, FMT with Zhu line search
 
 1. Follow same step 1 EXAMPLE 1
 2. Follow same step 2 EXAMPLE 1
@@ -169,7 +195,7 @@ Run depth_test (script for calling depth.pl)
 > gv $CAPHOME/20080418093700_check/depth_fmt_line.ps &
 
 ====================================================================================
-EXAMPLE 3: ILLINOIS EVENT, DC, full grid search (no line search)
+EXAMPLE 3: Illinois event, DC, full grid search (no line search)
 
 This is like EXAMPLE 1, but here we use a single, uniform grid search with no line searches or refined grid searches.
 This is aimed at performing a secondary analysis of uncertainties outside of CAP.
@@ -214,7 +240,7 @@ EXAMPLE 4: same as EXAMPLE 3 but with fixed magnitude
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -J0/0/0/0 20080418093700
 
 ====================================================================================
-EXAMPLE 5: ILLINOIS EVENT, FMT with lune parameterization, full grid search (no line search)
+EXAMPLE 5: Illinois event, FMT with lune parameterization, full grid search (no line search)
 
 ISO will be gridded by considering equal spacing inc sin(iso) space
 DIP will be gridded by considering equal spacing inc cos(dip) space
@@ -241,7 +267,7 @@ note: -I here will use a 0.2 interval of Mw
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_grid.out
 
 ====================================================================================
-EXAMPLE 6: ILLINOIS EVENT, DC with random sample search (optional: grid-search over Mw)
+EXAMPLE 6: Illinois event, DC with random sample search (optional: grid-search over Mw)
 
 1. Follow same step 1 EXAMPLE 3
 2. Follow same step 2 EXAMPLE 3
@@ -274,7 +300,7 @@ NOTES
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_dc_rand.out
 
 ====================================================================================
-EXAMPLE 7: ILLINOIS EVENT, FMT-fixed-magnitude with random sample search (optional: grid-search over Mw)
+EXAMPLE 7: Illinois event, FMT-fixed-magnitude with random sample search (optional: grid-search over Mw)
 
 1. Follow same step 1 EXAMPLE 6
 2. Follow same step 2 EXAMPLE 6
@@ -297,29 +323,6 @@ NOTES
 
 > gv $CAPHOME/20080418093700_check/cus_015_fmt_rand.ps &
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_rand.out
-
-====================================================================================
-EXAMPLE 8 Illinois event. Default DC grid search with P wave polarities in
-weight file
-
-1. Run CAP and point it to the weight file with polarity measurements.
-> cd $CAPRUN/inv/cus
-
-2a. Run cap with all available polarities
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -I10/0.1 -J0/0/0/0 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat 
-
-2b. run cap with all polarities but one flipped: BLO
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -I10/0.1 -J0/0/0/0 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
-
-2c. run cap with all polarities but one flipped: PVMO
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -I10/0.1 -J0/0/0/0 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
-
-2d. run cap with all polarities but one flipped: WVT
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -I10/0.1 -J0/0/0/0 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
-
-2e. run cap with only one polarity measurement
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -I10/0.1 -J0/0/0/0 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
-
 
 ====================================================================================
 TIPS
