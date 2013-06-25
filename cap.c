@@ -517,7 +517,7 @@ int main (int argc, char **argv) {
   else {
     nmtensor(mt[1].par,mt[2].par,sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor); //original
   }
-  fprintf(f_out,"# tensor = %8.3e %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f\n",amp*1.0e20,mtensor[0][0],mtensor[0][1],mtensor[0][2],mtensor[1][1],mtensor[1][2],mtensor[2][2]);
+  fprintf(f_out,"# tensor = %8.3e %7.4f %7.4f %7.4f %7.4f %7.4f %7.4f\n",amp*1.0e20,mtensor[0][0],mtensor[0][1],mtensor[0][2],mtensor[1][1],mtensor[1][2],mtensor[2][2]);
   for(i=1;i<sol.ms;i++) {
     j = sol.others[i];
     if (grid.err[j]-grid.err[sol.others[0]]<mltp*x2) {
