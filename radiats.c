@@ -152,6 +152,10 @@ void nmtensor(float iso, float clvd, float str, float dip, float rake, float ten
 
 /*****************************************************************
   radiation pattern from a double couple,  A & R, P118
+
+20130626 celso - given moment tensor, take off angle(alpha) and 
+                 azimuth (az) radpmt outputs scalar between [-1,1]
+
 ******************************************************************/
 float radpmt(float mom[3][3], float alpha, float az, int type)
 {
