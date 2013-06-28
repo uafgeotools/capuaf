@@ -325,6 +325,32 @@ NOTES
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_rand.out
 
 ====================================================================================
+EXAMPLE 8: Illinois event, DC with P wave polarities in weight file
+Given bad polarity observations (eg PVMO flipped from (true) negative to (bad)
+positive), cap may still allow a solution, within error threshold, even if it
+conflicts with the polarity observation. 
+
+KEY: threshold should be NEGATIVE if polarities are allowed to conflict expected
+polarity.
+
+This example runs 6 cases for different first-motion threshold (fm_thr) with
+values: fm_thr=-1.0, -0.2, -0.1, 0, 0.4, 1.0 (see cap flag -F to set
+thresholds).
+
+
+1. Follow same step 1 EXAMPLE 1
+2. Follow same step 2 EXAMPLE 1
+3. Follow same step 3 EXAMPLE 1
+
+8a. Run cap with with 
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F-1.0 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10  -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F-0.2 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10  -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F-0.1 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10  -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F0.0 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10  -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F0.4 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10  -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F1.0 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10  -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+
+====================================================================================
 TIPS
 
 1. If running in debug mode, remember to remove all the log files otherwise they will be appended (not overwritten!).
