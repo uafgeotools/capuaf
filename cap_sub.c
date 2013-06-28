@@ -64,6 +64,13 @@ float *cutTrace(float *trace, int npts, int offset, int n) {
 }
 
 
+// This function checks (1) if observed and predicted polarities match and (2) if
+// abs(radiation amp) is greater than threshold (fm_thr). if (1) and (2) both
+// true then solution is permissible. KEY: Letting fm_thr be negative allows for
+// possible bad observations, eg. for stations near nodal lines.
+// INPUT: moment tensor (mt[3][3]), set of polarity observations (fm),
+// number of observations (n) and value of threshold(fm_thr).
+// OUTPUT: -1 == bad solution or 0 == permissible solution
 int check_first_motion(float mt[3][3], FM *fm, int n, float fm_thr) {
   int	i;
   FM	*pt;
