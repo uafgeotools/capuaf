@@ -195,7 +195,7 @@ Run depth_test (script for calling depth.pl)
 > gv $CAPHOME/20080418093700_check/depth_fmt_line.ps &
 
 ============================================
-EXAMPLE 2: Illinois event, FMT with Fixed focal mech (strike/dip/rake/iso/clvd/mag)
+EXAMPLE 3: Illinois event, FMT with Fixed focal mech (strike/dip/rake/iso/clvd/mag)
 
 1. Follow same step 1 EXAMPLE 1
 2. Follow same step 2 EXAMPLE 1
@@ -211,7 +211,7 @@ EXAMPLE 2: Illinois event, FMT with Fixed focal mech (strike/dip/rake/iso/clvd/m
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_fixed.out
 
 ====================================================================================
-EXAMPLE 3: Illinois event, DC, full grid search (no line search)
+EXAMPLE 4 Illinois event, DC, full grid search (no line search)
 
 This is like EXAMPLE 1, but here we use a single, uniform grid search with no line searches or refined grid searches.
 This is aimed at performing a secondary analysis of uncertainties outside of CAP.
@@ -243,7 +243,7 @@ note: -I here will use a 0.1 interval of Mw
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_dc_grid.out
 
 ====================================================================================
-EXAMPLE 4: same as EXAMPLE 3 but with fixed magnitude
+EXAMPLE 5: same as EXAMPLE 3 but with fixed magnitude
 
 1. Follow same step 1 EXAMPLE 3
 2. Follow same step 2 EXAMPLE 3
@@ -256,7 +256,7 @@ EXAMPLE 4: same as EXAMPLE 3 but with fixed magnitude
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -J0/0/0/0 20080418093700
 
 ====================================================================================
-EXAMPLE 5: Illinois event, FMT with lune parameterization, full grid search (no line search)
+EXAMPLE 6: Illinois event, FMT with lune parameterization, full grid search (no line search)
 
 ISO will be gridded by considering equal spacing inc sin(iso) space
 DIP will be gridded by considering equal spacing inc cos(dip) space
@@ -283,7 +283,7 @@ note: -I here will use a 0.2 interval of Mw
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_grid.out
 
 ====================================================================================
-EXAMPLE 6: Illinois event, DC with random sample search (optional: grid-search over Mw)
+EXAMPLE 7: Illinois event, DC with random sample search (optional: grid-search over Mw)
 
 1. Follow same step 1 EXAMPLE 3
 2. Follow same step 2 EXAMPLE 3
@@ -316,7 +316,7 @@ NOTES
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_dc_rand.out
 
 ====================================================================================
-EXAMPLE 7: Illinois event, FMT-fixed-magnitude with random sample search (optional: grid-search over Mw)
+EXAMPLE 8: Illinois event, FMT-fixed-magnitude with random sample search (optional: grid-search over Mw)
 
 1. Follow same step 1 EXAMPLE 6
 2. Follow same step 2 EXAMPLE 6
@@ -341,7 +341,7 @@ NOTES
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_rand.out
 
 ====================================================================================
-EXAMPLE 8: Illinois event, DC with P wave polarities in weight file
+EXAMPLE 9: Illinois event, DC with P wave polarities in weight file
 Given bad polarity observations (eg PVMO flipped from (true) negative to (bad)
 positive), cap may still allow a solution, within error threshold, even if it
 conflicts with the polarity observation. 
