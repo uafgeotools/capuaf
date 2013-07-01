@@ -5,7 +5,7 @@ The default example should always be run, prior to committing any changes to the
 
 Figures to check are in the directory 20080418093700_check_orig
 
-============================================
+====================================================================================
 START-UP INSTRUCTIONS
 
 0. By default, do not run cap on a cluster (skip this step).
@@ -61,7 +61,7 @@ note: "make clean" before compilation if you have a previously compiled cap
 
 Make sure that none of these is missing.
 
-============================================
+====================================================================================
 DEFAULT EXAMPLE 1: Illinois event, double couple (DC)
 
 1. run the frequency-wavenumber code fk
@@ -133,31 +133,72 @@ Run depth_test (script for calling depth.pl)
 > gv $CAPHOME/20080418093700_check/depth_dc.ps &
 
 ====================================================================================
-EXAMPLE P: Illinois event, DC with P wave polarities in weight file
+EXAMPLE 2: Illinois event, DC with P wave polarities in weight file
 
 1. Follow same step 1 EXAMPLE 1
 2. Follow same step 2 EXAMPLE 1
 3. Follow same step 3 EXAMPLE 1
 
-Pa. Run cap with all available polarities
+a. Run cap with all available polarities
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat 
+==> since all polarities are consistent with the waveform-only solution, the solution is the sames as in EXAMPLE 1
 
-Pb. run cap with all polarities but one flipped: BLO
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
-
-Pc. run cap with all polarities but one flipped: PVMO
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
-
-Pd. run cap with all polarities but one flipped: WVT
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
-
-Pe. run cap with only one polarity measurement
+b. run cap with only one polarity measurement
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
+
+c. run cap with all polarities but one flipped: PVMO
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+==> solution is slightly worse, as PVMO was nearly nodal and is now within a colored quadrant
+
+d. run cap with all polarities but one flipped: WVT
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
+==> solution is significantly worse, since WVT was not nodal and is now within a colored quadrant
+
+e. run cap with all polarities but one flipped: BLO
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
+==> no solution is possible
 
 note: the command "-I10/0.1 -J0/0/0/0" could be added but will not affect the results
 
-============================================
-EXAMPLE 2: Illinois event, FMT with Zhu line search
+====================================================================================
+EXAMPLE 3: Illinois event, DC with P wave polarities in weight file
+
+Given bad polarity observations (eg PVMO flipped from (correct) negative to (incorrect) positive),
+cap may still allow a solution, within error threshold, even if it conflicts with the polarity observation. 
+
+KEY: threshold should be NEGATIVE if polarities are allowed to conflict expected polarity.
+
+This example runs 6 cases for different first-motion threshold (fm_thr) with values:
+fm_thr=-1.0, -0.2, -0.1, 0, 0.4, 1.0 (see cap flag -F to set thresholds).
+
+1. Follow same step 1 EXAMPLE 1
+2. Follow same step 2 EXAMPLE 1
+3. Follow same step 3 EXAMPLE 1
+
+4. Run cap with with 
+
+a. no MT grid point is rejected, so the solution is same as EXAMPLE 1 (PVMO obs does not match PVMO pred)
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F-1.0 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+
+b. a relatively small number of MT grid points are rejected that have large-amplitude mismatch of polarities;
+   this solution, with PVMO not matching PVMO pred, is not rejected beacause the PVMO is low amplitude
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F-0.2 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+
+c. PVMO is "just" inside the colored quadrant
+   note: PVMO could be "just" inside the white quadrant as well
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F-0.1 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+
+d. PVMO is "just" inside the colored quadrant (PVMO obs does match PVMO pred)
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F0.0  -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+
+e. the solution seeks to maximize the minimum amplitude associated with any (correct) polarity (PVMO obs does match PVMO pred)
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F0.4  -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+
+f. no solution, since every MT grid point is rejected with some station having too small an amplitude
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F1.0  -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+
+====================================================================================
+EXAMPLE 4: Illinois event, FMT with Zhu line search
 
 1. Follow same step 1 EXAMPLE 1
 2. Follow same step 2 EXAMPLE 1
@@ -194,16 +235,18 @@ Run depth_test (script for calling depth.pl)
 > diff junk2.out $CAPHOME/20080418093700_check/junk2_fmt_line.out
 > gv $CAPHOME/20080418093700_check/depth_fmt_line.ps &
 
-============================================
-EXAMPLE 3: Illinois event, FMT with Fixed focal mech (strike/dip/rake/iso/clvd/mag)
+====================================================================================
+EXAMPLE 5: Illinois event, FMT with fixed focal mech (strike/dip/rake/iso/clvd/mag)
 
 1. Follow same step 1 EXAMPLE 1
 2. Follow same step 2 EXAMPLE 1
 3. Follow same step 3 EXAMPLE 1
 
 4. run cap
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.4 -R296/296/84/84/6/6 -J0.16/0/0.04/0 -I10/0 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -R296/296/84/84/6/6 -J0.16/0/0.04/0 -I10/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
+
+note: the solution is slightly better than the result in EXAMPLE 4 (why? precision?)
 
 5. check the output files
 
@@ -211,7 +254,7 @@ EXAMPLE 3: Illinois event, FMT with Fixed focal mech (strike/dip/rake/iso/clvd/m
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_fixed.out
 
 ====================================================================================
-EXAMPLE 4 Illinois event, DC, full grid search (no line search)
+EXAMPLE 6: Illinois event, DC, full grid search (no line search)
 
 This is like EXAMPLE 1, but here we use a single, uniform grid search with no line searches or refined grid searches.
 This is aimed at performing a secondary analysis of uncertainties outside of CAP.
@@ -243,12 +286,13 @@ note: -I here will use a 0.1 interval of Mw
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_dc_grid.out
 
 ====================================================================================
-EXAMPLE 5: same as EXAMPLE 3 but with fixed magnitude
+EXAMPLE 7: same as EXAMPLE 6 but with fixed magnitude
 
-1. Follow same step 1 EXAMPLE 3
-2. Follow same step 2 EXAMPLE 3
-3. Follow same step 3 EXAMPLE 3
-4. Follow same step 4 EXAMPLE 3
+1. Follow same step 1 EXAMPLE 1
+2. Follow same step 2 EXAMPLE 1
+3. Follow same step 3 EXAMPLE 1
+
+4. Follow same step 4 EXAMPLE 6
 
 5. Run cap
 
@@ -256,15 +300,16 @@ EXAMPLE 5: same as EXAMPLE 3 but with fixed magnitude
 > cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -J0/0/0/0 20080418093700
 
 ====================================================================================
-EXAMPLE 6: Illinois event, FMT with lune parameterization, full grid search (no line search)
+EXAMPLE 8: Illinois event, FMT with lune parameterization, full grid search (no line search)
 
 ISO will be gridded by considering equal spacing inc sin(iso) space
 DIP will be gridded by considering equal spacing inc cos(dip) space
 
-1. Follow same step 1 EXAMPLE 3
-2. Follow same step 2 EXAMPLE 3
-3. Follow same step 3 EXAMPLE 3
-4. Follow same step 4 EXAMPLE 3
+1. Follow same step 1 EXAMPLE 1
+2. Follow same step 2 EXAMPLE 1
+3. Follow same step 3 EXAMPLE 1
+
+4. Follow same step 4 EXAMPLE 6
 
 5.  run cap (this will take a couple minutes)
 ISO and CLVD will be searched for in their general range (-90 < ISO < +90 ; -30 < CLVD < +30) (lune parameters).
@@ -283,11 +328,11 @@ note: -I here will use a 0.2 interval of Mw
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_grid.out
 
 ====================================================================================
-EXAMPLE 7: Illinois event, DC with random sample search (optional: grid-search over Mw)
+EXAMPLE 9: Illinois event, DC with random sample search (optional: grid-search over Mw)
 
-1. Follow same step 1 EXAMPLE 3
-2. Follow same step 2 EXAMPLE 3
-3. Follow same step 3 EXAMPLE 3
+1. Follow same step 1 EXAMPLE 1
+2. Follow same step 2 EXAMPLE 1
+3. Follow same step 3 EXAMPLE 1
 
 4. modify cap.c for random search of parameters
 
@@ -316,12 +361,13 @@ NOTES
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_dc_rand.out
 
 ====================================================================================
-EXAMPLE 8: Illinois event, FMT-fixed-magnitude with random sample search (optional: grid-search over Mw)
+EXAMPLE 10: Illinois event, FMT-fixed-magnitude with random sample search (optional: grid-search over Mw)
 
 1. Follow same step 1 EXAMPLE 6
 2. Follow same step 2 EXAMPLE 6
 3. Follow same step 3 EXAMPLE 6
-4. Follow same step 3 EXAMPLE 
+
+4. Follow same step 3 EXAMPLE 8
 
 5. Run cap
 
@@ -339,32 +385,6 @@ NOTES
 
 > gv $CAPHOME/20080418093700_check/cus_015_fmt_rand.ps &
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_rand.out
-
-====================================================================================
-EXAMPLE 9: Illinois event, DC with P wave polarities in weight file
-Given bad polarity observations (eg PVMO flipped from (true) negative to (bad)
-positive), cap may still allow a solution, within error threshold, even if it
-conflicts with the polarity observation. 
-
-KEY: threshold should be NEGATIVE if polarities are allowed to conflict expected
-polarity.
-
-This example runs 6 cases for different first-motion threshold (fm_thr) with
-values: fm_thr=-1.0, -0.2, -0.1, 0, 0.4, 1.0 (see cap flag -F to set
-thresholds).
-
-
-1. Follow same step 1 EXAMPLE 1
-2. Follow same step 2 EXAMPLE 1
-3. Follow same step 3 EXAMPLE 1
-
-8a. Run cap with with 
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F-1.0 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10  -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F-0.2 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10  -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F-0.1 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10  -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F0.0 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10  -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F0.4 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10  -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F1.0 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10  -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 ====================================================================================
 TIPS
