@@ -2,8 +2,8 @@
 
 sub plot {
 
-#  local($mdl, $t1, $t2, $am, $num_com, $sec_per_inch) = @_; # original
-  local($mdl, $t1, $t2, $am, $num_com, $sec_per_inch, $filterBand, $fmt_flag) = @_;
+#  local($mdl, $t1, $t2, $am, $num_com, $spis) = @_; # original
+  local($mdl, $t1, $t2, $am, $num_com, $spis, $filterBand, $fmt_flag) = @_;
   local($nn,$tt,$plt1,$plt2,$plt3,$plt4,$i,$nam,$com1,$com2,$j,$x,$y,@aa,$rslt,@name,@aztk);
   local $keepBad = 0;
   
@@ -33,7 +33,7 @@ sub plot {
   @rslt=grep(!/^#/,@rslt);
   $nrow = @rslt;
 
-  $pwidth_in = 8.5;  # width of paper
+  $pwidth_in = 8.5;  # width of paper    # orig 8.5
   $pheight_in = $nrow + 2;  # height of paper
   print "\n$nrow rows to plot";
   print "\npaper is $pwidth_in inches wide and $pheight_in inches tall";
@@ -41,17 +41,40 @@ sub plot {
 
   # positions of seismograms on the page
 
+  # will be passed in
+  $spib=2;  # seconds per inch, body waves
+
+  print "\n\n *** spib=$spib   spis=$spis *** \n\n";
+
   # height of each seismogram
   $nn = int($pheight_in);
   $height = $pheight_in - 0.5;
   #($nn,$height) = (12,10.5);   # 10 rows of traces per 10.5 in.
   #print "\n$nn rows of traces per $height in";  
-  print "\nseconds per inch = $sec_per_inch";
-  $sepa = 0.1*$sec_per_inch;
-  ($tt, $inc) = (2*$t1 + 3*$t2 + 4*$sepa, 1);
-  ($tt, $inc) = ($t1 + $t2 + $sepa, 4) if $num_com == 2;
-  $width = 0.1*int(10*$tt/$sec_per_inch+0.5);
-  @x0 = ($t1+$sepa, $t1+$sepa, $t2+$sepa, $t2+$sepa, $t2);
+  print "\nseconds per inch = $spis";
+  $sepb = 0.2*$spib;    # sec per inch (*1/2) bet body waves
+  $seps = 0.2*$spis;    # separation bet surface waves
+
+#  ($tt, $inc) = (2*$t1 + 3*$t2 + 4*$sepa, 1);
+#  ($tt, $inc) = (2*$t1 + 3*$t2 + 2*$seps+2*$sepb, 1);
+#  ($tt, $inc) = ($t1 + $t2 + $sepb, 4) if $num_com == 2;
+
+  ($ttb, $inc) = (2*$t1 + 2*$sepb, 1);
+  ($tts, $inc) = (3*$t2 + 2*$seps, 1);
+  $tt = $ttb + $tts;
+
+  ($tt, $inc) = ($t1 + $t2 + $sepb, 4) if $num_com == 2;
+#  $width = 0.1*int(10*$tt/$sec_per_inch+0.5);
+  $widthb = 0.1*int(10*$ttb/$spib+0.5);
+  $widths = 0.1*int(10*$tts/$spis+0.5);
+  $width = $widths+$widthb;
+#  @x0 = ($t1+$sepa, $t1+$sepa, $t2+$sepa, $t2+$sepa, $t2);
+  @x0 = ($t1+$sepb, $t1+$sepb, $t2+$seps, $t2+$seps, $t2);
+  print "\n*** x0=@x0 *** \n";
+
+  # horizontal offset (why is it needed?)
+#  $xoffset="3.0";
+  $xoffset=$widthb;
 
 # pssac2 amplitude scaling:
 # -M vertical scaling in sacfile_unit/MEASURE_UNIT = size<required> 
@@ -75,16 +98,22 @@ sub plot {
   $outps = sprintf("%s_%03d_fmt.ps",@dum[0],int(@dum[1])) if $fmt_flag eq "true";
 
   # (1) plot cut seismograms with scaled amplitudes (first command: no -O appears)
-  $plt1 = "| pssac2 -JX${width}i/${height}i -R0/$tt/0/$nn -Y0.2i -Ent-2 -M$stam -K -P >> $outps";
+  $plt1b = "| pssac2 -JX${widthb}i/${height}i -R0/$ttb/0/$nn -Y0.2i -Ent-2 -M$stam -K -P >> $outps";
+  $plt1s = "| pssac2 -JX${widths}i/${height}i -R0/$tts/0/$nn -X${xoffset}i -Ent-2 -M$stam -O -K -P >> $outps";
 
   # (2) plot text labels
-  $plt2 = "| pstext -JX -R -O -K -N >> $outps";
+  $plt2_stn_info = "| pstext -JX -R -O -K -N -X-${xoffset}i >> $outps";
+  $plt2_wf_info_b = "| pstext -JX${widthb}i/${height}i -R0/$ttb/0/$nn -O -K -N >> $outps";
+  $plt2_wf_info_s = "| pstext -JX${widths}i/${height}i -R0/$tts/0/$nn -X${xoffset}i -O -K -N >> $outps";
 
   # (3) plot beachballs (solution, followed by possible local minima)
   $ballcolor = "150";
-  $dY = ${pheight_in} - 1.8;
-  $plt3 = "| psmeca -JX5i/1i -R-1/9/-1/1 -Sa5i -G$ballcolor -Y${dY}i -X-0.7i -O -K >> $outps";
-  $plt3 = "| psmeca -JX5i/1i -R-1/9/-1/1 -Sm8i -G$ballcolor -Y${dY}i -X-0.7i -O -K >> $outps" if $tensor[1] eq "tensor";
+#  $dY = ${pheight_in} - 1.8;    # original
+  $dY = ${pheight_in} - 1.6;
+  $dX = -0.7-$xoffset;
+#  $plt3 = "| psmeca -JX5i/1i -R-1/9/-1/1 -Sa5i -G$ballcolor -Y${dY}i -X-0.7i -O -K >> $outps";
+  $plt3 = "| psmeca -JX5i/1i -R-1/9/-1/1 -Sa5i -G$ballcolor -Y${dY}i -X${dX}i -O -K >> $outps";
+  $plt3 = "| psmeca -JX5i/1i -R-1/9/-1/1 -Sm8i -G$ballcolor -Y${dY}i -X${dX}i -O -K >> $outps" if $tensor[1] eq "tensor";
 
   # (4) plot markers on beachball
   # note: -JPa is a basemap for polar coordinates, clockwise from north
@@ -96,9 +125,15 @@ sub plot {
   $plt4a = "| psxy -JPa1i -R0/360/0/1 -Sc0.08i -N -W0.5p,255/0/0 -O -K >> $outps";
 
   # default: lower hemisphere piercing points on beachballs (x) (last command: no -K appears)
-  $plt4 = "| psxy -JPa1i -R0/360/0/1 -Sx0.10i -N -W0.5p,255/0/0 -G255 -O >> $outps";
+  $plt4 = "| psxy -JPa1i -R0/360/0/1 -Sx0.10i -N -W0.5p,255/0/0 -G255 -O -K >> $outps";
 
-  #$plt1=$plt2=$plt3="|cat";	# output GMT commands to command window for testing
+#  $plt1=$plt2=$plt3="|cat";	# output GMT commands to command window for testing
+
+  # (2.5) plot header information
+  $dX = -$dX/$spib;
+  $dY = -$dY;
+  printf "\n*** debug. dX= $dX ***\n";
+  $plt4_5 = "| pstext -JX${widths}i/${height}i -R0/$tts/0/$nn -Y${dY}i -X${dX}i -O -N >> $outps";
 
 #--------------------------
 
@@ -185,64 +220,182 @@ sub plot {
 
   while (@rslt) {
 
-    # plot waveforms
-    open(PLT, $plt1);
+#    # plot waveforms
+#    open(PLT, $plt1);
+#    $i = 0;
+#    @aaaa = splice(@rslt,0,$nn-2);
+#    foreach (@aaaa) {
+#      @aa = split;
+#      $nam = "${mdl}_$aa[0].";
+#      $x=0;
+#      for($j=0;$j<5;$j+=$inc) {
+#        $com1=8-2*$j; $com2=$com1+1;
+#	if ($aa[4*$j+2]>0) {
+#	   printf PLT "%s %f %f 5/0/0/0\n",$nam.$com1,$x,$nn-$i-2;
+#           printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;
+#	} elsif ($keepBad) {
+#	   printf PLT "%s %f %f 2/0/255/0\n",$nam.$com1,$x,$nn-$i-2;
+#           printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;
+#	}
+#        $x = $x + $x0[$j];
+#      }
+#      $i++;
+#    }
+#    close(PLT);
+
+    # plot waveforms body waves
+    open(PLT, $plt1b);
     $i = 0;
     @aaaa = splice(@rslt,0,$nn-2);
     foreach (@aaaa) {
-      @aa = split;
-      $nam = "${mdl}_$aa[0].";
-      $x=0;
-      for($j=0;$j<5;$j+=$inc) {
-        $com1=8-2*$j; $com2=$com1+1;
-	if ($aa[4*$j+2]>0) {
-	   printf PLT "%s %f %f 5/0/0/0\n",$nam.$com1,$x,$nn-$i-2;
-           printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;
-	} elsif ($keepBad) {
-	   printf PLT "%s %f %f 2/0/255/0\n",$nam.$com1,$x,$nn-$i-2;
-           printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;
-	}
-        $x = $x + $x0[$j];
-      }
-      $i++;
+        @aa = split;
+        $nam = "${mdl}_$aa[0].";
+        $x=0;
+        for($j=0;$j<2;$j+=$inc) {
+            $com1=8-2*$j; $com2=$com1+1;
+            if ($aa[4*$j+2]>0) {
+#                printf "(j=$j) x=$x\t"; # debug
+                printf PLT "%s %f %f 5/0/0/0\n",$nam.$com1,$x,$nn-$i-2;     # data
+                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;   # synthetic
+            } elsif ($keepBad) {
+                printf PLT "%s %f %f 2/0/255/0\n",$nam.$com1,$x,$nn-$i-2;   # bad data
+                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;   # synthetic
+            }
+            $x = $x + $x0[$j];
+        }
+#                printf "\n"; # debug
+        $i++;
     }
     close(PLT);
+
+    # plot waveforms surface waves
+    open(PLT, $plt1s);
+    $i = 0;
+    foreach (@aaaa) {
+        @aa = split;
+        $nam = "${mdl}_$aa[0].";
+        $x=$x0[1];
+        for($j=2;$j<5;$j+=$inc) {
+#                printf "(j=$j) x=$x\t"; # debug
+            $com1=8-2*$j; $com2=$com1+1;
+            if ($aa[4*$j+2]>0) {
+                printf PLT "%s %f %f 5/0/0/0\n",$nam.$com1,$x,$nn-$i-2;
+                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;
+            } elsif ($keepBad) {
+                printf PLT "%s %f %f 2/0/255/0\n",$nam.$com1,$x,$nn-$i-2;
+                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;
+            }
+            $x = $x + $x0[$j];
+        }
+#                printf "\n"; # debug
+        $i++;
+    }
+    close(PLT);
+
     
     # text labels
-    open(PLT, $plt2);
+#    open(PLT, $plt2);
+#    $y = $nn-2;
+#    $i=0;
+#    foreach (@aaaa) {
+#      @aa = split;
+#      $x = 0;
+#      printf PLT "%f %f 10 0 0 1 $aa[0]\n",$x-0.8*$spis,$y;            # station label
+#      printf PLT "%f %f 10 0 0 1 $aa[1]\n",$x-0.7*$spis,$y-0.2;        # distance_km/overal time shift
+#      printf PLT "%f %f 10 0 0 1 %.1f\n",$x-0.7*$spis,$y-0.4,$az[$i];  # azimuth (see az above)
+#      $i=$i+1;
+#      for($j=0;$j<5;$j+=$inc) {
+#	if ($aa[4*$j+2]>0 || $keepBad) {
+#
+#          printf "(j=$j) x=$x \t ";
+#          printf PLT "%f %f 10 0 0 1 $aa[4*$j+5]\n",$x,$y-0.4;  # time shift each wave
+#          printf PLT "%f %f 10 0 0 1 $aa[4*$j+4]\n",$x,$y-0.6;  # correl value
+#	}
+#        $x = $x + $x0[$j];
+#      }
+#      $y--;
+#    }
+
+    # plot station info
+    
+    open(PLT, $plt2_stn_info);
     $y = $nn-2;
     $i=0;
     foreach (@aaaa) {
       @aa = split;
-      #print "\n @aa";
+# debug. aa=PLMK_XP 11.2/-0.00 1 1.09e-13 82 -0.19 1 1.55e-13 64 -0.19 1 9.71e-12 71 2.26 1 8.90e-12 85 2.26 1 8.18e-12 80 0.66
+#               |   |          |    |
+#               1   2          3    4     5     6  7    8     9   10   11   12    13  14  15   16    17  18  19  20     21  22
       $x = 0;
-      printf PLT "%f %f 10 0 0 1 $aa[0]\n",$x-0.8*$sec_per_inch,$y;            # station label
-      printf PLT "%f %f 10 0 0 1 $aa[1]\n",$x-0.7*$sec_per_inch,$y-0.2;        # distance_km/overal time shift
-      printf PLT "%f %f 10 0 0 1 %.1f\n",$x-0.7*$sec_per_inch,$y-0.4,$az[$i];  # azimuth (see az above)
+      printf PLT "%f %f 10 0 0 1 $aa[0]\n",$x-0.8*$spis,$y;            # station label
+      printf PLT "%f %f 10 0 0 1 $aa[1]\n",$x-0.7*$spis,$y-0.2;        # distance_km/overal time shift
+      printf PLT "%f %f 10 0 0 1 %.1f\n",$x-0.7*$spis,$y-0.4,$az[$i];  # azimuth (see az above)
       $i=$i+1;
-      for($j=0;$j<5;$j+=$inc) {
-	if ($aa[4*$j+2]>0 || $keepBad) {
-          printf PLT "%f %f 10 0 0 1 $aa[4*$j+5]\n",$x,$y-0.4;
-          printf PLT "%f %f 10 0 0 1 $aa[4*$j+4]\n",$x,$y-0.6;
-	}
-        $x = $x + $x0[$j];
-      }
       $y--;
     }
-    $x = 0.5*$sec_per_inch; 
-    $y = $nn-0.2;
-    printf PLT "$x $y 12 0 0 0 @meca[0,1,2] and Depth $meca[3]\n"; $y-=0.3;
-    printf PLT "$x $y 12 0 0 0 @meca[4..22]\n";$y-=0.3;
-    printf PLT "$x $y 12 0 0 0 @variance[1..3]\n" if $variance[1] eq "Variance";
-#    printf PLT "%f %f 10 0 0 0 @meca\n",0.5*$sec_per_inch,$nn-0.4;  # full title    # original
-#    printf PLT "%f %f 10 0 0 0 @meca\n",0.5*$sec_per_inch,$nn-0.2;  # full title
-    printf PLT "%f %f 12 0 0 0 $filterBand.\n",0.5*$sec_per_inch,$nn-1.1;  # 20120719 - filter bands
-    $x = 0.2*$sec_per_inch;
-    for($j=0;$j<5;$j+=$inc) {
+    close(PLT);
+
+    # plot data labels body waves
+    open(PLT, $plt2_wf_info_b);
+    $y = $nn-2;
+    foreach (@aaaa) {
+      @aa = split;
+      $x = 0;
+      for($j=0;$j<2;$j+=$inc) {
+          if ($aa[4*$j+2]>0 || $keepBad) {
+              printf "(j=$j) x=$x \t ";
+              printf PLT "%f %f 10 0 0 1 $aa[4*$j+5]\n",$x,$y-0.4;  # time shift each wf
+              printf PLT "%f %f 10 0 0 1 $aa[4*$j+4]\n",$x,$y-0.6;  # correl value
+          }
+#          $x = $x + $x0[$j];     # original
+          $x = $x + $x0[$j];
+      }
+      printf "\n";     # debug
+      $y--;
+    }
+    # plot labels PR and PV
+    $x = 0.2*$spib;
+    for($j=0;$j<2;$j+=$inc) {
       printf PLT "%f %f 12 0 0 1 $name[$j]\n",$x,$nn-1.5;
       $x = $x+$x0[$j];
     }
     close(PLT);
+
+    # plot data labels surface waves
+    open(PLT, $plt2_wf_info_s);
+    $y = $nn-2;
+    foreach (@aaaa) {
+      @aa = split;
+      $x = $x0[1];
+      for($j=2;$j<5;$j+=$inc) {
+          if ($aa[4*$j+2]>0 || $keepBad) {
+              printf "(j=$j) x=$x \t ";     # debug
+              printf PLT "%f %f 10 0 0 1 $aa[4*$j+5]\n",$x,$y-0.4;  # time shift each wave
+              printf PLT "%f %f 10 0 0 1 $aa[4*$j+4]\n",$x,$y-0.6;  # correl value
+          }
+          $x = $x + $x0[$j];     # original
+      }
+      printf "\n";     # debug
+      $y--;
+    }
+    # -------------------- end plot data for each trace
+
+    # plot labels PR PV SV SR SH for wave types
+#    $x = 0.2*$spis;
+#    for($j=0;$j<5;$j+=$inc) {
+#      printf PLT "%f %f 12 0 0 1 $name[$j]\n",$x,$nn-1.5;
+#      $x = $x+$x0[$j];
+#    }
+
+    # plot labels SV SR SH
+    $x = 0.2*$spis;
+#    $x = 0.2*$spis+$x0[2];
+    for($j=2;$j<5;$j+=$inc) {
+      printf PLT "%f %f 12 0 0 1 $name[$j]\n",$x,$nn-1.5;
+      $x = $x+$x0[$j];
+    }
+    close(PLT);
+
     
     # plot beachball
     # note 1: magnitude scale is "fixed" at 1e17 for psmeca -Sm and 1 for psmeca -Sa
@@ -251,7 +404,7 @@ sub plot {
     if ($tensor[1] eq "tensor") {
         printf PLT "0 0 0 @tensor[9,4,7,6] %f %f 17\n",-$tensor[8],-$tensor[5];
     } else {
-        printf PLT "0 0 0 @meca[5,6,7] 1\n";  # 0.5*$sec_per_inch,$nn-1;
+        printf PLT "0 0 0 @meca[5,6,7] 1\n";  # 0.5*$spis,$nn-1;
     }
 #    $x = 2;
 #    foreach (@others) {
@@ -278,7 +431,21 @@ sub plot {
       printf PLT;
     }
     close(PLT);
-    
+
+    # test start
+    $x = 0.5*$spis; 
+    $y = $nn-0.2;
+    # plot four header labels (event type, focal mecha, var red, filters)
+    open(PLT, $plt4_5);
+    printf PLT "$x $y 12 0 0 0 @meca[0,1,2] and Depth $meca[3]\n"; $y-=0.3;
+    printf PLT "$x $y 12 0 0 0 @meca[4..22]\n";$y-=0.3;
+    printf PLT "$x $y 12 0 0 0 @variance[1..3]\n" if $variance[1] eq "Variance";
+#    printf PLT "%f %f 10 0 0 0 @meca\n",0.5*$spis,$nn-0.4;  # full title    # original
+#    printf PLT "%f %f 10 0 0 0 @meca\n",0.5*$spis,$nn-0.2;  # full title
+    printf PLT "%f %f 12 0 0 0 $filterBand.\n",0.5*$spis,$nn-1.1;  # 20120719 - filter bands
+    close(PLT);
+    # test end
+
   }  # while (@rslt) {
 
 #---------------------------------
@@ -299,7 +466,7 @@ sub plot {
     if ($tensor[1] eq "tensor") {
      printf XPLT "0 0 0 @tensor[9,4,7,6] %f %f 17\n",-$tensor[8],-$tensor[5];
     } else {
-     printf XPLT "0 0 0 @meca[5,6,7] 1\n"; #0.5*$sec_per_inch,$nn-1;
+     printf XPLT "0 0 0 @meca[5,6,7] 1\n"; #0.5*$spis,$nn-1;
     }
     close(XPLT);
 
