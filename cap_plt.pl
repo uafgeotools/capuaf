@@ -42,7 +42,7 @@ sub plot {
   # positions of seismograms on the page
 
   # will be passed in
-  $spib=2;  # seconds per inch, body waves
+  $spib=$spis;  # seconds per inch, body waves
 
   print "\n\n *** spib=$spib   spis=$spis *** \n\n";
 
@@ -130,10 +130,12 @@ sub plot {
 #  $plt1=$plt2=$plt3="|cat";	# output GMT commands to command window for testing
 
   # (2.5) plot header information
-  $dX = -$dX/$spib;
-  $dY = -$dY;
+  $dX = 0.8;
+#  $dY = -${pheight_in} + 7;
+  $dY = 0.3;
   printf "\n*** debug. dX= $dX ***\n";
-  $plt4_5 = "| pstext -JX${widths}i/${height}i -R0/$tts/0/$nn -Y${dY}i -X${dX}i -O -N >> $outps";
+#  $plt4_5 = "| pstext -JX${widths}i/${height}i -R0/$tts/0/$nn -Y${dY}i -X${dX}i -O -N >> $outps";
+  $plt4_5 = "| pstext -J -R -Y${dY}i -X${dX}i -O -N >> $outps";
 
 #--------------------------
 
@@ -433,16 +435,20 @@ sub plot {
     close(PLT);
 
     # test start
-    $x = 0.5*$spis; 
-    $y = $nn-0.2;
+#    $x = 0.5*$spis; 
+    $x = 0; 
+#    $y = $nn-0.2;
+    $y = 0;
+    $tgap=0.5;
     # plot four header labels (event type, focal mecha, var red, filters)
     open(PLT, $plt4_5);
-    printf PLT "$x $y 12 0 0 0 @meca[0,1,2] and Depth $meca[3]\n"; $y-=0.3;
-    printf PLT "$x $y 12 0 0 0 @meca[4..22]\n";$y-=0.3;
-    printf PLT "$x $y 12 0 0 0 @variance[1..3]\n" if $variance[1] eq "Variance";
+    printf PLT "$x $y 12 0 0 0 @meca[0,1,2] and Depth $meca[3]\n"; $y-=$tgap;
+    printf PLT "$x $y 12 0 0 0 @meca[4..22]\n";$y-=$tgap;
+    printf PLT "$x $y 12 0 0 0 @variance[1..3]\n" if $variance[1] eq "Variance" ; $y-=$tgap;
 #    printf PLT "%f %f 10 0 0 0 @meca\n",0.5*$spis,$nn-0.4;  # full title    # original
 #    printf PLT "%f %f 10 0 0 0 @meca\n",0.5*$spis,$nn-0.2;  # full title
-    printf PLT "%f %f 12 0 0 0 $filterBand.\n",0.5*$spis,$nn-1.1;  # 20120719 - filter bands
+#    printf PLT "%f %f 12 0 0 0 $filterBand.\n",0.5*$spis,$nn-1.1;  # 20120719 - filter bands
+    printf PLT "$x $y 12 0 0 0 $filterBand.\n" ;  # 20120719 - filter bands
     close(PLT);
     # test end
 
