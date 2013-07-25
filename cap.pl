@@ -120,7 +120,12 @@ $usage =
     Here m1, m2 are the maximum lengths for the Pnl and surface waves windows
     (see the -T options below).
 
-  Usage: cap.pl -Mmodel_depth/mag [-B] [-C<f1_pnl/f2_pnl/f1_sw/f2_sw>] [-D<w1/p1/p2>] [-F<thr>] [-Ggreen] [-Hdt] [-Idd[/dm]] [-J[iso[/diso[/clvd[/dclvd]]]]] [-L<tau>] [-N<n>] [-O] [-P[<Yscale[/Xscale_b[/Xscale_s[/k]]]]>] [-Qnof] [-R<strike1/strike2/dip1/dip2/rake1/rake2>] [-S<s1/s2[/tie]>] [-T<m1/m2>] [-V<vp/vl/vr>] [-Udirct] [-Wi] [-Xn] [-Zstring] event_dirs
+  Usage: cap.pl -Mmodel_depth/mag [-B] [-C<f1_pnl/f2_pnl/f1_sw/f2_sw>]
+                  [-D<w1/p1/p2>] [-F<thr>] [-Ggreen] [-Hdt] [-Idd[/dm]]
+                  [-J[iso[/diso[/clvd[/dclvd]]]]] [-L<tau>] [-N<n>] [-O]
+                  [-P[<Yscale[/Xscale_b[/Xscale_s[/k]]]]>] [-Qnof]
+                  [-R<strike1/strike2/dip1/dip2/rake1/rake2>] [-S<s1/s2[/tie]>] [-T<m1/m2>]
+                  [-V<vp/vl/vr>] [-Udirct] [-Wi] [-Xn] [-Zstring] event_dirs
 
     -A  run cap for different depths. ($dep_min/$dep_max/$dep_inc). 
     -B  output misfit errors of all solutions for bootstrapping late ($bootrap).
@@ -144,7 +149,7 @@ $usage =
     -O  output CAP input (off).
     -P	generate waveform-fit plot with plotting scale.
     	Yscale: amplitude in inch for the first trace of the page ($amplify).
-	Xscale: seconds per inch. ($spib, $spis).
+	Xscale: seconds per inch. (body: $spib, surface:$spis).
 	append k if one wants to keep those waveforms.
     -Q  number of freedom per sample ($nof)
     -R	grid-search range for strike/dip/rake (0/360/0/90/-90/90).
@@ -229,7 +234,7 @@ foreach (grep(/^-/,@ARGV)) {
      $amplify = $value[0] if $#value >= 0;
      $spib = $value[1] if $value[1] > 0;
      $spis = $value[2] if $value[2] > 0;
-     $keep = 1 if $#value > 1;
+     $keep = 1 if $#value > 2;
    } elsif ($opt eq "Q") {
      $nof = $value[0];
    } elsif ($opt eq "R") {
