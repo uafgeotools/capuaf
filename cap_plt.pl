@@ -3,7 +3,7 @@
 sub plot {
 
 #  local($mdl, $t1, $t2, $am, $num_com, $spis) = @_; # original
-  local($mdl, $t1, $t2, $am, $num_com, $spis, $filterBand, $fmt_flag) = @_;
+  local($mdl, $t1, $t2, $am, $num_com, $spib, $spis, $filterBand, $fmt_flag) = @_;
   local($nn,$tt,$plt1,$plt2,$plt3,$plt4,$i,$nam,$com1,$com2,$j,$x,$y,@aa,$rslt,@name,@aztk);
   local $keepBad = 0;
   
@@ -40,11 +40,6 @@ sub plot {
   system("gmtset BASEMAP_TYPE plain PAPER_MEDIA Custom_${pwidth_in}ix${pheight_in}i MEASURE_UNIT inch");
 
   # positions of seismograms on the page
-
-  # will be passed in
-  $spib=$spis;  # seconds per inch, body waves
-
-  print "\n\n *** spib=$spib   spis=$spis *** \n\n";
 
   # height of each seismogram
   $nn = int($pheight_in);
@@ -131,10 +126,7 @@ sub plot {
 
   # (2.5) plot header information
   $dX = 0.8;
-#  $dY = -${pheight_in} + 7;
   $dY = 0.3;
-  printf "\n*** debug. dX= $dX ***\n";
-#  $plt4_5 = "| pstext -JX${widths}i/${height}i -R0/$tts/0/$nn -Y${dY}i -X${dX}i -O -N >> $outps";
   $plt4_5 = "| pstext -J -R -Y${dY}i -X${dX}i -O -N >> $outps";
 
 #--------------------------
@@ -345,14 +337,11 @@ sub plot {
       $x = 0;
       for($j=0;$j<2;$j+=$inc) {
           if ($aa[4*$j+2]>0 || $keepBad) {
-              printf "(j=$j) x=$x \t ";
               printf PLT "%f %f 10 0 0 1 $aa[4*$j+5]\n",$x,$y-0.4;  # time shift each wf
               printf PLT "%f %f 10 0 0 1 $aa[4*$j+4]\n",$x,$y-0.6;  # correl value
           }
-#          $x = $x + $x0[$j];     # original
           $x = $x + $x0[$j];
       }
-      printf "\n";     # debug
       $y--;
     }
     # plot labels PR and PV
@@ -371,23 +360,16 @@ sub plot {
       $x = $x0[1];
       for($j=2;$j<5;$j+=$inc) {
           if ($aa[4*$j+2]>0 || $keepBad) {
-              printf "(j=$j) x=$x \t ";     # debug
               printf PLT "%f %f 10 0 0 1 $aa[4*$j+5]\n",$x,$y-0.4;  # time shift each wave
               printf PLT "%f %f 10 0 0 1 $aa[4*$j+4]\n",$x,$y-0.6;  # correl value
           }
           $x = $x + $x0[$j];     # original
       }
-      printf "\n";     # debug
       $y--;
     }
     # -------------------- end plot data for each trace
 
     # plot labels PR PV SV SR SH for wave types
-#    $x = 0.2*$spis;
-#    for($j=0;$j<5;$j+=$inc) {
-#      printf PLT "%f %f 12 0 0 1 $name[$j]\n",$x,$nn-1.5;
-#      $x = $x+$x0[$j];
-#    }
 
     # plot labels SV SR SH
     $x = 0.2*$spis;
@@ -437,20 +419,15 @@ sub plot {
     # test start
 #    $x = 0.5*$spis; 
     $x = 0; 
-#    $y = $nn-0.2;
     $y = 0;
     $tgap=0.5;
     # plot four header labels (event type, focal mecha, var red, filters)
     open(PLT, $plt4_5);
     printf PLT "$x $y 12 0 0 0 @meca[0,1,2] and Depth $meca[3]\n"; $y-=$tgap;
-    printf PLT "$x $y 12 0 0 0 @meca[4..22]\n";$y-=$tgap;
+    printf PLT "$x $y 12 0 0 0 @meca[4..9, 17] %3.0f @meca[20] %3.0f @meca[10..12]\n",@meca[18],@meca[21];$y-=$tgap;
     printf PLT "$x $y 12 0 0 0 @variance[1..3]\n" if $variance[1] eq "Variance" ; $y-=$tgap;
-#    printf PLT "%f %f 10 0 0 0 @meca\n",0.5*$spis,$nn-0.4;  # full title    # original
-#    printf PLT "%f %f 10 0 0 0 @meca\n",0.5*$spis,$nn-0.2;  # full title
-#    printf PLT "%f %f 12 0 0 0 $filterBand.\n",0.5*$spis,$nn-1.1;  # 20120719 - filter bands
-    printf PLT "$x $y 12 0 0 0 $filterBand.\n" ;  # 20120719 - filter bands
+    printf PLT "$x $y 12 0 0 0 $filterBand" ;  # 20120719 - filter bands
     close(PLT);
-    # test end
 
   }  # while (@rslt) {
 
