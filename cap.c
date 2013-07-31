@@ -287,6 +287,8 @@ int main (int argc, char **argv) {
     /************input green's functions***********/
     strcat(strcat(strcat(strcat(strcpy(tmp,glib),dep),"/"),dst),".grn.0");
     c_pt = strrchr(tmp,(int) '0');
+    fprintf(stderr, "NOTE: convolving greens function with src time function (trapezoid) tau0=dura=%f riseTime=%f \n",
+            tau0, riseTime);
     for(j=0;j<NGR;j++) {
       *c_pt = grn_com[j];
       indx = 0; if (j>1) indx = 1; if (j>=kk[2]) indx=2;
@@ -605,7 +607,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		int		interp,
 		int		bootstrap
 		) {
-  int	i, j, k, l, m, k1, kc, z0, z1, z2, mw_ran,ii, N, iso_len;
+  int	i, j, k, l, m, k1, kc, z0, z1, z2, ii, N, iso_len;
+  float mw_ran; // 20130730 celso - half-range for magnitude search (previously int)
   int	i_stk, i_dip, i_rak, i_iso;
   float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3], m_par;
   float	*f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err, *rnd_stk, *rnd_dip, *rnd_rak, *rnd_iso, *rnd_clvd, *iso;
@@ -825,7 +828,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   if (search==1){
 
     //--------newly added section-------------
-    mw_ran = 1.0;
+    mw_ran = 0.5;
     mt[0].max = mt[0].par+mw_ran;
     mt[0].min = mt[0].par-mw_ran;
  
