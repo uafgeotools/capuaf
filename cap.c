@@ -80,7 +80,7 @@
 ****************************************************************/
 #include "cap.h"
 
-int total_n,loop=0,start=0,debug=0,search=0;
+int total_n,loop=0,start=0,debug=0,search=0, only_first_motion=0;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN];
   int	ns, mltp, nup, up[3], n_shft, nqP, nqS;
@@ -468,7 +468,12 @@ int main (int argc, char **argv) {
   if (search==1){
     if ((mt[1].dd<=1&&mt[1].dd!=0) || (mt[2].dd<=1&&mt[2].dd!=0))
       fprintf(stderr,"Warning: Very fine grid-search = Expecting line-search\n(set search=0) or increase search increment (-J flag)\n");
-    fprintf(stderr,"----------starting grid-search-----------\n");}
+    fprintf(stderr,"----------starting grid-search-----------\n");
+    if(only_first_motion)
+    {
+        fprintf(stderr,"NOTE: Computing only first motion. results output to out.misfit_fm.txt\n");
+    }
+  }
   if (search==2)
      fprintf(stderr,"----------starting random-search-----------\n");
 
@@ -618,6 +623,12 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   SOLN	sol, sol1, sol2, best_sol;
   FILE *log;
   char logfile[16];
+
+  FILE *fid;
+  if(only_first_motion)
+  {
+      fid=fopen("out.misfit_fm.txt","w");
+  }
   
   if (debug) {
     sprintf(logfile,"%s_%03d","log",loop);
@@ -831,6 +842,12 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     mw_ran = 0.5;
     mt[0].max = mt[0].par+mw_ran;
     mt[0].min = mt[0].par-mw_ran;
+
+    if(only_first_motion)
+    {
+        mt[0].min = mt[0].par;
+        mt[0].max = mt[0].par;
+    }
  
     for (ii=0; ii<3; ii++){
     if (mt[ii].dd==0){
@@ -904,6 +921,14 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		  //nmtensor(mt[1].par,mt[2].par,sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor);
 		  //nmtensor(temp[1],temp[2],sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor); // vipul's version
 		  tt2cmt(temp[2], temp[1], 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
+
+          // compute misfit from first motion. data will be output to out.misfit_fm.txt
+          if(only_first_motion)
+          {
+              misfit_first_motion(mtensor, nfm, fm, fid, temp[2], temp[1], temp[0], sol.meca.stk, sol.meca.dip, sol.meca.rak);
+              continue;
+          }
+
 		  if (check_first_motion(mtensor,fm,nfm,fm_thr)<0) {
 		    *grd_err++ = sol.err = FLT_MAX;
 		    continue;
@@ -1023,6 +1048,13 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	    if (1) fprintf(stderr,"Mw=%2.1f \t iso=%2.2f \t clvd=%2.2f\n",temp[0],temp[1],temp[2]);
 	  }
       }
+    }
+ 
+    if(only_first_motion)
+    {
+        fclose(fid);
+        fprintf(stderr,"Finished writing to file out.misfit_fm.txt\n");
+        fprintf(stderr,"No figures created. Ignore error messages from cap.pl (for now)\n");
     }
  
     if (debug) fprintf(stderr, "Mw=%5.2f  iso=%5.2f clvd=%5.2f misfit = %9.3e\n", mt[0].par, mt[1].par, mt[2].par, best_sol.err);
