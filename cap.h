@@ -104,7 +104,8 @@ float	*trap(float, float, float, int *);
 float	*cutTrace(float *, int, int, int);
 int	discard_bad_data(int,DATA *,SOLN,float,float *);
 int	check_first_motion(float mt[3][3], FM *fm, int n, float fm_thr);
-int tt2cmt(float gamma, float delta, float m0, float kappa, float theta, float sigma, float mtensor[3][3]);
+void tt2cmt(float gamma, float delta, float m0, float kappa, float theta, float sigma, float mtensor[3][3]);
+void misfit_first_motion(float mtensor[3][3], int nsta, FM *data, FILE *fid, float gamma, float delta, float mw, float kappa, float theta, float sigma);
 
 
 #endif
