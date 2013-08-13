@@ -268,7 +268,8 @@ sub plot {
     foreach (@aaaa) {
         @aa = split;
         $nam = "${mdl}_$aa[0].";
-        $x=$x0[1];
+#        $x=$x0[1];
+        $x=0;
         for($j=2;$j<5;$j+=$inc) {
 #                printf "(j=$j) x=$x\t"; # debug
             $com1=8-2*$j; $com2=$com1+1;
@@ -357,7 +358,8 @@ sub plot {
     $y = $nn-2;
     foreach (@aaaa) {
       @aa = split;
-      $x = $x0[1];
+#      $x = $x0[1];
+      $x = 0;
       for($j=2;$j<5;$j+=$inc) {
           if ($aa[4*$j+2]>0 || $keepBad) {
               printf PLT "%f %f 10 0 0 1 $aa[4*$j+5]\n",$x,$y-0.4;  # time shift each wave
