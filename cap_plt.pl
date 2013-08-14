@@ -424,9 +424,11 @@ sub plot {
     $y = 0;
     $tgap=0.5;
     # plot four header labels (event type, focal mecha, var red, filters)
+    # Event 20080418093700 Model cus_015 FM 115 90 -2 Mw 5.19 rms 1.207e-06 110 ERR 1 3 4 ISO 0.00 0.00 CLVD 0.00 0.00
+    # 0     1               2       3    4   5   6  7 8    9  
     open(PLT, $plt4_5);
     printf PLT "$x $y 12 0 0 0 @meca[0,1,2] and Depth $meca[3]\n"; $y-=$tgap;
-    printf PLT "$x $y 12 0 0 0 @meca[4..9, 17] %3.0f @meca[20] %3.0f @meca[10..12]\n",@meca[18],@meca[21];$y-=$tgap;
+    printf PLT "$x $y 12 0 0 0 @meca[4..9, 17] %3.0f @meca[20] %3.0f @meca[10..16]\n",@meca[18],@meca[21];$y-=$tgap;
     printf PLT "$x $y 12 0 0 0 @variance[1..3]\n" if $variance[1] eq "Variance" ; $y-=$tgap;
     printf PLT "$x $y 12 0 0 0 $filterBand" ;  # 20120719 - filter bands
     close(PLT);
