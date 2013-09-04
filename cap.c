@@ -627,7 +627,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   FILE *fid;
   if(only_first_motion)
   {
-      fid=fopen("out.misfit_fm.txt","w");
+      fid=fopen("out.misfit_fmp.txt","w");
   }
   
   if (debug) {
