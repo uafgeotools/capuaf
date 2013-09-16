@@ -898,6 +898,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     for(temp[0]=mt[0].min;temp[0]<=mt[0].max;temp[0]=temp[0]+mt[0].dd){
       for(i_iso=0; i_iso<2*iso_len-1; i_iso++){
 	temp[1]=asin(iso[i_iso])*(180.0/PI);
+	if (iso_len==1){
+	  temp[1]=mt[1].par;}
 	fprintf(stderr,"-----------------------------------------------\n");
 	for(temp[2]=mt[2].min;temp[2]<=mt[2].max;temp[2]=temp[2]+mt[2].dd)
 
