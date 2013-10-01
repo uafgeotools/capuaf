@@ -80,11 +80,12 @@
 ****************************************************************/
 #include "cap.h"
 
-int total_n,loop=0,start=0,debug=0,search=0, only_first_motion=0;
+int total_n,loop=0,start=0,debug=0,search=0,only_first_motion=0,Npoints,Nsta=0,Psamp[STN],Ssamp[STN];
+float data2=0.0,max_amp=0.0,synt2=0.0,synt,st2,err2,synt1,err1,st1,reco,synth;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN];
-  int	ns, mltp, nup, up[3], n_shft, nqP, nqS;
-  int	n1,n2,mm[2],n[NCP],max_shft[NCP],npts[NRC];
+  int	n1,n2,ns, mltp, nup, up[3], n_shft, nqP, nqS;
+  int	mm[2],n[NCP],max_shft[NCP],npts[NRC];
   int	repeat, bootstrap;
   char	tmp[128],glib[128],dep[32],dst[16],eve[32],*c_pt;
   float	x,x1,x2,y,y1,amp,dt,rad[6],arad[4][3],fm_thr,tie,mtensor[3][3],rec2=0.;
@@ -166,7 +167,7 @@ int main (int argc, char **argv) {
   /** max. window length, shift, and weight for P-SV, SH **/
   mm[1]=rint(y1/dt);
   max_shft[0]=max_shft[1]=max_shft[2]=2*rint(y/dt);
-  w_pnl[0]=w_pnl[1]=w_pnl[2]=1.;
+  w_pnl[0]=w_pnl[1]=w_pnl[2]=1;
   /** and tie of time shifts between SH and P-SV **/
 
   /** input grid-search range **/
@@ -378,12 +379,15 @@ int main (int argc, char **argv) {
     S_win[i] = n2*dt;
     S_shft[i] = s_shft;
     dis[i]=atoi(dst);
+    Psamp[i] = n1;
+    Ssamp[i] = n2;
 
     /***window data+Greens, do correlation and L2 norms **/
     t0[0]=t3;			/* love wave */
     t0[1]=t0[2]=t4-n2*dt;	/* rayleigh wave */
     t0[3]=t0[4]=t1;		/* Pnl */
     n[0]=n[1]=n[2]=n2;	n[3]=n[4]=n1;
+    fprintf(stderr, "%d %d %f\n",n1, n2,dt);
     shft0[i][0] = shft0[i][1] = shft0[i][2] = s_shft;
     shft0[i][3] = shft0[i][4] = 0.;
     if (obs->com[0].on_off>0) n_shft++;
@@ -398,24 +402,30 @@ int main (int argc, char **argv) {
       }
       spt->npt = npt = n[j];
       spt->b = t0[j];
-      if (spt->on_off) total_n+=npt;
-      weight = w_pnl[j]*pow(distance/dmin,bs[j]);
+      if (spt->on_off) {total_n+=npt; Nsta += spt->on_off;}
+      if (j<3) 
+	weight = w_pnl[j]*pow(distance/dmin,bs[j])/sqrt(Ssamp[i]);
+      else
+	weight = w_pnl[j]*pow(distance/dmin,bs[j])/sqrt(Psamp[i]);
       f_pt = cutTrace(data[indx], npts[indx], rint((t0[j]-tb[indx])/dt), npt);
       if ( f_pt == NULL ) {
 	fprintf(stderr, "fail to window the data\n");
 	return -1;
       }
-      spt->rec = f_pt;
-      if (j<3) {if (f1_sw>0.)  apply(f_pt,(long int) npt,0,sw_sn,sw_sd,nsects);}
+      spt->rec = f_pt;  
+      if (j<3) {if (f1_sw>0.)  apply(f_pt,(long int) npt,0,sw_sn,sw_sd,nsects); }
       else     {if (f1_pnl>0.) apply(f_pt,(long int) npt,0,pnl_sn,pnl_sd,nsects);}
       if (useDisp==1) cumsum(f_pt, npt, dt); /*use displacement data*/
       for(x2=0.,l=0;l<npt;l++,f_pt++) {
 	*f_pt *= weight;
 	x2+=(*f_pt)*(*f_pt);
+	if ((*f_pt) > max_amp)
+	  max_amp = (*f_pt);
+	//fprintf(stderr,"%f\n",max_amp);
       }
       spt->rec2 = x2;
       rec2 += spt->on_off*x2;
-      for(m=0,k=0;k<kc;k++) {
+       for(m=0,k=0;k<kc;k++) {
 	f_pt = cutTrace(green[gindx+k], hd[indx].npts, rint((t0[j]-con_shft[i]-shft0[i][j]-hd[indx].b)/dt), npt);
 	if ( f_pt == NULL ) {
 	  fprintf(stderr, "fail to window the Greens functions\n");
@@ -442,8 +452,9 @@ int main (int argc, char **argv) {
 	  for(x2=0.,l=0;l<npt;l++) x2+=(*f_pt0++)*(*f_pt1++);
 	  spt->syn2[m++] = x*x2;
 	}
+	//fprintf(stderr, "%e\n",spt->crl[k]);
       }
-      //fprintf(stderr, "%s %d %e\n",obs->stn, j, spt->rec2);
+      //fprintf(stderr, "%s %e %e\n",obs->stn, spt->rec2, spt->syn2[j]);
     }
 
     obs++;
@@ -451,7 +462,8 @@ int main (int argc, char **argv) {
     for(j=0;j<NGR;j++) free(green[j]);
 
   }	/*********end of loop over stations ********/
-
+  fprintf(stderr,"Nsta= %d",Nsta);
+  data2=rec2/Nsta;
   if (nda < 1) {
     fprintf(stderr,"No station available for inversion\n");
     return -1;
@@ -515,7 +527,7 @@ int main (int argc, char **argv) {
 	  mt[0].par, sol.err, dof,
 	  (int) rint(rad[0]), (int) rint(rad[1]), (int) rint(rad[2]),
 	  mt[1].par, sqrt(mt[1].sigma*x2),mt[2].par, sqrt(mt[2].sigma*x2));
-  fprintf(f_out,"# Variance reduction %4.1f\n",100*(1.-sol.err/rec2*total_n));
+  fprintf(f_out,"# Variance reduction %4.1f\n",100*(1.-sol.err/data2));
   amp=pow(10.,1.5*mt[0].par+16.1-20);
 
   if(search) {
@@ -621,8 +633,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   DATA	*obs;
   COMP	*spt;
   SOLN	sol, sol1, sol2, best_sol;
-  FILE *log;
-  char logfile[16];
+  FILE *log,*st_err1, *st_err2;
+  char logfile[16],st_err_body[20],st_err_surf[20];
 
   FILE *fid;
   if(only_first_motion)
@@ -631,6 +643,12 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   }
   
   if (debug) {
+    sprintf(st_err_body,"err_file_body");
+    st_err1=fopen(st_err_body,"w");
+    fclose(st_err1);
+    sprintf(st_err_surf,"err_file_surf");
+    st_err2=fopen(st_err_surf,"w");
+    fclose(st_err2);
     sprintf(logfile,"%s_%03d","log",loop);
     log = fopen(logfile,"w");
     fclose(log);
@@ -653,7 +671,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       mt[0].dd=1.0;
     }
 
-    N=10000;
+    N=50000;
     rnd_stk = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_dip = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_rak = (float*)malloc(sizeof(int) * N*sizeof(float));
@@ -702,8 +720,16 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	      *grd_err++ = sol.err = FLT_MAX;
 	      continue;
 	    }
+	    synt=0.;
+	    reco=0.;
 	    if (bootstrap && interp==0) fprintf(stderr,"BOOTSTRAPPING %5.2f %5.2f %5.2f %5.1f %5.1f %5.1f\n", mt[0].par, mt[1].par, mt[2].par, sol.meca.stk, sol.meca.dip, sol.meca.rak);
 	    for(obs=obs0,sol.err=0.,i=0;i<nda;i++,obs++){
+	      synt1=0.;
+	      synt2=0.;
+	      st2=0.;
+	      err2=0.;
+	      st1=0.;
+	      err1=0.;
 	      mt_radiat(obs->az,mtensor,arad);
 	      rad[0]=amp*arad[3][0];
 	      for(k=1;k<4;k++) rad[k]=amp*arad[3-k][0];
@@ -766,8 +792,10 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		/* compute the L2 norm of syn */
 		for(x2=0.,f_pt0=spt->syn2,k=0;k<kc;k++)
 		  for(k1=k;k1>=0;k1--)
-		    x2+=f_pt1[k]*f_pt1[k1]*(*f_pt0++);
+		    x2+=f_pt1[k]*f_pt1[k1]*(*f_pt0++); 
 
+		if (j<3) synt2+=spt->on_off*(x2);
+		else synt1+=spt->on_off*x2;
 		y1 = 1.;
 		/* find out the scaling factor for teleseismic distances */
 		if (obs->tele && spt->on_off) {
@@ -776,17 +804,36 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		}
 		sol.scl[i][j] = y1;
 
-		x1 = (spt->rec2+x2*y1*y1-2.*cfg[j]*y1)/total_n;
+		x1 = (spt->rec2+x2*y1*y1-2.*cfg[j]*y1);
 		sol.error[i][j] = x1;	/*L2 error for this com.*/
 		sol.cfg[i][j] = 100*cfg[j]/sqrt(spt->rec2*x2);
 		sol.err += spt->on_off*sol.error[i][j];
 		if (bootstrap && interp==0) fprintf(stderr,"BOOTSTRAPPING %-10s %d %d %9.3e\n", obs->stn, j, spt->on_off, x1);
-
+		if (j<3){
+		  st2+=spt->on_off*spt->rec2;
+		  err2+=spt->on_off*x1;
+		}
+		else{
+		  st1+=spt->on_off*spt->rec2;
+		  err1+=spt->on_off*x1;
+		}	
 	      }
 
+	      if (0){
+		st_err1 = fopen(st_err_body,"a");
+		fprintf(st_err1, "%f %e %e %e\n",obs->dist,st1, synt1, err1);
+		fclose(st_err1);
+		st_err2 = fopen(st_err_surf,"a");
+		fprintf(st_err2, "%f %e %e %e\n",obs->dist,st2, synt2, err2);
+		fclose(st_err2);}
+	      synt+=synt2+synt1;
+	      reco+=st2+st1;
 	    } /*-------------------------end of all stations*/
+	    sol.err=sol.err/Nsta;
+	    synt=synt/Nsta;
+	    reco=reco/Nsta;
 	    *grd_err++ = sol.err;		/*error for this solution*/
-	    if (best_sol.err>sol.err) {best_sol = sol;
+	    if (best_sol.err>sol.err) {best_sol = sol; synth=synt;
 	      if (debug) fprintf(stderr,"misfit for best sol = %f; stk=%3.1f, dip=%3.1f, rak=%3.1f \n",best_sol.err,sol.meca.stk, sol.meca.dip, sol.meca.rak);
 	      mt[0].par=temp[0];
 	      mt[1].par=temp[1];
@@ -795,7 +842,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
 	    if (debug) { 
 	      log = fopen(logfile,"a");                 // output log file
-	      fprintf(log,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err,  temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
+	      fprintf(log,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
 	      fclose(log);
 	    }
 
@@ -936,7 +983,15 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		    continue;
 		  }
 		  if (bootstrap && interp==0) fprintf(stderr,"BOOTSTRAPPING %5.2f %5.2f %5.2f %5.1f %5.1f %5.1f\n", mt[0].par, mt[1].par, mt[2].par, sol.meca.stk, sol.meca.dip, sol.meca.rak);
+		  synt=0.;
+		  reco=0.;
 		  for(obs=obs0,sol.err=0.,i=0;i<nda;i++,obs++){
+		    synt1=0.;
+		    synt2=0.;
+		    st2=0.;
+		    err2=0.;
+		    st1=0.;
+		    err1=0.;
 		    mt_radiat(obs->az,mtensor,arad);
 		    rad[0]=amp*arad[3][0];
 		    for(k=1;k<4;k++) rad[k]=amp*arad[3-k][0];
@@ -995,12 +1050,15 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		 
 		    /***error calculation*****/
 		    for(kc=2,f_pt1=rad+NRF,j=0;j<NCP;j++,spt++,kc=NRF,f_pt1=rad) {
-		   
+
 		      /* compute the L2 norm of syn */
 		      for(x2=0.,f_pt0=spt->syn2,k=0;k<kc;k++)
 			for(k1=k;k1>=0;k1--)
 			  x2+=f_pt1[k]*f_pt1[k1]*(*f_pt0++);
 		   
+		      //fprintf(stderr, "%s %e\n",obs->stn,x2/Npoints);
+		      if (j<3) synt2+=spt->on_off*(x2);
+		      else synt1+=spt->on_off*x2;
 		      y1 = 1.;
 		      /* find out the scaling factor for teleseismic distances */
 		      if (obs->tele && spt->on_off) {
@@ -1009,31 +1067,57 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		      }
 		      sol.scl[i][j] = y1;
 		   
-		      x1 = (spt->rec2+x2*y1*y1-2.*cfg[j]*y1)/total_n;
+		      x1 = (spt->rec2+x2*y1*y1-2.*cfg[j]*y1);
+		      //fprintf(stderr,"%e %e %e\n",spt->rec2,x2,cfg[j]);
 		      sol.error[i][j] = x1;	/*L2 error for this com.*/
 		      sol.cfg[i][j] = 100*cfg[j]/sqrt(spt->rec2*x2);
 		      sol.err += spt->on_off*x1;
 		      if (bootstrap && interp==0) fprintf(stderr,"BOOTSTRAPPING %-10s %d %d %9.3e\n", obs->stn, j, spt->on_off, x1);
-		   
+		      //fprintf(stderr, "%s %e %e %d\n",obs->stn, x2/Npoints, x1,sol.cfg[i][j]);
+		      if (j<3){
+			st2+=spt->on_off*spt->rec2;  // syn surf wave norm, individual staion
+			err2+=spt->on_off*x1;  // err surf wave norm, individual staion
+		      }
+		      else{
+			st1+=spt->on_off*spt->rec2;   // syn body wave norm, individual staion
+			err1+=spt->on_off*x1;   // err body wave norm, individual station
+		      }	
 		    }
-		 
-		  } /*-------------------------end of all stations*/
+		    
+		    if (0){
+		      st_err1 = fopen(st_err_body,"a");
+		      fprintf(st_err1, "%f %e %e %e\n",obs->dist,st1, synt1, err1);
+		      fclose(st_err1);
+		      st_err2 = fopen(st_err_surf,"a");
+		      fprintf(st_err2, "%f %e %e %e\n",obs->dist,st2, synt2, err2);
+		      fclose(st_err2);}
+		    synt+=synt2+synt1;  // syntheics norm (all stations)
+		    reco+=st2+st1;      // data norm, same as data2
+		  }
+		   /*-------------------------end of all stations*/
+		  //fprintf(stderr, "==========================\n");
+		  //fprintf(stderr, "Nsta=%d\n",Nsta);
+		  sol.err=sol.err/Nsta;
+		  synt = synt/Nsta;
+		  reco=reco/Nsta;
+		  //fprintf(stderr, "data2=%e synt2=%e\n",data2,synt2);
 		  *grd_err++ = sol.err;		/*error for this solution*/
-		  if (best_sol.err>sol.err) {best_sol = sol;
+		  if (best_sol.err>sol.err) {best_sol = sol; synth=synt; //fprintf(stderr, "synt=%e data2=%e err=%e\n",synth,data2,sol.err);
 		    if (0) fprintf(stderr,"misfit for best sol = %f; stk=%3.1f, dip=%3.1f, rak=%3.1f \n",best_sol.err,sol.meca.stk, sol.meca.dip, sol.meca.rak);
 		    mt[0].par=temp[0];
 		    mt[1].par=temp[1];
 		    mt[2].par=temp[2];
+		    //fprintf(stderr, "data=%e syn=%e err=%e\n",data2, synt2, sol.err);
 		  }
 	       
 		  if (debug) { 
 		    log = fopen(logfile,"a");                 // output log file
-		    fprintf(log,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err,  temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
+		    fprintf(log,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
 		    //fprintf(stderr,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err,  temp[0], temp[1], temp[2]);
 		    fclose(log);	  
 		  }
-		}
-	      }
+		} // stk loop
+	      }   // dip loop
 	    
 	      if (sol.meca.stk==(grid.x0[0]+(grid.n[0]-1)*grid.step[0]) &&  sol.meca.dip==(grid.x0[1]+(grid.n[1]-1)*grid.step[1]) &&  sol.meca.rak==(grid.x0[2]+(grid.n[2]-1)*grid.step[2])){
 		loop++;
@@ -1046,7 +1130,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		fprintf(log,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
 		fclose(log);
 	      }
-	    }
+	    }  // rak loop
 	    if (1) fprintf(stderr,"Mw=%2.1f \t iso=%2.2f \t clvd=%2.2f\n",temp[0],temp[1],temp[2]);
 	  }
       }
@@ -1105,9 +1189,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	mt[npar].sigma = 0.;
       }
       return(sol);
-
-    } else {	// the base case: grid-search for strike, dip, and rake =============
-
+    } 
+    else {	// the base case: grid-search for strike, dip, and rake =============
       amp = pow(10.,1.5*mt[0].par+16.1-20);
       best_sol.err = FLT_MAX;
       grd_err = grid.err;
@@ -1123,8 +1206,15 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	      continue;
 	    }
 	    if (bootstrap && interp==0) fprintf(stderr,"BOOTSTRAPPING %5.2f %5.2f %5.2f %5.1f %5.1f %5.1f\n", mt[0].par, mt[1].par, mt[2].par, sol.meca.stk, sol.meca.dip, sol.meca.rak);
+	    synt2=0.;
 	    for(obs=obs0,sol.err=0.,i=0;i<nda;i++,obs++){
-	      mt_radiat(obs->az,mtensor,arad);
+	      synt1=0.;
+	      synt2=0.;
+	      st2=0.;
+	      err2=0.;
+	      st1=0.;
+	      err1=0.;
+	      mt_radiat(obs->az,mtensor,arad);    // arad are green's function coefficient (see Wang & Hermann 1985)
 	      rad[0]=amp*arad[3][0];
 	      for(k=1;k<4;k++) rad[k]=amp*arad[3-k][0];
 	      for(k=4;k<6;k++) rad[k]=amp*arad[6-k][2];
@@ -1188,6 +1278,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		  for(k1=k;k1>=0;k1--)
 		    x2+=f_pt1[k]*f_pt1[k1]*(*f_pt0++);
 
+		if (j<3) synt2+=spt->on_off*(x2);
+		else synt1+=spt->on_off*x2;
 		y1 = 1.;
 		/* find out the scaling factor for teleseismic distances */
 		if (obs->tele && spt->on_off) {
@@ -1196,25 +1288,47 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		}
 		sol.scl[i][j] = y1;
 
-		x1 = (spt->rec2+x2*y1*y1-2.*cfg[j]*y1)/total_n;
+		x1 = (spt->rec2+x2*y1*y1-2.*cfg[j]*y1);
 		sol.error[i][j] = x1;	/*L2 error for this com.*/
 		sol.cfg[i][j] = 100*cfg[j]/sqrt(spt->rec2*x2);
 		sol.err += spt->on_off*x1;
 		if (bootstrap && interp==0) fprintf(stderr,"BOOTSTRAPPING %-10s %d %d %9.3e\n", obs->stn, j, spt->on_off, x1);
-
+		if (j<3){
+		  st2+=spt->on_off*spt->rec2;
+		  err2+=spt->on_off*x1;
+		}
+		else{
+		  st1+=spt->on_off*spt->rec2;
+		  err1+=spt->on_off*x1;
+		}
 	      }
-
+	      if (0){
+		st_err1 = fopen(st_err_body,"a");
+		fprintf(st_err1, "%f %e %e %e\n",obs->dist,st1, synt1, err1);
+		fclose(st_err1);
+		st_err2 = fopen(st_err_surf,"a");
+		fprintf(st_err2, "%f %e %e %e\n",obs->dist,st2, synt2, err2);
+		fclose(st_err2);}
+	      synt+=synt2+synt1;  // syntheics norm (all stations)
+	      reco+=st2+st1;      // data norm, same as data2
 	    } /*-------------------------end of all stations*/
+	    //fprintf(stderr, "Nsta=%d\n",Nsta);
+	    sol.err=sol.err/Nsta;
+	    synt = synt/Nsta;
+	    reco = reco/Nsta;
 	    *grd_err++ = sol.err;		/*error for this solution*/
-	    if (best_sol.err>sol.err) best_sol = sol;
+
+	    if (best_sol.err>sol.err) {
+	      best_sol=sol;
+	      synth=synt;}
 
 	    if (debug) { 
 	      log = fopen(logfile,"a");
-	      fprintf(log,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.1f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err, mt[0].par, mt[1].par, mt[2].par, amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
+	      fprintf(log,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.1f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, mt[0].par, mt[1].par, mt[2].par, amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
 	      fclose(log);	  
 	    }
-	  }
-	}
+	  } // loop for stk
+	}   // loop for dip
 	if (sol.meca.stk==360 &&  sol.meca.dip==90 &&  sol.meca.rak==90){
 	  loop++;
 	  if (debug) {
@@ -1241,9 +1355,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       best_sol.dev[4] = s3d[7]/(grid.step[0]*grid.step[2]);
       best_sol.dev[5] = s3d[8]/(grid.step[1]*grid.step[2]);
       return(best_sol);
-
     }
-
   }
 }
 
