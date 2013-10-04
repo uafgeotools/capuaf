@@ -13,6 +13,11 @@
  *          input: gamma, delta, m0, kappa, theta, sigma
  *         output: tensor[3][3]
  *
+ *         NOTE: output is in Aki and Richards format to match original output
+ *         by cap.c. Output from cap.c is then changed to GCMT by cap_plt.pl
+ *         
+ *
+ *
  * =============================================================================
  */
 
