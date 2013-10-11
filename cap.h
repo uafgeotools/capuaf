@@ -19,6 +19,7 @@
 #include "inversion.h"
 #include "radiats.h"
 
+
 /***********************Constants********************************/
 
 #define STN	200		/* up to STN stations */
@@ -98,7 +99,7 @@ typedef struct {
 } FM;
 
 /* function declaration */
-SOLN	error(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int);
+SOLN	error(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int);
 void    taper(float *aa, int n);
 float	*trap(float, float, float, int *);
 float	*cutTrace(float *, int, int, int);
