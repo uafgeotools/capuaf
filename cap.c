@@ -957,6 +957,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	else
 	  del_iso=(sin(mt[1].max*PI/180.0)-sin(mt[1].min*PI/180.0))/(iso_len-1);
 	temp[1]=asin(sin(mt[1].min*PI/180.0)+(i_iso*del_iso))*(180.0/PI);
+	if (temp[1]==-90. || temp[1]==-90.)
+	  continue;
 	fprintf(stderr,"-----------------------------------------------\n");
 	for(temp[2]=mt[2].min;temp[2]<=mt[2].max;temp[2]=temp[2]+mt[2].dd)
 
@@ -974,11 +976,13 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		else
 		  del_dip=(cos(grid.x0[1]*PI/180.0)-cos((grid.x0[1]+(grid.n[1]-1)*grid.step[1])*PI/180.0))/(grid.n[1]-1);
 		sol.meca.dip=acos(cos(grid.x0[1]*PI/180.0)-(i_dip*del_dip))*(180.0/PI);   //dip from -1 to 1
-		if (sol.meca.dip==0)
+		if (sol.meca.dip==0.)
 		  continue;
 		//sol.meca.dip=grid.x0[1]+i_dip*grid.step[1];
 		for(i_stk=0; i_stk<grid.n[0]; i_stk++) {
 		  sol.meca.stk=grid.x0[0]+i_stk*grid.step[1];
+		  if (sol.meca.stk == 360.)
+		    continue;
 		  tt2cmt(temp[2], temp[1], 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
 
           // compute misfit from first motion. data will be output to out.misfit_fm.txt
