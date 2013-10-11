@@ -21,8 +21,8 @@ $cmd = "cap";
 
 # green's function location
 #$green = "$home/data/models/Glib";        # original
-#$green = "/store/wf/FK_synthetics";       # standard models at UAF
-$green = "$caprun/models";                # user testing
+$green = "/store/wf/FK_synthetics";       # standard models at UAF
+#$green = "$caprun/models";                # user testing
 
 $repeat = 0;
 $bootstrap = 0;
@@ -58,12 +58,16 @@ $power_of_surf=0.5;
 #($vp, $love, $rayleigh) = (7.8, 3.5, 3.1);
 ($vp, $love, $rayleigh) = (-1, -1, -1);
 
+# search types
+$parm = -1.0;
+$type = -1.0;
+
 # default grid-search ranges
-($deg, $dm) = (10, 0.1);
+($deg, $dm, $dlune) = (10, 0.1, 0.);
 $str1 = 0; $str2 = 360;
 $dip1 = 0; $dip2 = 90;
 $rak1 = -90; $rak2 = 90;
-$iso = $diso = $clvd = $dclvd = 0.;
+$iso1 = $iso2 = $clvd1 = $clvd2 = 0.;
 
 # number of freedom per sample for estimating uncertainty
 $nof = 0.01;
@@ -120,8 +124,8 @@ $usage =
     Here m1, m2 are the maximum lengths for the Pnl and surface waves windows
     (see the -T options below).
 
-  Usage: cap.pl -Mmodel_depth/mag [-B] [-C<f1_pnl/f2_pnl/f1_sw/f2_sw>]
-                  [-D<w1/p1/p2>] [-F<thr>] [-Ggreen] [-Hdt] [-Idd[/dm]]
+  Usage: cap.pl -Mmodel_depth/mag [-A<dep_min/dep_max/dep_inc>][-B] [-C<f1_pnl/f2_pnl/f1_sw/f2_sw>]
+                  [-D<w1/p1/p2>] [-E<search>] [-F<thr>] [-Ggreen] [-Hdt] [-Idd[/dm]]
                   [-J[iso[/diso[/clvd[/dclvd]]]]] [-L<tau>] [-N<n>] [-O]
                   [-P[<Yscale[/Xscale_b[/Xscale_s[/k]]]]>] [-Qnof]
                   [-R<strike1/strike2/dip1/dip2/rake1/rake2>] [-S<s1/s2[/tie]>] [-T<m1/m2>]
@@ -133,6 +137,7 @@ $usage =
 	frequencies of the band-pass filter. ($f1_pnl/$f2_pnl/$f1_sw/$f2_sw).
     -D	weight for Pnl (w1) and distance scaling powers for Pnl (p1) and surface
    	waves (p2). If p1 or p2 is negative, all traces will be normalized. ($weight_of_pnl/$power_of_body/$power_of_surf).
+    -E  Specify what kind of parameterization (0=Zhu; 1=Lune)
     -F	include first-motion data in the search. thr is the threshold ($fm_thr).
     	The first motion data are specified in $weight. The polarities
 	can be specified using +-1 for P, +-2 for SV, and +-3 for SH after
@@ -141,8 +146,10 @@ $usage =
 	header.
     -G  Green's function library location ($green).
     -H  dt ($dt).
-    -I  search interval in strike/dip/rake and mag ($deg/$dm). If dm<0, the gain of each station will be determined by inversion.
-    -J  include isotropic and CLVD search using steps diso and dclvd (0/0/0/0).
+    -I  search interval in strike/dip/rake and mag ($deg/$dm/$dlune). If dm<0, the gain of each station will be determined by inversion. $dlune is ommited in case of search=0.
+    -J  (if search=0)include isotropic and CLVD search using steps diso and dclvd (0/0/0/0). (if increament set to 0 then acts as direct search)
+        (if search=1,2) iso and clvd search range (lune parameterization)
+    -K  Kind of search (0=line search; 1=Grid search; 2=random search)
     -L  source duration (estimate from mw, can put a sac file name here).
     -M	specify the model, source depth and initial magnitude.
     -N  repeat the inversion n times and discard bad traces ($repeat).
@@ -200,12 +207,23 @@ $ncom = 5;	# 5 segemnts to plot
 foreach (grep(/^-/,@ARGV)) {
    $opt = substr($_,1,1);
    @value = split(/\//,substr($_,2));
-   if ($opt eq "B") {
+   if ($opt eq "A") {
+     $dep_min = $value[0];
+     $dep_max = $value[1];
+     $dep_inc = $value[2];
+     if ($#value ==2){
+       printf STDERR "Running cap for multiple depths: $dep_min to $dep_max at $dep_inc km increment\nWarning: overwriting -Mdepth\n";
+     } else {
+       $dep_inc=0;
+       printf STDERR "Depth run flag -A not specified correctly\nUsing -Mdepth instead\n---------------------\n"; }
+   } elsif($opt eq "B") {
      $bootstrap = 1;
    } elsif ($opt eq "C") {
      ($f1_pnl, $f2_pnl, $f1_sw, $f2_sw) = @value;
    } elsif ($opt eq "D") {
      ($weight_of_pnl,$power_of_body,$power_of_surf)=@value;
+   } elsif ($opt eq "E") {
+     $parm = $value[0];
    } elsif ($opt eq "F") {
      $fm_thr = $value[0] if $#value >= 0;
    } elsif ($opt eq "G") {
@@ -215,12 +233,15 @@ foreach (grep(/^-/,@ARGV)) {
    } elsif ($opt eq "I") {
      $deg = $value[0];
      $dm = $value[1] if $#value > 0;
+     $dlune = $value[2] if $value[2]
    } elsif ($opt eq "J") {
-     $iso   = $value[0] if $value[0];
-     $diso  = $value[1] if $value[1];
-     $clvd  = $value[2] if $value[2];
-     $dclvd = $value[3] if $value[3];
+     $iso1   = $value[0] if $value[0];
+     $iso2  = $value[1] if $value[1];
+     $clvd1  = $value[2] if $value[2];
+     $clvd2 = $value[3] if $value[3];
      $fmt_flag="true";     # used later for renaming output figures with fmt
+   } elsif ($opt eq "K") {
+     $type = $value[0];
    } elsif ($opt eq "L") {
      $dura = join('/',@value);
    } elsif ($opt eq "M") {
@@ -258,15 +279,6 @@ foreach (grep(/^-/,@ARGV)) {
      $mltp = $value[0];
    } elsif ($opt eq "Z") {
      $weight = $value[0];
-   } elsif ($opt eq "A") {
-     $dep_min = $value[0];
-     $dep_max = $value[1];
-     $dep_inc = $value[2];
-     if ($#value ==2){
-       printf STDERR "Running cap for multiple depths: $dep_min to $dep_max at $dep_inc km increment\nWarning: overwriting -Mdepth\n";
-     } else {
-       $dep_inc=0;
-       printf STDERR "Depth run flag -A not specified correctly\nUsing -Mdepth instead\n---------------------\n"; }
    } else {
      printf STDERR $usage;
      exit(0);
@@ -278,6 +290,22 @@ unless ($dura) {
   $dura = int(10**(($mg-5)/2)+0.5);
   $dura = 1 if $dura < 1;
   $dura = 9 if $dura > 9;
+}
+
+printf STDERR $search;
+
+if (($parm==0 ) && ($type==0)){
+    $search=0;
+} elsif (($parm==1 ) && ($type==1)){
+    $search=1;
+} elsif (($parm==1 ) && ($type==2)){
+    $search=2;
+} else {
+    printf STDERR "=====================================================
+This feature is not yet enabled. Try different combination of parameterization (-E) and search type (-K).
+=====================================================\n";
+    printf STDERR $usage;
+    exit(0);
 }
 
 if ( -r $dura ) {	# use a sac file for source time function   
@@ -311,8 +339,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     close(WEI);
     $ncom = 2 if $wwf[0] =~ / -1 /;
 
-    $cmd = "cap$dirct $eve $md_dep" unless $cmd eq "cat";
-    
+    $cmd = "cap$dirct $eve $md_dep" unless $cmd eq "cat";    
     open(SRC, "| $cmd") || die "can not run $cmd\n";
     print SRC "$pVel $sVel $riseTime $dura $rupDir\n",$riseTime if $dirct eq "_dir";
     print SRC "$model $dep\n";  # 20120723 calvizuri
@@ -323,10 +350,11 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     print SRC "$plot\n";
     print SRC "$disp $mltp\n";
     print SRC "$green/$model/\n";
+    print SRC "$search\n";
     print SRC "$dt $dura $riseTime\n";
     print SRC "$f1_pnl $f2_pnl $f1_sw $f2_sw\n";
-    print SRC "$mg $dm\n";
-    print SRC "$iso\n$diso\n$clvd\n$dclvd\n";
+    print SRC "$mg $dm $dlune\n";
+    print SRC "$iso1\n$iso2\n$clvd1\n$clvd2\n";
     print SRC "$str1 $str2 $deg\n";
     print SRC "$dip1 $dip2 $deg\n";
     print SRC "$rak1 $rak2 $deg\n";
