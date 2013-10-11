@@ -92,7 +92,7 @@ The old weight file is under the name weight_orig.dat
 
 4. run cap
 
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 20080418093700
 
 > gv 20080418093700/cus_015.ps &
 
@@ -120,7 +120,7 @@ Run cap for different depths by setting the range and increment for which you wa
 One output (.out) file should be generated for each depth.
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -A5/30/5 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -A5/30/5 20080418093700
 
 Run depth_test (script for calling depth.pl)
 > depth_test 20080418093700 cus 
@@ -209,7 +209,7 @@ ISO and CLVD will be searched for in their general range: (-1 < ISO < +1) and (-
 However you can change the increment by using -J flag in the input command line.
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -J0/0.1/0/0.1 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -J0/0.1/0/0.1 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: -J0/0.1/0/0.1 means line search from (0,0) in increments of 0.1 in each direction
@@ -223,7 +223,7 @@ note: -J0/0.1/0/0.1 means line search from (0,0) in increments of 0.1 in each di
 
 6. perform the depth test (Green's functions already computed)
 
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -J0/0.1/0/0.1 -A5/30/5 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -J0/0.1/0/0.1 -A5/30/5 20080418093700
 
 Run depth_test (script for calling depth.pl)
 > depth_test 20080418093700 cus 
@@ -243,7 +243,7 @@ EXAMPLE 5: Illinois event, FMT with fixed focal mech (strike/dip/rake/iso/clvd/m
 3. Follow same step 3 EXAMPLE 1
 
 4. run cap
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -R296/296/84/84/6/6 -J0.16/0/0.04/0 -I10/0 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -E0 -K0 -R296/296/84/84/6/6 -J0.16/0/0.04/0 -I10/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: the solution is slightly better than the result in EXAMPLE 4 (why? precision?)
@@ -274,7 +274,7 @@ open cap.c, set search=1 (and preferably debug=0 so that it do not generate nume
 5.  run cap
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.1 -J0/0/0/0 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.1 -E1 -K1 -J0/0/0/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: -J0/0/0/0 means fixed ISO and CLVD components -- the command can be omitted and the result will be the same
@@ -297,13 +297,13 @@ EXAMPLE 7: same as EXAMPLE 6 but with fixed magnitude
 5. Run cap
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -J0/0/0/0 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -E1 -K1 -J0/0/0/0 20080418093700
 
 ====================================================================================
 EXAMPLE 8: Illinois event, FMT with lune parameterization, full grid search (no line search)
 
-ISO will be gridded by considering equal spacing inc sin(iso) space
-DIP will be gridded by considering equal spacing inc cos(dip) space
+ISO will be gridded by considering equal spacing in sin(iso) space
+DIP will be gridded by considering equal spacing in cos(dip) space
 
 1. Follow same step 1 EXAMPLE 1
 2. Follow same step 2 EXAMPLE 1
@@ -313,10 +313,10 @@ DIP will be gridded by considering equal spacing inc cos(dip) space
 
 5.  run cap (this will take a couple minutes)
 ISO and CLVD will be searched for in their general range (-90 < ISO < +90 ; -30 < CLVD < +30) (lune parameters).
-However you can change the increament by using -J flag in the input command line.
+However you can change the increment by using -J flag in the input command line.
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.2 -J0/10/0/10 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.2/10 -E1 -K1 -J-90/90/-30/30 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: -J0/5/0/5 means 5 deg increment in ISO (delta) and 5 deg increment in CLVD (longitude); the 0's are ignored in this mode
@@ -345,7 +345,7 @@ open cap.c, set search=2 (and preferably debug=0 so that it do not generate nume
 5. Run cap
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0 -J0/0/0/0 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0 -E1 -K2 -J0/0/0/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 NOTES
@@ -372,7 +372,7 @@ EXAMPLE 10: Illinois event, FMT-fixed-magnitude with random sample search (optio
 5. Run cap
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0 -J0/1/0/1 20080418093700
+> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0/10 -E1 -K2 -J0/1/0/1 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 NOTES
