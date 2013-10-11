@@ -20,8 +20,12 @@
     M0_in_dyncm Mxx Mxy Mxz Myy Myz Mzz
   where x=North, y=East, z=Down.
 
-  For reference, see Zhu and Helmberger, Advancements in source estimation
+  For reference, see:
+  Zhu and Helmberger, Advancements in source estimation
   techniques using broadband regional seismograms, BSSA, 86, 1634-1641, 1996.
+  Zhao and Helmberger, 1994
+  Ben-Zion and Zhu, 2012
+  Tape and Tape, 2012, 2013
 
   requires:
 	Green's function -- has P and S arrival time set (t1 and t2 in SAC header)
@@ -80,10 +84,10 @@
 ****************************************************************/
 #include "cap.h"
 
-int total_n,loop=0,start=0,debug=0,search=0,only_first_motion=0,Npoints,Nsta=0,Psamp[STN],Ssamp[STN];
+int total_n,loop=0,start=0,debug=0,only_first_motion=0,Npoints,Nsta=0,Psamp[STN],Ssamp[STN];
 float data2=0.0,max_amp=0.0,synt2=0.0,synt,st2,err2,synt1,err1,st1,reco,synth;
 int main (int argc, char **argv) {
-  int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN];
+  int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search;
   int	n1,n2,ns, mltp, nup, up[3], n_shft, nqP, nqS;
   int	mm[2],n[NCP],max_shft[NCP],npts[NRC];
   int	repeat, bootstrap;
@@ -122,6 +126,7 @@ int main (int argc, char **argv) {
   
   strcpy(eve,argv[1]);
   strcpy(dep,argv[2]);
+ 
 
   /****** input control parameters *************/
   char mod_dep[]="-999";         /* 20130102 calvizuri - for renaming .out file */
@@ -136,7 +141,9 @@ int main (int argc, char **argv) {
   scanf("%d",&plot);
   scanf("%d%d",&useDisp,&mltp);
   scanf("%s",glib);
-
+  scanf("%d",&search);
+  
+  fprintf(stderr,"=========search = %d==========\n",search);
   /*** input source functions and filters for pnl and sw ***/
   scanf("%f",&dt);
   if (dt>0.) {
@@ -171,14 +178,24 @@ int main (int argc, char **argv) {
   /** and tie of time shifts between SH and P-SV **/
 
   /** input grid-search range **/
-  scanf("%f%f",&(mt[0].par),&(mt[0].dd)); mt[0].min =  1.;  mt[0].max = 10.;
+  scanf("%f%f%f",&(mt[0].par),&(mt[0].dd),&(mt[1].dd)); mt[0].min =  1.;  mt[0].max = 10.;
   if(search) {      // use ranges for lune parameters
-    scanf("%f%f",&(mt[1].par),&(mt[1].dd)); mt[1].min = -90.; mt[1].max = 90.; // -1 to 1
-    scanf("%f%f",&(mt[2].par),&(mt[2].dd)); mt[2].min = -30.; mt[2].max = 30.; // -0.5 to 0.25
+    scanf("%f%f",&(mt[1].min),&(mt[1].max));  // -90 to 90
+    scanf("%f%f",&(mt[2].min),&(mt[2].max));  // -30 to 30
+    if (search==1){
+      if ((mt[1].min==0.) && (mt[1].max==0.) && (mt[2].min==0.) && (mt[2].max==0.) && (mt[1].dd != 0.)){
+	fprintf(stderr,"Warning: Range not specified (-J flag); Doing full grid search\n");
+	mt[1].min=-90.; mt[1].max=90.; mt[2].min=-30.; mt[2].max=30;}
+    if (mt[1].dd==0. && (mt[1].min != mt[1].max) && (mt[2].min != mt[2].max)){ 
+      mt[1].dd=10.; fprintf(stderr,"Warning: Increment not specified (-I flag); Setting it to 10\n");}
+    }
+    mt[2].dd=mt[1].dd;
+    mt[1].par=mt[1].min;
+    mt[2].par=mt[2].min;
   }
   else {
-    scanf("%f%f",&(mt[1].par),&(mt[1].dd)); mt[1].min = -1.; mt[1].max = 1.;
-    scanf("%f%f",&(mt[2].par),&(mt[2].dd)); mt[2].min = -0.5; mt[2].max = 0.25;
+    scanf("%f%f",&(mt[1].par),&(mt[1].dd)); mt[1].min = -1.; mt[1].max = 1.;   // -1 to 1
+    scanf("%f%f",&(mt[2].par),&(mt[2].dd)); mt[2].min = -0.5; mt[2].max = 0.25;  //-0.5 to 0.25
   }
   for(j=0;j<3;j++) {
     scanf("%f%f%f",&x1,&x2,&grid.step[j]);
@@ -452,7 +469,6 @@ int main (int argc, char **argv) {
 	  for(x2=0.,l=0;l<npt;l++) x2+=(*f_pt0++)*(*f_pt1++);
 	  spt->syn2[m++] = x*x2;
 	}
-	//fprintf(stderr, "%e\n",spt->crl[k]);
       }
       //fprintf(stderr, "%s %e %e\n",obs->stn, spt->rec2, spt->syn2[j]);
     }
@@ -490,7 +506,7 @@ int main (int argc, char **argv) {
      fprintf(stderr,"----------starting random-search-----------\n");
 
  INVERSION:
-  sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap);
+  sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search);
 
   dof = nof_per_samp*total_n;
   x2 = sol.err/dof;		/* data variance */
@@ -622,12 +638,13 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		MTPAR		*mt,
 		GRID		grid,
 		int		interp,
-		int		bootstrap
+		int		bootstrap,
+		int             search
 		) {
   int	i, j, k, l, m, k1, kc, z0, z1, z2, ii, N, iso_len;
   float mw_ran; // 20130730 celso - half-range for magnitude search (previously int)
   int	i_stk, i_dip, i_rak, i_iso;
-  float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3], m_par;
+  float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3], m_par, del_dip, del_iso;
   float	*f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err, *rnd_stk, *rnd_dip, *rnd_rak, *rnd_iso, *rnd_clvd, *iso;
   float dx, mtensor[3][3], *r_iso, *z_iso;
   DATA	*obs;
@@ -671,7 +688,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       mt[0].dd=1.0;
     }
 
-    N=50000;
+    N=10000;
     rnd_stk = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_dip = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_rak = (float*)malloc(sizeof(int) * N*sizeof(float));
@@ -890,7 +907,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     mt[0].max = mt[0].par+mw_ran;
     mt[0].min = mt[0].par-mw_ran;
 
-    if(only_first_motion)
+    if(only_first_motion)   
     {
         mt[0].min = mt[0].par;
         mt[0].max = mt[0].par;
@@ -902,18 +919,9 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       mt[ii].min = mt[ii].par;
       mt[ii].dd=1.0;
     }}
-    iso_len = ceil((mt[1].max - mt[1].min)/(2*mt[1].dd) + 1);
-    iso = (float*)malloc(sizeof(int) * (2*iso_len)*sizeof(float));
+  
+    iso_len = rint((mt[1].max - mt[1].min)/mt[1].dd) + 1;
 
-    if (iso_len==1){
-      iso[0]=0;}
-    else{
-      for (ii=0;ii<iso_len;ii++)
-	iso[ii]=-(iso_len-1.0-ii)/iso_len;
-      for (ii=0;ii<iso_len;ii++)
-	iso[ii+iso_len-1]=(float)ii/iso_len;
-    }
-    
     //Output search ranges
     fprintf(stderr,"=========GRID-SEARCH RANGE===========\n");
     for (ii=0; ii<3; ii++){
@@ -943,10 +951,12 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     best_sol.err = FLT_MAX;
 
     for(temp[0]=mt[0].min;temp[0]<=mt[0].max;temp[0]=temp[0]+mt[0].dd){
-      for(i_iso=0; i_iso<2*iso_len-1; i_iso++){
-	temp[1]=asin(iso[i_iso])*(180.0/PI);
-	if (iso_len==1){
-	  temp[1]=mt[1].par;}
+      for(i_iso=0; i_iso<iso_len; i_iso++){
+	if (iso_len==1)
+	  del_iso=0.;
+	else
+	  del_iso=(sin(mt[1].max*PI/180.0)-sin(mt[1].min*PI/180.0))/(iso_len-1);
+	temp[1]=asin(sin(mt[1].min*PI/180.0)+(i_iso*del_iso))*(180.0/PI);
 	fprintf(stderr,"-----------------------------------------------\n");
 	for(temp[2]=mt[2].min;temp[2]<=mt[2].max;temp[2]=temp[2]+mt[2].dd)
 
@@ -959,16 +969,16 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	    for(i_rak=0; i_rak<grid.n[2]; i_rak++) {
 	      sol.meca.rak=grid.x0[2]+i_rak*grid.step[2];
 	      for(i_dip=0; i_dip<grid.n[1]; i_dip++) {
-		sol.meca.dip=acos(cos(grid.x0[1]*PI/180.0)-(i_dip*(cos(grid.x0[1]*PI/180.0)-cos((grid.x0[1]+(grid.n[1]-1)*grid.step[1])*PI/180.0))/(grid.n[1]-1)))*(180.0/PI);   //dip from -1 to 1
-		//sol.meca.dip=acos(cos(grid.x0[1]*PI/180.0)-(i_dip/grid.n[1]))*(180.0/PI);   //dip from -1 to 1
-		//sol.meca.dip=acos(1.0-(i_dip*(1.0/(grid.n[1]-1))))*(180.0/PI);   //dip from -1 to 1
+		if (grid.n[1]==1)
+		  del_dip=0.;
+		else
+		  del_dip=(cos(grid.x0[1]*PI/180.0)-cos((grid.x0[1]+(grid.n[1]-1)*grid.step[1])*PI/180.0))/(grid.n[1]-1);
+		sol.meca.dip=acos(cos(grid.x0[1]*PI/180.0)-(i_dip*del_dip))*(180.0/PI);   //dip from -1 to 1
 		if (sol.meca.dip==0)
 		  continue;
 		//sol.meca.dip=grid.x0[1]+i_dip*grid.step[1];
 		for(i_stk=0; i_stk<grid.n[0]; i_stk++) {
 		  sol.meca.stk=grid.x0[0]+i_stk*grid.step[1];
-		  //nmtensor(mt[1].par,mt[2].par,sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor);
-		  //nmtensor(temp[1],temp[2],sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor); // vipul's version
 		  tt2cmt(temp[2], temp[1], 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
 
           // compute misfit from first motion. data will be output to out.misfit_fm.txt
@@ -1095,7 +1105,6 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		    reco+=st2+st1;      // data norm, same as data2
 		  }
 		   /*-------------------------end of all stations*/
-		  //fprintf(stderr, "==========================\n");
 		  //fprintf(stderr, "Nsta=%d\n",Nsta);
 		  sol.err=sol.err/Nsta;
 		  synt = synt/Nsta;
@@ -1166,10 +1175,10 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       npar--;
       dx = mt[npar].dd;
       i = 1; if (dx>0.001) i = 0;
-      sol = error(npar,nda,obs0,nfm,fm,fm_thr,max_shft,tie,mt,grid,i,bootstrap);
+      sol = error(npar,nda,obs0,nfm,fm,fm_thr,max_shft,tie,mt,grid,i,bootstrap,search);
       if (dx>0.001) {	/* do line search */
 	mt[npar].par += dx;
-	sol2 = error(npar,nda,obs0,nfm,fm,fm_thr,max_shft,tie,mt,grid,0,bootstrap);
+	sol2 = error(npar,nda,obs0,nfm,fm,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search);
 	if (sol2.err > sol.err) {	/* this is the wrong direction, turn around */
 	  dx = -dx;
 	  sol1 = sol2; sol2 = sol; sol  = sol1; /*swap sol, sol2 */
@@ -1180,11 +1189,11 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	  sol = sol2;
 	  mt[npar].par += dx;
 	  if (mt[npar].par>mt[npar].max || mt[npar].par<mt[npar].min) sol2.err = sol1.err;
-	  else sol2 = error(npar,nda,obs0,nfm,fm,fm_thr,max_shft,tie,mt,grid,0,bootstrap);
+	  else sol2 = error(npar,nda,obs0,nfm,fm,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search);
 	}
 	mt[npar].sigma = 2*dx*dx/(sol2.err+sol1.err-2*sol.err);
 	mt[npar].par -= dx+0.5*dx*(sol2.err-sol1.err)/(sol2.err+sol1.err-2*sol.err);
-	sol = error(npar,nda,obs0,nfm,fm,fm_thr,max_shft,tie,mt,grid,1,bootstrap);
+	sol = error(npar,nda,obs0,nfm,fm,fm_thr,max_shft,tie,mt,grid,1,bootstrap,search);
       } else {
 	mt[npar].sigma = 0.;
       }
@@ -1206,7 +1215,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	      continue;
 	    }
 	    if (bootstrap && interp==0) fprintf(stderr,"BOOTSTRAPPING %5.2f %5.2f %5.2f %5.1f %5.1f %5.1f\n", mt[0].par, mt[1].par, mt[2].par, sol.meca.stk, sol.meca.dip, sol.meca.rak);
-	    synt2=0.;
+	    synt=0.;
+	    reco=0.;
 	    for(obs=obs0,sol.err=0.,i=0;i<nda;i++,obs++){
 	      synt1=0.;
 	      synt2=0.;
