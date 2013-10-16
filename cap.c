@@ -1003,13 +1003,14 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     best_sol.err = FLT_MAX;
 
     for(temp[0]=mt[0].min;temp[0]<=mt[0].max;temp[0]=temp[0]+mt[0].dd){
-      for(i_iso=0; i_iso<iso_len; i_iso++){
+      for(i_iso=0; i_iso<iso_len-1; i_iso++){
 	if (iso_len==1)
 	  del_iso=0.;
 	else
 	  del_iso=(sin(mt[1].max*PI/180.0)-sin(mt[1].min*PI/180.0))/(iso_len-1);
 	temp[1]=asin(sin(mt[1].min*PI/180.0)+(i_iso*del_iso))*(180.0/PI);
-	if (temp[1]==-90. || temp[1]==90.)
+	fprintf(stderr,"temp[1]=%f %d",temp[1],i_iso);
+	if ((temp[1]==-90.) || (temp[1]==90.))
 	  continue;
 	fprintf(stderr,"-----------------------------------------------\n");
 	for(temp[2]=mt[2].min;temp[2]<=mt[2].max;temp[2]=temp[2]+mt[2].dd)
