@@ -84,7 +84,7 @@
 ****************************************************************/
 #include "cap.h"
 
-int total_n,loop=0,start=0,debug=0,only_first_motion=0,Npoints,Nsta=0,Psamp[STN],Ssamp[STN];
+int total_n,loop=0,start=0,debug=0, only_first_motion=0, misfit_on_lune=0, Npoints,Nsta=0,Psamp[STN],Ssamp[STN];
 float data2=0.0,max_amp=0.0,synt2=0.0,synt,st2,err2,synt1,err1,st1,reco,synth;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search;
@@ -127,6 +127,15 @@ int main (int argc, char **argv) {
   strcpy(eve,argv[1]);
   strcpy(dep,argv[2]);
  
+  /* get station info and polarity */
+  FILE *fidfmp;
+  float stnpp;  // stn radius on beachball
+  float stnaz;  // stn azim
+  float toa;    // takeoff angle
+  if(only_first_motion)
+  {
+      fidfmp = fopen("out.fmp_stndata_","w");
+  }
 
   /****** input control parameters *************/
   char mod_dep[]="-999";         /* 20130102 calvizuri - for renaming .out file */
@@ -305,8 +314,16 @@ int main (int argc, char **argv) {
     /************input green's functions***********/
     strcat(strcat(strcat(strcat(strcpy(tmp,glib),dep),"/"),dst),".grn.0");
     c_pt = strrchr(tmp,(int) '0');
-    fprintf(stderr, "NOTE: convolving greens function with src time function (trapezoid) tau0=dura=%f riseTime=%f \n",
-            tau0, riseTime);
+//    fprintf(stderr, "NOTE: convolving greens function with src time function (trapezoid) tau0=dura=%f riseTime=%f \n",
+//            tau0, riseTime);
+
+    if(only_first_motion)
+    {
+        // get first motion parameters from each station
+        stnaz = hd->az;
+        fprintf(fidfmp,"%8s %10.6f %10.6f d= %10.6f az= %10.6f ",
+                obs->stn, hd->stlo, hd->stla, hd->dist, stnaz);
+    }
     for(j=0;j<NGR;j++) {
       *c_pt = grn_com[j];
       indx = 0; if (j>1) indx = 1; if (j>=kk[2]) indx=2;
@@ -332,6 +349,21 @@ int main (int argc, char **argv) {
         nfm++;
         fm++;
       }
+    }
+
+    /* get data for first motion polarity */
+    if(only_first_motion)
+    {
+        toa = hd->user1;
+        if(hd->user1 > 90.0)
+        {
+            // project to lower hemisphere
+            stnaz += 180.0;
+            toa = 180.0-toa;
+        }
+        stnpp = sqrt(2) * sin(toa * PI/360.0);
+        fprintf(fidfmp,"toa= %10.6f POL: %2d %10.6f %10.6f\n", 
+                hd->user1, up[0], stnpp, stnaz);
     }
 
     /*** calculate time shift needed to align data and syn approximately ****/
@@ -377,7 +409,7 @@ int main (int argc, char **argv) {
       else{
 	t3 += con_shft[i] + s_shft;              /* add con_shft only if surf arrival time is not specified*/
 	t4 += con_shft[i] + s_shft;
-	//fprintf(stderr,"%f %f %f %f\n",t3,t4,hd[0].t2,con_shft[i]);
+	fprintf(stderr,"%f %f %f %f\n",t3,t4,hd[0].t2,con_shft[i]);
       }
       if (surf_win != 0)                                /* for specific length of time window */
 	t4 = t3 + surf_win;
@@ -404,7 +436,6 @@ int main (int argc, char **argv) {
     t0[1]=t0[2]=t4-n2*dt;	/* rayleigh wave */
     t0[3]=t0[4]=t1;		/* Pnl */
     n[0]=n[1]=n[2]=n2;	n[3]=n[4]=n1;
-    //fprintf(stderr, "%d %d %f\n",n1, n2,dt);
     shft0[i][0] = shft0[i][1] = shft0[i][2] = s_shft;
     shft0[i][3] = shft0[i][4] = 0.;
     if (obs->com[0].on_off>0) n_shft++;
@@ -478,6 +509,12 @@ int main (int argc, char **argv) {
     for(j=0;j<NGR;j++) free(green[j]);
 
   }	/*********end of loop over stations ********/
+
+  /*  first motion polarity - close file */
+  if(only_first_motion)
+  {
+      fclose(fidfmp);
+  }
   fprintf(stderr,"Nsta= %d",Nsta);
   data2=rec2/Nsta;
   if (nda < 1) {
@@ -489,6 +526,7 @@ int main (int argc, char **argv) {
   log = fopen("log_diff","w");
   fclose(log);
 
+  // maybe we label this section "cap messages"...
   if (search==0){
     if (mt[1].dd>=1 || mt[2].dd>=1)
       fprintf(stderr,"Warning: Possible error = Expecting grid-search\n(set search=1) or reduce the search increment (-J flag)\n");
@@ -499,7 +537,11 @@ int main (int argc, char **argv) {
     fprintf(stderr,"----------starting grid-search-----------\n");
     if(only_first_motion)
     {
-        fprintf(stderr,"NOTE: Computing only first motion. results output to out.misfit_fm.txt\n");
+        fprintf(stderr,"NOTE: Computing only first motion. results output to out.misfit.fmp_\n");
+    }
+    if(misfit_on_lune)
+    {
+        fprintf(stderr,"NOTE: misfit on lune output to file out.misfit.wf_\n");
     }
   }
   if (search==2)
@@ -653,10 +695,20 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   FILE *log,*st_err1, *st_err2;
   char logfile[16],st_err_body[20],st_err_surf[20];
 
-  FILE *fid;
+  /* parameters that produce least misfit */
+  float best_err, best_stk, best_dip, best_rak;
+  FILE *fidmol;
+  /* output of misfit on lune */
+  if(misfit_on_lune)
+  {
+      fidmol=fopen("out.misfit.wf_","w");
+  }
+
+  /* output of first motion polarity */
+  FILE *fidfmp;
   if(only_first_motion)
   {
-      fid=fopen("out.misfit_fmp.txt","w");
+      fidfmp=fopen("out.misfit.fmp_","w");
   }
   
   if (debug) {
@@ -688,7 +740,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       mt[0].dd=1.0;
     }
 
-    N=100000;
+    N=10000;
     rnd_stk = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_dip = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_rak = (float*)malloc(sizeof(int) * N*sizeof(float));
@@ -907,7 +959,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     mt[0].max = mt[0].par+mw_ran;
     mt[0].min = mt[0].par-mw_ran;
 
-    if(only_first_motion)   
+    if(only_first_motion) 
     {
         mt[0].min = mt[0].par;
         mt[0].max = mt[0].par;
@@ -966,6 +1018,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
        
        
 	  {  // the base case: grid-search for strike, dip, and rake =============
+        best_err = FLT_MAX; /* used when misfit_on_lune=1 */
 	    amp = pow(10.,1.5*temp[0]+16.1-20);
 	    grd_err = grid.err;
 	    for(i_rak=0; i_rak<grid.n[2]; i_rak++) {
@@ -988,7 +1041,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
           // compute misfit from first motion. data will be output to out.misfit_fm.txt
           if(only_first_motion)
           {
-              misfit_first_motion(mtensor, nfm, fm, fid, temp[2], temp[1], temp[0], sol.meca.stk, sol.meca.dip, sol.meca.rak);
+              misfit_first_motion(mtensor, nfm, fm, fidfmp, temp[2], temp[1], temp[0], sol.meca.stk, sol.meca.dip, sol.meca.rak);
               continue;
           }
 
@@ -1115,6 +1168,17 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		  reco=reco/Nsta;
 		  //fprintf(stderr, "data2=%e synt2=%e\n",data2,synt2);
 		  *grd_err++ = sol.err;		/*error for this solution*/
+          if(misfit_on_lune)
+          {
+              // remember smallest misfit for a given gamma/delta on lune
+              if(best_err > sol.err)
+              {
+                  best_err = sol.err;
+                  best_stk = sol.meca.stk;
+                  best_dip = sol.meca.dip;
+                  best_rak = sol.meca.rak;
+              }
+          }
 		  if (best_sol.err>sol.err) {best_sol = sol; synth=synt; //fprintf(stderr, "synt=%e data2=%e err=%e\n",synth,data2,sol.err);
 		    if (0) fprintf(stderr,"misfit for best sol = %f; stk=%3.1f, dip=%3.1f, rak=%3.1f \n",best_sol.err,sol.meca.stk, sol.meca.dip, sol.meca.rak);
 		    mt[0].par=temp[0];
@@ -1145,15 +1209,27 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	      }
 	    }  // rak loop
 	    if (1) fprintf(stderr,"Mw=%2.1f \t iso=%2.2f \t clvd=%2.2f\n",temp[0],temp[1],temp[2]);
+
+        if(misfit_on_lune)
+        {
+            fprintf(fidmol,"%5.1f %5.1f %5.1f %5.1f %5.1f %e %3.1f\n",
+                    temp[1], temp[2], best_stk, best_dip, best_rak, best_err, temp[0]);
+        }
 	  }
       }
+    }
+
+    if(misfit_on_lune)
+    {
+        fclose(fidmol);
+        fprintf(stdout, "\nFinished writing misfit to file out.misfit.wf_\n");
     }
  
     if(only_first_motion)
     {
-        fclose(fid);
-        fprintf(stderr,"Finished writing to file out.misfit_fm.txt\n");
-        fprintf(stderr,"No figures created. Ignore error messages from cap.pl (for now)\n");
+        fclose(fidfmp);
+        fprintf(stderr,"\nFinished writing to file out.misfit.fmp_\n");
+        fprintf(stderr,"No figure should be created (no -P flag) in this mode.\n");
     }
  
     if (debug) fprintf(stderr, "Mw=%5.2f  iso=%5.2f clvd=%5.2f misfit = %9.3e\n", mt[0].par, mt[1].par, mt[2].par, best_sol.err);
