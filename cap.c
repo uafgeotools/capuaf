@@ -377,7 +377,7 @@ int main (int argc, char **argv) {
       else{
 	t3 += con_shft[i] + s_shft;              /* add con_shft only if surf arrival time is not specified*/
 	t4 += con_shft[i] + s_shft;
-	fprintf(stderr,"%f %f %f %f\n",t3,t4,hd[0].t2,con_shft[i]);
+	//fprintf(stderr,"%f %f %f %f\n",t3,t4,hd[0].t2,con_shft[i]);
       }
       if (surf_win != 0)                                /* for specific length of time window */
 	t4 = t3 + surf_win;
@@ -404,7 +404,7 @@ int main (int argc, char **argv) {
     t0[1]=t0[2]=t4-n2*dt;	/* rayleigh wave */
     t0[3]=t0[4]=t1;		/* Pnl */
     n[0]=n[1]=n[2]=n2;	n[3]=n[4]=n1;
-    fprintf(stderr, "%d %d %f\n",n1, n2,dt);
+    //fprintf(stderr, "%d %d %f\n",n1, n2,dt);
     shft0[i][0] = shft0[i][1] = shft0[i][2] = s_shft;
     shft0[i][3] = shft0[i][4] = 0.;
     if (obs->com[0].on_off>0) n_shft++;
@@ -688,7 +688,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       mt[0].dd=1.0;
     }
 
-    N=10000;
+    N=100000;
     rnd_stk = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_dip = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_rak = (float*)malloc(sizeof(int) * N*sizeof(float));
@@ -957,7 +957,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	else
 	  del_iso=(sin(mt[1].max*PI/180.0)-sin(mt[1].min*PI/180.0))/(iso_len-1);
 	temp[1]=asin(sin(mt[1].min*PI/180.0)+(i_iso*del_iso))*(180.0/PI);
-	if (temp[1]==-90. || temp[1]==-90.)
+	if (temp[1]==-90. || temp[1]==90.)
 	  continue;
 	fprintf(stderr,"-----------------------------------------------\n");
 	for(temp[2]=mt[2].min;temp[2]<=mt[2].max;temp[2]=temp[2]+mt[2].dd)
