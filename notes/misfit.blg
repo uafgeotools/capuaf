@@ -1,0 +1,45 @@
+This is BibTeX, Version 0.99c (Web2C 7.5.6)
+The top-level auxiliary file: misfit.aux
+The style file: agu.bst
+Database file #1: report_ref.bib.bib
+You've used 10 entries,
+            2789 wiz_defined-function locations,
+            1052 strings with 9518 characters,
+and the built_in function-call counts, 8170 in all, are:
+= -- 1091
+> -- 194
+< -- 10
++ -- 126
+- -- 48
+* -- 504
+:= -- 760
+add.period$ -- 10
+call.type$ -- 10
+change.case$ -- 44
+chr.to.int$ -- 9
+cite$ -- 30
+duplicate$ -- 802
+empty$ -- 414
+format.name$ -- 82
+if$ -- 1629
+int.to.chr$ -- 2
+int.to.str$ -- 1
+missing$ -- 12
+newline$ -- 34
+num.names$ -- 40
+pop$ -- 319
+preamble$ -- 1
+purify$ -- 36
+quote$ -- 0
+skip$ -- 563
+stack$ -- 0
+substring$ -- 433
+swap$ -- 718
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 84
+warning$ -- 0
+while$ -- 53
+width$ -- 0
+write$ -- 111
