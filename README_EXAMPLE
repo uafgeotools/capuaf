@@ -92,7 +92,7 @@ The old weight file is under the name weight_orig.dat
 
 4. run cap
 
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 20080418093700
 
 > gv 20080418093700/cus_015.ps &
 
@@ -120,7 +120,7 @@ Run cap for different depths by setting the range and increment for which you wa
 One output (.out) file should be generated for each depth.
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -A5/30/5 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -A5/30/5 20080418093700
 
 Run depth_test (script for calling depth.pl)
 > depth_test 20080418093700 cus 
@@ -140,22 +140,22 @@ EXAMPLE 2: Illinois event, DC with P wave polarities in weight file
 3. Follow same step 3 EXAMPLE 1
 
 a. Run cap with all available polarities
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat 
 ==> since all polarities are consistent with the waveform-only solution, the solution is the sames as in EXAMPLE 1
 
 b. run cap with only one polarity measurement
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
 
 c. run cap with all polarities but one flipped: PVMO
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 ==> solution is slightly worse, as PVMO was nearly nodal and is now within a colored quadrant
 
 d. run cap with all polarities but one flipped: WVT
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
 ==> solution is significantly worse, since WVT was not nodal and is now within a colored quadrant
 
 e. run cap with all polarities but one flipped: BLO
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
 ==> no solution is possible
 
 note: the command "-I10/0.1 -J0/0/0/0" could be added but will not affect the results
@@ -178,24 +178,24 @@ fm_thr=-1.0, -0.2, -0.1, 0, 0.4, 1.0 (see cap flag -F to set thresholds).
 4. Run cap with with 
 
 a. no MT grid point is rejected, so the solution is same as EXAMPLE 1 (PVMO obs does not match PVMO pred)
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F-1.0 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-1.0 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 b. a relatively small number of MT grid points are rejected that have large-amplitude mismatch of polarities;
    this solution, with PVMO not matching PVMO pred, is not rejected beacause the PVMO is low amplitude
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F-0.2 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-0.2 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 c. PVMO is "just" inside the colored quadrant
    note: PVMO could be "just" inside the white quadrant as well
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F-0.1 -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-0.1 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 d. PVMO is "just" inside the colored quadrant (PVMO obs does match PVMO pred)
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F0.0  -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F0.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 e. the solution seeks to maximize the minimum amplitude associated with any (correct) polarity (PVMO obs does match PVMO pred)
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F0.4  -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F0.4  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 f. no solution, since every MT grid point is rejected with some station having too small an amplitude
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F1.0  -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F1.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 ====================================================================================
 EXAMPLE 4: Illinois event, FMT with Zhu line search
@@ -209,7 +209,7 @@ ISO and CLVD will be searched for in their general range: (-1 < ISO < +1) and (-
 However you can change the increment by using -J flag in the input command line.
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -J0/0.1/0/0.1 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -J0/0.1/0/0.1 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: -J0/0.1/0/0.1 means line search from (0,0) in increments of 0.1 in each direction
@@ -223,7 +223,7 @@ note: -J0/0.1/0/0.1 means line search from (0,0) in increments of 0.1 in each di
 
 6. perform the depth test (Green's functions already computed)
 
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -J0/0.1/0/0.1 -A5/30/5 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -J0/0.1/0/0.1 -A5/30/5 20080418093700
 
 Run depth_test (script for calling depth.pl)
 > depth_test 20080418093700 cus 
@@ -243,7 +243,7 @@ EXAMPLE 5: Illinois event, FMT with fixed focal mech (strike/dip/rake/iso/clvd/m
 3. Follow same step 3 EXAMPLE 1
 
 4. run cap
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -E0 -K0 -R296/296/84/84/6/6 -J0.16/0/0.04/0 -I10/0 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -E0 -K0 -R296/296/84/84/6/6 -J0.16/0/0.04/0 -I10/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: the solution is slightly better than the result in EXAMPLE 4 (why? precision?)
@@ -263,24 +263,16 @@ This is aimed at performing a secondary analysis of uncertainties outside of CAP
 2. Follow same step 2 EXAMPLE 1
 3. Follow same step 3 EXAMPLE 1
 
-4. modify cap.c for full grid search
-
-> cd $CAPHOME
-
-open cap.c, set search=1 (and preferably debug=0 so that it do not generate numerous output files), then save, then compile:
-
-> make all
-
-5.  run cap
+4.  run cap
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.1 -E1 -K1 -J0/0/0/0 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.1 -E1 -K1 -J0/0/0/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: -J0/0/0/0 means fixed ISO and CLVD components -- the command can be omitted and the result will be the same
 note: -I here will use a 0.1 interval of Mw
 
-6. check the output files
+5. check the output files
 
 > gv $CAPHOME/20080418093700_check/cus_015_dc_grid.ps &
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_dc_grid.out
@@ -292,12 +284,10 @@ EXAMPLE 7: same as EXAMPLE 6 but with fixed magnitude
 2. Follow same step 2 EXAMPLE 1
 3. Follow same step 3 EXAMPLE 1
 
-4. Follow same step 4 EXAMPLE 6
-
-5. Run cap
+4. Run cap
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -E1 -K1 -J0/0/0/0 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -E1 -K1 -J0/0/0/0 20080418093700
 
 ====================================================================================
 EXAMPLE 8: Illinois event, FMT with lune parameterization, full grid search (no line search)
@@ -309,43 +299,51 @@ DIP will be gridded by considering equal spacing in cos(dip) space
 2. Follow same step 2 EXAMPLE 1
 3. Follow same step 3 EXAMPLE 1
 
-4. Follow same step 4 EXAMPLE 6
-
-5.  run cap (this will take a couple minutes)
+4.  run cap (this will take a couple minutes)
 ISO and CLVD will be searched for in their general range (-90 < ISO < +90 ; -30 < CLVD < +30) (lune parameters).
 However you can change the increment by using -J flag in the input command line.
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.2/10 -E1 -K1 -J-90/90/-30/30 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.2/10 -E1 -K1 -J-90/90/-30/30 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: -J0/5/0/5 means 5 deg increment in ISO (delta) and 5 deg increment in CLVD (longitude); the 0's are ignored in this mode
-note: -I here will use a 0.2 interval of Mw
+note: -I here will use a 0.2 interval of Mw and 10 degree for ISO and CLVD lune parameters
 
-6. check the output files
+5. check the output files
 
 > gv $CAPHOME/20080418093700_check/cus_015_fmt_grid.ps &
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_grid.out
 
 ====================================================================================
-EXAMPLE 9: Illinois event, DC with random sample search (optional: grid-search over Mw)
+EXAMPLE 9: Illinois event, Direct search FMT (LUNE parameterization) with fixed focal mech (strike/dip/rake/iso/clvd/mag)
 
 1. Follow same step 1 EXAMPLE 1
 2. Follow same step 2 EXAMPLE 1
 3. Follow same step 3 EXAMPLE 1
 
-4. modify cap.c for random search of parameters
+4. run cap
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -E1 -K1 -R296/296/84/84/6/6 -J-30/30/10/10 -I10/0/0 20080418093700
+> gv 20080418093700/cus_015_fmt.ps &
 
-> cd $CAPHOME
+note: the solution is slightly better than the result in EXAMPLE 4 (why? precision?)
 
-open cap.c, set search=2 (and preferably debug=0 so that it do not generate numerous output files), then save, then compile:
+5. check the output files
 
-> make all
+> gv $CAPHOME/20080418093700_check/cus_015_fmt_fixed.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_fixed.out
 
-5. Run cap
+====================================================================================
+EXAMPLE 10: Illinois event, DC with random sample search (optional: grid-search over Mw)
+
+1. Follow same step 1 EXAMPLE 1
+2. Follow same step 2 EXAMPLE 1
+3. Follow same step 3 EXAMPLE 1
+
+4. Run cap
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0 -E1 -K2 -J0/0/0/0 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0 -E1 -K2 -J0/0/0/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 NOTES
@@ -355,13 +353,13 @@ NOTES
 - For any other ISO or CLVD value, set it using -J flag. Just remember to keep the increment=0 (e.g. -J10/0/10/0)
 - the -J0/0/0/0 can be omitted, and the output will be identical
 
-6. check the output files
+5. check the output files
 
 > gv $CAPHOME/20080418093700_check/cus_015_dc_rand.ps &
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_dc_rand.out
 
 ====================================================================================
-EXAMPLE 10: Illinois event, FMT-fixed-magnitude with random sample search (optional: grid-search over Mw)
+EXAMPLE 11: Illinois event, FMT-fixed-magnitude with random sample search (optional: grid-search over Mw)
 
 1. Follow same step 1 EXAMPLE 6
 2. Follow same step 2 EXAMPLE 6
@@ -372,7 +370,7 @@ EXAMPLE 10: Illinois event, FMT-fixed-magnitude with random sample search (optio
 5. Run cap
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P2.2e-6 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0/10 -E1 -K2 -J0/1/0/1 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0/10 -E1 -K2 -J0/1/0/1 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 NOTES
@@ -387,12 +385,12 @@ NOTES
 > diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_rand.out
 
 ====================================================================================
-EXAMPLE 11: Bolivia event 20100516-063454, first motion polarity
+EXAMPLE 12: Bolivia event 20100516-063454, first motion polarity
 
 1. In cap.c change: search=1, only_first_motion=1
 2. Compile cap
 3. Run cap
-> ./cap.pl -H0.01 -S0.5/4/0 -T1/60  -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.01 -W1 -I5/0 -J0/5/0/5 -Mutu03_6/3.0 -Zweight_fmp.dat 20100516063454
+> ./cap.pl -H0.01 -S0.5/4/0 -T1/60  -D1/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.01 -W1 -I5/0 -J0/5/0/5 -Mutu03_6/3.0 -Zweight_fmp.dat 20100516063454
 
 4. Process misfit data (input file: out.misfit_fm.txt) for lune plot
 > python misfit2lune.py > out.misfit_summ_20100516-063454
