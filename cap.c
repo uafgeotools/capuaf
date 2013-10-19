@@ -84,7 +84,7 @@
 ****************************************************************/
 #include "cap.h"
 
-int total_n,loop=0,start=0,debug=0, only_first_motion=0, misfit_on_lune=0, Npoints,Nsta=0,Psamp[STN],Ssamp[STN];
+int total_n,loop=0,start=0,debug=0, only_first_motion=0, misfit_on_lune=0, Npoints,Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
 float data2=0.0,max_amp=0.0,synt2=0.0,synt,st2,err2,synt1,err1,st1,reco,synth;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search;
@@ -142,6 +142,7 @@ int main (int argc, char **argv) {
   char model[128];
   int depth=-999;
   scanf("%s %d",model, &depth);  /* 20130102 calvizuri - end */
+  edep=depth;
 
   scanf("%f%f%f%f%d%d%f%f",&x1,&y1,&x,&y,&repeat,&bootstrap,&fm_thr,&tie);
   if (repeat) for(j=0;j<NCP;j++) scanf("%f",rms_cut+4-j);
@@ -718,7 +719,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     sprintf(st_err_surf,"err_file_surf");
     st_err2=fopen(st_err_surf,"w");
     fclose(st_err2);
-    sprintf(logfile,"%s_%03d","log",loop);
+    sprintf(logfile,"%s_%03d_%03d","log",edep,loop);
     log = fopen(logfile,"w");
     fclose(log);
   }
@@ -740,7 +741,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       mt[0].dd=1.0;
     }
 
-    N=10000;
+    N=100000;
     rnd_stk = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_dip = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_rak = (float*)malloc(sizeof(int) * N*sizeof(float));
@@ -914,22 +915,24 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	      fprintf(log,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
 	      fclose(log);
 	    }
-
-	    if (1){
-	      loop++;
-	      if (debug) {
-		sprintf(logfile,"%s_000","log");  // changes the log file name for next sext search
-		log = fopen(logfile,"a");
-		fclose(log);
-	      }
-	      log = fopen("log_diff","a"); /*fprintf(stderr,"completed stk,dip,rake loop\n");        //summary log file*/
-	      fprintf(log,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
-	      fclose(log);
-	    }
-	    fprintf(stderr, "%d\t%3.2f\t%3.2f\t%3.2f\t%2.1f\t%2.1f\t%2.2f\n",ii+1,sol.meca.stk, sol.meca.dip,sol.meca.rak,temp[0],temp[1],temp[2]);
 	  }
-	  fprintf(stderr,"========================Minimum==================================\n");
-	  fprintf(stderr, "%3.2f\t%3.2f\t%3.2f\t%2.1f\t%2.1f\t%2.2f\n",best_sol.meca.stk, best_sol.meca.dip,best_sol.meca.rak,temp[0],mt[1].par,mt[2].par);
+
+	  if (debug) {
+	    loop++;
+	    sprintf(logfile,"%s_%03d_%03d","log",edep,loop);  // changes the log file name for next sext search
+	    log = fopen(logfile,"a");
+	    fclose(log);
+	  }
+	  
+	  if (1){
+	    log = fopen("log_diff","a"); /*fprintf(stderr,"completed stk,dip,rake loop\n");        //summary log file*/
+	    fprintf(log,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
+	    fclose(log);
+	  }
+	  fprintf(stderr, "%d\t%3.2f\t%3.2f\t%3.2f\t%2.1f\t%2.1f\t%2.2f\n",ii+1,sol.meca.stk, sol.meca.dip,sol.meca.rak,temp[0],temp[1],temp[2]);
+	  
+     fprintf(stderr,"========================Minimum==================================\n");
+     fprintf(stderr, "%3.2f\t%3.2f\t%3.2f\t%2.1f\t%2.1f\t%2.2f\n",best_sol.meca.stk, best_sol.meca.dip,best_sol.meca.rak,temp[0],mt[1].par,mt[2].par);
      }
      // }
      //}
@@ -976,41 +979,58 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
     //Output search ranges
     fprintf(stderr,"=========GRID-SEARCH RANGE===========\n");
-    for (ii=0; ii<3; ii++){
+    for (ii=0; ii<3; ii=ii+2){
       if (ii==0)
 	fprintf(stderr,"---------Mw--------\n");
-      if (ii==1)
-	fprintf(stderr,"---------sin(ISO)--------\n");
       if (ii==2)
 	fprintf(stderr,"---------CLVD--------\n");      
       for(m_par = mt[ii].min; m_par<=mt[ii].max; m_par=m_par+mt[ii].dd){
 	fprintf(stderr,"%f\n",m_par);
       }
     }
+    fprintf(stderr,"---------ISO--------\n");
+    for(i_iso=0; i_iso<iso_len; i_iso++){
+      if (iso_len==1)
+	  del_iso=0.;
+	else
+	  del_iso=(sin(mt[1].max*PI/180.0)-sin(mt[1].min*PI/180.0))/(iso_len-1);
+	temp[1]=asin(sin(mt[1].min*PI/180.0)+(i_iso*del_iso))*(180.0/PI);
+	if (temp[1]==-90. || temp[1]==90. || temp[1] != temp[1])
+	  continue;
+	fprintf(stderr,"%f\n",temp[1],i_iso);
+    }
 
-    for (ii=0; ii<3; ii++){
+    for (ii=0; ii<3; ii=ii+2){
       if (ii==0)
 	fprintf(stderr,"---------STK--------\n");
-      if (ii==1)
-	fprintf(stderr,"---------cos(DIP)--------\n");
       if (ii==2)
 	fprintf(stderr,"---------RAK--------\n");      
       for(m_par = grid.x0[ii]; m_par<(grid.x0[ii]+(grid.n[ii])*grid.step[ii]); m_par=m_par+grid.step[ii]){
 	fprintf(stderr,"%f\n",m_par);
       }
+    }    
+    fprintf(stderr,"---------DIP--------\n");    
+    for(i_dip=0; i_dip<grid.n[1]; i_dip++) {
+      if (grid.n[1]==1)
+	del_dip=0.;
+      else
+	del_dip=(cos(grid.x0[1]*PI/180.0)-cos((grid.x0[1]+(grid.n[1]-1)*grid.step[1])*PI/180.0))/(grid.n[1]-1);
+      sol.meca.dip=acos(cos(grid.x0[1]*PI/180.0)-(i_dip*del_dip))*(180.0/PI);   //dip from -1 to 1
+      if (sol.meca.dip==0.)
+      	continue;
+	  fprintf(stderr,"%f\n",sol.meca.dip);
     }
 
     best_sol.err = FLT_MAX;
 
     for(temp[0]=mt[0].min;temp[0]<=mt[0].max;temp[0]=temp[0]+mt[0].dd){
-      for(i_iso=0; i_iso<iso_len-1; i_iso++){
+      for(i_iso=0;i_iso<iso_len;i_iso++){
 	if (iso_len==1)
 	  del_iso=0.;
 	else
 	  del_iso=(sin(mt[1].max*PI/180.0)-sin(mt[1].min*PI/180.0))/(iso_len-1);
 	temp[1]=asin(sin(mt[1].min*PI/180.0)+(i_iso*del_iso))*(180.0/PI);
-	fprintf(stderr,"temp[1]=%f %d",temp[1],i_iso);
-	if ((temp[1]==-90.) || (temp[1]==90.))
+	if (temp[1]==-90. || temp[1]==90. || temp[1] != temp[1])    // Do not include the limits, or if ISO is NaN; temp[1]!=temp[1] only if temp[1] is NaN (if sin(theta)>1)
 	  continue;
 	fprintf(stderr,"-----------------------------------------------\n");
 	for(temp[2]=mt[2].min;temp[2]<=mt[2].max;temp[2]=temp[2]+mt[2].dd)
@@ -1200,8 +1220,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	      if (sol.meca.stk==(grid.x0[0]+(grid.n[0]-1)*grid.step[0]) &&  sol.meca.dip==(grid.x0[1]+(grid.n[1]-1)*grid.step[1]) &&  sol.meca.rak==(grid.x0[2]+(grid.n[2]-1)*grid.step[2])){
 		loop++;
 		if (debug) {
-		  sprintf(logfile,"%s_%03d","log",loop);  // changes the log file name for next sext search (for multiple log files - search over stk,dip and rake only)
-		  log = fopen(logfile,"a");
+		  sprintf(logfile,"%s_%03d_%03d","log",edep,loop);  // changes the log file name for next sext search (for multiple log files - search over stk,dip and rake only)
+		  log = fopen(logfile,"w");
 		  fclose(log);
 		}
 		log = fopen("log_diff","a"); /*fprintf(stderr,"completed stk,dip,rake loop\n");        //summary log file*/
@@ -1420,7 +1440,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	    }
 	  } // loop for stk
 	}   // loop for dip
-	if (sol.meca.stk==360 &&  sol.meca.dip==90 &&  sol.meca.rak==90){
+	if (sol.meca.stk==360. &&  sol.meca.dip==90. &&  sol.meca.rak==90.){
 	  loop++;
 	  if (debug) {
 	    sprintf(logfile,"%s_%03d","log",loop);
