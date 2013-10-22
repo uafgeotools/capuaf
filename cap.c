@@ -270,6 +270,10 @@ int main (int argc, char **argv) {
       continue;
     }
 
+    /* up[i] unknown if not in weight file, so initialize*/
+    up[0] = 0;
+    up[1] = 0;
+    up[2] = 0;
     nup = sscanf(tmp,"%[^/]/%d/%d/%d",obs->stn,&up[0],&up[1],&up[2]);
     if ( fm_thr > 1 ) nup = 1;
 
@@ -356,15 +360,15 @@ int main (int argc, char **argv) {
     if(only_first_motion)
     {
         toa = hd->user1;
-        if(hd->user1 > 90.0)
+        if(toa > 90.0)
         {
             // project to lower hemisphere
             stnaz += 180.0;
             toa = 180.0-toa;
         }
-        stnpp = sqrt(2) * sin(toa * PI/360.0);
+        stnpp = sqrt(2.0) * sin(toa * PI/360.0);
         fprintf(fidfmp,"toa= %10.6f POL: %2d %10.6f %10.6f\n", 
-                hd->user1, up[0], stnpp, stnaz);
+                toa, up[0], stnpp, stnaz);
     }
 
     /*** calculate time shift needed to align data and syn approximately ****/
