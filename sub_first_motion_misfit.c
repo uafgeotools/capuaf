@@ -15,8 +15,9 @@
  *
  * =============================================================================
  */
-#include<stdio.h>
-#include"cap.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include "cap.h"
 
 void misfit_first_motion(
             float mtensor[3][3],
@@ -48,7 +49,7 @@ void misfit_first_motion(
         {
             ipol_obs = (data+i)->type;
             pol_theory = radpmt(mtensor, (data+i)->alpha, (data+i)->az, 1);
-            if(pol_theory>0.0) ipol_theory = 1;
+            if(pol_theory>=0.0) ipol_theory = 1;
             else ipol_theory = -1;
             misfit_fm += abs(ipol_obs-ipol_theory);
             fprintf(fid,"(%d %d) ", ipol_obs, ipol_theory);
@@ -60,7 +61,7 @@ void misfit_first_motion(
         {
             ipol_obs = (data+i)->type;
             pol_theory = radpmt(mtensor, (data+i)->alpha, (data+i)->az, 1);
-            if(pol_theory>0.0) ipol_theory = 1;
+            if(pol_theory>=0.0) ipol_theory = 1;
             else ipol_theory = -1;
             misfit_fm += abs(ipol_obs-ipol_theory);
         }
