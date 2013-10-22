@@ -131,7 +131,7 @@ $usage =
                   [-R<strike1/strike2/dip1/dip2/rake1/rake2>] [-S<s1/s2[/tie]>] [-T<m1/m2>]
                   [-V<vp/vl/vr>] [-Udirct] [-Wi] [-Xn] [-Zstring] event_dirs
 
-    -A  run cap for different depths. ($dep_min/$dep_max/$dep_inc). 
+    -A  run cap for different depths. (dep_min/dep_max/dep_inc). 
     -B  output misfit errors of all solutions for bootstrapping late ($bootrap).
     -C  filters for Pnl and surface waves, specified by the corner
 	frequencies of the band-pass filter. ($f1_pnl/$f2_pnl/$f1_sw/$f2_sw).
@@ -186,9 +186,10 @@ Event 20080418093700 Model cus_15 FM 115 90  -2 Mw 5.19 rms 1.341e-02   110 ERR 
   To find the best focal depth, repeat the inversion for different focal depths:
 > for h in 05 10 15 20 25 30; do ./cap.pl -H0.2 -P0.3 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_\$h/5.0 20080418093700; done
   and store all the results in a temporary file:
-> grep -h Event 20080418093700/cus_*.out > junk.out
+> grep -h Event 20080418093700/cus_*.out > junk1.out
+> grep -h tensor 20080418093700/cus_*.out > junk2.out
   and then run
-> ./depth.pl junk.out 20080418093700 > junk.ps
+> ./depth.pl junk1.out junk2.out 20080418093700 > junk.ps
   The output from the above command
 Event 20080418093700 Model cus_15 FM 115 90  -2 Mw 5.19 rms 1.341e-02   110 ERR   1   3   4 H  14.8 0.6
   shows that the best focal depth is 14.8 +/- 0.6 km.
