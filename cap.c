@@ -211,6 +211,10 @@ int main (int argc, char **argv) {
     scanf("%f%f%f",&x1,&x2,&grid.step[j]);
     grid.n[j] = rint((x2-x1)/grid.step[j]) + 1;
     grid.x0[j] = x1;
+    if (j==1 && x1==0){
+      grid.n[j] = rint((x2-grid.step[j])/grid.step[j]) + 1;
+      grid.x0[j] = grid.step[j];
+    }
   }
   grid.err = (float *) malloc(grid.n[0]*grid.n[1]*grid.n[2]*sizeof(float));
   if (grid.err == NULL ) {
@@ -1014,15 +1018,15 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       for(m_par = grid.x0[ii]; m_par<(grid.x0[ii]+(grid.n[ii])*grid.step[ii]); m_par=m_par+grid.step[ii]){
 	fprintf(stderr,"%f\n",m_par);
       }
-    }    
-    fprintf(stderr,"---------DIP--------\n");    
+    }
+    fprintf(stderr,"---------DIP--------\n");
     for(i_dip=0; i_dip<grid.n[1]; i_dip++) {
       if (grid.n[1]==1)
 	del_dip=0.;
       else
 	del_dip=(cos(grid.x0[1]*PI/180.0)-cos((grid.x0[1]+(grid.n[1]-1)*grid.step[1])*PI/180.0))/(grid.n[1]-1);
       sol.meca.dip=acos(cos(grid.x0[1]*PI/180.0)-(i_dip*del_dip))*(180.0/PI);   //dip from -1 to 1
-      if (sol.meca.dip==0.)
+      if (sol.meca.dip==0. || sol.meca.dip>90.)
       	continue;
 	  fprintf(stderr,"%f\n",sol.meca.dip);
     }
@@ -1043,8 +1047,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
 	  //--------newly added section ends here-------------
        
-       
-	  {  // the base case: grid-search for strike, dip, and rake =============
+       	  {  // the base case: grid-search for strike, dip, and rake =============
         best_err = FLT_MAX; /* used when misfit_on_lune=1 */
 	    amp = pow(10.,1.5*temp[0]+16.1-20);
 	    grd_err = grid.err;
@@ -1056,7 +1059,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		else
 		  del_dip=(cos(grid.x0[1]*PI/180.0)-cos((grid.x0[1]+(grid.n[1]-1)*grid.step[1])*PI/180.0))/(grid.n[1]-1);
 		sol.meca.dip=acos(cos(grid.x0[1]*PI/180.0)-(i_dip*del_dip))*(180.0/PI);   //dip from -1 to 1
-		if (sol.meca.dip==0.)
+		if (sol.meca.dip==0. || sol.meca.dip>90.)
 		  continue;
 		//sol.meca.dip=grid.x0[1]+i_dip*grid.step[1];
 		for(i_stk=0; i_stk<grid.n[0]; i_stk++) {
