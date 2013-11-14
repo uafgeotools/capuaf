@@ -703,8 +703,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   DATA	*obs;
   COMP	*spt;
   SOLN	sol, sol1, sol2, best_sol;
-  FILE *log,*st_err1, *st_err2;
-  char logfile[16],st_err_body[20],st_err_surf[20];
+  FILE *log,*st_err1, *st_err2,*std_range;
+  char logfile[16],st_err_body[20],st_err_surf[20], range_file[20];
 
   /* parameters that produce least misfit */
   float best_err, best_stk, best_dip, best_rak;
@@ -736,6 +736,9 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
   if (debug) fprintf(stderr, "loop=%d start=%d \n",loop,start);
   start++;
+
+  // search range file
+  sprintf(range_file,"search_range");
 
   if (search==2){
 
@@ -987,18 +990,19 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   
     iso_len = rint((mt[1].max - mt[1].min)/mt[1].dd) + 1;
 
+    std_range = fopen(range_file,"w");
     //Output search ranges
     fprintf(stderr,"=========GRID-SEARCH RANGE===========\n");
     for (ii=0; ii<3; ii=ii+2){
       if (ii==0)
-	fprintf(stderr,"---------Mw--------\n");
+	fprintf(std_range,"---------Mw--------\n");
       if (ii==2)
-	fprintf(stderr,"---------CLVD--------\n");      
+	fprintf(std_range,"---------CLVD--------\n");      
       for(m_par = mt[ii].min; m_par<=mt[ii].max; m_par=m_par+mt[ii].dd){
-	fprintf(stderr,"%f\n",m_par);
+	fprintf(std_range,"%f\n",m_par);
       }
     }
-    fprintf(stderr,"---------ISO--------\n");
+    fprintf(std_range,"---------ISO--------\n");
     for(i_iso=0; i_iso<iso_len; i_iso++){
       if (iso_len==1)
 	  del_iso=0.;
@@ -1007,19 +1011,19 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	temp[1]=asin(sin(mt[1].min*PI/180.0)+(i_iso*del_iso))*(180.0/PI);
 	if (temp[1]==-90. || temp[1]==90. || temp[1] != temp[1])
 	  continue;
-	fprintf(stderr,"%f\n",temp[1],i_iso);
+	fprintf(std_range,"%f\t%f\t%f\n",(((float)i_iso)*mt[1].dd)+mt[1].min,sin(temp[1]),temp[1]);
     }
 
     for (ii=0; ii<3; ii=ii+2){
       if (ii==0)
-	fprintf(stderr,"---------STK--------\n");
+	fprintf(std_range,"---------STK--------\n");
       if (ii==2)
-	fprintf(stderr,"---------RAK--------\n");      
+	fprintf(std_range,"---------RAK--------\n");      
       for(m_par = grid.x0[ii]; m_par<(grid.x0[ii]+(grid.n[ii])*grid.step[ii]); m_par=m_par+grid.step[ii]){
-	fprintf(stderr,"%f\n",m_par);
+	fprintf(std_range,"%f\n",m_par);
       }
     }
-    fprintf(stderr,"---------DIP--------\n");
+    fprintf(std_range,"---------DIP--------\n");
     for(i_dip=0; i_dip<grid.n[1]; i_dip++) {
       if (grid.n[1]==1)
 	del_dip=0.;
@@ -1028,8 +1032,9 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       sol.meca.dip=acos(cos(grid.x0[1]*PI/180.0)-(i_dip*del_dip))*(180.0/PI);   //dip from -1 to 1
       if (sol.meca.dip==0. || sol.meca.dip>90.)
       	continue;
-	  fprintf(stderr,"%f\n",sol.meca.dip);
+      fprintf(std_range,"%f\t%f\t%f\n",((float)i_dip+1.)*grid.step[2],sol.meca.dip,cos(grid.x0[1]*PI/180.0)-(i_dip*del_dip));
     }
+    fclose(std_range);
 
     best_sol.err = FLT_MAX;
 
