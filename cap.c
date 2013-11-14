@@ -1011,7 +1011,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	temp[1]=asin(sin(mt[1].min*PI/180.0)+(i_iso*del_iso))*(180.0/PI);
 	if (temp[1]==-90. || temp[1]==90. || temp[1] != temp[1])
 	  continue;
-	fprintf(std_range,"%f\t%f\t%f\n",(((float)i_iso)*mt[1].dd)+mt[1].min,sin(temp[1]),temp[1]);
+	fprintf(std_range,"%f\t%f\t%f\n",(((float)i_iso)*mt[1].dd)+mt[1].min,sin(temp[1]*PI/180.),temp[1]);
     }
 
     for (ii=0; ii<3; ii=ii+2){
@@ -1032,7 +1032,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       sol.meca.dip=acos(cos(grid.x0[1]*PI/180.0)-(i_dip*del_dip))*(180.0/PI);   //dip from -1 to 1
       if (sol.meca.dip==0. || sol.meca.dip>90.)
       	continue;
-      fprintf(std_range,"%f\t%f\t%f\n",((float)i_dip+1.)*grid.step[2],sol.meca.dip,cos(grid.x0[1]*PI/180.0)-(i_dip*del_dip));
+      fprintf(std_range,"%f\t%f\t%f\n",((float)i_dip+1.)*grid.step[2],cos(sol.meca.dip*PI/180.),sol.meca.dip);
     }
     fclose(std_range);
 
