@@ -84,7 +84,7 @@
 ****************************************************************/
 #include "cap.h"
 
-int total_n,loop=0,start=0,debug=0, only_first_motion=0, misfit_on_lune=0, Npoints,Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
+int total_n,loop=0,start=0,debug=0, only_first_motion=1, misfit_on_lune=0, Npoints,Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
 float data2=0.0,max_amp=0.0,synt2=0.0,synt,st2,err2,synt1,err1,st1,reco,synth;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search;
@@ -129,13 +129,8 @@ int main (int argc, char **argv) {
  
   /* get station info and polarity */
   FILE *fidfmp;
-  float stnpp;  // stn radius on beachball
-  float stnaz;  // stn azim
-  float toa;    // takeoff angle
-  if(only_first_motion)
-  {
-      fidfmp = fopen("out.fmp_stndata_","w");
-  }
+  FMPDATA *fmpdata;
+  fmpdata = (FMPDATA *) malloc(sizeof(FMPDATA));
 
   /****** input control parameters *************/
   char mod_dep[]="-999";         /* 20130102 calvizuri - for renaming .out file */
@@ -143,6 +138,14 @@ int main (int argc, char **argv) {
   int depth=-999;
   scanf("%s %d",model, &depth);  /* 20130102 calvizuri - end */
   edep=depth;
+
+  if(only_first_motion)
+  {
+      strcpy(fmpdata->evid, eve);
+      strcpy(fmpdata->vmod, model);
+      fmpdata->idep = depth;
+      fidfmp = fopen("out.fmp_stndata_","w");
+  }
 
   scanf("%f%f%f%f%d%d%f%f",&x1,&y1,&x,&y,&repeat,&bootstrap,&fm_thr,&tie);
   if (repeat) for(j=0;j<NCP;j++) scanf("%f",rms_cut+4-j);
@@ -328,11 +331,13 @@ int main (int argc, char **argv) {
 
     if(only_first_motion)
     {
-        // get first motion parameters from each station
-        stnaz = hd->az;
-        fprintf(fidfmp,"%8s %10.6f %10.6f d= %10.6f az= %10.6f ",
-                obs->stn, hd->stlo, hd->stla, hd->dist, stnaz);
+        fmpdata->azim = hd->az;
+        strcpy(fmpdata->stname, obs->stn);
+        fmpdata->stlo = hd->stlo;
+        fmpdata->stla = hd->stla;
+        fmpdata->dist = hd->dist;
     }
+
     for(j=0;j<NGR;j++) {
       *c_pt = grn_com[j];
       indx = 0; if (j>1) indx = 1; if (j>=kk[2]) indx=2;
@@ -351,6 +356,7 @@ int main (int argc, char **argv) {
     } else {
       obs->alpha = hd[2].user1;
       for(j=1;j<nup;j++) {
+        /* type:  1=P; 2=SV; 3=SH; positive=up; negative=down */
         fm->type = up[j-1];
         fm->az = obs->az;
         if (abs(fm->type)==1)	fm->alpha = hd[2].user1;
@@ -363,16 +369,10 @@ int main (int argc, char **argv) {
     /* get data for first motion polarity */
     if(only_first_motion)
     {
-        toa = hd->user1;
-        if(toa > 90.0)
-        {
-            // project to lower hemisphere
-            stnaz += 180.0;
-            toa = 180.0-toa;
-        }
-        stnpp = sqrt(2.0) * sin(toa * PI/360.0);
-        fprintf(fidfmp,"toa= %10.6f POL: %2d %10.6f %10.6f\n", 
-                toa, up[0], stnpp, stnaz);
+        fmpdata->pol = up[0];
+        fmpdata->toa = hd[2].user1;
+        fmpdata->tp = hd[2].t1;
+        fmpdata->ts = hd[2].t2;
     }
 
     /*** calculate time shift needed to align data and syn approximately ****/
@@ -517,12 +517,18 @@ int main (int argc, char **argv) {
     for(j=0;j<NRC;j++) free(data[j]);
     for(j=0;j<NGR;j++) free(green[j]);
 
+    if(only_first_motion)
+    {
+        fmp_print_parameters(fidfmp, fmpdata);
+    }
+
   }	/*********end of loop over stations ********/
 
   /*  first motion polarity - close file */
   if(only_first_motion)
   {
       fclose(fidfmp);
+      free(fmpdata);
   }
   fprintf(stderr,"Nsta= %d",Nsta);
   data2=rec2/Nsta;
