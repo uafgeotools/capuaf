@@ -98,6 +98,25 @@ typedef struct {
 	int	type;	/* 1=P; 2=SV; 3=SH; positive=up; negative=down */
 } FM;
 
+/* data for processing first-motion polarity */
+typedef struct {
+    char evid[256];
+    char stname[256];
+    char vmod[256]; // name of velocity model
+
+    int idep;       // inversion depth
+    float toa;      // takeoff angle
+
+    float dist;     // source-stn distance
+
+    float stlo;
+    float stla;     
+    float azim;
+    float strad_lh; // station location on lower hemisphere (bb plot)
+    int pol;        // observed polarity
+    float tp, ts;   // arrival time for p and s waves
+} FMPDATA;
+
 /* function declaration */
 SOLN	error(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int);
 void    taper(float *aa, int n);
@@ -107,6 +126,6 @@ int	discard_bad_data(int,DATA *,SOLN,float,float *);
 int	check_first_motion(float mt[3][3], FM *fm, int n, float fm_thr);
 void tt2cmt(float gamma, float delta, float m0, float kappa, float theta, float sigma, float mtensor[3][3]);
 void misfit_first_motion(float mtensor[3][3], int nsta, FM *data, FILE *fid, float gamma, float delta, float mw, float kappa, float theta, float sigma);
-
+void fmp_print_parameters(FILE *fid, FMPDATA *fmpdata);
 
 #endif
