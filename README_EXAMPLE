@@ -140,22 +140,22 @@ EXAMPLE 2: Illinois event, DC with P wave polarities in weight file
 3. Follow same step 3 EXAMPLE 1
 
 a. Run cap with all available polarities
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat 
 ==> since all polarities are consistent with the waveform-only solution, the solution is the sames as in EXAMPLE 1
 
 b. run cap with only one polarity measurement
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
 
 c. run cap with all polarities but one flipped: PVMO
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 ==> solution is slightly worse, as PVMO was nearly nodal and is now within a colored quadrant
 
 d. run cap with all polarities but one flipped: WVT
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
 ==> solution is significantly worse, since WVT was not nodal and is now within a colored quadrant
 
 e. run cap with all polarities but one flipped: BLO
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
 ==> no solution is possible
 
 note: the command "-I10/0.1 -J0/0/0/0" could be added but will not affect the results
@@ -178,24 +178,24 @@ fm_thr=-1.0, -0.2, -0.1, 0, 0.4, 1.0 (see cap flag -F to set thresholds).
 4. Run cap with with 
 
 a. no MT grid point is rejected, so the solution is same as EXAMPLE 1 (PVMO obs does not match PVMO pred)
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-1.0 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-1.0 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 b. a relatively small number of MT grid points are rejected that have large-amplitude mismatch of polarities;
    this solution, with PVMO not matching PVMO pred, is not rejected beacause the PVMO is low amplitude
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-0.2 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-0.2 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 c. PVMO is "just" inside the colored quadrant
    note: PVMO could be "just" inside the white quadrant as well
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-0.1 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-0.1 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 d. PVMO is "just" inside the colored quadrant (PVMO obs does match PVMO pred)
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F0.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F0.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 e. the solution seeks to maximize the minimum amplitude associated with any (correct) polarity (PVMO obs does match PVMO pred)
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F0.4  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F0.4  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 f. no solution, since every MT grid point is rejected with some station having too small an amplitude
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F1.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F1.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 ====================================================================================
 EXAMPLE 4: Illinois event, FMT with Zhu line search
