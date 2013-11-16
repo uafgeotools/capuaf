@@ -84,7 +84,7 @@
 ****************************************************************/
 #include "cap.h"
 
-int total_n,loop=0,start=0,debug=0, only_first_motion=1, misfit_on_lune=0, Npoints,Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
+int total_n,loop=0,start=0,debug=0, only_first_motion=0, misfit_on_lune=0, Npoints,Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
 float data2=0.0,max_amp=0.0,synt2=0.0,synt,st2,err2,synt1,err1,st1,reco,synth;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search;
@@ -524,12 +524,6 @@ int main (int argc, char **argv) {
 
   }	/*********end of loop over stations ********/
 
-  /*  first motion polarity - close file */
-  if(only_first_motion)
-  {
-      fclose(fidfmp);
-      free(fmpdata);
-  }
   fprintf(stderr,"Nsta= %d",Nsta);
   data2=rec2/Nsta;
   if (nda < 1) {
@@ -550,10 +544,7 @@ int main (int argc, char **argv) {
     if ((mt[1].dd<=1&&mt[1].dd!=0) || (mt[2].dd<=1&&mt[2].dd!=0))
       fprintf(stderr,"Warning: Very fine grid-search = Expecting line-search\n(set search=0) or increase search increment (-J flag)\n");
     fprintf(stderr,"----------starting grid-search-----------\n");
-    if(only_first_motion)
-    {
-        fprintf(stderr,"NOTE: Computing only first motion. results output to out.misfit.fmp_\n");
-    }
+
     if(misfit_on_lune)
     {
         fprintf(stderr,"NOTE: misfit on lune output to file out.misfit.wf_\n");
@@ -564,6 +555,17 @@ int main (int argc, char **argv) {
 
  INVERSION:
   sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search);
+
+  /* if runnning in first-motion-polarity mode clean up and end cap
+   * after grid search in error function
+   */
+  if(only_first_motion)
+  {
+      fclose(fidfmp);
+      free(fmpdata);
+      fprintf(stderr,"NOTE: Computing only first motion. results output to out.misfit.fmp_\n");
+      return 0;
+  }
 
   dof = nof_per_samp*total_n;
   x2 = sol.err/dof;		/* data variance */
@@ -981,6 +983,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     mt[0].max = mt[0].par+mw_ran;
     mt[0].min = mt[0].par-mw_ran;
 
+    // reset magnitude range to so that cap runs only once in this mode
     if(only_first_motion) 
     {
         mt[0].min = mt[0].par;
@@ -1079,7 +1082,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		    continue;
 		  tt2cmt(temp[2], temp[1], 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
 
-          // compute misfit from first motion. data will be output to out.misfit_fm.txt
+          // compute misfit from first motion. data will be output to out.misfit.fmp_
           if(only_first_motion)
           {
               misfit_first_motion(mtensor, nfm, fm, fidfmp, temp[2], temp[1], temp[0], sol.meca.stk, sol.meca.dip, sol.meca.rak);

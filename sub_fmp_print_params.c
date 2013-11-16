@@ -18,7 +18,7 @@ void fmp_print_parameters(FILE *fid, FMPDATA *fmpdata)
 
     /* output data to file */
     /* possibly add event lat/lon/dep */
-    fprintf(fid, "%s %s %11.6f %11.6f %2d %s %02d %7.2f %7.2f %f %6.2f %6.2f %5.1f\n",
+    fprintf(fid, "%14s %8s %11.6f %11.6f %2d %12s %02d %7.2f %7.2f %f %6.2f %6.2f %5.1f\n",
             fmpdata->evid, fmpdata->stname,
             fmpdata->stlo, fmpdata->stla,
             fmpdata->pol,
