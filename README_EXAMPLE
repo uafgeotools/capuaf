@@ -403,6 +403,25 @@ NOTES
 - No figure should be created when running first motion polarity (run without -P flag)
 
 ====================================================================================
+EXAMPLE 13: Bolivia event 20100516-063454, FMT with lune parameterization, full grid search (no line search)
+
+ISO will be gridded by considering equal spacing in sin(iso) space
+DIP will be gridded by considering equal spacing in cos(dip) space
+
+1. Follow same step 1 EXAMPLE 1
+2. Follow same step 2 EXAMPLE 1
+3. Follow same step 3 EXAMPLE 1
+4. Compile cap
+5. Run cap
+> ./cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.5/4/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I10/0.2/10 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_picks_pol.dat 20100516063454
+
+NOTES
+- this result is an improvement of CIG2013 result. Key changes:
+    set -L0.1
+    set weights as: 1 1 60 60 60
+    specify P arrival times for all stations used in inversion
+    
+====================================================================================
 TIPS
 
 1. If running in debug mode, remember to remove all the log files otherwise they will be appended (not overwritten!).
