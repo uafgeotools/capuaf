@@ -325,6 +325,11 @@ sub plot {
       printf PLT "%f %f 10 0 0 1 $aa[0]\n",$x-0.8*$spis,$y;            # station label
       printf PLT "%f %f 10 0 0 1 $aa[1]\n",$x-0.7*$spis,$y-0.2;        # distance_km/overal time shift
       printf PLT "%f %f 10 0 0 1 %.1f\n",$x-0.7*$spis,$y-0.4,$az[$i];  # azimuth (see az above)
+      # if polarity is 0 or does not exist, then nothing is written
+      # note: 23 entry is observed polarity (from input file) and is optional
+      if ( $aa[23] ) {
+         printf PLT "%f %f 10 0 0 1 $aa[23]\n",$x-0.7*$spis,$y-0.6;
+      }
       $i=$i+1;
       $y--;
     }
