@@ -318,17 +318,17 @@ sub plot {
     $i=0;
     foreach (@aaaa) {
       @aa = split;
-# debug. aa=PLMK_XP 11.2/-0.00 1 1.09e-13 82 -0.19 1 1.55e-13 64 -0.19 1 9.71e-12 71 2.26 1 8.90e-12 85 2.26 1 8.18e-12 80 0.66
-#               |   |          |    |
-#               1   2          3    4     5     6  7    8     9   10   11   12    13  14  15   16    17  18  19  20     21  22
+#debug. aa=PLQU_XP 17.6/-0.73 1 2.61e-10 89  0.16 1 2.24e-09  9  0.16 60 8.74e-11 67 2.65 60 5.94e-10 41  2.65 60 8.03e-10 44  3.67 -1
+#             |        |      |    |     |     |  |    |      |   |   |    |      |   |   |   |       |   |    |  |        |   |    |
+#             0        1      2    3     4     5  6    7      8   9  10   11     12  13  14  15      16  17   18  19       20  21   22
       $x = 0;
       printf PLT "%f %f 10 0 0 1 $aa[0]\n",$x-0.8*$spis,$y;            # station label
       printf PLT "%f %f 10 0 0 1 $aa[1]\n",$x-0.7*$spis,$y-0.2;        # distance_km/overal time shift
       printf PLT "%f %f 10 0 0 1 %.1f\n",$x-0.7*$spis,$y-0.4,$az[$i];  # azimuth (see az above)
       # if polarity is 0 or does not exist, then nothing is written
-      # note: 23 entry is observed polarity (from input file) and is optional
-      if ( $aa[23] ) {
-         printf PLT "%f %f 10 0 0 1 $aa[23]\n",$x-0.7*$spis,$y-0.6;
+      # note: 22 entry is observed polarity (from input file) and is optional
+      if ( $aa[22] ) {
+         printf PLT "%f %f 10 0 0 1 $aa[22]\n",$x-0.7*$spis,$y-0.6;
       }
       $i=$i+1;
       $y--;
