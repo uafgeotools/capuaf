@@ -21,8 +21,8 @@ $cmd = "cap";
 
 # green's function location
 #$green = "$home/data/models/Glib";        # original
-$green = "/store/wf/FK_synthetics";       # standard models at UAF
-#$green = "$caprun/models";                # user testing
+#$green = "/store/wf/FK_synthetics";       # standard models at UAF
+$green = "$caprun/models";                # user testing
 
 $repeat = 0;
 $bootstrap = 0;
