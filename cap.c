@@ -634,7 +634,8 @@ int main (int argc, char **argv) {
       kc = sol.cfg[i][k]; if (kc<0) kc = 0;
       fprintf(f_out," %1d %8.2e %2d %5.2f",obs->com[k].on_off,sol.error[i][k],kc,shft0[i][k]+dt*sol.shft[i][k]);
     }
-    fprintf(f_out,"\n");
+    fprintf(f_out," %2d\n", fm0->type);
+    fm0++;  /* iterate structure with polarity data */ 
   }
   fclose(f_out);
 
