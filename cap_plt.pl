@@ -389,12 +389,13 @@ sub plot {
 
     
     # plot beachball
-    # note 1: magnitude scale is "fixed" at 1e17 for psmeca -Sm and 1 for psmeca -Sa
-    # note 2: moment tensor is converted from AkiRichads basis to GCMT basis, which is required for psmeca
+    # note: magnitude scale is "fixed" at 1e17 for psmeca -Sm and 1 for psmeca -Sa
     open(PLT, $plt3);
     if ($tensor[1] eq "tensor") {
+        # moment tensor is converted from AkiRichads basis to GCMT basis, which is required for psmeca
         printf PLT "0 0 0 @tensor[9,4,7,6] %f %f 17\n",-$tensor[8],-$tensor[5];
     } else {
+        # focal mechanism is plotted from the M0, strike/dip/rake values
         printf PLT "0 0 0 @meca[5,6,7] 1\n";  # 0.5*$spis,$nn-1;
     }
 #    $x = 2;
