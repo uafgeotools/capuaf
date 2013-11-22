@@ -424,6 +424,7 @@ note: You do not need to run fk if you have a pre-computed library of Green's fu
 This will create 3 additional green functions for each distance of the form dist.grn.(a-c),
 eg. 11.grn.a, 11.grn.b, 11.grn.c
 
+------------
 PART II. cap inversion (polarities + Pnl + Surface)
 
 ISO will be gridded by considering equal spacing in sin(iso) space
@@ -454,13 +455,14 @@ note: all P arrivals times are specified
 note: -L0.1 is a key command to get high-frequency synthetics (but not too high)
 note: the result is an improvement of the CIG2013 poster (same event)
 
-note: time shifts are allowed between 0 s and 5 s, which reflects our belief that either
-        (a) the origin time is wrong
-        (b) the depth is wrong
-        (c) the model is systematically too slow
-      We are able to specify the 0-5 s shifts with two changes:
-        (1) the S_shifts in weight file (last column) are set to 2.5 
-        (2) the actual time shifts are set by -S0.5/2.5/0 to be +/- 2.5 s
+note:
+time shifts are allowed between 0 s and 5 s, which reflects our belief that either
+   (a) the origin time is wrong
+   (b) the depth is wrong
+   (c) the model is systematically too slow
+We are able to specify the 0-5 s shifts with two changes:
+   (1) the S_shifts in weight file (last column) are set to 2.5 
+   (2) the actual time shifts are set by -S0.5/2.5/0 to be +/- 2.5 s
 
 5. check output:
 
