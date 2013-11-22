@@ -424,7 +424,7 @@ note: You do not need to run fk if you have a pre-computed library of Green's fu
 This will create 3 additional green functions for each distance of the form dist.grn.(a-c),
 eg. 11.grn.a, 11.grn.b, 11.grn.c
 
-PART II. cap inversion
+PART II. cap inversion (polarities + Pnl + Surface)
 
 ISO will be gridded by considering equal spacing in sin(iso) space
 DIP will be gridded by considering equal spacing in cos(dip) space
@@ -449,44 +449,38 @@ note: all P arrivals times are specified
 4. run cap
 
 > cd $CAPRUN/inv/utu06
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.5/4/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I10/0.2/10 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_picks_pol.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.5/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I10/0.2/10 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_picks_pol.dat 20100516063454
 
 note: -L0.1 is a key command to get high-frequency synthetics (but not too high)
 note: the result is an improvement of the CIG2013 poster (same event)
-    
+
+note: time shifts are allowed between 0 s and 5 s, which reflects our belief that either
+        (a) the origin time is wrong
+        (b) the depth is wrong
+        (c) the model is systematically too slow
+      We are able to specify the 0-5 s shifts with two changes:
+        (1) the S_shifts in weight file (last column) are set to 2.5 
+        (2) the actual time shifts are set by -S0.5/2.5/0 to be +/- 2.5 s
+
 5. check output:
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt.ps &
 > diff 20100516063454/utu06_010.out $CAPHOME/20100516063454_check/utu06_010.out
 
-PART III. waveform inversion with different cap parameters
+6. try body waves only (+ polarities)
 
-A. Body waves only
-A.1 Turn off surface waves. Change surface weights in weight file to 0, eg
-PLMK_XP/+1  0   1 1 0 0 0
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.5/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I10/0.2/10 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_picks_pol_nosurf.dat 20100516063454
 
-A.2 Run cap and check output
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.5/4/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I10/0.2/10 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_picks_pol.dat 20100516063454
-> gv 20100516063454/utu06_010_fmt_body.ps
+> gv 20100516063454/utu06_010_fmt.ps &
+> gv $CAPHOME/20100516063454_check/utu06_010_fmt_body.ps &
 
-B. Surface waves only
-B.1 Turn off body . Change body weights in weight file to 0, eg
-PLMK_XP/+1  0   0 0 1 1 1
+7. try surface waves only (+ polarities)
 
-B.2 Run cap and check output
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.5/4/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I10/0.2/10 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_picks_pol.dat 20100516063454
-> gv 20100516063454/utu06_010_fmt_surf.ps
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.5/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I10/0.2/10 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_picks_pol_nobody.dat 20100516063454
 
-C. Custom time shifts (surface waves only)
-Most stations for this event require positive time shifts, so negative shifts
-for surface waves be disabled. From +/-4 allow to time shifts between 0 and 5
-
-C.1 change flag -S0.5/4/0 to -S0.5/2.5/0, then change S_shifts in weight file (last column) to 2.5
-eg.
-PLMK_XP/+1  0   1 1 60 60 60    2.5 0.0 0.0 0.0 2.5 <-- last column
-
-
+> gv 20100516063454/utu06_010_fmt.ps &
+> gv $CAPHOME/20100516063454_check/utu06_010_fmt_surf.ps &
 
 ====================================================================================
 TIPS
