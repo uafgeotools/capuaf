@@ -5,10 +5,12 @@ sub plot {
 #  local($mdl, $t1, $t2, $am, $num_com, $spis) = @_; # original
   local($mdl, $t1, $t2, $am, $num_com, $spib, $spis, $filterBand, $fmt_flag) = @_;
   local($nn,$tt,$plt1,$plt2,$plt3,$plt4,$i,$nam,$com1,$com2,$j,$x,$y,@aa,$rslt,@name,@aztk);
+
+# set this =1 if you want to plot time windows that have been excluded
   local $keepBad = 0;
   
   @trace = ("1/255/255/255","3/0/0/0");       # plot data trace
-  @name = ("P V","P R","Surf. V"," Surf R","SH");
+  @name = ("P V","P R","Surf V"," Surf R","Surf T");
 
   $filterBand = "Filter periods (seconds): $filterBand";    # 20120719 - report filter bands
   
@@ -117,7 +119,7 @@ sub plot {
   $plt4b = "| psxy -JPa1i -R0/360/0/1 -Sc0.02i -N -W0.5p,0/0/0 -G255 -O -K >> $outps";
 
   # supplemental: upper hemisphere piercing points on beachballs (o)
-  $plt4a = "| psxy -JPa1i -R0/360/0/1 -Sc0.08i -N -W0.5p,255/0/0 -O -K >> $outps";
+  #$plt4a = "| psxy -JPa1i -R0/360/0/1 -Sc0.08i -N -W0.5p,255/0/0 -O -K >> $outps";
 
   # default: lower hemisphere piercing points on beachballs (x) (last command: no -K appears)
   $plt4 = "| psxy -JPa1i -R0/360/0/1 -Sx0.10i -N -W0.5p,255/0/0 -G255 -O -K >> $outps";
