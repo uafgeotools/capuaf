@@ -438,9 +438,9 @@ DIP will be gridded by considering equal spacing in cos(dip) space
 
 2. check the weight.dat file
 
-> more 20100516063454/weight_picks_pol.dat
+> more 20100516063454/weight.dat
 
-note: weights are set as 1 1 1 60 60 60, which gives all weight to surface waves
+note: weights are set as 1 1 1 1 1 1, which gives equal weight to body waves and surface waves
 note: all P arrivals times are specified
 
 3. check that cap is compiled
@@ -450,9 +450,9 @@ note: all P arrivals times are specified
 4. run cap
 
 > cd $CAPRUN/inv/utu06
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I10/0.2/10 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_picks_pol.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight.dat 20100516063454
 
-note: lune grid will NOT do a refined search, so pick -I accordingly (here: 10 deg inc on lune; 0.2 inc Mw)
+note: lune grid will NOT do a refined search, so pick -I accordingly (here: 5 deg inc on lune; 0.2 inc Mw)
 note: because all P arrivals are hand-picked (to within 0.05 s), we can set the allowable time shift for P to 0.2 s
 note: -L0.1 is a key command to get high-frequency synthetics (but not too high)
 note: the result is an improvement of the CIG2013 poster (same event)
@@ -474,23 +474,23 @@ We are able to specify the 0-5 s shifts with two changes:
 
 6. try the same run, but with equal weights for body waves and surface waves:
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I10/0.2/10 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_picks_pol_2.dat 20100516063454
+note: weights are set as 1 1 1 60 60 60, which gives all weight to surface waves
+
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_2.dat 20100516063454
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt_2.ps &
 
 7. try body waves only (+ polarities)
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I10/0.2/10 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_picks_pol_nosurf.dat 20100516063454
-
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I10/0.2/10 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_picks_pol_nosurfX.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_body.dat 20100516063454
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt_body.ps &
 
 8. try surface waves only (+ polarities)
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I10/0.2/10 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_picks_pol_nobody.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_surf.dat 20100516063454
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt_surf.ps &
