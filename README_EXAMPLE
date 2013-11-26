@@ -450,18 +450,18 @@ note: all P arrivals times are specified
 4. run cap
 
 > cd $CAPRUN/inv/utu06
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight.dat 20100516063454
 
 note: lune grid will NOT do a refined search, so pick -I accordingly (here: 5 deg inc on lune; 0.2 inc Mw)
 note: because all P arrivals are hand-picked (to within 0.05 s), we can set the allowable time shift for P to 0.2 s
-note: -L0.1 is a key command to get high-frequency synthetics (but not too high)
+note: -L gives the half-duration of the synthetics; this is a key command to get high-frequency synthetics in P (but not too high)
 note: the result is an improvement of the CIG2013 poster (same event)
 
 note:
-surface wave time shifts are allowed between 0 s and 5 s, which reflects our belief that either
-   (a) the origin time is wrong
+surface wave time shifts are allowed to be between 0 s and 5 s, which reflects our belief that either:
+   (a) the model is systematically too slow
    (b) the depth is wrong
-   (c) the model is systematically too slow
+   (c) the origin time is wrong
 We are able to specify the 0-5 s shifts with two changes:
    (1) the S_shifts in weight file (last column) are set to 2.5 
    (2) the actual time shifts are set by -S0.5/2.5/0 to be +/- 2.5 s
@@ -472,28 +472,36 @@ We are able to specify the 0-5 s shifts with two changes:
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt.ps &
 > diff 20100516063454/utu06_010.out $CAPHOME/20100516063454_check/utu06_010.out
 
-6. try the same run, but with equal weights for body waves and surface waves:
+6. try the same run, but with different weights:
 
 note: weights are set as 1 1 1 60 60 60, which gives all weight to surface waves
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_2.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_2.dat 20100516063454
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt_2.ps &
 
 7. try body waves only (+ polarities)
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_body.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_body.dat 20100516063454
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt_body.ps &
 
 8. try surface waves only (+ polarities)
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_surf.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_surf.dat 20100516063454
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt_surf.ps &
+
+9. try body waves only (no polarities)
+
+note: by not using polarities (to exclude large portions of misfit space), the search takes much longer
+
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_body_nopol.dat 20100516063454
+
+FIGURES STILL NEED TO BE ADDED.
 
 ====================================================================================
 TIPS
