@@ -495,13 +495,14 @@ note: weights are set as 1 1 1 60 60 60, which gives all weight to surface waves
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt_surf.ps &
 
-9. try body waves only (no polarities)
+9. try body + surf but no polarities
 
-note: by not using polarities (to exclude large portions of misfit space), the search takes much longer
+note: by not using polarities (to exclude large portions of misfit space), the search takes MUCH longer
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_body_nopol.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_nopol.dat 20100516063454
 
-FIGURES STILL NEED TO BE ADDED.
+> gv 20100516063454/utu06_010_fmt.ps &
+> gv $CAPHOME/20100516063454_check/utu06_010_fmt_nopol.ps &
 
 ====================================================================================
 TIPS
