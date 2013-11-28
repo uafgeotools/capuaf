@@ -637,7 +637,7 @@ int main (int argc, char **argv) {
     
     /* output observed polarity and predicted rad amplitude */
     fprintf(f_out," %2d ", fm0->type);
-    fprintf(f_out, "%4.1e\n", radpmt(mtensor, fm0->alpha, fm0->az, 1)); 
+    fprintf(f_out, "%6.2f\n", radpmt(mtensor, fm0->alpha, fm0->az, 1)); 
     fm0++;  /* iterate structure with polarity data */ 
   }
   fclose(f_out);
