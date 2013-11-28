@@ -330,7 +330,7 @@ sub plot {
       # if polarity is 0 or does not exist, then nothing is written
       # note: 22 entry is observed polarity (from input file) and is optional
       if ( $aa[22] ) {
-         printf PLT "%f %f 10 0 0 1 $aa[22]\n",$x-0.7*$spis,$y-0.6;
+         printf PLT "%f %f 10 0 0 1 $aa[22] ($aa[23])\n",$x-0.7*$spis,$y-0.6;
       }
       $i=$i+1;
       $y--;
