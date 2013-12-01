@@ -117,6 +117,24 @@ typedef struct {
     float tp, ts;   // arrival time for p and s waves
 } FMPDATA;
 
+/* for tracking misfit at each (gamma,delta) on the lune */
+typedef struct {
+    /* lune coordinates */
+    float gamma;
+    float delta;
+    /* misfit */
+    float misfit;
+    /* moment tensor */
+    float mrr;
+    float mtt;
+    float mpp;
+    float mrt;
+    float mrp;
+    float mtp;
+
+    float mag;
+} LUNE_MISFIT;
+
 /* function declaration */
 SOLN	error(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int);
 void    taper(float *aa, int n);

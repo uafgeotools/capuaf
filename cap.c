@@ -718,10 +718,10 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   FILE *log,*st_err1, *st_err2,*std_range;
   char logfile[16],st_err_body[20],st_err_surf[20], range_file[20];
 
-  /* parameters that produce least misfit */
-  float best_err, best_stk, best_dip, best_rak;
+  /* vars to track smallest misfit at each (gamma,delta) on the lune */
   FILE *fidmol;
-  /* output of misfit on lune */
+  LUNE_MISFIT * bestmisfit;
+  bestmisfit = (LUNE_MISFIT *) malloc(sizeof(LUNE_MISFIT));
   if(misfit_on_lune)
   {
       fidmol=fopen("out.misfit.wf_","w");
@@ -1066,7 +1066,20 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	  //--------newly added section ends here-------------
        
        	  {  // the base case: grid-search for strike, dip, and rake =============
-        best_err = FLT_MAX; /* used when misfit_on_lune=1 */
+
+        /*  variables to track smallest misfit at each (gamma,delta) on the lune */
+        /*  used only when misfit_on_lune=1 */
+        bestmisfit->misfit = FLT_MAX;
+        bestmisfit->gamma  = NAN;
+        bestmisfit->delta  = NAN;
+        bestmisfit->mrr = NAN;
+        bestmisfit->mtt = NAN;
+        bestmisfit->mpp = NAN;
+        bestmisfit->mrt = NAN;
+        bestmisfit->mrp = NAN;
+        bestmisfit->mtp = NAN;
+        bestmisfit->mag = NAN;
+
 	    amp = pow(10.,1.5*temp[0]+16.1-20);
 	    grd_err = grid.err;
 	    for(i_rak=0; i_rak<grid.n[2]; i_rak++) {
@@ -1216,17 +1229,27 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		  reco=reco/Nsta;
 		  //fprintf(stderr, "data2=%e synt2=%e\n",data2,synt2);
 		  *grd_err++ = sol.err;		/*error for this solution*/
+
+          /* track smallest misfit at each (gamma,delta) on the lune */
           if(misfit_on_lune)
           {
-              // remember smallest misfit for a given gamma/delta on lune
-              if(best_err > sol.err)
+              if(sol.err < bestmisfit->misfit)
               {
-                  best_err = sol.err;
-                  best_stk = sol.meca.stk;
-                  best_dip = sol.meca.dip;
-                  best_rak = sol.meca.rak;
+                  bestmisfit->gamma = temp[2];
+                  bestmisfit->delta = temp[1];
+                  bestmisfit->misfit = sol.err;
+                  /* GCMT format (ready for psmeca) */
+                  bestmisfit->mrr = mtensor[2][2];
+                  bestmisfit->mtt = mtensor[0][0];
+                  bestmisfit->mpp = mtensor[1][1];
+                  bestmisfit->mrt = mtensor[0][2];
+                  bestmisfit->mrp = -mtensor[1][2];
+                  bestmisfit->mtp = -mtensor[0][1];
+  
+                  bestmisfit->mag = temp[0];
               }
           }
+
 		  if (best_sol.err>sol.err) {best_sol = sol; synth=synt; //fprintf(stderr, "synt=%e data2=%e err=%e\n",synth,data2,sol.err);
 		    if (0) fprintf(stderr,"misfit for best sol = %f; stk=%3.1f, dip=%3.1f, rak=%3.1f \n",best_sol.err,sol.meca.stk, sol.meca.dip, sol.meca.rak);
 		    mt[0].par=temp[0];
@@ -1241,8 +1264,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		    //fprintf(stderr,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err,  temp[0], temp[1], temp[2]);
 		    fclose(log);	  
 		  }
-		} // stk loop
-	      }   // dip loop
+		}   /* end stk loop */
+	      } /* end dip loop */
 	    
 	      if (sol.meca.stk==(grid.x0[0]+(grid.n[0]-1)*grid.step[0]) &&  sol.meca.dip==(grid.x0[1]+(grid.n[1]-1)*grid.step[1]) &&  sol.meca.rak==(grid.x0[2]+(grid.n[2]-1)*grid.step[2])){
 		loop++;
@@ -1255,22 +1278,28 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		fprintf(log,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
 		fclose(log);
 	      }
-	    }  // rak loop
+	    }  /* end rak loop */
 	    if (1) fprintf(stderr,"Mw=%2.1f \t iso=%2.2f \t clvd=%2.2f\n",temp[0],temp[1],temp[2]);
 
+        /* output smallest misfit at each (gamma,delta) on the lune */
         if(misfit_on_lune)
         {
-            fprintf(fidmol,"%5.1f %5.1f %5.1f %5.1f %5.1f %e %3.1f\n",
-                    temp[1], temp[2], best_stk, best_dip, best_rak, best_err, temp[0]);
+            fprintf(fidmol,"%6.2f %6.2f %9.6e %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f %4.1f\n",
+                    bestmisfit->gamma, bestmisfit->delta, bestmisfit->misfit,
+                    bestmisfit->mrr, bestmisfit->mtt, bestmisfit->mpp,
+                    bestmisfit->mrt, bestmisfit->mrp, bestmisfit->mtp,
+                    bestmisfit->mag);
         }
-	  }
-      }
-    }
+
+	  } /* end clvd loop */
+      } /* end iso loop */
+    }   /* end mag loop */
 
     if(misfit_on_lune)
     {
         fclose(fidmol);
-        fprintf(stdout, "\nFinished writing misfit to file out.misfit.wf_\n");
+        free(bestmisfit);
+        fprintf(stdout, "\nFinished writing waveform misfit to file out.misfit.wf_\n");
     }
  
     if(only_first_motion)
