@@ -390,7 +390,7 @@ EXAMPLE 12: Bolivia event 20100516-063454, first motion polarity
 1. In cap.c change: only_first_motion=1
 2. Compile cap
 3. Run cap
-> ./cap.pl -F0.0 -I5/0/5 -J-90/90/-30/30 -Mutu06_10/3.0 -E1 -K1 -Zweight_fmp.dat 20100516063454
+> ./cap.pl -F0.0 -I5/0/5 -J-90/90/-30/30 -Mutu06_5/3.0 -E1 -K1 -Zweight_fmp.dat 20100516063454
 
 4. Process misfit data output from cap (file out.misfit.fmp_)
 > misfit2lune.py out.misfit.fmp_ > out.misfit_summ_20100516-063454
@@ -440,7 +440,7 @@ DIP will be gridded by considering equal spacing in cos(dip) space
 
 > more 20100516063454/weight.dat
 
-note: weights are set as 1 1 1 1 1 1, which gives equal weight to body waves and surface waves
+note: weights are set as 1 1 1 1 1, which gives equal weight to body waves and surface waves
 note: all P arrivals times are specified
 
 3. check that cap is compiled
@@ -450,7 +450,7 @@ note: all P arrivals times are specified
 4. run cap
 
 > cd $CAPRUN/inv/utu06
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_5/3.1 -Zweight.dat 20100516063454
 
 note: lune grid will NOT do a refined search, so pick -I accordingly (here: 5 deg inc on lune; 0.2 inc Mw)
 note: because all P arrivals are hand-picked (to within 0.05 s), we can set the allowable time shift for P to 0.2 s
@@ -476,21 +476,21 @@ We are able to specify the 0-5 s shifts with two changes:
 
 note: weights are set as 1 1 1 60 60 60, which gives all weight to surface waves
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_2.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_5/3.1 -Zweight_2.dat 20100516063454
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt_2.ps &
 
 7. try body waves only (+ polarities)
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_body.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_5/3.1 -Zweight_body.dat 20100516063454
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt_body.ps &
 
 8. try surface waves only (+ polarities)
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_surf.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_5/3.1 -Zweight_surf.dat 20100516063454
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt_surf.ps &
@@ -499,14 +499,14 @@ note: weights are set as 1 1 1 60 60 60, which gives all weight to surface waves
 
 note: by not using polarities (to exclude large portions of misfit space), the search takes MUCH longer
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_10/3.1 -Zweight_nopol.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_5/3.1 -Zweight_nopol.dat 20100516063454
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt_nopol.ps &
 
 10. try body + surf + polarities BUT constrained to DC
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.5/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2 -J0/0/0/0 -E1 -K1 -Mutu06_10/3.1 -Zweight.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2 -J0/0/0/0 -E1 -K1 -Mutu06_5/3.1 -Zweight.dat 20100516063454
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_dc.ps &
