@@ -1,3 +1,4 @@
+% dvips -t letter misfit.dvi -o misfit.ps ; ps2pdf misfit.ps
 \documentclass[11pt,titlepage,fleqn]{article}
 
 \usepackage{amsmath}
@@ -39,7 +40,8 @@ Vipul Silwal \\
 Geophysical Institute \\
 University of Alaksa\\
 Fairbanks, Alaska\\
-\today}
+Last compiled: \today
+}
 \end{center}
 %==================================================================
 \tableofcontents
@@ -505,7 +507,7 @@ The scaled logarithmic variation Eq.\ref{err4prob} of misfit could be used to ge
 \en
 where $k = \int \exp (-E_2(\bem)\ d\bem$ is the normalization factor and $\bem$ are our model parameters ($\phi,\delta,\lambda$). $\bsigma(\bem)$ is the posterior probability density function. However, this is does not include any knowledge of the {\it shape} of the space in itself, \ie the information about the homoegenous probability of model space parameters. \citep{Tarantola_2006}. To get 'the' solution, homogenous state of information ($\bmu(\bem)$) must be introduced in order to achieve the actual likelihood of solution. This could be done by:
 \eq
-\L(\bem)=\frac{\bsigma(\bem)}{\bmu(\bem)}
+L(\bem)=\frac{\bsigma(\bem)}{\bmu(\bem)}
 \en
 In case of double couple, homogeneous state of information $\bmu(\bem) = \bmu{\phi,\delta,\lambda}$ is giben by:
 \eqa
@@ -535,6 +537,6 @@ L(\bem)&=& L'(\bxi)
 %=================
 \addcontentsline{toc}{section}{Bibliography}
 \bibliographystyle{agu}
-\bibliography{report_ref.bib}
+\bibliography{report_ref}
 %=================
 \end{document}
