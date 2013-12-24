@@ -35,14 +35,10 @@ sub plot {
   @rslt=grep(!/^#/,@rslt);
   $nrow = @rslt;
 
-  $pwidth_in = 8.5;  # width of paper    # orig 8.5
-  $pheight_in = $nrow + 2;  # height of paper
-  print "\n$nrow rows to plot";
-  print "\npaper is $pwidth_in inches wide and $pheight_in inches tall";
-  system("gmtset BASEMAP_TYPE plain PAPER_MEDIA Custom_${pwidth_in}ix${pheight_in}i MEASURE_UNIT inch");
+  # Page size
+  $pheight_in = $nrow + 2;  # height of pape
 
   # positions of seismograms on the page
-
   # height of each seismogram
   $nn = int($pheight_in);
   $height = $pheight_in - 0.5;
@@ -68,6 +64,11 @@ sub plot {
 #  @x0 = ($t1+$sepa, $t1+$sepa, $t2+$sepa, $t2+$sepa, $t2);
   @x0 = ($t1+$sepb, $t1+$sepb, $t2+$seps, $t2+$seps, $t2);
   print "\n*** x0=@x0 *** \n";
+
+  $pwidth_in = $width +1.5 ;  # width of paper    # orig 8.5
+  print "\n$nrow rows to plot";
+  print "\npaper is $pwidth_in inches wide and $pheight_in inches tall";
+  system("gmtset BASEMAP_TYPE plain PAPER_MEDIA Custom_${pwidth_in}ix${pheight_in}i MEASURE_UNIT inch");
 
   # horizontal offset (why is it needed?)
 #  $xoffset="3.0";
