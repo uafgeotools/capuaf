@@ -84,7 +84,7 @@
 ****************************************************************/
 #include "cap.h"
 
-int total_n,loop=0,start=0,debug=0, only_first_motion=0, misfit_on_lune=0, Npoints,Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
+int total_n,loop=0,start=0,debug=0, only_first_motion=0, misfit_on_lune=0, Npoints,Nsta=0,Psamp[STN],Ssamp[STN],edep=-999, norm=2;
 float data2=0.0,max_amp=0.0,synt2=0.0,synt,st2,err2,synt1,err1,st1,reco,synth;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search;
@@ -481,6 +481,7 @@ int main (int argc, char **argv) {
 	//fprintf(stderr,"%f\n",max_amp);
       }
       spt->rec2 = x2;
+      if (norm==1) x2 = sqrt(x2);
       rec2 += spt->on_off*x2;
        for(m=0,k=0;k<kc;k++) {
 	f_pt = cutTrace(green[gindx+k], hd[indx].npts, rint((t0[j]-con_shft[i]-shft0[i][j]-hd[indx].b)/dt), npt);
@@ -1195,7 +1196,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		      }
 		      sol.scl[i][j] = y1;
 		   
-		      x1 = (spt->rec2+x2*y1*y1-2.*cfg[j]*y1);
+		      x1 = spt->rec2+x2*y1*y1-2.*cfg[j]*y1;
+		      if (norm==1) x1 = sqrt(x1);
 		      //fprintf(stderr,"%e %e %e\n",spt->rec2,x2,cfg[j]);
 		      sol.error[i][j] = x1;	/*L2 error for this com.*/
 		      sol.cfg[i][j] = 100*cfg[j]/sqrt(spt->rec2*x2);
