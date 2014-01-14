@@ -92,7 +92,7 @@ The old weight file is under the name weight_orig.dat
 
 4. run cap
 
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y2 20080418093700
 
 > gv 20080418093700/cus_015.ps &
 
@@ -120,7 +120,7 @@ Run cap for different depths by setting the range and increment for which you wa
 One output (.out) file should be generated for each depth.
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -A5/30/5 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y2 -A5/30/5 20080418093700
 
 Run depth_test (script for calling depth.pl)
 > depth_test 20080418093700 cus 
@@ -140,22 +140,22 @@ EXAMPLE 2: Illinois event, DC with P wave polarities in weight file
 3. Follow same step 3 EXAMPLE 1
 
 a. Run cap with all available polarities
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat 
 ==> since all polarities are consistent with the waveform-only solution, the solution is the sames as in EXAMPLE 1
 
 b. run cap with only one polarity measurement
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
 
 c. run cap with all polarities but one flipped: PVMO
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 ==> solution is slightly worse, as PVMO was nearly nodal and is now within a colored quadrant
 
 d. run cap with all polarities but one flipped: WVT
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
 ==> solution is significantly worse, since WVT was not nodal and is now within a colored quadrant
 
 e. run cap with all polarities but one flipped: BLO
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
 ==> no solution is possible
 
 note: the command "-I10/0.1 -J0/0/0/0" could be added but will not affect the results
@@ -178,24 +178,24 @@ fm_thr=-1.0, -0.2, -0.1, 0, 0.4, 1.0 (see cap flag -F to set thresholds).
 4. Run cap with with 
 
 a. no MT grid point is rejected, so the solution is same as EXAMPLE 1 (PVMO obs does not match PVMO pred)
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-1.0 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-1.0 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 b. a relatively small number of MT grid points are rejected that have large-amplitude mismatch of polarities;
    this solution, with PVMO not matching PVMO pred, is not rejected beacause the PVMO is low amplitude
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-0.2 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-0.2 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 c. PVMO is "just" inside the colored quadrant
    note: PVMO could be "just" inside the white quadrant as well
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-0.1 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-0.1 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 d. PVMO is "just" inside the colored quadrant (PVMO obs does match PVMO pred)
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F0.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F0.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 e. the solution seeks to maximize the minimum amplitude associated with any (correct) polarity (PVMO obs does match PVMO pred)
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F0.4  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F0.4  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 f. no solution, since every MT grid point is rejected with some station having too small an amplitude
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F1.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F1.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 ====================================================================================
 EXAMPLE 4: Illinois event, FMT with Zhu line search
@@ -223,7 +223,7 @@ note: -J0/0.1/0/0.1 means line search from (0,0) in increments of 0.1 in each di
 
 6. perform the depth test (Green's functions already computed)
 
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -J0/0.1/0/0.1 -A5/30/5 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y2 -J0/0.1/0/0.1 -A5/30/5 20080418093700
 
 Run depth_test (script for calling depth.pl)
 > depth_test 20080418093700 cus 
@@ -243,7 +243,7 @@ EXAMPLE 5: Illinois event, FMT with fixed focal mech (strike/dip/rake/iso/clvd/m
 3. Follow same step 3 EXAMPLE 1
 
 4. run cap
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -E0 -K0 -R296/296/84/84/6/6 -J0.16/0/0.04/0 -I10/0 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -E0 -K0 -Y2 -R296/296/84/84/6/6 -J0.16/0/0.04/0 -I10/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: the solution is slightly better than the result in EXAMPLE 4 (why? precision?)
@@ -266,7 +266,7 @@ This is aimed at performing a secondary analysis of uncertainties outside of CAP
 4.  run cap
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.1 -E1 -K1 -J0/0/0/0 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.1 -E1 -K1 -Y2 -J0/0/0/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: -J0/0/0/0 means fixed ISO and CLVD components -- the command can be omitted and the result will be the same
@@ -287,7 +287,7 @@ EXAMPLE 7: same as EXAMPLE 6 but with fixed magnitude
 4. Run cap
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -E1 -K1 -J0/0/0/0 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -E1 -K1 -Y2 -J0/0/0/0 20080418093700
 
 ====================================================================================
 EXAMPLE 8: Illinois event, FMT with lune parameterization, full grid search (no line search)
@@ -304,7 +304,7 @@ ISO and CLVD will be searched for in their general range (-90 < ISO < +90 ; -30 
 However you can change the increment by using -J flag in the input command line.
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.2/10 -E1 -K1 -J-90/90/-30/30 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.2/10 -E1 -K1 -Y2 -J-90/90/-30/30 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: -J0/5/0/5 means 5 deg increment in ISO (delta) and 5 deg increment in CLVD (longitude); the 0's are ignored in this mode
@@ -323,7 +323,7 @@ EXAMPLE 9: Illinois event, Direct search FMT (LUNE parameterization) with fixed 
 3. Follow same step 3 EXAMPLE 1
 
 4. run cap
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -E1 -K1 -R296/296/84/84/6/6 -J-30/30/10/10 -I10/0/0 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -E1 -K1 -Y2 -R296/296/84/84/6/6 -J-30/30/10/10 -I10/0/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: the solution is slightly better than the result in EXAMPLE 4 (why? precision?)
@@ -343,7 +343,7 @@ EXAMPLE 10: Illinois event, DC with random sample search (optional: grid-search 
 4. Run cap
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0 -E1 -K2 -J0/0/0/0 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0 -E1 -K2 -Y2 -J0/0/0/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 NOTES
@@ -370,7 +370,7 @@ EXAMPLE 11: Illinois event, FMT-fixed-magnitude with random sample search (optio
 5. Run cap
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0/10 -E1 -K2 -J0/1/0/1 20080418093700
+> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0/10 -E1 -K2 -Y2 -J0/1/0/1 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 NOTES
@@ -390,7 +390,7 @@ EXAMPLE 12: Bolivia event 20100516-063454, first motion polarity
 1. In cap.c change: only_first_motion=1
 2. Compile cap
 3. Run cap
-> ./cap.pl -F0.0 -I5/0/5 -J-90/90/-30/30 -Mutu06_5/3.0 -E1 -K1 -Zweight_fmp.dat 20100516063454
+> ./cap.pl -F0.0 -I5/0/5 -J-90/90/-30/30 -Mutu06_5/3.0 -E1 -K1 -Y2 -Zweight_fmp.dat 20100516063454
 
 4. Process misfit data output from cap (file out.misfit.fmp_)
 > misfit2lune.py out.misfit.fmp_ > out.misfit_summ_20100516-063454
@@ -450,7 +450,7 @@ note: all P arrivals times are specified
 4. run cap
 
 > cd $CAPRUN/inv/utu06
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_5/3.1 -Zweight.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Y2 -Mutu06_5/3.1 -Zweight.dat 20100516063454
 
 note: lune grid will NOT do a refined search, so pick -I accordingly (here: 5 deg inc on lune; 0.2 inc Mw)
 note: because all P arrivals are hand-picked (to within 0.05 s), we can set the allowable time shift for P to 0.2 s
@@ -476,21 +476,21 @@ We are able to specify the 0-5 s shifts with two changes:
 
 note: weights are set as 1 1 1 60 60 60, which gives all weight to surface waves
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_5/3.1 -Zweight_2.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Y2 -Mutu06_5/3.1 -Zweight_2.dat 20100516063454
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt_2.ps &
 
 7. try body waves only (+ polarities)
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_5/3.1 -Zweight_body.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Y2 -Mutu06_5/3.1 -Zweight_body.dat 20100516063454
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt_body.ps &
 
 8. try surface waves only (+ polarities)
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_5/3.1 -Zweight_surf.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Y2 -Mutu06_5/3.1 -Zweight_surf.dat 20100516063454
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt_surf.ps &
@@ -499,14 +499,14 @@ note: weights are set as 1 1 1 60 60 60, which gives all weight to surface waves
 
 note: by not using polarities (to exclude large portions of misfit space), the search takes MUCH longer
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Mutu06_5/3.1 -Zweight_nopol.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Y2 -Mutu06_5/3.1 -Zweight_nopol.dat 20100516063454
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_fmt_nopol.ps &
 
 10. try body + surf + polarities BUT constrained to DC
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2 -J0/0/0/0 -E1 -K1 -Mutu06_5/3.1 -Zweight.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2 -J0/0/0/0 -E1 -K1 -Y2 -Mutu06_5/3.1 -Zweight.dat 20100516063454
 
 > gv 20100516063454/utu06_010_fmt.ps &
 > gv $CAPHOME/20100516063454_check/utu06_010_dc.ps &

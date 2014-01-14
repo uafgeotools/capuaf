@@ -62,6 +62,9 @@ $power_of_surf=0.5;
 $parm = -1.0;
 $type = -1.0;
 
+# minimization (norm)
+$norm = 2;
+
 # default grid-search ranges
 ($deg, $dm, $dlune) = (10, 0.1, 0.);
 $str1 = 0; $str2 = 360;
