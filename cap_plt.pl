@@ -32,6 +32,7 @@ sub plot {
   @variance = split('\s+',shift(@rslt));
   @tensor = split('\s+',$rslt[0]);
   @others = grep(/^#/,@rslt);
+  @ncomp = grep(/^#/,@rslt);
   @rslt=grep(!/^#/,@rslt);
   $nrow = @rslt;
 
@@ -439,7 +440,8 @@ sub plot {
     printf PLT "$x $y 12 0 0 0 @meca[0,1,2] and Depth $meca[3]\n"; $y-=$tgap;
     printf PLT "$x $y 12 0 0 0 @meca[4..9, 17] %3.0f @meca[20] %3.0f @meca[10..16]\n",@meca[18],@meca[21];$y-=$tgap;
     printf PLT "$x $y 12 0 0 0 @variance[1..3]\n" if $variance[1] eq "Variance" ; $y-=$tgap;
-    printf PLT "$x $y 12 0 0 0 $filterBand" ;  # 20120719 - filter bands
+    printf PLT "$x $y 12 0 0 0 $filterBand\n" ; $y-=$tgap;  # 20120719 - filter bands
+    printf PLT "$x $y 12 0 0 0 @ncomp[1]" ;
     close(PLT);
 
   }  # while (@rslt) {

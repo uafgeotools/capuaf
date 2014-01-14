@@ -88,7 +88,7 @@ int total_n,loop=0,start=0,debug=0, only_first_motion=0, misfit_on_lune=0, Npoin
 float data2=0.0,max_amp=0.0,synt2=0.0,synt,st2,err2,synt1,err1,st1,reco,synth;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search;
-  int	n1,n2,ns, mltp, nup, up[3], n_shft, nqP, nqS;
+  int	n1,n2,ns, mltp, nup, up[3], n_shft, nqP, nqS,isurf=0,ibody=0,istat=0,Nsurf=0,Nbody=0,Nstat=0;
   int	mm[2],n[NCP],max_shft[NCP],npts[NRC];
   int	repeat, bootstrap;
   char	tmp[128],glib[128],dep[32],dst[16],eve[32],*c_pt;
@@ -138,7 +138,7 @@ int main (int argc, char **argv) {
   int depth=-999;
   scanf("%s %d",model, &depth);  /* 20130102 calvizuri - end */
   edep=depth;
-
+  
   if(only_first_motion)
   {
       strcpy(fmpdata->evid, eve);
@@ -146,7 +146,7 @@ int main (int argc, char **argv) {
       fmpdata->idep = depth;
       fidfmp = fopen("out.fmp_stndata_","w");
   }
-
+  
   scanf("%f%f%f%f%d%d%f%f",&x1,&y1,&x,&y,&repeat,&bootstrap,&fm_thr,&tie);
   if (repeat) for(j=0;j<NCP;j++) scanf("%f",rms_cut+4-j);
   scanf("%f%f%f",&vp,&vs1,&vs2);
@@ -450,6 +450,9 @@ int main (int argc, char **argv) {
     if (obs->com[0].on_off>0) n_shft++;
     if (obs->com[1].on_off>0 || obs->com[2].on_off>0) n_shft++;
     if (obs->com[3].on_off>0 || obs->com[3].on_off>0) n_shft++;
+    isurf=0;
+    ibody=0;
+    istat=0;
     for(spt=obs->com,kc=2,j=0;j<NCP;j++,spt++,kc=NRF) {
       indx  = kd[j];
       gindx = kk[j];
@@ -460,10 +463,13 @@ int main (int argc, char **argv) {
       spt->npt = npt = n[j];
       spt->b = t0[j];
       if (spt->on_off) {total_n+=npt; Nsta += spt->on_off;}
-      if (j<3) 
+      if (j<3) {
 	weight = w_pnl[j]*pow(distance/dmin,bs[j])/sqrt(Ssamp[i]);
-      else
+	isurf += spt->on_off;}
+      else {
 	weight = w_pnl[j]*pow(distance/dmin,bs[j])/sqrt(Psamp[i]);
+	ibody += spt->on_off;}
+      istat += spt ->on_off;
       f_pt = cutTrace(data[indx], npts[indx], rint((t0[j]-tb[indx])/dt), npt);
       if ( f_pt == NULL ) {
 	fprintf(stderr, "fail to window the data\n");
@@ -510,9 +516,13 @@ int main (int argc, char **argv) {
 	  for(x2=0.,l=0;l<npt;l++) x2+=(*f_pt0++)*(*f_pt1++);
 	  spt->syn2[m++] = x*x2;
 	}
-      }
+       }
       //fprintf(stderr, "%s %e %e\n",obs->stn, spt->rec2, spt->syn2[j]);
-    }
+      // fprintf(stderr, "%d %d %d %d \n",ibody,Nbody,isurf,Nsurf);
+    } // end of loop over components
+    Nsurf += (isurf>0);
+    Nbody += (ibody>0);
+    Nstat += (istat>0);
 
     obs++;
     for(j=0;j<NRC;j++) free(data[j]);
@@ -525,7 +535,8 @@ int main (int argc, char **argv) {
 
   }	/*********end of loop over stations ********/
 
-  fprintf(stderr,"Nsta= %d",Nsta);
+  fprintf(stderr,"Nsta=%d\t Ncomp= %d\n",nda,Nsta);
+  fprintf(stderr,"Nbody= %d\tNsurf= %d\tNstat=%d\n",Nbody,Nsurf,Nstat);
   data2=rec2/Nsta;
   if (nda < 1) {
     fprintf(stderr,"No station available for inversion\n");
@@ -577,7 +588,6 @@ int main (int argc, char **argv) {
     goto INVERSION;
   }
 
-
   /**************output the results***********************/
   if (sol.flag) fprintf(stderr,"\nWarning: flag=%d => the minimum %5.1f/%4.1f/%5.1f is at boundary\n",sol.flag,sol.meca.stk,sol.meca.dip,sol.meca.rak);
   else principal_values(&(sol.dev[0]));
@@ -615,6 +625,7 @@ int main (int argc, char **argv) {
     nmtensor(mt[1].par,mt[2].par,sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor); //original
   }
   fprintf(f_out,"# tensor = %8.3e %7.4f %7.4f %7.4f %7.4f %7.4f %7.4f\n",amp*1.0e20,mtensor[0][0],mtensor[0][1],mtensor[0][2],mtensor[1][1],mtensor[1][2],mtensor[2][2]);
+  fprintf(f_out,"# N %d Nb %d Ns %d\n",Nstat,Nbody,Nsurf);
   for(i=1;i<sol.ms;i++) {
     j = sol.others[i];
     if (grid.err[j]-grid.err[sol.others[0]]<mltp*x2) {
@@ -901,6 +912,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		sol.scl[i][j] = y1;
 
 		x1 = (spt->rec2+x2*y1*y1-2.*cfg[j]*y1);
+		if (norm==1) x1 = sqrt(x1);
 		sol.error[i][j] = x1;	/*L2 error for this com.*/
 		sol.cfg[i][j] = 100*cfg[j]/sqrt(spt->rec2*x2);
 		sol.err += spt->on_off*sol.error[i][j];

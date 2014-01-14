@@ -509,7 +509,7 @@ where $k = \int \exp (-E_2(\bem)\ d\bem$ is the normalization factor and $\bem$ 
 \eq
 L(\bem)=\frac{\bsigma(\bem)}{\bmu(\bem)}
 \en
-In case of double couple, homogeneous state of information $\bmu(\bem) = \bmu{\phi,\delta,\lambda}$ is giben by:
+In case of double couple, homogeneous state of information $\bmu(\bem) = \bmu(\phi,\delta,\lambda)$ is given by:
 \eqa
 \mu(\phi) &=& c_1\\
 \mu(\delta) &=& \cos^{-1}c_2\\
@@ -520,7 +520,7 @@ The importance of likelihood function is that it is the ratio of probabilites (n
 
 For a double couple source, the shape of beachball always remains the same. What changes is the orientation of it. Keeping this in mind, it would be more sensible to estimate the uncertainity in terms of rotation of beachball from its minimum misfit (maximum likelihood) orientation rather that separately evaluating the uncertainities for different parameters (whether strike-dip-rake or moment-tensors elements). Also we can't do this in strike-dip-rake space because of the complications of clearly defining the domain. Parameterization would definately have a great impact on uncertainty estimation. Here even though we are only using one roatation angle (minimum), in reality we should using the whole rotation matrix in order to clearly understand and quantify the misfit variation in parameter space.
 
-We transform our parameter space from ($\phi,\delta,\lambda$) to ($\omega$ or $\xi$). This 
+We transform our parameter space from ($\phi,\delta,\lambda$) to ($\omega$ or $\xi$). 
 
 Let the orientation of minimum misfit solution be $\bem_0 = {\phi_0, \delta_0, \lambda_0}$. Distance between all the samples, $\bem$, and minimum misfit solution $\bem_0$ can be written as:
 \eq
@@ -530,7 +530,7 @@ This is an example of surjective mapping (not injective). There are four differe
 
 Using this transformation, we can find $\sigma'(\bxi)$ from $\sigma(\bem)$. However, they are not the same (due the transformation of variables). What still remains same is the likelihood function. Mathematically, we can write
 \eqa
-\sigma(\bem) &\neq& \sigma'(\bxi)\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\, \left [\because \sigma'(\bxi) = \sigma(\bxi)\left | \frac{d \bem}{d \bem} \right | \right ]\\
+\sigma(\bem) &\neq& \sigma'(\bxi)\,\,\,\,\,\,\,\,\,\,\,\,\,\,\,\, \left [\because \sigma'(\bxi) = \sigma(\bem)\left | \frac{d \bxi}{d \bem} \right | \right ]\\
 \frac{\sigma(\bem)}{\mu(\bem)} &=& \frac{\sigma'(\bxi)}{\mu'(\bxi)}\\
 L(\bem)&=& L'(\bxi)
 \ena
