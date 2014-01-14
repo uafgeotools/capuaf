@@ -136,7 +136,7 @@ typedef struct {
 } LUNE_MISFIT;
 
 /* function declaration */
-SOLN	error(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int);
+SOLN	error(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int,int);
 void    taper(float *aa, int n);
 float	*trap(float, float, float, int *);
 float	*cutTrace(float *, int, int, int);

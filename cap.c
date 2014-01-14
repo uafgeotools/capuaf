@@ -84,10 +84,10 @@
 ****************************************************************/
 #include "cap.h"
 
-int total_n,loop=0,start=0,debug=0, only_first_motion=0, misfit_on_lune=0, Npoints,Nsta=0,Psamp[STN],Ssamp[STN],edep=-999, norm=2;
+int total_n,loop=0,start=0,debug=0, only_first_motion=0, misfit_on_lune=0, Npoints,Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
 float data2=0.0,max_amp=0.0,synt2=0.0,synt,st2,err2,synt1,err1,st1,reco,synth;
 int main (int argc, char **argv) {
-  int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search;
+  int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search,norm;
   int	n1,n2,ns, mltp, nup, up[3], n_shft, nqP, nqS,isurf=0,ibody=0,istat=0,Nsurf=0,Nbody=0,Nstat=0;
   int	mm[2],n[NCP],max_shft[NCP],npts[NRC];
   int	repeat, bootstrap;
@@ -155,6 +155,7 @@ int main (int argc, char **argv) {
   scanf("%d%d",&useDisp,&mltp);
   scanf("%s",glib);
   scanf("%d",&search);
+  scanf("%d",&norm);
   
   fprintf(stderr,"=========search = %d==========\n",search);
   /*** input source functions and filters for pnl and sw ***/
@@ -566,7 +567,7 @@ int main (int argc, char **argv) {
      fprintf(stderr,"----------starting random-search-----------\n");
 
  INVERSION:
-  sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search);
+  sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search,norm);
 
   /* if runnning in first-motion-polarity mode clean up and end cap
    * after grid search in error function
@@ -716,7 +717,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		GRID		grid,
 		int		interp,
 		int		bootstrap,
-		int             search
+		int             search,
+		int             norm
 		) {
   int	i, j, k, l, m, k1, kc, z0, z1, z2, ii, N, iso_len;
   float mw_ran; // 20130730 celso - half-range for magnitude search (previously int)
@@ -1346,10 +1348,10 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       npar--;
       dx = mt[npar].dd;
       i = 1; if (dx>0.001) i = 0;
-      sol = error(npar,nda,obs0,nfm,fm,fm_thr,max_shft,tie,mt,grid,i,bootstrap,search);
+      sol = error(npar,nda,obs0,nfm,fm,fm_thr,max_shft,tie,mt,grid,i,bootstrap,search,norm);
       if (dx>0.001) {	/* do line search */
 	mt[npar].par += dx;
-	sol2 = error(npar,nda,obs0,nfm,fm,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search);
+	sol2 = error(npar,nda,obs0,nfm,fm,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search,norm);
 	if (sol2.err > sol.err) {	/* this is the wrong direction, turn around */
 	  dx = -dx;
 	  sol1 = sol2; sol2 = sol; sol  = sol1; /*swap sol, sol2 */
@@ -1360,11 +1362,11 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	  sol = sol2;
 	  mt[npar].par += dx;
 	  if (mt[npar].par>mt[npar].max || mt[npar].par<mt[npar].min) sol2.err = sol1.err;
-	  else sol2 = error(npar,nda,obs0,nfm,fm,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search);
+	  else sol2 = error(npar,nda,obs0,nfm,fm,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search,norm);
 	}
 	mt[npar].sigma = 2*dx*dx/(sol2.err+sol1.err-2*sol.err);
 	mt[npar].par -= dx+0.5*dx*(sol2.err-sol1.err)/(sol2.err+sol1.err-2*sol.err);
-	sol = error(npar,nda,obs0,nfm,fm,fm_thr,max_shft,tie,mt,grid,1,bootstrap,search);
+	sol = error(npar,nda,obs0,nfm,fm,fm_thr,max_shft,tie,mt,grid,1,bootstrap,search,norm);
       } else {
 	mt[npar].sigma = 0.;
       }

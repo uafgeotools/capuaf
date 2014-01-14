@@ -169,6 +169,7 @@ $usage =
     -V	apparent velocities for Pnl, Love, and Rayleigh waves (off).
     -W  use displacement for inversion; 1=> data in velocity; 2=> data in disp ($disp).
     -X  output other local minimums whose misfit-min<n*sigma ($mltp).
+    -Y  specify norm (1 - L1 norm; 2 - L2 norm)
     -Z  specify a different weight file name ($weight).
 
 Examples:
@@ -278,6 +279,8 @@ foreach (grep(/^-/,@ARGV)) {
      $disp = $value[0];
    } elsif ($opt eq "X") {
      $mltp = $value[0];
+   } elsif ($opt eq "Y") {
+     $norm = $value[0];
    } elsif ($opt eq "Z") {
      $weight = $value[0];
    } else {
@@ -352,6 +355,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     print SRC "$disp $mltp\n";
     print SRC "$green/$model/\n";
     print SRC "$search\n";
+    print SRC "$norm\n";
     print SRC "$dt $dura $riseTime\n";
     print SRC "$f1_pnl $f2_pnl $f1_sw $f2_sw\n";
     print SRC "$mg $dm $dlune\n";
