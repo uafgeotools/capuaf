@@ -394,7 +394,7 @@ int main (int argc, char **argv) {
 	t1 = sqrt(distance*distance+depSqr)/vp;	/* use vp to compute t1 */
       else
 	t1 = hd[2].t1;					/* use tp as t1 */
-      t1 = t1 - 0.2*mm[0]*dt + con_shft[i];
+      t1 = t1 - 0.4*mm[0]*dt + con_shft[i];
       t2 = hd[0].t2 + 0.2*mm[0]*dt + con_shft[i];	/* ts plus some delay */
       if (Pnl_win != 0)                                 /* for specific length of time window */
 	t2 = t1 + Pnl_win;
@@ -1229,10 +1229,10 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		    }
 		    
 		    if (0){
-		      st_err1 = fopen(st_err_body,"a");
+		      st_err1 = fopen(st_err_body,"w");
 		      fprintf(st_err1, "%f %e %e %e\n",obs->dist,st1, synt1, err1);
 		      fclose(st_err1);
-		      st_err2 = fopen(st_err_surf,"a");
+		      st_err2 = fopen(st_err_surf,"w");
 		      fprintf(st_err2, "%f %e %e %e\n",obs->dist,st2, synt2, err2);
 		      fclose(st_err2);}
 		    synt+=synt2+synt1;  // syntheics norm (all stations)
