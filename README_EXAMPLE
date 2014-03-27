@@ -458,13 +458,14 @@ note: -L gives the half-duration of the synthetics; this is a key command to get
 note: the result is an improvement of the CIG2013 poster (same event)
 
 note:
-surface wave time shifts are allowed to be between 0 s and 5 s, which reflects our belief that either:
+surface wave time shifts are allowed to be between -1.5 s and 4.5 s, which reflects our belief that either:
    (a) the model is systematically too slow
    (b) the depth is wrong
    (c) the origin time is wrong
-We are able to specify the 0-5 s shifts with two changes:
-   (1) the S_shifts in weight file (last column) are set to 2.5 
-   (2) the actual time shifts are set by -S0.5/2.5/0 to be +/- 2.5 s
+We are able to specify the -1.5 to 4.5 s shifts with two changes:
+   (1) the relative surface time shifts are +/- 3.0, which is set as -S0.2/3.0/0
+   (2) the systematic S_shifts in weight file (last column) are set to 1.5 
+   --> the actual time shifts are then -1.5 s (-3.0 + 1.5) and 4.5 s (+3.0 + 1.5)
 
 5. check output:
 
