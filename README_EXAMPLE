@@ -469,9 +469,9 @@ We are able to specify the -1.5 to 4.5 s shifts with two changes:
 
 5. check output:
 
-> gv 20100516063454/utu06_010_fmt.ps &
-> gv $CAPHOME/20100516063454_check/utu06_010_fmt.ps &
-> diff 20100516063454/utu06_010.out $CAPHOME/20100516063454_check/utu06_010.out
+> gv 20100516063454464/utu06_005_fmt.ps &
+> gv $CAPHOME/20100516063454_check/utu06_005_fmt.ps &
+> diff 20100516063454464/utu06topo4p6_005.out $CAPHOME/20100516063454_check/utu06_005.out
 
 6. try the same run, but with different weights:
 
