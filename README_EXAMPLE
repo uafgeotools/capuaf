@@ -450,7 +450,7 @@ note: all P arrivals times are specified
 4. run cap
 
 > cd $CAPRUN/inv/utu06
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Y2 -Mutu06_5/3.1 -Zweight.dat 20100516063454
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Y2 -Mutu06topo4p6_5/3.1 -Zweight.dat 20100516063454464
 
 note: lune grid will NOT do a refined search, so pick -I accordingly (here: 5 deg inc on lune; 0.2 inc Mw)
 note: because all P arrivals are hand-picked (to within 0.05 s), we can set the allowable time shift for P to 0.2 s
