@@ -117,13 +117,16 @@ typedef struct {
     float tp, ts;   // arrival time for p and s waves
 } FMPDATA;
 
-/* for tracking misfit at each (gamma,delta) on the lune */
+/* for tracking misfit at each point on the lune */
 typedef struct {
-    /* lune coordinates */
+    /* beachball */
     float gamma;
     float delta;
-    /* misfit */
+    float stk;
+    float dip;
+    float rak;
     float misfit;
+
     /* moment tensor */
     float mrr;
     float mtt;

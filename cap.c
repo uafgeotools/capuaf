@@ -1082,7 +1082,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
        
        	  {  // the base case: grid-search for strike, dip, and rake =============
 
-        /*  variables to track smallest misfit at each (gamma,delta) on the lune */
+        /*  variables to track smallest misfit at each point on the lune */
         /*  used only when misfit_on_lune=1 */
         bestmisfit->misfit = FLT_MAX;
         bestmisfit->gamma  = NAN;
@@ -1094,6 +1094,9 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
         bestmisfit->mrp = NAN;
         bestmisfit->mtp = NAN;
         bestmisfit->mag = NAN;
+        bestmisfit->stk = NAN;
+        bestmisfit->dip = NAN;
+        bestmisfit->rak = NAN;
 
 	    amp = pow(10.,1.5*temp[0]+16.1-20);
 	    grd_err = grid.err;
@@ -1246,23 +1249,26 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		  //fprintf(stderr, "data2=%e synt2=%e\n",data2,synt2);
 		  *grd_err++ = sol.err;		/*error for this solution*/
 
-          /* track smallest misfit at each (gamma,delta) on the lune */
+          /* track smallest misfit at each point on the lune */
           if(misfit_on_lune)
           {
               if(sol.err < bestmisfit->misfit)
               {
                   bestmisfit->gamma = temp[2];
                   bestmisfit->delta = temp[1];
+                  bestmisfit->stk = sol.meca.stk;
+                  bestmisfit->dip = sol.meca.dip;
+                  bestmisfit->rak = sol.meca.rak;
                   bestmisfit->misfit = sol.err;
-                  /* GCMT format (ready for psmeca) */
+                  bestmisfit->mag = temp[0];
+
+                  /* GCMT format */
                   bestmisfit->mrr = mtensor[2][2];
                   bestmisfit->mtt = mtensor[0][0];
                   bestmisfit->mpp = mtensor[1][1];
                   bestmisfit->mrt = mtensor[0][2];
                   bestmisfit->mrp = -mtensor[1][2];
                   bestmisfit->mtp = -mtensor[0][1];
-  
-                  bestmisfit->mag = temp[0];
               }
           }
 
@@ -1300,8 +1306,9 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
         /* output smallest misfit at each (gamma,delta) on the lune */
         if(misfit_on_lune)
         {
-            fprintf(fidmol,"%6.2f %6.2f %9.6e %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f %4.1f\n",
-                    bestmisfit->gamma, bestmisfit->delta, bestmisfit->misfit,
+            fprintf(fidmol,"%6.2f %6.2f %6.2f %6.2f %6.2f %9.6e %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f %4.1f\n",
+                    bestmisfit->gamma, bestmisfit->delta, bestmisfit->stk, bestmisfit->dip, bestmisfit->rak,
+                    bestmisfit->misfit,
                     bestmisfit->mrr, bestmisfit->mtt, bestmisfit->mpp,
                     bestmisfit->mrt, bestmisfit->mrp, bestmisfit->mtp,
                     bestmisfit->mag);
