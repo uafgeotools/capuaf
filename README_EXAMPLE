@@ -390,12 +390,12 @@ EXAMPLE 12: Bolivia event 20100516-063454, first motion polarity
 1. In cap.c change: only_first_motion=1
 2. Compile cap
 3. Run cap
-> ./cap.pl -F0.0 -I5/0/5 -J-90/90/-30/30 -Mutu06_5/3.0 -E1 -K1 -Y2 -Zweight_fmp.dat 20100516063454
+> ./cap.pl -F0.0 -I5/0/5 -J-90/90/-30/30 -Mutu06topo4p6_5/3.0 -E1 -K1 -Y2 -Zweight.dat 20100516063454464
 
 4. Process misfit data output from cap (file out.misfit.fmp_)
-> misfit2lune.py out.misfit.fmp_ > out.misfit_summ_20100516-063454
+> python misfit2lune.py out.misfit.fmp_ > out.misfit_summary
 
-5. Plot misfit on the lune with file out.misfit_summ_20100516-063454
+5. Plot misfit on the lune with file out.misfit_summary
 
 NOTES
 - Output file from cap run (step 3) will be out.misfit.fmp_
@@ -410,16 +410,16 @@ PART I. generate greens functions
 1. run the frequency-wavenumber code fk
 
 > mkdir -p $CAPRUN/models/utu06
-> cd $CAPRUN/models/utu06/
-> cp $CAPHOME/20100516063454/models/utu06 .
-> fk.pl -Mutu06/10 -N16384/0.01 11 14 18 18 19 21 22 31 33 37 50
+> cd $CAPRUN/models/utu06topo4p6/
+> cp $CAPHOME/20100516063454464/models/utu06topo4p6 .
+> fk.pl -Mutu06topo4p6/5 -N16384/0.01 11 14 18 19 21 22 31 33 37 50
 
-note: this uses the "utu06" 1D model for the Uturuncu region 
+note: this uses the "utu06topo4p6" 1D model for the Uturuncu region 
 note: You do not need to run fk if you have a pre-computed library of Green's functions.
 
 2. run fk again to generate isotropic components
 
-> fk.pl -Mutu06/10 -N16384/0.01 -S0 11 14 18 18 19 21 22 31 33 37 50
+> fk.pl -Mutu06topo4p6/5 -N16384/0.01 -S0 11 14 18 19 21 22 31 33 37 50
 
 This will create 3 additional green functions for each distance of the form dist.grn.(a-c),
 eg. 11.grn.a, 11.grn.b, 11.grn.c
@@ -432,13 +432,13 @@ DIP will be gridded by considering equal spacing in cos(dip) space
 
 1. prepare data directory
 
-> mkdir -p $CAPRUN/inv/utu06
-> cd $CAPRUN/inv/utu06/
-> rsync -av $CAPHOME/20100516063454 .
+> mkdir -p $CAPRUN/inv/utu06topo4p6
+> cd $CAPRUN/inv/utu06topo4p6/
+> rsync -av $CAPHOME/20100516063454464 .
 
 2. check the weight.dat file
 
-> more 20100516063454/weight.dat
+> more 20100516063454464/weight.dat
 
 note: weights are set as 1 1 1 1 1, which gives equal weight to body waves and surface waves
 note: all P arrivals times are specified
