@@ -409,7 +409,7 @@ PART I. generate greens functions
 
 1. run the frequency-wavenumber code fk
 
-> mkdir -p $CAPRUN/models/utu06
+> mkdir -p $CAPRUN/models/utu06topo4p6
 > cd $CAPRUN/models/utu06topo4p6/
 > cp $CAPHOME/20100516063454464/models/utu06topo4p6 .
 > fk.pl -Mutu06topo4p6/5 -N16384/0.01 11 14 18 19 21 22 31 33 37 50
