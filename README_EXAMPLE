@@ -507,10 +507,10 @@ note: by not using polarities (to exclude large portions of misfit space), the s
 
 10. try body + surf + polarities BUT constrained to DC
 
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/3.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2 -J0/0/0/0 -E1 -K1 -Y2 -Mutu06topo4p6_5/3.1 -Zweight.dat 20100516063454464
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.1 -J0/0/0/0 -E1 -K1 -Y2 -Mutu06topo4p6_5/3.1 -Zweight.dat 20100516063454464
 
 > gv 20100516063454464/utu06topo4p6_005_fmt.ps &
-> gv $CAPHOME/20100516063454_check/utu06_005_dc.ps &
+> gv $CAPHOME/20100516063454464_check/utu06topo4p6_005_dc.ps &
 
 note: this MUST be a worse solution than the non-DC version, since this solution was considered in the non-DC search
 
