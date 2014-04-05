@@ -1,0 +1,36 @@
+These results compare misfit from first motion polarity.
+Same event but different cap versions and different greens functions.
+(greens functions from velocity models utu03_notopo, utu03, utu06)
+
+DATA
+$CAPHOME/20100516063454
+
+CAP versions
+cap-r1182
+cap-r1312
+
+Greens functions 
+without topo correction, model utu03_notopo
+$CAPRUN/models/utu03notopo/
+
+with topo correction(4km), model utu03
+$CAPRUN/models/utu03/
+
+with topo correction(4km), model utu06
+$CAPRUN/models/utu03/
+
+RESULTS
+greens from model utu03, no topo
+misfit_20100516063454_utu03notopo_depth06_cap1182
+misfit_20100516063454_utu03notopo_depth06_cap1312
+
+greens from model utu03, WITH topo
+misfit_20100516063454_utu03_depth10_cap1182
+misfit_20100516063454_utu03_depth10_cap1312
+
+greens from model utu06, WITH topo
+misfit_20100516063454_utu06_depth10_cap1182
+misfit_20100516063454_utu06_depth10_cap1312
+
+summary figure
+diff_revs_cap_topo.pdf
