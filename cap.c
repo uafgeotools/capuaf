@@ -394,7 +394,7 @@ int main (int argc, char **argv) {
 	t1 = sqrt(distance*distance+depSqr)/vp;	/* use vp to compute t1 */
       else
 	t1 = hd[2].t1;					/* use tp as t1 */
-      t1 = t1 - 0.4*mm[0]*dt + con_shft[i];
+      t1 = t1 - 0.2*mm[0]*dt + con_shft[i];
       t2 = hd[0].t2 + 0.2*mm[0]*dt + con_shft[i];	/* ts plus some delay */
       if (Pnl_win != 0)                                 /* for specific length of time window */
 	t2 = t1 + Pnl_win;
@@ -626,7 +626,7 @@ int main (int argc, char **argv) {
     nmtensor(mt[1].par,mt[2].par,sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor); //original
   }
   fprintf(f_out,"# tensor = %8.3e %7.4f %7.4f %7.4f %7.4f %7.4f %7.4f\n",amp*1.0e20,mtensor[0][0],mtensor[0][1],mtensor[0][2],mtensor[1][1],mtensor[1][2],mtensor[2][2]);
-  fprintf(f_out,"# N %d Nb %d Ns %d\n",Nstat,Nbody,Nsurf);
+  fprintf(f_out,"# Pwin %g Swin %g    # N %d Np %d Ns %d\n",mm[0]*dt,mm[1]*dt,y1,Nstat,Nbody,Nsurf);
   for(i=1;i<sol.ms;i++) {
     j = sol.others[i];
     if (grid.err[j]-grid.err[sol.others[0]]<mltp*x2) {
