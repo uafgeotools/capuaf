@@ -92,7 +92,7 @@ int main (int argc, char **argv) {
   int	mm[2],n[NCP],max_shft[NCP],npts[NRC];
   int	repeat, bootstrap;
   char	tmp[128],glib[128],dep[32],dst[16],eve[32],*c_pt;
-  float	x,x1,x2,y,y1,amp,dt,rad[6],arad[4][3],fm_thr,tie,mtensor[3][3],rec2=0.;
+  float	x,x1,x2,y,y1,amp,dt,rad[6],arad[4][3],fm_thr,tie,mtensor[3][3],rec2=0.,VR,evla,evlo,evdp;
   float	rms_cut[NCP], t0[NCP], tb[NRC], t1, t2, t3, t4, srcDelay;
   float	con_shft[STN], s_shft, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN];
   float	tstarP, tstarS, attnP[NFFT], attnS[NFFT];
@@ -308,7 +308,9 @@ int main (int argc, char **argv) {
     t4 = hd[0].t4-hd[0].o;
     if (dst[0]=='0' && dst[1]=='\0')
       snprintf(dst,10,"%1.0f", rint(obs->dist));     /*if 0 distance given use the distance from header files*/
-
+    evla = hd->evla;
+    evlo = hd->evlo;
+    evdp = hd->evdp;
     /**************compute source time function***********/
 #ifdef DIRECTIVITY
     temp = hd->az*DEG2RAD-faultStr;
@@ -609,11 +611,11 @@ int main (int argc, char **argv) {
   strcat(strcat(strcat(strcpy(tmp,eve),"/"),mod_dep),".out"); // 20130102 calvizuri - end rename .out
   //  strcat(strcat(strcat(strcpy(tmp,eve),"/"),dep),".out");   // 20130102 calvizuri - original
   f_out=fopen(tmp,"w");
-  fprintf(f_out,"Event %s Model %s FM %3d %2d %3d Mw %4.2f rms %9.3e %5d ERR %3d %3d %3d ISO %3.2f %3.2f CLVD %3.2f %3.2f\n",eve,mod_dep,
+  fprintf(f_out,"Event %s Model %s FM %3d %2d %3d Mw %4.2f rms %9.3e %5d ERR %3d %3d %3d ISO %3.2f %3.2f CLVD %3.2f %3.2f elat %3.2f elon %3.2f edep %3.2f\n",eve,mod_dep,
 	  (int) rint(sol.meca.stk), (int) rint(sol.meca.dip), (int) rint(sol.meca.rak),
 	  mt[0].par, sol.err, dof,
 	  (int) rint(rad[0]), (int) rint(rad[1]), (int) rint(rad[2]),
-	  mt[1].par, sqrt(mt[1].sigma*x2),mt[2].par, sqrt(mt[2].sigma*x2));
+	  mt[1].par, sqrt(mt[1].sigma*x2),mt[2].par, sqrt(mt[2].sigma*x2),evla,evlo,evdp);
   fprintf(f_out,"# Variance reduction %4.1f\n",100*(1.-sol.err/data2));
   // convert Mw to M0 using GCMT convention (also in Aki and Richards, 2002)
   // this is very close to Kanamori1977 (16.1 vs 16.1010)
