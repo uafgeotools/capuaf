@@ -89,7 +89,7 @@ sub plot {
 
   # KEY: set amplitude scaling for seismograms
   if ($am>0.) {$stam = "$am/-1";} else {$stam=-$am;} # original line (with pssac, not pssac2)
-  $stam = "$am/0.";                                   # overwrite for absolute amplitudes (to match default plotting)
+  $stam = "$am/1.";                                   # overwrite for absolute amplitudes (to match default plotting)
   print "\namplitude scaling am = $am";
   print "\npssac2 amplitude scaling stam = $stam\n";
 #  $outps = "$mdl.ps";   # original
@@ -438,7 +438,7 @@ sub plot {
     # 0     1               2       3    4   5   6  7 8    9  
     open(PLT, $plt4_5);
     printf PLT "$x $y 12 0 0 0 @meca[0,1,2] and Depth $meca[3] @meca[23..28]\n"; $y-=$tgap;
-    printf PLT "$x $y 12 0 0 0 @meca[4..9, 17] %3.0f @meca[20] %3.0f VR @variance[3]\n",@meca[18],@meca[21];$y-=$tgap;
+    printf PLT "$x $y 12 0 0 0 @meca[4..9, 17] %3.0f @meca[20] %3.0f @meca[10,11] VR @variance[3]\n",@meca[18],@meca[21];$y-=$tgap;
 #   printf PLT "$x $y 12 0 0 0 @variance[1..3]\n" if $variance[1] eq "Variance" ; $y-=$tgap;
     printf PLT "$x $y 12 0 0 0 $filterBand\n" ; $y-=$tgap;  # 20120719 - filter bands
     printf PLT "$x $y 12 0 0 0 @ncomp[1]" ;
