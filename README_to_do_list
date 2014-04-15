@@ -3,8 +3,6 @@ To-do list for CAP
 When the item is fixed, just delete it from here.
 (Your entry in the svn log will mark the change.)
 
-+ add lon lat depth to cap.out files, so that we have all necessary information for reading them in later (for map plots, for example)
-
 + read_cap_out.m
 
 + CAP should be able to run fine with vertical components only, but at the moment you have to copy the files, then set the horizontal component weights to zero
