@@ -591,6 +591,11 @@ int main (int argc, char **argv) {
     goto INVERSION;
   }
 
+  if (norm==1)
+    VR = 100*(1.-(sol.err/data2)*(sol.err/data2));
+  if (norm==2) 
+    VR = 100*(1.-sol.err/data2);
+
   /**************output the results***********************/
   if (sol.flag) fprintf(stderr,"\nWarning: flag=%d => the minimum %5.1f/%4.1f/%5.1f is at boundary\n",sol.flag,sol.meca.stk,sol.meca.dip,sol.meca.rak);
   else principal_values(&(sol.dev[0]));
@@ -616,7 +621,7 @@ int main (int argc, char **argv) {
 	  mt[0].par, sol.err, dof,
 	  (int) rint(rad[0]), (int) rint(rad[1]), (int) rint(rad[2]),
 	  mt[1].par, sqrt(mt[1].sigma*x2),mt[2].par, sqrt(mt[2].sigma*x2),evla,evlo,evdp);
-  fprintf(f_out,"# Variance reduction %4.1f\n",100*(1.-sol.err/data2));
+  fprintf(f_out,"# Variance reduction %4.1f\n",VR);
   // convert Mw to M0 using GCMT convention (also in Aki and Richards, 2002)
   // this is very close to Kanamori1977 (16.1 vs 16.1010)
   amp=pow(10.,1.5*mt[0].par+16.1-20);
