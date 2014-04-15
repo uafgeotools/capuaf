@@ -29,7 +29,7 @@ sub plot {
   @rslt = <FFF>;
   close(FFF);
   @meca = split('\s+',shift(@rslt));
-  @variance = split('\s+',shift(@rslt));
+  @hypo = split('\s+',shift(@rslt));
   @tensor = split('\s+',$rslt[0]);
   @others = grep(/^#/,@rslt);
   @ncomp = grep(/^#/,@rslt);
@@ -174,7 +174,6 @@ sub plot {
   # uncomment output for debugging purposes
   print "\n-------------------";
   print "\nmeca:\n@meca";
-  print "\nvariance:\n@variance";
   print "\ntensor:\n@tensor";
   print "\nothers:\n@others";
   print "\nrslt:\n@rslt";
@@ -437,9 +436,8 @@ sub plot {
     # Event 20080418093700 Model cus_015 FM 115 90 -2 Mw 5.19 rms 1.207e-06 110 ERR 1 3 4 ISO 0.00 0.00 CLVD 0.00 0.00
     # 0     1               2       3    4   5   6  7 8    9  
     open(PLT, $plt4_5);
-    printf PLT "$x $y 12 0 0 0 @meca[0,1,2] and Depth $meca[3] @meca[23..28]\n"; $y-=$tgap;
-    printf PLT "$x $y 12 0 0 0 @meca[4..9, 17] %3.0f @meca[20] %3.0f @meca[10,11] VR @variance[3]\n",@meca[18],@meca[21];$y-=$tgap;
-#   printf PLT "$x $y 12 0 0 0 @variance[1..3]\n" if $variance[1] eq "Variance" ; $y-=$tgap;
+    printf PLT "$x $y 12 0 0 0 @meca[0,1,2] and Depth $meca[3]\n"; $y-=$tgap;
+    printf PLT "$x $y 12 0 0 0 @meca[4..9, 17] %3.0f @meca[20] %3.0f @meca[10,11] VR %3.1f\n",@meca[18],@meca[21],@meca[24];$y-=$tgap;
     printf PLT "$x $y 12 0 0 0 $filterBand\n" ; $y-=$tgap;  # 20120719 - filter bands
     printf PLT "$x $y 12 0 0 0 @ncomp[1]" ;
     close(PLT);

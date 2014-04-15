@@ -591,6 +591,7 @@ int main (int argc, char **argv) {
     goto INVERSION;
   }
 
+  //Compute variance reduction
   if (norm==1)
     VR = 100*(1.-(sol.err/data2)*(sol.err/data2));
   if (norm==2) 
@@ -616,12 +617,12 @@ int main (int argc, char **argv) {
   strcat(strcat(strcat(strcpy(tmp,eve),"/"),mod_dep),".out"); // 20130102 calvizuri - end rename .out
   //  strcat(strcat(strcat(strcpy(tmp,eve),"/"),dep),".out");   // 20130102 calvizuri - original
   f_out=fopen(tmp,"w");
-  fprintf(f_out,"Event %s Model %s FM %3d %2d %3d Mw %4.2f rms %9.3e %5d ERR %3d %3d %3d ISO %3.2f %3.2f CLVD %3.2f %3.2f elat %3.2f elon %3.2f edep %3.2f\n",eve,mod_dep,
+  fprintf(f_out,"Event %s Model %s FM %3d %2d %3d Mw %4.2f rms %9.3e %5d ERR %3d %3d %3d ISO %3.2f %3.2f CLVD %3.2f %3.2f VR %3.1f\n",eve,mod_dep,
 	  (int) rint(sol.meca.stk), (int) rint(sol.meca.dip), (int) rint(sol.meca.rak),
 	  mt[0].par, sol.err, dof,
 	  (int) rint(rad[0]), (int) rint(rad[1]), (int) rint(rad[2]),
-	  mt[1].par, sqrt(mt[1].sigma*x2),mt[2].par, sqrt(mt[2].sigma*x2),evla,evlo,evdp);
-  fprintf(f_out,"# Variance reduction %4.1f\n",VR);
+	  mt[1].par, sqrt(mt[1].sigma*x2),mt[2].par, sqrt(mt[2].sigma*x2),VR);
+  fprintf(f_out,"# Hypocenter elat %e elan %e edep %e\n",evla,evlo,evdp);
   // convert Mw to M0 using GCMT convention (also in Aki and Richards, 2002)
   // this is very close to Kanamori1977 (16.1 vs 16.1010)
   amp=pow(10.,1.5*mt[0].par+16.1-20);
@@ -1280,7 +1281,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
           }
 
 		  if (best_sol.err>sol.err) {best_sol = sol; synth=synt; //fprintf(stderr, "synt=%e data2=%e err=%e\n",synth,data2,sol.err);
-		    if (0) fprintf(stderr,"misfit for best sol = %f; stk=%3.1f, dip=%3.1f, rak=%3.1f \n",best_sol.err,sol.meca.stk, sol.meca.dip, sol.meca.rak);
+		    if (0) fprintf(stderr,"misfit for best sol = %f; stk=%3.1f, dip=%3.1f, rak=%3.1f, VR = %3.2f \n",best_sol.err,sol.meca.stk, sol.meca.dip, sol.meca.rak,100*(1.-(sol.err/data2)*(sol.err/data2)));
 		    mt[0].par=temp[0];
 		    mt[1].par=temp[1];
 		    mt[2].par=temp[2];
