@@ -8,7 +8,7 @@
 
 $ballsize = 4;		    # controls default beachball size (psmeca)
 $min0 = 1.0e+19;		# impossibly large misfit value
-$Bscale = "-Ba5f1:\"Depth, km\":/a20f5:\"Misfit\":";
+$Bscale = "-Ba5f1:\"Depth, km\":/a20f5:\"Relative Misfit\":";
 
 #------------
 
