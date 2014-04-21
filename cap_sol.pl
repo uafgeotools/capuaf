@@ -51,11 +51,19 @@ $faultfile = "/home/admin/share/datalib/faults/alaska/DGGS2012/ak_fault_database
 $histogramfile2 = "$datadir/${eid}_histo2.dat";
 
 # ==========Plotting specifications=====
+
+# for interior alaska
 $xmin = -155;
 $xmax = -145;
 $ymin = 57;
 $ymax = 65;
 $scale = 7500000;
+# for north-western alaska
+$xmin = -164;
+$xmax = -147;
+$ymin = 60;
+$ymax = 69;
+$scale = 13000000;
 $xcen = ($xmin + $xmax)/2;
 $ycen = ($ymin + $ymax)/2;
 $J = "-Jb$xcen/$ycen/$ymin/$ymax/1:$scale";
@@ -63,9 +71,9 @@ $R = "-R$xmin/$xmax/$ymin/$ymax";
 #$B = "-Ba4f2:.Southern_Alaska:WesN";
 $B = "-Ba4f2WesN";
 $X = "-X14c";
-$Y = "-Y16c";
+$Y = "-Y18c";
 $Xr = "-X-14c";
-$Yr = "-Y-16c";
+$Yr = "-Y-18c";
 $title = "eid: $eid";
 $stainfoa= "-Si5p -W3p,0/0/0";
 $stainfob = "-Si5p -W1p,255/255/255";
@@ -97,7 +105,7 @@ print CSH "grdimage $grdfile $R $J $B -E100 -C$cptfile -I$gradfile -V -K -O >> $
 # plot faultline
 print CSH "psxy $faultfile $J $R -m -W/255/0/0 -V -K -O >> $psfile\n";
 # plot coastline
-print CSH "pscoast $R $J -A0 -Df -W -N1 -L-148/58/58.5/200+p1p,0/0/0,solid+f255/255/255 -O -K -V >> $psfile\n";
+print CSH "pscoast $R $J -A0 -Df -W -N1 -L-150/59.5/64/200+p1p,0/0/0,solid+f255/255/255 -O -K -V >> $psfile\n";
 # print CSH "psxy $J $R -W1p,255/255/255 -Si10p -V -K -O >> $psfile<<EOF\n-150 60\nEOF\n";
 # print CSH "pstext $J $R -G0/0/0 -W255/255/255 -O -V -K>> $psfile<<EOF\n$elon $elat  14 0 1 CM $eid\nEOF\n";
 print CSH "pstext -JM7i -R0/1/0/1 -Xa0c -Ya11c -K -N -O -V>> $psfile<<EOF\n0 0 12 0 1 LB (c)\nEOF\n";
@@ -180,12 +188,12 @@ print CSH "pstext -JM7i -R0/1/0/1 -N -Xa1c -Ya25.25c -O -K -V>> $psfile<<EOF\n0 
 
 # ====================plotting histograms====================
 print CSH "gmtset LABEL_OFFSET 0.03c\n";
-print CSH "pshistogram $histogramfile2 -JX3c/3c -R0/360/0/50 -G0/0/0 -L0.25p,0/0/0 -Z1 -W10  -Ba90:strike:/a10::WeSn -Xa6.5c -Ya2c -T0 -K -O -V >>$psfile\n";
-print CSH "pshistogram $histogramfile -JX3c/3c -R0/360/0/50 -G0/255/0 -L0.25p,0/0/0 -Z1 -W10  -Ba90f45:strike:/a10::WeSn -Xa6.5c -Ya2c -T0 -K -O -V >>$psfile\n";
-print CSH "pshistogram $histogramfile2 -JX3c/3c -R0/90/0/50 -G0/0/0 -L0.25p,0/0/0 -Z1 -W5  -Ba30:dip:/a10::WeSn -Xa6.5c -Ya6.9c -T1 -K -O -V >>$psfile\n";
-print CSH "pshistogram $histogramfile -JX3c/3c -R0/90/0/50 -G0/255/0 -L0.25p,0/0/0 -Z1 -W5  -Ba30:dip:/a10::WeSn -Xa6.5c -Ya6.9c -T1 -K -O -V >>$psfile\n";
-print CSH "pshistogram $histogramfile2 -JX3c/3c -R-180/180/0/50 -G0/0/0 -L0.25p,0/0/0 -Z1 -W10  -Ba90f45:rake:/a10::WeSn -Xa6.5c -Ya11.8c -T2 -K -O -V >>$psfile\n";
-print CSH "pshistogram $histogramfile -JX3c/3c -R-180/180/0/50 -G0/255/0 -L0.25p,0/0/0 -Z1 -W10  -Ba90f45:rake:/a10::WeSn -Xa6.5c -Ya11.8c -T2 -K -O -V >>$psfile\n";
+print CSH "pshistogram $histogramfile2 -JX3c/3c -R0/360/0/30 -G0/0/0 -L0.25p,0/0/0 -Z1 -W10  -Ba90:strike:/a10::WeSn -Xa6.5c -Ya2c -T0 -K -O -V >>$psfile\n";
+print CSH "pshistogram $histogramfile -JX3c/3c -R0/360/0/30 -G0/255/0 -L0.25p,0/0/0 -Z1 -W10  -Ba90f45:strike:/a10::WeSn -Xa6.5c -Ya2c -T0 -K -O -V >>$psfile\n";
+print CSH "pshistogram $histogramfile2 -JX3c/3c -R0/90/0/30 -G0/0/0 -L0.25p,0/0/0 -Z1 -W5  -Ba30:dip:/a10::WeSn -Xa6.5c -Ya6.9c -T1 -K -O -V >>$psfile\n";
+print CSH "pshistogram $histogramfile -JX3c/3c -R0/90/0/30 -G0/255/0 -L0.25p,0/0/0 -Z1 -W5  -Ba30:dip:/a10::WeSn -Xa6.5c -Ya6.9c -T1 -K -O -V >>$psfile\n";
+print CSH "pshistogram $histogramfile2 -JX3c/3c -R-180/180/0/30 -G0/0/0 -L0.25p,0/0/0 -Z1 -W10  -Ba90f45:rake:/a10::WeSn -Xa6.5c -Ya11.8c -T2 -K -O -V >>$psfile\n";
+print CSH "pshistogram $histogramfile -JX3c/3c -R-180/180/0/30 -G0/255/0 -L0.25p,0/0/0 -Z1 -W10  -Ba90f45:rake:/a10::WeSn -Xa6.5c -Ya11.8c -T2 -K -O -V >>$psfile\n";
 print CSH "pstext -JM7i -R0/1/0/1 -Xa6.5c -Ya15.2c -K -N -O -V>> $psfile<<EOF\n0 0 12 0 1 LB (e)\nEOF\n";
 #============================ plot beachballs===================
 $Xm = "-X1c";
