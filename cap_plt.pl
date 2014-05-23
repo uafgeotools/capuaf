@@ -97,8 +97,10 @@ sub plot {
   $outps = sprintf("%s_%03d_fmt.ps",@dum[0],int(@dum[1])) if $fmt_flag eq "true";
 
   # (1) plot cut seismograms with scaled amplitudes (first command: no -O appears)
-  $plt1b = "| pssac2 -JX${widthb}i/${height}i -R0/$ttb/0/$nn -Y0.2i -Ent-2 -M$stam -K -P >> $outps";
-  $plt1s = "| pssac2 -JX${widths}i/${height}i -R0/$tts/0/$nn -X${xoffset}i -Ent-2 -M$stam -O -K -P >> $outps";
+  $tscale_x = 0.55;
+  $tscale_y = $pheight_in - 2.0;
+  $plt1b = "| pssac2 -JX${widthb}i/${height}i -L${spib} -l${tscale_x}/${tscale_y}/1/0.075/8 -R0/$ttb/0/$nn -Y0.2i -Ent-2 -M$stam -K -P >> $outps";
+  $plt1s = "| pssac2 -JX${widths}i/${height}i -L${spis} -l${tscale_x}/${tscale_y}/1/0.075/8 -R0/$tts/0/$nn -X${xoffset}i -Ent-2 -M$stam -O -K -P >> $outps";
 
   # (2) plot text labels
   $plt2_stn_info = "| pstext -JX -R -O -K -N -X-${xoffset}i >> $outps";
