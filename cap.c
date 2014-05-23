@@ -1087,9 +1087,9 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
         /* output smallest misfit at each (gamma,delta) on the lune */
         if(misfit_on_lune)
         {
-            fprintf(fidmol,"%6.2f %6.2f %6.2f %6.2f %6.2f %9.6e %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f %4.1f\n",
+            fprintf(fidmol,"%6.2f %6.2f %6.2f %6.2f %6.2f %9.6e %9.6e %10.6f %10.6f %10.6f %10.6f %10.6f %10.6f %4.1f\n",
                     bestmisfit->gamma, bestmisfit->delta, bestmisfit->stk, bestmisfit->dip, bestmisfit->rak,
-                    bestmisfit->misfit,
+                    bestmisfit->misfit, 100.0*(1.-(bestmisfit->misfit/data2)*(bestmisfit->misfit/data2)),
                     bestmisfit->mrr, bestmisfit->mtt, bestmisfit->mpp,
                     bestmisfit->mrt, bestmisfit->mrp, bestmisfit->mtp,
                     bestmisfit->mag);
