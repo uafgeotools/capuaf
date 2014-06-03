@@ -101,6 +101,8 @@ int main (int argc, char **argv) {
   float	w_pnl[NCP];
   float	distance,dmin=100.,vp,vs1,vs2,depSqr=25;
   float	*syn,*f_pt,*f_pt0,*f_pt1;
+  float *p_body, *p_surf, *p_grn;
+  int npt_body, s_len, offset_h=0;
   GRID	grid;
   MTPAR mt[3];
   COMP	*spt;
@@ -457,68 +459,99 @@ int main (int argc, char **argv) {
     ibody=0;
     istat=0;
     for(spt=obs->com,kc=2,j=0;j<NCP;j++,spt++,kc=NRF) {
-      indx  = kd[j];
-      gindx = kk[j];
-      if (tele) {
-	if (j==2) {indx=1; gindx=2;}		/* no vertical S, use the radial */
-	if (j==3) {indx=2; gindx=kk[2];}	/* no radial P, use the vertical */
-      }
-      spt->npt = npt = n[j];
-      spt->b = t0[j];
-      if (spt->on_off) {total_n+=npt; Nsta += spt->on_off;}
-      if (j<3) {
-	weight = w_pnl[j]*pow(distance/dmin,bs[j])/sqrt(Ssamp[i]);
-	isurf += spt->on_off;}
-      else {
-	weight = w_pnl[j]*pow(distance/dmin,bs[j])/sqrt(Psamp[i]);
-	ibody += spt->on_off;}
-      istat += spt ->on_off;
-      f_pt = cutTrace(data[indx], npts[indx], rint((t0[j]-tb[indx])/dt), npt);
-      if ( f_pt == NULL ) {
-	fprintf(stderr, "fail to window the data\n");
-	return -1;
-      }
-      spt->rec = f_pt;  
-      if (j<3) {if (f1_sw>0.)  apply(f_pt,(long int) npt,0,sw_sn,sw_sd,nsects); }
-      else     {if (f1_pnl>0.) apply(f_pt,(long int) npt,0,pnl_sn,pnl_sd,nsects);}
-      if (useDisp==1) cumsum(f_pt, npt, dt); /*use displacement data*/
-      for(x2=0.,l=0;l<npt;l++,f_pt++) {
-	*f_pt *= weight;
-	x2+=(*f_pt)*(*f_pt);
-      }
-      spt->rec2 = x2;
-      if (norm==1) x2 = sqrt(x2);
-      rec2 += spt->on_off*x2;
-       for(m=0,k=0;k<kc;k++) {
-	f_pt = cutTrace(green[gindx+k], hd[indx].npts, rint((t0[j]-con_shft[i]-shft0[i][j]-hd[indx].b)/dt), npt);
-	if ( f_pt == NULL ) {
-	  fprintf(stderr, "fail to window the Greens functions\n");
-	  return -1;
-	}
-	spt->syn[k] = f_pt;
-	if (j<3) {
+        indx  = kd[j];
+        gindx = kk[j];
+        if (tele) {
+            if (j==2) {indx=1; gindx=2;}		/* no vertical S, use the radial */
+            if (j==3) {indx=2; gindx=kk[2];}	/* no radial P, use the vertical */
+        }
+        spt->npt = npt = n[j];
+        spt->b = t0[j];
+        if (spt->on_off) {total_n+=npt; Nsta += spt->on_off;}
+        if (j<3) {
+            weight = w_pnl[j]*pow(distance/dmin,bs[j])/sqrt(Ssamp[i]);
+            isurf += spt->on_off;
+        }
+        else {
+            weight = w_pnl[j]*pow(distance/dmin,bs[j])/sqrt(Psamp[i]);
+            ibody += spt->on_off;
+        }
+        istat += spt->on_off;
+
+        //f_pt = cutTrace(data[indx], npts[indx], rint((t0[j]-tb[indx])/dt), npt);
+        npt_body = npts[indx]-offset_h;
+        p_body = cutTrace(data[indx], npts[indx], offset_h, npt_body);
+        p_surf = cutTrace(data[indx], npts[indx], offset_h, npt_body);
+        taper(p_body, npt_body);
+        taper(p_surf, npt_body);
+
+        if ( p_body == NULL ) {
+            fprintf(stderr, "fail to window the data\n");
+            return -1;
+        }
+        //spt->rec = f_pt;  
+        if (j<3) {
+            if (f1_sw>0.) {
+                //apply(f_pt,(long int) npt,0,sw_sn,sw_sd,nsects); 
+                apply(p_surf,(long int) npt_body, 0,sw_sn,sw_sd,nsects);
+                f_pt = cutTrace(p_surf, npt_body, (int) rint((t0[j]-tb[indx])/dt), npt);
+                // taper(f_pt, npt);
+            }
+        }
+        else {
+            if (f1_pnl>0.) {
+                //apply(f_pt,(long int) npt,0,pnl_sn,pnl_sd,nsects);
+                apply(p_body,(long int) npt_body, 0,pnl_sn,pnl_sd,nsects);
+                f_pt = cutTrace(p_body, npt_body, (int) rint((t0[j]-tb[indx])/dt), npt);
+            }
+        }
+        //            f_pt = cutTrace(p_body, npt_body, (int) rint((t0[j]-tb[indx])/dt), npt);
+        spt->rec = f_pt;
+        if (useDisp==1) cumsum(f_pt, npt, dt); /*use displacement data*/
+        for(x2=0.,l=0;l<npt;l++,f_pt++) {
+            *f_pt *= weight;
+            x2+=(*f_pt)*(*f_pt);
+        }
+        spt->rec2 = x2;
+        if (norm==1) x2 = sqrt(x2);
+        rec2 += spt->on_off*x2;
+        for(m=0,k=0;k<kc;k++) {
+            f_pt = cutTrace(green[gindx+k], hd[indx].npts, rint((t0[j]-con_shft[i]-shft0[i][j]-hd[indx].b)/dt), npt);
+            if ( f_pt == NULL ) {
+                fprintf(stderr, "fail to window the Greens functions\n");
+                return -1;
+            }
+            spt->syn[k] = f_pt;
+            if (j<3) {
 #ifdef DIRECTIVITY
-	  conv(src_sw, ns_sw, f_pt, npt);
+                conv(src_sw, ns_sw, f_pt, npt);
 #endif
-	  if (f1_sw>0.)  apply(f_pt,(long int) npt,0,sw_sn,sw_sd,nsects);
-	} else {
+                if (f1_sw>0.) {
+                    apply(f_pt,(long int) npt,0,sw_sn,sw_sd,nsects);
+                }
+            } 
+            else {
 #ifdef DIRECTIVITY
-	  conv(src_pnl, ns_pnl, f_pt, npt);
+                conv(src_pnl, ns_pnl, f_pt, npt);
 #endif
-	  if (f1_pnl>0.) apply(f_pt,(long int) npt,0,pnl_sn,pnl_sd,nsects);
-	}
-	if (useDisp) cumsum(f_pt, npt, dt);
-	for(l=0;l<npt;l++) f_pt[l] *= weight;
-	spt->crl[k] = crscrl(npt,spt->rec,f_pt,max_shft[j]);
-	for(x=1.,k1=k;k1>=0;k1--,x=2.) {
-	  f_pt0=spt->syn[k];
-	  f_pt1=spt->syn[k1];
-	  for(x2=0.,l=0;l<npt;l++) x2+=(*f_pt0++)*(*f_pt1++);
-	  spt->syn2[m++] = x*x2;
-	}
-       }
-      //fprintf(stderr, "%s %e %e\n",obs->stn, spt->rec2, spt->syn2[j]);
-      // fprintf(stderr, "%d %d %d %d \n",ibody,Nbody,isurf,Nsurf);
+                if (f1_pnl>0.) {
+                    apply(f_pt,(long int) npt,0,pnl_sn,pnl_sd,nsects);
+                }
+            }
+            if (useDisp) cumsum(f_pt, npt, dt);
+            for(l=0;l<npt;l++) f_pt[l] *= weight;
+            spt->crl[k] = crscrl(npt,spt->rec,f_pt,max_shft[j]);
+            for(x=1.,k1=k;k1>=0;k1--,x=2.) {
+                f_pt0=spt->syn[k];
+                f_pt1=spt->syn[k1];
+                for(x2=0.,l=0;l<npt;l++) {
+                    x2+=(*f_pt0++)*(*f_pt1++);
+                }
+                spt->syn2[m++] = x*x2;
+            }
+        }
+        //fprintf(stderr, "%s %e %e\n",obs->stn, spt->rec2, spt->syn2[j]);
+        // fprintf(stderr, "%d %d %d %d \n",ibody,Nbody,isurf,Nsurf);
     } // end of loop over components
     Nsurf += (isurf>0);
     Nbody += (ibody>0);

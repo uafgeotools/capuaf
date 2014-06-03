@@ -59,7 +59,6 @@ float *cutTrace(float *trace, int npts, int offset, int n) {
       if (m>npts) n = npts-offset;
       if (n>0) memcpy(cut, trace+offset, n*sizeof(float));
    }
-   taper(cut, n);
    return cut;
 }
 
