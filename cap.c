@@ -84,7 +84,8 @@
 ****************************************************************/
 #include "cap.h"
 
-int total_n,loop=0,start=0,debug=0,only_first_motion=0, misfit_on_lune=0, Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
+int total_n,loop=0,start=0,debug=0, Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
+int only_first_motion=0, misfit_on_lune=0, filter_then_cut=0;
 float data2=0.0;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search,norm;
@@ -101,8 +102,8 @@ int main (int argc, char **argv) {
   float	w_pnl[NCP];
   float	distance,dmin=100.,vp,vs1,vs2,depSqr=25;
   float	*syn,*f_pt,*f_pt0,*f_pt1;
-  float *p_body, *p_surf, *p_grn;
-  int npt_body, s_len, offset_h=0;
+  float *f_pt2;
+  int npt_data, s_len, offset_h=0;
   GRID	grid;
   MTPAR mt[3];
   COMP	*spt;
@@ -478,35 +479,48 @@ int main (int argc, char **argv) {
         }
         istat += spt->on_off;
 
-        //f_pt = cutTrace(data[indx], npts[indx], rint((t0[j]-tb[indx])/dt), npt);
-        npt_body = npts[indx]-offset_h;
-        p_body = cutTrace(data[indx], npts[indx], offset_h, npt_body);
-        p_surf = cutTrace(data[indx], npts[indx], offset_h, npt_body);
-        taper(p_body, npt_body);
-        taper(p_surf, npt_body);
-
-        if ( p_body == NULL ) {
-            fprintf(stderr, "fail to window the data\n");
-            return -1;
+        if(filter_then_cut) {
+            npt_data = npts[indx]-offset_h;
+            f_pt2 = cutTrace(data[indx], npts[indx], offset_h, npt_data);
+            taper(f_pt2, npt_data);
+            if (f_pt2 == NULL) {
+                fprintf(stderr, "fail to window the data\n");
+                return -1;
+            }
         }
-        //spt->rec = f_pt;  
+        else {
+            f_pt = cutTrace(data[indx], npts[indx], (int) rint((t0[j]-tb[indx])/dt), npt);
+            taper(f_pt, npt);
+            if (f_pt == NULL) {
+                fprintf(stderr, "fail to window the data\n");
+                return -1;
+            }
+            spt->rec = f_pt; 
+        }
         if (j<3) {
             if (f1_sw>0.) {
-                //apply(f_pt,(long int) npt,0,sw_sn,sw_sd,nsects); 
-                apply(p_surf,(long int) npt_body, 0,sw_sn,sw_sd,nsects);
-                f_pt = cutTrace(p_surf, npt_body, (int) rint((t0[j]-tb[indx])/dt), npt);
-                // taper(f_pt, npt);
+                if(filter_then_cut) {
+                    apply(f_pt2,(long int) npt_data, 0,sw_sn,sw_sd,nsects);
+                    f_pt = cutTrace(f_pt2, npt_data, (int) rint((t0[j]-tb[indx])/dt), npt);
+                    spt->rec = f_pt; 
+                }
+                else {
+                    apply(f_pt,(long int) npt,0,sw_sn,sw_sd,nsects); 
+                }
             }
         }
         else {
             if (f1_pnl>0.) {
-                //apply(f_pt,(long int) npt,0,pnl_sn,pnl_sd,nsects);
-                apply(p_body,(long int) npt_body, 0,pnl_sn,pnl_sd,nsects);
-                f_pt = cutTrace(p_body, npt_body, (int) rint((t0[j]-tb[indx])/dt), npt);
+                if(filter_then_cut) {
+                    apply(f_pt2,(long int) npt_data, 0,pnl_sn,pnl_sd,nsects);
+                    f_pt = cutTrace(f_pt2, npt_data, (int) rint((t0[j]-tb[indx])/dt), npt);
+                    spt->rec = f_pt; 
+                }
+                else {
+                    apply(f_pt,(long int) npt,0,pnl_sn,pnl_sd,nsects);
+                }
             }
         }
-        //            f_pt = cutTrace(p_body, npt_body, (int) rint((t0[j]-tb[indx])/dt), npt);
-        spt->rec = f_pt;
         if (useDisp==1) cumsum(f_pt, npt, dt); /*use displacement data*/
         for(x2=0.,l=0;l<npt;l++,f_pt++) {
             *f_pt *= weight;
@@ -516,18 +530,19 @@ int main (int argc, char **argv) {
         if (norm==1) x2 = sqrt(x2);
         rec2 += spt->on_off*x2;
         for(m=0,k=0;k<kc;k++) {
-            f_pt = cutTrace(green[gindx+k], hd[indx].npts, rint((t0[j]-con_shft[i]-shft0[i][j]-hd[indx].b)/dt), npt);
-            if ( f_pt == NULL ) {
-                fprintf(stderr, "fail to window the Greens functions\n");
-                return -1;
-            }
-            spt->syn[k] = f_pt;
+                f_pt = cutTrace(green[gindx+k], hd[indx].npts, (int) rint((t0[j]-con_shft[i]-shft0[i][j]-hd[indx].b)/dt), npt);
+                taper(f_pt, npt);
+                if ( f_pt == NULL ) {
+                    fprintf(stderr, "fail to window the Greens functions\n");
+                    return -1;
+                }
+                spt->syn[k] = f_pt;
             if (j<3) {
 #ifdef DIRECTIVITY
                 conv(src_sw, ns_sw, f_pt, npt);
 #endif
                 if (f1_sw>0.) {
-                    apply(f_pt,(long int) npt,0,sw_sn,sw_sd,nsects);
+                        apply(f_pt,(long int) npt,0,sw_sn,sw_sd,nsects);
                 }
             } 
             else {
@@ -535,7 +550,7 @@ int main (int argc, char **argv) {
                 conv(src_pnl, ns_pnl, f_pt, npt);
 #endif
                 if (f1_pnl>0.) {
-                    apply(f_pt,(long int) npt,0,pnl_sn,pnl_sd,nsects);
+                        apply(f_pt,(long int) npt,0,pnl_sn,pnl_sd,nsects);
                 }
             }
             if (useDisp) cumsum(f_pt, npt, dt);
