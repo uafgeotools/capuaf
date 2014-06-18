@@ -502,6 +502,7 @@ int main (int argc, char **argv) {
                 if(filter_then_cut) {
                     apply(f_pt2,(long int) npt_data, 0,sw_sn,sw_sd,nsects);
                     f_pt = cutTrace(f_pt2, npt_data, (int) rint((t0[j]-tb[indx])/dt), npt);
+                    taper(f_pt, npt);
                     spt->rec = f_pt; 
                 }
                 else {
@@ -514,6 +515,7 @@ int main (int argc, char **argv) {
                 if(filter_then_cut) {
                     apply(f_pt2,(long int) npt_data, 0,pnl_sn,pnl_sd,nsects);
                     f_pt = cutTrace(f_pt2, npt_data, (int) rint((t0[j]-tb[indx])/dt), npt);
+                    taper(f_pt, npt);
                     spt->rec = f_pt; 
                 }
                 else {
