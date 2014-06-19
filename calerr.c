@@ -90,7 +90,7 @@ SOLN  calerr(int   	nda,    // number of stations
       }
       sol.scl[i][j] = y1;
 		   
-      x1 = spt->rec2+x2*y1*y1-2.*cfg[j]*y1;
+      x1 = spt->rec2+x2*y1*y1-2.*cfg[j]*y1;// MISIFIT FUNCTION
       if (norm==1) x1 = sqrt(x1);
       sol.error[i][j] = x1;	/*L2 error for this com.*/
       sol.cfg[i][j] = 100*cfg[j]/sqrt(spt->rec2*x2);
