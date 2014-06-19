@@ -664,11 +664,11 @@ int main (int argc, char **argv) {
   strcat(strcat(strcat(strcpy(tmp,eve),"/"),mod_dep),".out"); // 20130102 calvizuri - end rename .out
   //  strcat(strcat(strcat(strcpy(tmp,eve),"/"),dep),".out");   // 20130102 calvizuri - original
   f_out=fopen(tmp,"w");
-  fprintf(f_out,"Event %s Model %s FM %3d %2d %3d Mw %4.2f rms %9.3e %5d ERR %3d %3d %3d ISO %3.2f %3.2f CLVD %3.2f %3.2f VR %3.1f\n",eve,mod_dep,
+  fprintf(f_out,"Event %s Model %s FM %3d %2d %3d Mw %4.2f rms %9.3e %5d ERR %3d %3d %3d ISO %3.2f %3.2f CLVD %3.2f %3.2f VR %3.1f data2 %9.3e\n",eve,mod_dep,
 	  (int) rint(sol.meca.stk), (int) rint(sol.meca.dip), (int) rint(sol.meca.rak),
 	  mt[0].par, sol.err, dof,
 	  (int) rint(rad[0]), (int) rint(rad[1]), (int) rint(rad[2]),
-	  mt[1].par, sqrt(mt[1].sigma*x2),mt[2].par, sqrt(mt[2].sigma*x2),VR);
+	  mt[1].par, sqrt(mt[1].sigma*x2),mt[2].par, sqrt(mt[2].sigma*x2),VR,data2);
   fprintf(f_out,"# Hypocenter_sac_header elat %e elon %e edep %e\n",evla,evlo,evdp);
   // convert Mw to M0 using GCMT convention (also in Aki and Richards, 2002)
   // this is very close to Kanamori1977 (16.1 vs 16.1010)
@@ -923,7 +923,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   
 
     if (debug) fprintf(stderr, "Mw=%5.2f  iso=%5.2f clvd=%5.2f misfit = %9.3e\n", mt[0].par, mt[1].par, mt[2].par, best_sol.err);
-    if (interp=1) return(best_sol);
+    if (interp==0) return(best_sol);
     /* do interpolation */
     best_sol.err = grid3d(grid.err,&(grid.n[0]),s3d,&(best_sol.flag),&(best_sol.ms),best_sol.others);
     if (debug) fprintf(stderr, " interpolation  misfit = %9.3e\n", best_sol.err);
@@ -1164,7 +1164,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     }
  
     if (debug) fprintf(stderr, "Mw=%5.2f  iso=%5.2f clvd=%5.2f misfit = %9.3e\n", mt[0].par, mt[1].par, mt[2].par, best_sol.err);
-    if (interp=1) return(best_sol);
+    if (interp==0) return(best_sol);
     /* do interpolation */
     best_sol.err = grid3d(grid.err,&(grid.n[0]),s3d,&(best_sol.flag),&(best_sol.ms),best_sol.others);
     if (debug) fprintf(stderr, " interpolation  misfit = %9.3e\n", best_sol.err);
