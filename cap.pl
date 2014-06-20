@@ -19,6 +19,8 @@ require "$caphome/cap_plt.pl";             # include plot script
 #================defaults======================================
 $cmd = "cap";
 
+$inp_cmd = "inp_cmd";
+
 # green's function location
 #$green = "$home/data/models/Glib";        # original
 #$green = "/store/wf/FK_synthetics";       # standard models at UAF
@@ -207,6 +209,13 @@ Event 20080418093700 Model cus_15 FM 115 90  -2 Mw 5.19 rms 1.341e-02   110 ERR 
 @ARGV > 1 || die $usage;
 
 $ncom = 5;	# 5 segemnts to plot
+
+open(INP,">$inp_cmd");
+print INP "cap.pl ";
+foreach $argnum (0 .. $#ARGV) {
+    print INP "@ARGV[$argnum] ";}
+close(INP);
+system("chmod +x $inp_cmd");
 
 #input options
 foreach (grep(/^-/,@ARGV)) {
