@@ -254,11 +254,11 @@ sub plot {
             $com1=8-2*$j; $com2=$com1+1;
             if ($aa[4*$j+2]>0) {
 #                printf "(j=$j) x=$x\t"; # debug
-                printf PLT "%s %f %f 5/0/0/0\n",$nam.$com1,$x,$nn-$i-2;     # data
-                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;   # synthetic
+                printf PLT "%s %f %f 5/0/0/0\n",$nam.$com1,$x,$nn-$i-2;     # data (black)
+                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;   # synthetic (red)
             } elsif ($keepBad) {
-                printf PLT "%s %f %f 2/0/255/0\n",$nam.$com1,$x,$nn-$i-2;   # bad data
-                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;   # synthetic
+                printf PLT "%s %f %f 2/0/255/0\n",$nam.$com1,$x,$nn-$i-2;   # bad data (green)
+                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;   # synthetic (red)
             }
             $x = $x + $x0[$j];
         }
@@ -279,11 +279,11 @@ sub plot {
 #                printf "(j=$j) x=$x\t"; # debug
             $com1=8-2*$j; $com2=$com1+1;
             if ($aa[4*$j+2]>0) {
-                printf PLT "%s %f %f 5/0/0/0\n",$nam.$com1,$x,$nn-$i-2;
-                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;
+                printf PLT "%s %f %f 5/0/0/0\n",$nam.$com1,$x,$nn-$i-2;     # data (black)
+                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;   # synthetic (red)
             } elsif ($keepBad) {
-                printf PLT "%s %f %f 2/0/255/0\n",$nam.$com1,$x,$nn-$i-2;
-                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;
+                printf PLT "%s %f %f 2/0/255/0\n",$nam.$com1,$x,$nn-$i-2;   # bad data (green)
+                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;   # synthetic (red)
             }
             $x = $x + $x0[$j];
         }
