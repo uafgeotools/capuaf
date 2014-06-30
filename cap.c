@@ -276,10 +276,13 @@ int main (int argc, char **argv) {
       if (tstarP>0.) fttq_(&dt, &tstarP, &j, &nqP, attnP);
       if (tstarS>0.) fttq_(&dt, &tstarS, &j, &nqS, attnS);
     }
-    if (nup==0) {	/* skip this station */
-      nda--; i--;
-      continue;
-    }
+
+    /* this section added as comment so that we can use polarities 
+     * even when body waves not available */
+//    if (nup==0) {	/* skip this station */
+//      nda--; i--;
+//      continue;
+//    }
 
     /* up[i] unknown if not in weight file, so initialize*/
     up[0] = 0;
