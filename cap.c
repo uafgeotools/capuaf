@@ -577,7 +577,7 @@ int main (int argc, char **argv) {
 #endif
                 if (f1_pnl>0.) {
                     if(FTC_green){
-                        apply(g_pt,(long int) hd[indx].npts, 0,sw_sn,sw_sd,nsects);
+                        apply(g_pt,(long int) hd[indx].npts, 0,pnl_sn,pnl_sd,nsects);
                         f_pt = cutTrace(g_pt, hd[indx].npts, (int) rint((t0[j]-con_shft[i]-shft0[i][j]-hd[indx].b)/dt), npt);
                         taper(f_pt, npt);
                         spt->syn[k] = f_pt;
