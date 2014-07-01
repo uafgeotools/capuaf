@@ -85,7 +85,7 @@
 #include "cap.h"
 
 int total_n,loop=0,start=0,debug=0, Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
-int only_first_motion=0, misfit_on_lune=0, filter_then_cut=0;
+int only_first_motion=0, misfit_on_lune=0, FTC_data=0, FTC_green=0;
 float data2=0.0;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search,norm;
@@ -103,6 +103,7 @@ int main (int argc, char **argv) {
   float	distance,dmin=100.,vp,vs1,vs2,depSqr=25;
   float	*syn,*f_pt,*f_pt0,*f_pt1;
   float *f_pt2;
+  float *g_pt;  // 20140630 celsoa - for FTC_green
   int npt_data, s_len, offset_h=0;
   GRID	grid;
   MTPAR mt[3];
@@ -277,10 +278,12 @@ int main (int argc, char **argv) {
       if (tstarS>0.) fttq_(&dt, &tstarS, &j, &nqS, attnS);
     }
 
-    if (nup==0) {	/* skip this station */
-      nda--; i--;
-      continue;
-    }
+    /* this section added as comment so that we can use polarities 
+     * even when body waves not available */
+//    if (nup==0) {	/* skip this station */
+//      nda--; i--;
+//      continue;
+//    }
 
     /* up[i] unknown if not in weight file, so initialize*/
     up[0] = 0;
@@ -480,7 +483,8 @@ int main (int argc, char **argv) {
         }
         istat += spt->on_off;
 
-        if(filter_then_cut) {
+        /* cut and filter data */
+        if(FTC_data) {
             npt_data = npts[indx]-offset_h;
             f_pt2 = cutTrace(data[indx], npts[indx], offset_h, npt_data);
             taper(f_pt2, npt_data);
@@ -500,7 +504,7 @@ int main (int argc, char **argv) {
         }
         if (j<3) {
             if (f1_sw>0.) {
-                if(filter_then_cut) {
+                if(FTC_data) {
                     apply(f_pt2,(long int) npt_data, 0,sw_sn,sw_sd,nsects);
                     f_pt = cutTrace(f_pt2, npt_data, (int) rint((t0[j]-tb[indx])/dt), npt);
                     taper(f_pt, npt);
@@ -513,7 +517,7 @@ int main (int argc, char **argv) {
         }
         else {
             if (f1_pnl>0.) {
-                if(filter_then_cut) {
+                if(FTC_data) {
                     apply(f_pt2,(long int) npt_data, 0,pnl_sn,pnl_sd,nsects);
                     f_pt = cutTrace(f_pt2, npt_data, (int) rint((t0[j]-tb[indx])/dt), npt);
                     taper(f_pt, npt);
@@ -532,7 +536,18 @@ int main (int argc, char **argv) {
         spt->rec2 = x2;
         if (norm==1) x2 = sqrt(x2);
         rec2 += spt->on_off*x2;
+
+        /* cut and filter greens functions */
         for(m=0,k=0;k<kc;k++) {
+            if(FTC_green){
+                g_pt = cutTrace(green[gindx+k], hd[indx].npts, 0, hd[indx].npts);
+                taper(g_pt, hd[indx].npts);
+                if ( g_pt == NULL ) {
+                    fprintf(stderr, "fail to window the Greens functions\n");
+                    return -1;
+                }
+            }
+            else{
                 f_pt = cutTrace(green[gindx+k], hd[indx].npts, (int) rint((t0[j]-con_shft[i]-shft0[i][j]-hd[indx].b)/dt), npt);
                 taper(f_pt, npt);
                 if ( f_pt == NULL ) {
@@ -540,12 +555,22 @@ int main (int argc, char **argv) {
                     return -1;
                 }
                 spt->syn[k] = f_pt;
+            }
             if (j<3) {
 #ifdef DIRECTIVITY
                 conv(src_sw, ns_sw, f_pt, npt);
 #endif
                 if (f1_sw>0.) {
+                    if(FTC_green){
+                        apply(g_pt,(long int) hd[indx].npts, 0,sw_sn,sw_sd,nsects);
+                        f_pt = cutTrace(g_pt, hd[indx].npts, (int) rint((t0[j]-con_shft[i]-shft0[i][j]-hd[indx].b)/dt), npt);
+                        taper(f_pt, npt);
+                        spt->syn[k] = f_pt;
+                    }
+                    else {
                         apply(f_pt,(long int) npt,0,sw_sn,sw_sd,nsects);
+                        taper(f_pt, npt);
+                    }
                 }
             } 
             else {
@@ -553,7 +578,16 @@ int main (int argc, char **argv) {
                 conv(src_pnl, ns_pnl, f_pt, npt);
 #endif
                 if (f1_pnl>0.) {
+                    if(FTC_green){
+                        apply(g_pt,(long int) hd[indx].npts, 0,sw_sn,sw_sd,nsects);
+                        f_pt = cutTrace(g_pt, hd[indx].npts, (int) rint((t0[j]-con_shft[i]-shft0[i][j]-hd[indx].b)/dt), npt);
+                        taper(f_pt, npt);
+                        spt->syn[k] = f_pt;
+                    }
+                    else {
                         apply(f_pt,(long int) npt,0,pnl_sn,pnl_sd,nsects);
+                        taper(f_pt, npt);
+                    }
                 }
             }
             if (useDisp) cumsum(f_pt, npt, dt);
