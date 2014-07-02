@@ -514,6 +514,34 @@ note: by not using polarities (to exclude large portions of misfit space), the s
 
 note: this MUST be a worse solution than the non-DC version, since this solution was considered in the non-DC search
 
+------------
+PART 13.3. Compare cap inversions cut-then-filter (original) vs filter-then-cut.
+Example with Uturuncu event 20110622023324299
+
+1. Original cap mode. In cap.c set FTC_data=0, FTC_data=0, compile cap, then run
+
+> cap.pl -H0.01 -P2e-5/1/30 -S0.1/2.0/0 -T1.5/60.0 -D1/1/0.5 -C1/10/0.1/0.4 -W1 -Y1 -F0 -L0.05 -E1 -K1 -I5/0/5 -J33.748/33.748/40/40 -R215/215/69.41/69.41/40/40 -Mutuhalf_9/0.6 -Zweight.dat 20110622023324299 
+
+2. check output
+> gv $CAPHOME/20110622023324299/utuhalf_009_fmt.ps &
+> gv $CAPHOME/20110622023324299_check/utuhalf_009_fmt_cut-filter.ps &
+
+3. Filter-then-cut data. In cap.c set FTC_data=1, FTC_data=0, compile cap, then run
+
+> cap.pl -H0.01 -P2e-5/1/30 -S0.1/2.0/0 -T1.5/60.0 -D1/1/0.5 -C1/10/0.1/0.4 -W1 -Y1 -F0 -L0.05 -E1 -K1 -I5/0/5 -J33.748/33.748/40/40 -R215/215/69.41/69.41/40/40 -Mutuhalf_9/0.6 -Zweight.dat 20110622023324299 
+
+4. check output
+> gv $CAPHOME/20110622023324299/utuhalf_009_fmt.ps &
+> gv $CAPHOME/20110622023324299_check/utuhalf_009_fmt_filter-cut-data.ps &
+
+5. Filter-then-cut data and greens functions. In cap.c set FTC_data=1, FTC_data=1, compile cap, then run
+
+> cap.pl -H0.01 -P2e-5/1/30 -S0.1/2.0/0 -T1.5/60.0 -D1/1/0.5 -C1/10/0.1/0.4 -W1 -Y1 -F0 -L0.05 -E1 -K1 -I5/0/5 -J33.748/33.748/40/40 -R215/215/69.41/69.41/40/40 -Mutuhalf_9/0.6 -Zweight.dat 20110622023324299 
+
+6. check output
+> gv $CAPHOME/20110622023324299/utuhalf_009_fmt.ps &
+> gv $CAPHOME/20110622023324299_check/utuhalf_009_fmt_filter-cut-data-greens.ps &
+
 ====================================================================================
 EXAMPLE 14: Running Alaska Example (20090407201255351)
 
