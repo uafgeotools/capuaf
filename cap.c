@@ -95,7 +95,7 @@ int main (int argc, char **argv) {
   char	tmp[128],glib[128],dep[32],dst[16],eve[32],*c_pt;
   float	x,x1,x2,y,y1,amp,dt,rad[6],arad[4][3],fm_thr,tie,mtensor[3][3],rec2=0.,VR,evla,evlo,evdp;
   float	rms_cut[NCP], t0[NCP], tb[NRC], t1, t2, t3, t4, srcDelay;
-  float	con_shft[STN], s_shft, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN];
+  float	con_shft[STN], s_shft, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN],syn_amp[200][NCP],dat_amp[200][NCP],kcc;
   float	tstarP, tstarS, attnP[NFFT], attnS[NFFT];
   float *data[NRC], *green[NGR];
   float	bs_body,bs_surf,bs[NCP],weight,nof_per_samp;
@@ -112,7 +112,7 @@ int main (int argc, char **argv) {
   FM	*fm, *fm0;
   SOLN	sol;
   SACHEAD hd[NRC];
-  FILE 	*f_out, *log, *wt, *wt2 ;
+  FILE 	*f_out, *logf, *wt, *wt2 ;
   float tau0, riseTime, *src;
   char type[2] = {'B','P'}, proto[2] = {'B','U'};
   double f1_pnl, f2_pnl, f1_sw, f2_sw;
@@ -235,6 +235,7 @@ int main (int argc, char **argv) {
   faultDip = grid.x0[1]*DEG2RAD;
 #endif
 
+  
   /** input number of stations **/
   scanf("%d",&nda);
   if (nda > STN) {
@@ -252,7 +253,8 @@ int main (int argc, char **argv) {
   total_n = 0;
   n_shft = 0;
   nfm = 0;
-  for(i=0;i<nda;i++) {
+
+ for(i=0;i<nda;i++) {
 
     /***** input station name and weighting factor ******/
     scanf("%s%s",tmp,dst);
@@ -627,8 +629,8 @@ int main (int argc, char **argv) {
   }
 
   /************grid-search for full moment tensor***********/
-  log = fopen("log_diff","w");
-  fclose(log);
+  logf = fopen("log_diff","w");
+  fclose(logf);
 
   // maybe we label this section "cap messages"...
   if (search==0){
@@ -677,6 +679,13 @@ int main (int argc, char **argv) {
   if (norm==2) 
     VR = 100*(1.-sol.err/data2);
 
+/***** output waveforms for both data and synthetics ****/
+  i = mm[1]; if(mm[0]>i) i=mm[0];
+  syn = (float *) malloc(i*sizeof(float));
+  if (syn == NULL) {
+    fprintf(stderr,"fail to allocate memory for output\n");
+    return -1;
+  }
   /**************output the results***********************/
   if (sol.flag) fprintf(stderr,"\nWarning: flag=%d => the minimum %5.1f/%4.1f/%5.1f is at boundary\n",sol.flag,sol.meca.stk,sol.meca.dip,sol.meca.rak);
   else principal_values(&(sol.dev[0]));
@@ -727,32 +736,15 @@ int main (int argc, char **argv) {
 	      mt[0].par,grid.err[j],(grid.err[j]-grid.err[sol.others[0]])/x2);
     }
   } 
-  for(obs=obs0,i=0;i<nda;i++,obs++) {
-    fprintf(f_out,"%-9s %5.1f/%-5.2f",obs->stn, obs->dist, con_shft[i]);
+for(obs=obs0,i=0;i<nda;i++,obs++) {
     for(j=0;j<NCP;j++) {
       k = NCP - 1 - j;
       sol.shft[i][k]=sol.shft[i][k] - max_shft[k]/2;
-      kc = sol.cfg[i][k]; if (kc<0) kc = 0;
-      fprintf(f_out," %1d %8.2e %2d %5.2f",obs->com[k].on_off,sol.error[i][k],kc,shft0[i][k]+dt*sol.shft[i][k]);
     }
-    
-    /* output observed polarity and predicted rad amplitude */
-    fprintf(f_out," %2d ", fm0->type);
-    fprintf(f_out, "%6.2f\n", radpmt(mtensor, fm0->alpha, fm0->az, 1)); 
-    fm0++;  /* iterate structure with polarity data */ 
-  }
-  fclose(f_out);
-
-  if ( ! plot ) return 0;
-
-  /***** output waveforms for both data and synthetics ****/
-  i = mm[1]; if(mm[0]>i) i=mm[0];
-  syn = (float *) malloc(i*sizeof(float));
-  if (syn == NULL) {
-    fprintf(stderr,"fail to allocate memory for output\n");
-    return -1;
-  }
-  for(obs=obs0,i=0;i<nda;i++,obs++){
+ }
+// generate synthetic and data waveforms for each 5 component (filtered and cut) 
+// these are deleted at the later stage (see cap.pl)
+for(obs=obs0,i=0;i<nda;i++,obs++){
     mt_radiat(obs->az, mtensor, arad);
     rad[0]=arad[3][0];
     for(k=1;k<4;k++) rad[k]=arad[3-k][0];
@@ -764,19 +756,47 @@ int main (int argc, char **argv) {
       hd[0] = sachdr(dt, npt, spt->b);
       hd->dist = obs->dist; hd->az = obs->az; hd->user1 = obs->alpha;
       hd->a = hd->b;
-      for(l=0;l<npt;l++) syn[l] = spt->rec[l]/amp;
-      write_sac(tmp,hd[0],syn);
+      dat_amp[i][j]=0.; // variable for finding the maximum data amplitude
+      for(l=0;l<npt;l++){
+	syn[l] = spt->rec[l]/amp;
+	if (fabs(spt->rec[l]/amp)>dat_amp[i][j]) dat_amp[i][j]=fabs(spt->rec[l]/amp); // maximum data amplitude
+      }
+      write_sac(tmp,hd[0],syn);   // generate data
       (*c_pt)++;
+      syn_amp[i][j]=0.;  // variable for finding the maximum synthetic amplitude
       for(l=0;l<npt;l++) {
 	for(x2=0.,k=0;k<kc;k++) x2 += f_pt[k]*spt->syn[k][l];
 	syn[l] = sol.scl[i][j]*x2;
+	if (fabs(sol.scl[i][j]*x2)>syn_amp[i][j]) {syn_amp[i][j]=fabs(sol.scl[i][j]*x2);}  // maximum synthetic amplitude
       }
+      //kcc = log(dat_amp[i][j]/syn_amp[i][j]);
+      //fprintf(stderr,"%.3f\t",kcc);
       hd->b -= (shft0[i][j]+con_shft[i]);
       hd->a = hd->b-sol.shft[i][j]*dt;
-      write_sac(tmp,hd[0],syn);
+      write_sac(tmp,hd[0],syn);   // generate synthetics
       (*c_pt)++;
     }
-  }
+ }
+ 
+for(obs=obs0,i=0;i<nda;i++,obs++) {
+    fprintf(f_out,"%-9s %5.1f/%-5.2f",obs->stn, obs->dist, con_shft[i]);
+    for(j=0;j<NCP;j++) {
+      k = NCP - 1 - j;
+      kc = sol.cfg[i][k]; if (kc<0) kc = 0;
+      fprintf(stderr,"%.3f\t",(dat_amp[i][k]/syn_amp[i][k]));
+      //fprintf(f_out," %1d %8.2e %2d %5.2f",obs->com[k].on_off,sol.error[i][k],kc,shft0[i][k]+dt*sol.shft[i][k]);
+      fprintf(f_out," %1d %8.2e %2d %5.2f %2.2f",obs->com[k].on_off,sol.error[i][k]*100/(Nsta*sol.err),kc,shft0[i][k]+dt*sol.shft[i][k],log(dat_amp[i][k]/syn_amp[i][k]));
+      
+    }
+    fprintf(stderr,"%s\n",obs->stn);
+    /* output observed polarity and predicted rad amplitude */
+    fprintf(f_out," %2d ", fm0->type);
+    fprintf(f_out, "%6.2f\n", radpmt(mtensor, fm0->alpha, fm0->az, 1)); 
+    fm0++;  /* iterate structure with polarity data */ 
+ }
+  fclose(f_out);
+
+  //if ( ! plot ) return 0;
 
   /**********ouput weight file -vipul**********/
   wt = fopen(strcat(strcat(strcpy(tmp,eve),"/"),"weight_capout.dat"),"w");
@@ -817,7 +837,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   DATA	*obs;
   COMP	*spt;
   SOLN	sol, sol1, sol2, best_sol;
-  FILE *log,*std_range;
+  FILE *logf,*std_range;
   char logfile[16],range_file[20];
 
   /* vars to track smallest misfit at each (gamma,delta) on the lune */
@@ -838,8 +858,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   
   if (debug) {
     sprintf(logfile,"%s_%03d_%03d","log",edep,loop);
-    log = fopen(logfile,"w");
-    fclose(log);
+    logf = fopen(logfile,"w");
+    fclose(logf);
   }
 
   if (debug) fprintf(stderr, "loop=%d start=%d \n",loop,start);
@@ -928,23 +948,23 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	    }
 
 	    if (debug) { 
-	      log = fopen(logfile,"a");                 // output log file
-	      fprintf(log,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
-	      fclose(log);
+	      logf = fopen(logfile,"a");                 // output log file
+	      fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
+	      fclose(logf);
 	    }
 	  }
 
 	  if (debug) {
 	    loop++;
 	    sprintf(logfile,"%s_%03d_%03d","log",edep,loop);  // changes the log file name for next sext search
-	    log = fopen(logfile,"a");
-	    fclose(log);
+	    logf = fopen(logfile,"a");
+	    fclose(logf);
 	  }
 	  
 	  if (1){
-	    log = fopen("log_diff","a"); /*fprintf(stderr,"completed stk,dip,rake loop\n");        //summary log file*/
-	    fprintf(log,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
-	    fclose(log);
+	    logf = fopen("log_diff","a"); /*fprintf(stderr,"completed stk,dip,rake loop\n");        //summary log file*/
+	    fprintf(logf,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
+	    fclose(logf);
 	  }
 	  fprintf(stderr, "%d\t%3.2f\t%3.2f\t%3.2f\t%2.1f\t%2.1f\t%2.2f\n",ii+1,sol.meca.stk, sol.meca.dip,sol.meca.rak,temp[0],temp[1],temp[2]);
 	  
@@ -1145,10 +1165,10 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		  }
 	       
 		  if (debug) { 
-		    log = fopen(logfile,"a");                 // output log file
-		    fprintf(log,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
+		    logf = fopen(logfile,"a");                 // output log file
+		    fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
 		    //fprintf(stderr,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err,  temp[0], temp[1], temp[2]);
-		    fclose(log);	  
+		    fclose(logf);	  
 		  }
 		}   /* end stk loop */
 	      } /* end dip loop */
@@ -1157,12 +1177,12 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		loop++;
 		if (debug) {
 		  sprintf(logfile,"%s_%03d_%03d","log",edep,loop);  // changes the log file name for next sext search (for multiple log files - search over stk,dip and rake only)
-		  log = fopen(logfile,"w");
-		  fclose(log);
+		  logf = fopen(logfile,"w");
+		  fclose(logf);
 		}
-		log = fopen("log_diff","a"); /*fprintf(stderr,"completed stk,dip,rake loop\n");        //summary log file*/
-		fprintf(log,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
-		fclose(log);
+		logf = fopen("log_diff","a"); /*fprintf(stderr,"completed stk,dip,rake loop\n");        //summary log file*/
+		fprintf(logf,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
+		fclose(logf);
 	      }
 	    }  /* end rak loop */
 	    if (1) fprintf(stderr,"Mw=%2.1f \t iso=%2.2f \t clvd=%2.2f\n",temp[0],temp[1],temp[2]);
@@ -1271,9 +1291,9 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	      best_sol=sol;
 	    
 	    if (debug) { 
-	      log = fopen(logfile,"a");
-	      fprintf(log,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.1f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, mt[0].par, mt[1].par, mt[2].par, amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
-	      fclose(log);	  
+	      logf = fopen(logfile,"a");
+	      fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.1f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, mt[0].par, mt[1].par, mt[2].par, amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
+	      fclose(logf);	  
 	    }
 	  } // loop for stk
 	}   // loop for dip
@@ -1281,12 +1301,12 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	  loop++;
 	  if (debug) {
 	    sprintf(logfile,"%s_%03d","log",loop);
-	    log = fopen(logfile,"a");
-	    fclose(log);
+	    logf = fopen(logfile,"a");
+	    fclose(logf);
 	  }
-	  log = fopen("log_diff","a");
-	  fprintf(log,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
-	  fclose(log);
+	  logf = fopen("log_diff","a");
+	  fprintf(logf,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
+	  fclose(logf);
 	}
       }
   
