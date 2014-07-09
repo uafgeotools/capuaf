@@ -7,7 +7,7 @@ sub plot {
   local($nn,$tt,$plt1,$plt2,$plt3,$plt4,$i,$nam,$com1,$com2,$j,$x,$y,@aa,$rslt,@name,@aztk);
 
 # set this =1 if you want to plot time windows that have been excluded
-  local $keepBad = 0;
+  local $keepBad = 1;
   
   @trace = ("1/255/255/255","3/0/0/0");       # plot data trace
   @name = ("P V","P R","Surf V"," Surf R","Surf T");
@@ -46,8 +46,8 @@ sub plot {
   #($nn,$height) = (12,10.5);   # 10 rows of traces per 10.5 in.
   #print "\n$nn rows of traces per $height in";  
   print "\nseconds per inch = $spis";
-  $sepb = 0.2*$spib;    # sec per inch (*1/2) bet body waves
-  $seps = 0.2*$spis;    # separation bet surface waves
+  $sepb = 0.5*$spib;    # sec per inch (*1/2) bet body waves
+  $seps = 0.5*$spis;    # separation bet surface waves
 
 #  ($tt, $inc) = (2*$t1 + 3*$t2 + 4*$sepa, 1);
 #  ($tt, $inc) = (2*$t1 + 3*$t2 + 2*$seps+2*$sepb, 1);
@@ -73,7 +73,7 @@ sub plot {
 
   # horizontal offset (why is it needed?)
   #  $xoffset="3.0";
-  $xoffset=$widthb;
+  $xoffset=$widthb+.25;
 
 # pssac2 amplitude scaling:
 # -M vertical scaling in sacfile_unit/MEASURE_UNIT = size<required> 
@@ -195,6 +195,7 @@ sub plot {
 
     # compute polar coordinates azimuth and radius
     $az[$i] = $aa[1];
+    $azvec[$i] = sprintf("%s\n",$aa[1]);
     $staz[$i] = sprintf("%s %f %s\n",$aa[1],1.1,$stnm);      # station azimuth
     if ($aa[2]>90.) {                                         # upper hemisphere
        $rad = sqrt(2.)*cos($aa[2]*$pi/360);
@@ -208,7 +209,7 @@ sub plot {
     $rad = sqrt(2.)*sin($aa[2]*$pi/360);
     $tklh[$i] = sprintf("%s %f %s\n",$aa[1],$rad,$stnm);        # lower hemisphere
     $i++;
-  }
+}
 
   # remove the file if it exists
   unlink($outps) if -e $outps;
@@ -252,13 +253,13 @@ sub plot {
         $x=0;
         for($j=0;$j<2;$j+=$inc) {
             $com1=8-2*$j; $com2=$com1+1;
-            if ($aa[4*$j+2]>0) {
+            if ($aa[5*$j+2]>0) {
 #                printf "(j=$j) x=$x\t"; # debug
-                printf PLT "%s %f %f 5/0/0/0\n",$nam.$com1,$x,$nn-$i-2;     # data (black)
-                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;   # synthetic (red)
+                printf PLT "%s %f %f 5/0/0/0\n",$nam.$com1,$x+4,$nn-$i-2;     # data (black)
+                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x+4,$nn-$i-2;   # synthetic (red)
             } elsif ($keepBad) {
-                printf PLT "%s %f %f 2/0/255/0\n",$nam.$com1,$x,$nn-$i-2;   # bad data (green)
-                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;   # synthetic (red)
+                printf PLT "%s %f %f 2/0/255/0\n",$nam.$com1,$x+4,$nn-$i-2;   # bad data (green)
+                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x+4,$nn-$i-2;   # synthetic (red)
             }
             $x = $x + $x0[$j];
         }
@@ -278,7 +279,7 @@ sub plot {
         for($j=2;$j<5;$j+=$inc) {
 #                printf "(j=$j) x=$x\t"; # debug
             $com1=8-2*$j; $com2=$com1+1;
-            if ($aa[4*$j+2]>0) {
+            if ($aa[5*$j+2]>0) {
                 printf PLT "%s %f %f 5/0/0/0\n",$nam.$com1,$x,$nn-$i-2;     # data (black)
                 printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;   # synthetic (red)
             } elsif ($keepBad) {
@@ -323,17 +324,17 @@ sub plot {
     $i=0;
     foreach (@aaaa) {
       @aa = split;
-#debug. aa=PLQU_XP 17.6/-0.73 1 2.61e-10 89  0.16 1 2.24e-09  9  0.16 60 8.74e-11 67 2.65 60 5.94e-10 41  2.65 60 8.03e-10 44  3.67 -1
-#             |        |      |    |     |     |  |    |      |   |   |    |      |   |   |   |       |   |    |  |        |   |    |
-#             0        1      2    3     4     5  6    7      8   9  10   11     12  13  14  15      16  17   18  19       20  21   22
+#debug. aa=BIGB_YV    15.9/-0.00 1 3.23e+00 84 -0.70 1.19 1 1.37e+00  0 -0.70 1.29 1 1.16e+00 98 -0.66 0.19 1 4.05e-01 97 -0.66 -0.11 0 3.14e-01 31 -8.00 -0.15  0  -1.00
+#             |            |     |     |     |    |    |  |     |     |   |    |   |   |       |   |     |  |    |      |    |     |  |     |     |   |     |    |     |
+#             0            1     2     3     4    5    6  7     8     9  10   11   12  13     14  15    16  17   18     19   20   21  22    23    24  25    26   27    28
       $x = 0;
       printf PLT "%f %f 10 0 0 1 $aa[0]\n",$x-0.8*$spis,$y;            # station label
       printf PLT "%f %f 10 0 0 1 $aa[1]\n",$x-0.7*$spis,$y-0.2;        # distance_km/overal time shift
       printf PLT "%f %f 10 0 0 1 %.1f\n",$x-0.7*$spis,$y-0.4,$az[$i];  # azimuth (see az above)
       # if polarity is 0 or does not exist, then nothing is written
       # note: 22 entry is observed polarity (from input file) and is optional
-      if ( $aa[22] ) {
-         printf PLT "%f %f 10 0 0 1 $aa[22] ($aa[23])\n",$x-0.7*$spis,$y-0.6;
+      if ( $aa[27] ) {
+         printf PLT "%f %f 10 0 0 1 $aa[27] ($aa[28])\n",$x-0.7*$spis,$y-0.6;
       }
       $i=$i+1;
       $y--;
@@ -347,9 +348,13 @@ sub plot {
       @aa = split;
       $x = 0;
       for($j=0;$j<2;$j+=$inc) {
-          if ($aa[4*$j+2]>0 || $keepBad) {
-              printf PLT "%f %f 10 0 0 1 $aa[4*$j+5]\n",$x,$y-0.4;  # time shift each wf
-              printf PLT "%f %f 10 0 0 1 $aa[4*$j+4]\n",$x,$y-0.6;  # correl value
+          if ($aa[5*$j+2]>0 || $keepBad) {
+	      $fracmis=sprintf("%2.2f",$aa[5*$j+3]);
+	      $lamp=sprintf("%2.2f",$aa[5*$j+6]);
+              printf PLT "%f %f 10 0 0 1 $aa[5*$j+5]\n",$x+5,$y-0.2;  # time shift each wf
+              printf PLT "%f %f 10 0 0 1 $aa[5*$j+4]\n",$x+5,$y-0.4;  # correl value
+	      printf PLT "%f %f 10 0 0 1 $fracmis\n",$x+5,$y-0.6;  # fractional misfit
+	      printf PLT "%f %f 10 0 0 1 $lamp\n",$x+5,$y-0.8;  # log(max_amp_data/max_amp_syn)
           }
           $x = $x + $x0[$j];
       }
@@ -371,9 +376,13 @@ sub plot {
 #      $x = $x0[1];
       $x = 0;
       for($j=2;$j<5;$j+=$inc) {
-          if ($aa[4*$j+2]>0 || $keepBad) {
-              printf PLT "%f %f 10 0 0 1 $aa[4*$j+5]\n",$x,$y-0.4;  # time shift each wave
-              printf PLT "%f %f 10 0 0 1 $aa[4*$j+4]\n",$x,$y-0.6;  # correl value
+          if ($aa[5*$j+2]>0 || $keepBad) {
+	      $fracmis=sprintf("%2.2f",$aa[5*$j+3]);
+	      $lamp=sprintf("%2.2f",$aa[5*$j+6]);
+              printf PLT "%f %f 10 0 0 1 $aa[5*$j+5]\n",$x,$y-0.2;  # time shift each wave
+              printf PLT "%f %f 10 0 0 1 $aa[5*$j+4]\n",$x,$y-0.4;  # correl value
+	      printf PLT "%f %f 10 0 0 1 $fracmis\n",$x,$y-0.6;  # fractional misfit
+	      printf PLT "%f %f 10 0 0 1 $lamp\n",$x,$y-0.8;  # log(max_amp_data/max_amp_syn)
           }
           $x = $x + $x0[$j];     # original
       }
