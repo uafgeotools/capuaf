@@ -37,11 +37,11 @@ sub plot {
   $nrow = @rslt;
 
   # Page size
-  $pheight_in = $nrow + 2;  # height of pape
+  $pheight_in = $nrow + 2;  # height of paper
 
   # positions of seismograms on the page
   # height of each seismogram
-  $nn = int($pheight_in);
+  $nn = int($pheight_in);       # WARNING: what about the $nn that comes in from cap?
   $height = $pheight_in - 0.5;
   #($nn,$height) = (12,10.5);   # 10 rows of traces per 10.5 in.
   #print "\n$nn rows of traces per $height in";  
@@ -255,11 +255,11 @@ sub plot {
             $com1=8-2*$j; $com2=$com1+1;
             if ($aa[5*$j+2]>0) {
 #                printf "(j=$j) x=$x\t"; # debug
-                printf PLT "%s %f %f 5/0/0/0\n",$nam.$com1,$x+4,$nn-$i-2;     # data (black)
-                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x+4,$nn-$i-2;   # synthetic (red)
+                printf PLT "%s %f %f 5/0/0/0\n",  $nam.$com1, $x+4, $nn-$i-2;     # data (black)
+                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2, $x+4, $nn-$i-2;   # synthetic (red)
             } elsif ($keepBad) {
-                printf PLT "%s %f %f 2/0/255/0\n",$nam.$com1,$x+4,$nn-$i-2;   # bad data (green)
-                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x+4,$nn-$i-2;   # synthetic (red)
+                printf PLT "%s %f %f 2/0/255/0\n",$nam.$com1, $x+4, $nn-$i-2;   # bad data (green)
+                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2, $x+4, $nn-$i-2;   # synthetic (red)
             }
             $x = $x + $x0[$j];
         }
