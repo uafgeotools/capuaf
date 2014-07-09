@@ -29,6 +29,7 @@ SOLN  calerr(int   	nda,    // number of stations
     f_pt0 = spt->crl[0];
     f_pt1 = spt->crl[1];
     z0 = spt->on_off>0?1:0;
+    z0=1;
     /**PSV surface wave**/
     spt++;
     r_pt0 = spt->crl[1];
@@ -42,6 +43,7 @@ SOLN  calerr(int   	nda,    // number of stations
     z_pt  = spt->crl[3];
     z_iso = spt->crl[0];
     z2 = spt->on_off>0?1:0;
+    if (z1==z2){z1=1;z2=1;}
     for(y1=y2=-FLT_MAX,l=0;l<=max_shft[1];l++) {
       x =rad[4]*(*f_pt0++)+rad[5]*(*f_pt1++);
       x1=rad[1]*(*r_pt0++)+rad[2]*(*r_pt1++)+rad[3]*(*r_pt++)+rad[0]*(*r_iso++);
@@ -65,6 +67,7 @@ SOLN  calerr(int   	nda,    // number of stations
     z_pt  = spt->crl[3];
     z_iso = spt->crl[0];
     z2 = spt->on_off>0?1:0;
+    if (z1==z2){z1=1;z2=1;}
     for(y1=-FLT_MAX,l=0;l<=max_shft[3];l++) {
       x1=rad[1]*(*r_pt0++)+rad[2]*(*r_pt1++)+rad[3]*(*r_pt++)+rad[0]*(*r_iso++);
       x2=rad[1]*(*z_pt0++)+rad[2]*(*z_pt1++)+rad[3]*(*z_pt++)+rad[0]*(*z_iso++);
