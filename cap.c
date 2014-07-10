@@ -85,7 +85,7 @@
 #include "cap.h"
 
 int total_n,loop=0,start=0,debug=0, Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
-int only_first_motion=0, misfit_on_lune=0, FTC_data=0, FTC_green=0;
+int only_first_motion=0, misfit_on_lune=0, FTC_data=1, FTC_green=0;
 float data2=0.0;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search,norm;
@@ -706,8 +706,9 @@ int main (int argc, char **argv) {
   strcat(strcat(strcat(strcpy(tmp,eve),"/"),mod_dep),".out"); // 20130102 calvizuri - end rename .out
   //  strcat(strcat(strcat(strcpy(tmp,eve),"/"),dep),".out");   // 20130102 calvizuri - original
   f_out=fopen(tmp,"w");
-  fprintf(f_out,"Event %s Model %s FM %3d %2d %3d Mw %4.2f rms %9.3e %5d ERR %3d %3d %3d ISO %3.2f %3.2f CLVD %3.2f %3.2f VR %3.1f data2 %9.3e\n",eve,mod_dep,
-	  (int) rint(sol.meca.stk), (int) rint(sol.meca.dip), (int) rint(sol.meca.rak),
+  fprintf(f_out,"Event %s Model %s FM %3.4f %2.4f %3.4f Mw %4.2f rms %9.3e %5d ERR %3d %3d %3d ISO %3.2f %3.2f CLVD %3.2f %3.2f VR %3.1f data2 %9.3e\n",eve,mod_dep,
+	  //(int) rint(sol.meca.stk), (int) rint(sol.meca.dip), (int) rint(sol.meca.rak),
+	  sol.meca.stk, sol.meca.dip, sol.meca.rak,
 	  mt[0].par, sol.err, dof,
 	  (int) rint(rad[0]), (int) rint(rad[1]), (int) rint(rad[2]),
 	  mt[1].par, sqrt(mt[1].sigma*x2),mt[2].par, sqrt(mt[2].sigma*x2),VR,data2);
@@ -783,7 +784,7 @@ for(obs=obs0,i=0;i<nda;i++,obs++) {
     for(j=0;j<NCP;j++) {
       k = NCP - 1 - j;
       kc = sol.cfg[i][k]; if (kc<0) kc = 0;
-      fprintf(stderr,"%.3f\t",(dat_amp[i][k]/syn_amp[i][k]));
+      //fprintf(stderr,"%.3f\t",(dat_amp[i][k]/syn_amp[i][k]));
       //fprintf(f_out," %1d %8.2e %2d %5.2f",obs->com[k].on_off,sol.error[i][k],kc,shft0[i][k]+dt*sol.shft[i][k]);
       fprintf(f_out," %1d %8.2e %2d %5.2f %2.2f",obs->com[k].on_off,sol.error[i][k]*100/(Nsta*sol.err),kc,shft0[i][k]+dt*sol.shft[i][k],log(dat_amp[i][k]/syn_amp[i][k]));
       
