@@ -23,8 +23,8 @@ $inp_cmd = "inp_cmd";
 
 # green's function location
 #$green = "$home/data/models/Glib";        # original
-#$green = "/store/wf/FK_synthetics";       # standard models at UAF
-$green = "$caprun/models";                # user testing
+$green = "/store/wf/FK_synthetics";        # standard models at UAF
+#$green = "$caprun/models";                # user testing
 
 $repeat = 0;
 $bootstrap = 0;
@@ -42,6 +42,7 @@ $spib = 40; # sec per inch, body waves
 $spis = 45; # spi, surface waves
 $keep = 0;
 $rise = 0.5;
+$ampfact = 1;
 
 # filters and window lengths
 ($f1_pnl, $f2_pnl, $f1_sw, $f2_sw, $m1, $m2) = (0.02,0.2,0.02,0.1,35,70);
@@ -270,6 +271,8 @@ foreach (grep(/^-/,@ARGV)) {
      $spib = $value[1] if $value[1] > 0;
      $spis = $value[2] if $value[2] > 0;
      $keep = 1 if $#value > 2;
+   } elsif ($opt eq "p") {
+     $ampfact = $value[0];
    } elsif ($opt eq "Q") {
      $nof = $value[0];
    } elsif ($opt eq "R") {
@@ -390,7 +393,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     if ( $plot > 0 && ($? >> 8) == 0 ) {
       chdir($eve);
       #     &plot($md_dep, $m1, $m2, $amplify, $ncom, $sec_per_inch); # 20130102 calvizuri - original
-      &plot($md_dep, $m1, $m2, $amplify, $ncom, $spib, $spis, $filterBand, $fmt_flag); # 20130102 calvizuri - added filter freq bands
+      &plot($md_dep, $m1, $m2, $amplify, $ampfact, $ncom, $spib, $spis, $filterBand, $fmt_flag); # 20130102 calvizuri - added filter freq bands
       unlink(<${md_dep}_*.?>) unless $keep;
       chdir("../");
     }
