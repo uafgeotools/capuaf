@@ -555,15 +555,26 @@ EXAMPLE 14: Running Alaska Example (20090407201255351)
 
 Make sure ~/GEOTOOLS/tomo_util/cap/20090407201255351/ exists and contains '.r,.t,.z waveforms' and a weight_file 'weight111.dat'
 
-1. Set the path to green's function library:
+1. set the path to green's function library
+
 > xe cap.pl 
 > $green = "/store/wf/FK_synthetics";       # standard models at UAF
 
-2. Open cap.c and check filter_then_cut=0
+2. open cap.c and check that FTC_data=0 and FTC_green=0 (recompile if needed: make all >& make.log )
 
-3. cap.pl -H0.02 -P0.5e+0.5/40 -S3/12/0 -T20/100 -D1/1/0.5 -C0.05/0.2/0.02/0.06 -W1 -Mscak_41/5.0 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 20090407201255351
+3. prepare run
 
-4. Checking the solutions
+> mkdir -p $CAPRUN/inv/scak
+> cd $CAPRUN/inv/scak
+> rsync -av $CAPHOME/20090407201255351 .
+
+4. run
+
+> cap.pl -H0.02 -P0.5e+0.5/40 -S3/12/0 -T20/100 -D1/1/0.5 -C0.05/0.2/0.02/0.06 -W1 -Mscak_41/5.0 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 20090407201255351
+
+VIPUL: PLEASE UPDATE THIS COMMAND WITH THE CORRECT P FLAG
+
+5. Checking the solutions
 > gv 20090407201255351/scak_041.ps
 > gv $CAPHOME/20090407201255351_check/2009040720125535_check.ps &
 > diff 20090407201255351/scak_041.out $CAPHOME/20090407201255351_check/2009040720125535_check.out
