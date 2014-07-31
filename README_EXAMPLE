@@ -447,11 +447,17 @@ note: all P arrivals times are specified
 
 > ls -ltr $CAPHOME/cap
 
-4. run cap
+4a. run cap and plot with absolute amplitudes
+
+> cd $CAPRUN/inv/utu06
+> cap.pl -H0.01 -PXXXXXX/2/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutu06topo4p6_5/2.4 -Zweight.dat 20100516063454464
+
+4b. run cap with data and syn SEPARATELY scaled
 
 > cd $CAPRUN/inv/utu06
 > cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutu06topo4p6_5/2.4 -Zweight.dat 20100516063454464
 
+note: plotting flag is set to -P0.5e+0.5/... which is a kludge for unnormalized plotting
 note: lune grid will NOT do a refined search, so pick -I accordingly (here: 5 deg inc on lune; 0.1 inc Mw)
 note: because all P arrivals are hand-picked (to within 0.01 s), we can set the allowable time shift for P to 0.2 s
 note: -L gives the half-duration of the synthetics; this is a key command to get high-frequency synthetics in P (but not too high)
@@ -553,8 +559,6 @@ Note: plotting flag is set to -P0.5e+0.5/... since greens functions in this mode
 ====================================================================================
 EXAMPLE 14: Running Alaska Example (20090407201255351)
 
-Make sure ~/GEOTOOLS/tomo_util/cap/20090407201255351/ exists and contains '.r,.t,.z waveforms' and a weight_file 'weight111.dat'
-
 1. set the path to green's function library
 > xe cap.pl 
 > $green = "/store/wf/FK_synthetics";       # standard models at UAF
@@ -569,8 +573,13 @@ Make sure ~/GEOTOOLS/tomo_util/cap/20090407201255351/ exists and contains '.r,.t
 4. run
 > cap.pl -H0.02 -P0.5e+0.5/40 -S3/12/0 -T20/100 -D1/1/0.5 -C0.05/0.2/0.02/0.06 -W1 -Mscak_41/5.0 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 20090407201255351
 
-VIPUL: PLEASE UPDATE THIS COMMAND WITH THE CORRECT P FLAG
-VIPUL: PLEASE UPDATE THE WEIGHT FILE TO BE SORTED BY AZIMUTH
+fixed solution (for plot testing) -- THIS DOES NOT WORK
+cap.pl -H0.02 -P1.0e-8/40/10 -S3/12/0 -T20/100 -D1/1/0.5 -C0.05/0.2/0.02/0.06 -W1 -Mscak_41/5.0 -R20/20/42/42/-90/-90 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 20090407201255351
+
+VIPUL, PLEASE MAKE THESE UPDATES:
+1. correct P flag for amsolute amplitudes
+2. weight file sorted by azimuth
+3. -D flag for plotting surface waves a bit larger
 
 5. Checking the solutions
 > gv 20090407201255351/scak_041.ps
