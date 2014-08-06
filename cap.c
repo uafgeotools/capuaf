@@ -86,6 +86,7 @@
 
 int total_n,loop=0,start=0,debug=0, Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
 int only_first_motion=0, misfit_on_lune=0, FTC_data=1, FTC_green=0;
+int skip_zero_weights=0;  /* for default cap set skip_zero_weights=1 */
 float data2=0.0;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search,norm;
@@ -110,6 +111,8 @@ int main (int argc, char **argv) {
   COMP	*spt;
   DATA	*obs, *obs0;
   FM	*fm, *fm0;
+  FM *fm_copy;  /*  copy of all first motions entered in weight file */
+
   SOLN	sol;
   SACHEAD hd[NRC];
   FILE 	*f_out, *logf, *wt, *wt2 ;
@@ -244,6 +247,12 @@ int main (int argc, char **argv) {
   }
   obs = obs0 = (DATA *) malloc(nda*sizeof(DATA));
   fm = fm0 = (FM *) malloc(3*nda*sizeof(FM));
+  
+  /* used when not discarding stations with zero weight */
+  if (skip_zero_weights==0){
+      fm_copy = (FM *) malloc(nda*sizeof(FM));
+  }
+
   if (obs == NULL || fm == NULL) {
     fprintf(stderr,"fail to allocate memory for data\n");
     return -1;
@@ -280,9 +289,13 @@ int main (int argc, char **argv) {
       if (tstarS>0.) fttq_(&dt, &tstarS, &j, &nqS, attnS);
     }
 
-    if (nup==0) {	/* skip this station */
-      nda--; i--;
-      continue;
+    /*  original code: remove current station if all weights==0 */
+    /*  updated code: don't remove station  */
+    if (skip_zero_weights==1){
+        if (nup==0) {	/* skip this station */
+            nda--; i--;
+            continue;
+        }
     }
 
     /* up[i] unknown if not in weight file, so initialize*/
@@ -374,6 +387,16 @@ int main (int argc, char **argv) {
         nfm++;
         fm++;
       }
+    }
+
+    /* make copy of station and polarity (if no polarity, set=0)  */
+    /* note this is a workaround, only works with p-wave first motions */
+    /* type:  1=P; 2=SV; 3=SH; positive=up; negative=down */
+    if (skip_zero_weights==0){
+        fm_copy->type = up[0];
+        fm_copy->az = obs->az;
+        fm_copy->alpha = hd[2].user1;
+        fm_copy++;
     }
 
     /* get data for first motion polarity */
@@ -737,6 +760,8 @@ int main (int argc, char **argv) {
 	      mt[0].par,grid.err[j],(grid.err[j]-grid.err[sol.others[0]])/x2);
     }
   } 
+
+// vipul: this is new, what does it do, needs comment...
 for(obs=obs0,i=0;i<nda;i++,obs++) {
     for(j=0;j<NCP;j++) {
       k = NCP - 1 - j;
@@ -778,7 +803,12 @@ for(obs=obs0,i=0;i<nda;i++,obs++){
       (*c_pt)++;
     }
  }
- 
+
+    // set fm_copy to start at beginning of array
+    if (skip_zero_weights==0){
+        for(i=0;i<nda;i++, fm_copy--);
+    }
+
 for(obs=obs0,i=0;i<nda;i++,obs++) {
     fprintf(f_out,"%-9s %5.1f/%-5.2f",obs->stn, obs->dist, con_shft[i]);
     for(j=0;j<NCP;j++) {
@@ -789,11 +819,22 @@ for(obs=obs0,i=0;i<nda;i++,obs++) {
       fprintf(f_out," %1d %8.2e %2d %5.2f %2.2f",obs->com[k].on_off,sol.error[i][k]*100/(Nsta*sol.err),kc,shft0[i][k]+dt*sol.shft[i][k],log(dat_amp[i][k]/syn_amp[i][k]));
       
     }
-    fprintf(stderr,"%s\n",obs->stn);
     /* output observed polarity and predicted rad amplitude */
-    fprintf(f_out," %2d ", fm0->type);
-    fprintf(f_out, "%6.2f\n", radpmt(mtensor, fm0->alpha, fm0->az, 1)); 
-    fm0++;  /* iterate structure with polarity data */ 
+    if (skip_zero_weights==1){
+        fprintf(f_out," %2d ", fm0->type);
+        fprintf(f_out, "%6.2f\n", radpmt(mtensor, fm0->alpha, fm0->az, 1)); 
+        fm0++;  /* iterate structure with polarity data */ 
+    }    
+    else {
+        if ( (fm_copy->type == 0) ) {
+            fprintf(f_out," 0 %6.2f\n", radpmt(mtensor, fm_copy->alpha, fm_copy->az, 1)); 
+        }    
+        else {
+            fprintf(f_out, " %2d ", fm_copy->type);
+            fprintf(f_out, "%6.2f\n", radpmt(mtensor, fm_copy->alpha, fm_copy->az, 1)); 
+        }    
+        fm_copy++;  /* iterate structure with polarity data */ 
+    }
  }
   fclose(f_out);
 
