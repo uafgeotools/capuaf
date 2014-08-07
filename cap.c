@@ -86,7 +86,7 @@
 
 int total_n,loop=0,start=0,debug=0, Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
 int only_first_motion=0, misfit_on_lune=0, FTC_data=1, FTC_green=0;
-int skip_zero_weights=0;  /* for default cap set skip_zero_weights=1 */
+int skip_zero_weights=1;  /* for default cap set skip_zero_weights=1 */
 float data2=0.0;
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search,norm;
