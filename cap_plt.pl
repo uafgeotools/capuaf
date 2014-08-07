@@ -37,17 +37,17 @@ sub plot {
   $nrow = @rslt;
 
   # Page size
-  $pheight_in = $nrow + 2;  # height of paper
+  $pheight_in = $nrow + 2;  # height of pape
 
   # positions of seismograms on the page
   # height of each seismogram
-  $nn = int($pheight_in);       # WARNING: what about the $nn that comes in from cap?
+  $nn = int($pheight_in);
   $height = $pheight_in - 0.5;
   #($nn,$height) = (12,10.5);   # 10 rows of traces per 10.5 in.
   #print "\n$nn rows of traces per $height in";  
   print "\nseconds per inch = $spis";
-  $sepb = 0.5*$spib;    # sec per inch (*1/2) bet body waves
-  $seps = 0.5*$spis;    # separation bet surface waves
+  $sepb = 0.2*$spib;    # sec per inch (*1/2) bet body waves
+  $seps = 0.2*$spis;    # separation bet surface waves
 
 #  ($tt, $inc) = (2*$t1 + 3*$t2 + 4*$sepa, 1);
 #  ($tt, $inc) = (2*$t1 + 3*$t2 + 2*$seps+2*$sepb, 1);
@@ -73,7 +73,7 @@ sub plot {
 
   # horizontal offset (why is it needed?)
   #  $xoffset="3.0";
-  $xoffset=$widthb+.25;
+  $xoffset=$widthb;
 
 # pssac2 amplitude scaling:
 # -M vertical scaling in sacfile_unit/MEASURE_UNIT = size<required> 
@@ -209,7 +209,7 @@ sub plot {
     $rad = sqrt(2.)*sin($aa[2]*$pi/360);
     $tklh[$i] = sprintf("%s %f %s\n",$aa[1],$rad,$stnm);        # lower hemisphere
     $i++;
-}
+  }
 
   # remove the file if it exists
   unlink($outps) if -e $outps;
@@ -247,19 +247,19 @@ sub plot {
     open(PLT, $plt1b);
     $i = 0;
     @aaaa = splice(@rslt,0,$nn-2);
-    foreach (@aaaa) {
+    foreach (@aaaa) {   # go over each line in .out file
         @aa = split;
         $nam = "${mdl}_$aa[0].";
         $x=0;
         for($j=0;$j<2;$j+=$inc) {
-            $com1=8-2*$j; $com2=$com1+1;
-            if ($aa[5*$j+2]>0) {
+            $com1=8-2*$j; $com2=$com1+1;    # seismogram extensions (.0, .1, .2...)
+            if ($aa[6*$j+2]>0) {
 #                printf "(j=$j) x=$x\t"; # debug
-                printf PLT "%s %f %f 5/0/0/0\n",  $nam.$com1, $x+4, $nn-$i-2;     # data (black)
-                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2, $x+4, $nn-$i-2;   # synthetic (red)
+                printf PLT "%s %f %f 5/0/0/0\n",  $nam.$com1,$x+0,$nn-$i-2;     # data (black)
+                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x+0,$nn-$i-2;   # synthetic (red)
             } elsif ($keepBad) {
-                printf PLT "%s %f %f 2/0/255/0\n",$nam.$com1, $x+4, $nn-$i-2;   # bad data (green)
-                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2, $x+4, $nn-$i-2;   # synthetic (red)
+                printf PLT "%s %f %f 2/0/255/0\n",$nam.$com1,$x+0,$nn-$i-2;   # bad data (green)
+                printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x+0,$nn-$i-2;   # synthetic (red)
             }
             $x = $x + $x0[$j];
         }
@@ -279,8 +279,8 @@ sub plot {
         for($j=2;$j<5;$j+=$inc) {
 #                printf "(j=$j) x=$x\t"; # debug
             $com1=8-2*$j; $com2=$com1+1;
-            if ($aa[5*$j+2]>0) {
-                printf PLT "%s %f %f 5/0/0/0\n",$nam.$com1,$x,$nn-$i-2;     # data (black)
+            if ($aa[7*$j+2]>0) {
+                printf PLT "%s %f %f 5/0/0/0\n",  $nam.$com1,$x,$nn-$i-2;   # data (black)
                 printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x,$nn-$i-2;   # synthetic (red)
             } elsif ($keepBad) {
                 printf PLT "%s %f %f 2/0/255/0\n",$nam.$com1,$x,$nn-$i-2;   # bad data (green)
@@ -324,17 +324,21 @@ sub plot {
     $i=0;
     foreach (@aaaa) {
       @aa = split;
-#debug. aa=BIGB_YV    15.9/-0.00 1 3.23e+00 84 -0.70 1.19 1 1.37e+00  0 -0.70 1.29 1 1.16e+00 98 -0.66 0.19 1 4.05e-01 97 -0.66 -0.11 0 3.14e-01 31 -8.00 -0.15  0  -1.00
-#             |            |     |     |     |    |    |  |     |     |   |    |   |   |       |   |     |  |    |      |    |     |  |     |     |   |     |    |     |
-#             0            1     2     3     4    5    6  7     8     9  10   11   12  13     14  15    16  17   18     19   20   21  22    23    24  25    26   27    28
+# debug
+#    0          1       2     3   4   5      6      7       8     9    10  11   12    13      14       15   16   17  18   19    20    21        22    23   24  25   26    27    28     29 
+#    |          |       |     |   |   |      |      |       |     |     |   |   |     |        |       |    |     |   |    |    |      |        |     |     |   |    |     |    |       |
+# PLMK_XP    11.2/0.14  1   0.67 95 -0.08  0.64 8.19e-07 4.32e-07 1   0.79 80 -0.08 -0.09 8.05e-07 8.79e-07 1   3.48 79  1.89  0.84 9.47e-07 4.10e-07 1   4.47 75  1.89  1.24 1.03e-06 2.98e-07 1   3.68 80  0.23  1.61 7.56e-07 1.51e-07  1   0.45
+#     |     |   |   |      |    |         |      |    |
+#     30    31 32   33    34    35        36     37   38
       $x = 0;
       printf PLT "%f %f 10 0 0 1 $aa[0]\n",$x-0.8*$spis,$y;            # station label
       printf PLT "%f %f 10 0 0 1 $aa[1]\n",$x-0.7*$spis,$y-0.2;        # distance_km/overal time shift
       printf PLT "%f %f 10 0 0 1 %.1f\n",$x-0.7*$spis,$y-0.4,$az[$i];  # azimuth (see az above)
       # if polarity is 0 or does not exist, then nothing is written
       # note: 22 entry is observed polarity (from input file) and is optional
-      if ( $aa[27] ) {
-         printf PLT "%f %f 10 0 0 1 $aa[27] ($aa[28])\n",$x-0.7*$spis,$y-0.6;
+      if ( $aa[38] ) {
+          #  printf PLT "%f %f 10 0 0 1 $aa[22] ($aa[23])\n",$x-0.7*$spis,$y-0.6;
+         printf PLT "%f %f 10 0 0 1 $aa[37] ($aa[38])\n",$x-0.7*$spis,$y-0.6;
       }
       $i=$i+1;
       $y--;
@@ -348,13 +352,15 @@ sub plot {
       @aa = split;
       $x = 0;
       for($j=0;$j<2;$j+=$inc) {
-          if ($aa[5*$j+2]>0 || $keepBad) {
-	      $fracmis=sprintf("%2.2f",$aa[5*$j+3]);
-	      $lamp=sprintf("%2.2f",$aa[5*$j+6]);
-              printf PLT "%f %f 10 0 0 1 $aa[5*$j+5]\n",$x+5,$y-0.2;  # time shift each wf
-              printf PLT "%f %f 10 0 0 1 $aa[5*$j+4]\n",$x+5,$y-0.4;  # correl value
-	      printf PLT "%f %f 10 0 0 1 $fracmis\n",$x+5,$y-0.6;  # fractional misfit
-	      printf PLT "%f %f 10 0 0 1 $lamp\n",$x+5,$y-0.8;  # log(max_amp_data/max_amp_syn)
+          if ($aa[6*$j+2]>0 || $keepBad) {
+            # printf PLT "%f %f 10 0 0 1 $aa[4*$j+5]\n",$x,$y-0.4;  # time shift each wf
+            # printf PLT "%f %f 10 0 0 1 $aa[4*$j+4]\n",$x,$y-0.6;  # correl value
+              $fracmis=sprintf("%2.2f", $aa[7*$j+3]);
+              $lamp=sprintf("%2.2f", $aa[7*$j+6]);
+              printf PLT "%f %f 10 0 0 1 $aa[7*$j+5]\n", $x+0, $y-0.2;  # time shift each wf
+              printf PLT "%f %f 10 0 0 1 $aa[7*$j+4]\n", $x+0, $y-0.4;  # correl value
+              printf PLT "%f %f 10 0 0 1 $fracmis\n", $x+0, $y-0.6;     # fractional misfit
+              printf PLT "%f %f 10 0 0 1 $lamp\n", $x+0, $y-0.8;        # log(max_amp_data/max_amp_syn)
           }
           $x = $x + $x0[$j];
       }
@@ -376,13 +382,15 @@ sub plot {
 #      $x = $x0[1];
       $x = 0;
       for($j=2;$j<5;$j+=$inc) {
-          if ($aa[5*$j+2]>0 || $keepBad) {
-	      $fracmis=sprintf("%2.2f",$aa[5*$j+3]);
-	      $lamp=sprintf("%2.2f",$aa[5*$j+6]);
-              printf PLT "%f %f 10 0 0 1 $aa[5*$j+5]\n",$x,$y-0.2;  # time shift each wave
-              printf PLT "%f %f 10 0 0 1 $aa[5*$j+4]\n",$x,$y-0.4;  # correl value
-	      printf PLT "%f %f 10 0 0 1 $fracmis\n",$x,$y-0.6;  # fractional misfit
-	      printf PLT "%f %f 10 0 0 1 $lamp\n",$x,$y-0.8;  # log(max_amp_data/max_amp_syn)
+          if ($aa[7*$j+2]>0 || $keepBad) {
+              #printf PLT "%f %f 10 0 0 1 $aa[4*$j+5]\n",$x,$y-0.4;  # time shift each wave
+              #printf PLT "%f %f 10 0 0 1 $aa[4*$j+4]\n",$x,$y-0.6;  # correl value
+              $fracmis=sprintf("%2.2f", $aa[7*$j+3]);
+              $lamp=sprintf("%2.2f", $aa[7*$j+6]);
+              printf PLT "%f %f 10 0 0 1 $aa[7*$j+5]\n", $x, $y-0.2;  # time shift each wave
+              printf PLT "%f %f 10 0 0 1 $aa[7*$j+4]\n", $x, $y-0.4;  # correl value
+              printf PLT "%f %f 10 0 0 1 $fracmis\n", $x, $y-0.6;  # fractional misfit
+              printf PLT "%f %f 10 0 0 1 $lamp\n", $x, $y-0.8;  # log(max_amp_data/max_amp_syn)
           }
           $x = $x + $x0[$j];     # original
       }
