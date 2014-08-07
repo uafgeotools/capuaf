@@ -810,22 +810,27 @@ for(obs=obs0,i=0;i<nda;i++,obs++){
     }
 
 for(obs=obs0,i=0;i<nda;i++,obs++) {
+    //             stname /  distance / shift (what)
+    //              1     2     3
     fprintf(f_out,"%-9s %5.1f/%-5.2f",obs->stn, obs->dist, con_shft[i]);
     for(j=0;j<NCP;j++) {
       k = NCP - 1 - j;
       kc = sol.cfg[i][k]; if (kc<0) kc = 0;
-      //fprintf(stderr,"%.3f\t",(dat_amp[i][k]/syn_amp[i][k]));
-      //fprintf(f_out," %1d %8.2e %2d %5.2f",obs->com[k].on_off,sol.error[i][k],kc,shft0[i][k]+dt*sol.shft[i][k]);
-      fprintf(f_out," %1d %8.2e %2d %5.2f %2.2f",obs->com[k].on_off,sol.error[i][k]*100/(Nsta*sol.err),kc,shft0[i][k]+dt*sol.shft[i][k],log(dat_amp[i][k]/syn_amp[i][k]));
+      //        on_off / station misfit % / kc(what?) / t-shift / log(Aobs/Asyn) / Aobs / Asyn
+      //               4    5    6    7     8     9     10 
+      fprintf(f_out," %1d %6.2f %2d %5.2f %5.2f %8.2e %8.2e",
+              obs->com[k].on_off, sol.error[i][k]*100/(Nsta*sol.err), kc, shft0[i][k]+dt*sol.shft[i][k], 
+              log(dat_amp[i][k]/syn_amp[i][k]), dat_amp[i][k], syn_amp[i][k]);
       
     }
     /* output observed polarity and predicted rad amplitude */
     if (skip_zero_weights==1){
         fprintf(f_out," %2d ", fm0->type);
         fprintf(f_out, "%6.2f\n", radpmt(mtensor, fm0->alpha, fm0->az, 1)); 
-        fm0++;  /* iterate structure with polarity data */ 
-    }    
+        fm0++; 
+    } 
     else {
+        /* if no polarity then output pol = 0 */
         if ( (fm_copy->type == 0) ) {
             fprintf(f_out," 0 %6.2f\n", radpmt(mtensor, fm_copy->alpha, fm_copy->az, 1)); 
         }    
@@ -833,7 +838,7 @@ for(obs=obs0,i=0;i<nda;i++,obs++) {
             fprintf(f_out, " %2d ", fm_copy->type);
             fprintf(f_out, "%6.2f\n", radpmt(mtensor, fm_copy->alpha, fm_copy->az, 1)); 
         }    
-        fm_copy++;  /* iterate structure with polarity data */ 
+        fm_copy++; 
     }
  }
   fclose(f_out);
