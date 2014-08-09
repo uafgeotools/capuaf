@@ -164,6 +164,7 @@ $usage =
     	Yscale: amplitude in inch for the first trace of the page ($amplify).
 	Xscale: seconds per inch. (body: $spib, surface:$spis).
 	append k if one wants to keep those waveforms.
+    -p  (small p) For amplitude scaling of surface waves (relative to body waves)
     -Q  number of freedom per sample ($nof)
     -R	grid-search range for strike/dip/rake (0/360/0/90/-90/90).
     -S	max. time shifts in sec for Pnl and surface waves ($max_shft1/$max_shift2) and
@@ -392,11 +393,16 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
   plot:
     if ( $plot > 0 && ($? >> 8) == 0 ) {
       chdir($eve);
+      @dum = split('_', $md_dep);  # split mdl string
+      $outfile = sprintf("%s_%03d.out",@dum[0],int(@dum[1]));
+      open(my $out,'>>',$outfile);
+      say $out "INPUT_PAR $md_dep P_win $m1 S_win $m2 P $amplify p $ampfact NCOM $ncom spiB $spib spiS $spis $filterBand FMT $fmt_flag";
+
       #     &plot($md_dep, $m1, $m2, $amplify, $ncom, $sec_per_inch); # 20130102 calvizuri - original
       &plot($md_dep, $m1, $m2, $amplify, $ampfact, $ncom, $spib, $spis, $filterBand, $fmt_flag); # 20130102 calvizuri - added filter freq bands
-      unlink(<${md_dep}_*.?>) unless $keep;
+      #unlink(<${md_dep}_*.?>) unless $keep;
       chdir("../");
     }
-  } 
+  }
 }
 exit(0);
