@@ -3,7 +3,7 @@
 sub plot {
 
 #  local($mdl, $t1, $t2, $am, $num_com, $spis) = @_; # original
-  local($mdl, $t1, $t2, $am, $num_com, $spib, $spis, $filterBand, $fmt_flag) = @_;
+  local($mdl, $t1, $t2, $am, $ampfact, $num_com, $spib, $spis, $filterBand, $fmt_flag) = @_;
   local($nn,$tt,$plt1,$plt2,$plt3,$plt4,$i,$nam,$com1,$com2,$j,$x,$y,@aa,$rslt,@name,@aztk);
 
 # set this =1 if you want to plot time windows that have been excluded
@@ -35,6 +35,17 @@ sub plot {
   @ncomp = grep(/^#/,@rslt);
   @rslt=grep(!/^#/,@rslt);
   $nrow = @rslt;
+
+ # check if there are Input parameters in the last line
+  @part = ();
+  @last=split(' ',$rslt[$nrow-1]);
+  if ($last[0] eq 'INPUT_PAR') {
+      #$nrow = nrow-1;
+      for $ii (0..$nrow-2) {
+	   push @part, $rslt[$ii];}
+       @rslt=@part;
+       $nrow=$nrow-1;
+   }
 
   # Page size
   $pheight_in = $nrow + 2;  # height of pape
@@ -89,7 +100,9 @@ sub plot {
 
   # KEY: set amplitude scaling for seismograms
   if ($am>0.) {$stam = "$am/-1";} else {$stam=-$am;} # original line (with pssac, not pssac2)
-  $stam = "$am/0.";                                   # overwrite for absolute amplitudes (to match default plotting)
+  $amp = $am/$ampfact;
+  $stams = "$amp/0.";
+  $stamb = "$am/0.";                                   # overwrite for absolute (to match default plotting)
   print "\namplitude scaling am = $am";
   print "\npssac2 amplitude scaling stam = $stam\n";
 #  $outps = "$mdl.ps";   # original
@@ -99,8 +112,8 @@ sub plot {
   # (1) plot cut seismograms with scaled amplitudes (first command: no -O appears)
   $tscale_x = 0.55;
   $tscale_y = $pheight_in - 2.0;
-  $plt1b = "| pssac2 -JX${widthb}i/${height}i -L${spib} -l${tscale_x}/${tscale_y}/1/0.075/8 -R0/$ttb/0/$nn -Y0.2i -Ent-2 -M$stam -K -P >> $outps";
-  $plt1s = "| pssac2 -JX${widths}i/${height}i -L${spis} -l${tscale_x}/${tscale_y}/1/0.075/8 -R0/$tts/0/$nn -X${xoffset}i -Ent-2 -M$stam -O -K -P >> $outps";
+  $plt1b = "| pssac2 -JX${widthb}i/${height}i -L${spib} -l${tscale_x}/${tscale_y}/1/0.075/8 -R0/$ttb/0/$nn -Y0.2i -Ent-2 -M$stamb -K -P >> $outps";
+  $plt1s = "| pssac2 -JX${widths}i/${height}i -L${spis} -l${tscale_x}/${tscale_y}/1/0.075/8 -R0/$tts/0/$nn -X${xoffset}i -Ent-2 -M$stams -O -K -P >> $outps";
 
   # (2) plot text labels
   $plt2_stn_info = "| pstext -JX -R -O -K -N -X-${xoffset}i >> $outps";
@@ -180,6 +193,11 @@ sub plot {
   print "\nothers:\n@others";
   print "\nrslt:\n@rslt";
   print "\n-------------------\n";
+
+# get strike dip and rake
+  $stk = @meca[0];
+  $dip = @meca[1];
+  $rak = @meca[2];
 
   # compute piercing points for beachballs
   $i = 0; $j = 0;
