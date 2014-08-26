@@ -7,7 +7,7 @@ sub plot {
   local($nn,$tt,$plt1,$plt2,$plt3,$plt4,$i,$nam,$com1,$com2,$j,$x,$y,@aa,$rslt,@name,@aztk);
 
 # set this =1 if you want to plot time windows that have been excluded
-  local $keepBad = 1;
+  local $keepBad = 0;
   
   @trace = ("1/255/255/255","3/0/0/0");       # plot data trace
   @name = ("P V","P R","Surf V"," Surf R","Surf T");
@@ -271,7 +271,7 @@ sub plot {
         $x=0;
         for($j=0;$j<2;$j+=$inc) {
             $com1=8-2*$j; $com2=$com1+1;    # seismogram extensions (.0, .1, .2...)
-            if ($aa[6*$j+2]>0) {
+            if ($aa[7*$j+2]>0) {
 #                printf "(j=$j) x=$x\t"; # debug
                 printf PLT "%s %f %f 5/0/0/0\n",  $nam.$com1,$x+0,$nn-$i-2;     # data (black)
                 printf PLT "%s %f %f 3/255/0/0\n",$nam.$com2,$x+0,$nn-$i-2;   # synthetic (red)
@@ -370,7 +370,7 @@ sub plot {
       @aa = split;
       $x = 0;
       for($j=0;$j<2;$j+=$inc) {
-          if ($aa[6*$j+2]>0 || $keepBad) {
+          if ($aa[7*$j+2]>0 || $keepBad) {
             # printf PLT "%f %f 10 0 0 1 $aa[4*$j+5]\n",$x,$y-0.4;  # time shift each wf
             # printf PLT "%f %f 10 0 0 1 $aa[4*$j+4]\n",$x,$y-0.6;  # correl value
               $fracmis=sprintf("%2.2f", $aa[7*$j+3]);
