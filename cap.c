@@ -825,9 +825,7 @@ for(obs=obs0,i=0;i<nda;i++,obs++) {
     }
     /* output observed polarity and predicted rad amplitude */
     if (skip_zero_weights==1){
-        fprintf(f_out," %2d ", fm0->type);
-        fprintf(f_out, "%6.2f\n", radpmt(mtensor, fm0->alpha, fm0->az, 1)); 
-        fm0++; 
+        fprintf(f_out, " 0 0\n"); // note leading space
     } 
     else {
         /* if no polarity then output pol = 0 */
