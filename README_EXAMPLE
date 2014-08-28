@@ -579,7 +579,10 @@ fixed solution (for plot testing)
 5. For azimuthally sorted stations:
 > cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/100 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0 -Zaz_sort_weight111.dat -E1 -K1 -Y1 20090407201255351
 
-6. Checking the solutions
+6. For all the available stations
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/100 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0 -Zweight110.dat -E1 -K1 -Y1 20090407201255351
+
+7. Checking the solutions
 > gv 20090407201255351/scak_041.ps 
 > gv $CAPHOME/20090407201255351/scak_041_az.ps (for azimuth sorting) OR
   gv $CAPHOME/20090407201255351_check/scak_041.ps & (for distance sorting)
