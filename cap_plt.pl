@@ -7,7 +7,7 @@ sub plot {
   local($nn,$tt,$plt1,$plt2,$plt3,$plt4,$i,$nam,$com1,$com2,$j,$x,$y,@aa,$rslt,@name,@aztk);
 
 # set this =1 if you want to plot time windows that have been excluded
-  local $keepBad = 1;
+  local $keepBad = 0;
   
   @trace = ("1/255/255/255","3/0/0/0");       # plot data trace
   @name = ("P V","P R","Surf V"," Surf R","Surf T");
@@ -341,31 +341,36 @@ sub plot {
     $y = $nn-2;
     $i=0;
     foreach (@aaaa) {
-      @aa = split;
-      @ab = split('/',$aa[1]);
+        @aa = split;
+        @ab = split('/',$aa[1]);
 # debug
 #    0          1       2     3   4   5      6      7       8     9    10  11   12    13      14       15   16   17  18   19    20    21        22    23   24  25   26    27    28     29 
 #    |          |       |     |   |   |      |      |       |     |     |   |   |     |        |       |    |     |   |    |    |      |        |     |     |   |    |     |    |       |
 # PLMK_XP    11.2/0.14  1   0.67 95 -0.08  0.64 8.19e-07 4.32e-07 1   0.79 80 -0.08 -0.09 8.05e-07 8.79e-07 1   3.48 79  1.89  0.84 9.47e-07 4.10e-07 1   4.47 75  1.89  1.24 1.03e-06 2.98e-07 1   3.68 80  0.23  1.61 7.56e-07 1.51e-07  1   0.45
 #                                                                                                                                                                                               |     |   |   |      |    |         |      |    |
 #                                                                                                                                                                                               30    31 32   33    34    35        36     37   38
-      $x = 0;
-      printf PLT "%f %f 10 0 0 1 $aa[0]\n",$x-0.8*$spis,$y;            # station label
-      if ($ab[1]==0.){
-	  printf PLT "%f %f 10 0 0 1 $ab[0]\n",$x-0.7*$spis,$y-0.2;        # distance_km/overal time shift
-      }
-      else {
-	 printf PLT "%f %f 10 0 0 1 $aa[1]\n",$x-0.7*$spis,$y-0.2;        # distance_km/overal time shift
-     }
-      printf PLT "%f %f 10 0 0 1 %.1f\n",$x-0.7*$spis,$y-0.4,$az[$i];  # azimuth (see az above)
-      # if polarity is 0 or does not exist, then nothing is written
-      # note: 22 entry is observed polarity (from input file) and is optional
-      if ( $aa[37] ) {
-          #  printf PLT "%f %f 10 0 0 1 $aa[22] ($aa[23])\n",$x-0.7*$spis,$y-0.6;
-         printf PLT "%f %f 10 0 0 1 $aa[37] ($aa[38])\n",$x-0.7*$spis,$y-0.6;
-      }
-      $i=$i+1;
-      $y--;
+
+# test if weight or polarity exists. if neither then print nothing and dont skip space
+        if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0)){
+
+            $x = 0;
+            printf PLT "%f %f 10 0 0 1 $aa[0]\n",$x-0.8*$spis,$y;            # station label
+            if ($ab[1]==0.){
+                printf PLT "%f %f 10 0 0 1 $ab[0]\n",$x-0.7*$spis,$y-0.2;        # distance_km/overal time shift
+            }
+            else {
+                printf PLT "%f %f 10 0 0 1 $aa[1]\n",$x-0.7*$spis,$y-0.2;        # distance_km/overal time shift
+            }
+            printf PLT "%f %f 10 0 0 1 %.1f\n",$x-0.7*$spis,$y-0.4,$az[$i];  # azimuth (see az above)
+            # if polarity is 0 or does not exist, then nothing is written
+            # note: 22 entry is observed polarity (from input file) and is optional
+            if ( $aa[37] ) {
+                #  printf PLT "%f %f 10 0 0 1 $aa[22] ($aa[23])\n",$x-0.7*$spis,$y-0.6;
+                printf PLT "%f %f 10 0 0 1 $aa[37] ($aa[38])\n",$x-0.7*$spis,$y-0.6;
+            }
+            $i=$i+1;
+            $y--;
+        } # end tests for weight and polarity
     }
     close(PLT);
 
