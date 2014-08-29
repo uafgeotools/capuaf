@@ -82,7 +82,7 @@ sub plot {
   print "\npaper is $pwidth_in inches wide and $pheight_in inches tall";
   system("gmtset BASEMAP_TYPE plain PAPER_MEDIA Custom_${pwidth_in}ix${pheight_in}i MEASURE_UNIT inch");
 
-  # horizontal offset (why is it needed?)
+  # horizontal offset (why is it needed?) Because life is complicated bro!
   #  $xoffset="3.0";
   $xoffset=$widthb;
 
@@ -267,6 +267,7 @@ sub plot {
     @aaaa = splice(@rslt,0,$nn-2);
     foreach (@aaaa) {   # go over each line in .out file
         @aa = split;
+	if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0)){
         $nam = "${mdl}_$aa[0].";
         $x=0;
         for($j=0;$j<2;$j+=$inc) {
@@ -284,6 +285,7 @@ sub plot {
 #                printf "\n"; # debug
         $i++;
     }
+    }
     close(PLT);
 
     # plot waveforms surface waves
@@ -291,6 +293,7 @@ sub plot {
     $i = 0;
     foreach (@aaaa) {
         @aa = split;
+	if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0)){
         $nam = "${mdl}_$aa[0].";
 #        $x=$x0[1];
         $x=0;
@@ -308,6 +311,7 @@ sub plot {
         }
 #                printf "\n"; # debug
         $i++;
+    }
     }
     close(PLT);
 
@@ -379,6 +383,7 @@ sub plot {
     $y = $nn-2;
     foreach (@aaaa) {
       @aa = split;
+      if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0)){
       $x = 0;
       for($j=0;$j<2;$j+=$inc) {
           if ($aa[7*$j+2]>0 || $keepBad) {
@@ -401,6 +406,7 @@ sub plot {
       printf PLT "%f %f 12 0 0 1 $name[$j]\n",$x,$nn-1.5;
       $x = $x+$x0[$j];
     }
+  }
     close(PLT);
 
     # plot data labels surface waves
@@ -408,6 +414,7 @@ sub plot {
     $y = $nn-2;
     foreach (@aaaa) {
       @aa = split;
+      if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0)){
 #      $x = $x0[1];
       $x = 0;
       for($j=2;$j<5;$j+=$inc) {
@@ -436,6 +443,7 @@ sub plot {
       printf PLT "%f %f 12 0 0 1 $name[$j]\n",$x,$nn-1.5;
       $x = $x+$x0[$j];
     }
+  }
     close(PLT);
 
     
