@@ -7,7 +7,7 @@ sub plot {
   local($nn,$tt,$plt1,$plt2,$plt3,$plt4,$i,$nam,$com1,$com2,$j,$x,$y,@aa,$rslt,@name,@aztk);
 
 # set this =1 if you want to plot time windows that have been excluded
-  local $keepBad = 0;
+  local $keepBad = 1;
   
   @trace = ("1/255/255/255","3/0/0/0");       # plot data trace
   @name = ("P V","P R","Surf V"," Surf R","Surf T");
@@ -267,7 +267,7 @@ sub plot {
     @aaaa = splice(@rslt,0,$nn-2);
     foreach (@aaaa) {   # go over each line in .out file
         @aa = split;
-	if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0)){
+	if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0 || $keepBad!=0)){
         $nam = "${mdl}_$aa[0].";
         $x=0;
         for($j=0;$j<2;$j+=$inc) {
@@ -293,7 +293,7 @@ sub plot {
     $i = 0;
     foreach (@aaaa) {
         @aa = split;
-	if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0)){
+	if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0 || $keepBad!=0)){
         $nam = "${mdl}_$aa[0].";
 #        $x=$x0[1];
         $x=0;
@@ -355,7 +355,7 @@ sub plot {
 #                                                                                                                                                                                               30    31 32   33    34    35        36     37   38
 
 # test if weight or polarity exists. if neither then print nothing and dont skip space
-        if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0)){
+        if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0 || $keepBad!=0)){
 
             $x = 0;
             printf PLT "%f %f 10 0 0 1 $aa[0]\n",$x-0.8*$spis,$y;            # station label
@@ -368,7 +368,7 @@ sub plot {
             printf PLT "%f %f 10 0 0 1 %.1f\n",$x-0.7*$spis,$y-0.4,$az[$i];  # azimuth (see az above)
             # if polarity is 0 or does not exist, then nothing is written
             # note: 22 entry is observed polarity (from input file) and is optional
-            if ( $aa[37] ) {
+            if ( $aa[37] || $keepBad==1) {
                 #  printf PLT "%f %f 10 0 0 1 $aa[22] ($aa[23])\n",$x-0.7*$spis,$y-0.6;
                 printf PLT "%f %f 10 0 0 1 $aa[37] ($aa[38])\n",$x-0.7*$spis,$y-0.6;
             }
@@ -383,7 +383,7 @@ sub plot {
     $y = $nn-2;
     foreach (@aaaa) {
       @aa = split;
-      if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0)){
+      if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0 || $keepBad!=0)){
       $x = 0;
       for($j=0;$j<2;$j+=$inc) {
           if ($aa[7*$j+2]>0 || $keepBad) {
@@ -414,7 +414,7 @@ sub plot {
     $y = $nn-2;
     foreach (@aaaa) {
       @aa = split;
-      if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0)){
+      if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0 || $keepBad!=0)){
 #      $x = $x0[1];
       $x = 0;
       for($j=2;$j<5;$j+=$inc) {
