@@ -100,7 +100,11 @@ sub plot {
 
   # KEY: set amplitude scaling for seismograms
   if ($am>0.) {$stam = "$am/-1";} else {$stam=-$am;} # original line (with pssac, not pssac2)
-  $amp = $am/$ampfact;
+  if ($am == 0x0){
+      $amp = $am;}
+  else{
+      $amp = $am/$ampfact;}
+  print "----$am---";
   $stams = "$amp/0.";
   $stamb = "$am/0.";                                   # overwrite for absolute (to match default plotting)
   print "\namplitude scaling am = $am";
