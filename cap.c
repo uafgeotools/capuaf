@@ -104,7 +104,7 @@ int main (int argc, char **argv) {
   float	distance,dmin=100.,vp,vs1,vs2,depSqr=25;
   float	*syn,*f_pt,*f_pt0,*f_pt1;
   float *f_pt2;
-  float *g_pt;  // 20140630 celsoa - for FTC_green
+  float *g_pt;  // for FTC_green
   int npt_data, s_len, offset_h=0;
   GRID	grid;
   MTPAR mt[3];
@@ -140,10 +140,10 @@ int main (int argc, char **argv) {
   fmpdata = (FMPDATA *) malloc(sizeof(FMPDATA));
 
   /****** input control parameters *************/
-  char mod_dep[]="-999";         /* 20130102 calvizuri - for renaming .out file */
+  char mod_dep[]="-999";         /* for renaming .out file */
   char model[128];
   int depth=-999;
-  scanf("%s %d",model, &depth);  /* 20130102 calvizuri - end */
+  scanf("%s %d",model, &depth); 
   edep=depth;
   
   if(only_first_motion)
@@ -725,9 +725,9 @@ int main (int argc, char **argv) {
   //grid.n[0]=grid.n[1]=grid.n[2]=1;
   //grid.x0[0]=sol.meca.stk; grid.x0[1]=sol.meca.dip; grid.x0[2]=sol.meca.rak;
   //sol = error(nda,obs0,nfm,fm0,max_shft,m0,grid,fm_thr,tie);
-  sprintf(mod_dep,"%s_%03d",model,depth);                     // 20120723 calvizuri - rename .out file
-  strcat(strcat(strcat(strcpy(tmp,eve),"/"),mod_dep),".out"); // 20130102 calvizuri - end rename .out
-  //  strcat(strcat(strcat(strcpy(tmp,eve),"/"),dep),".out");   // 20130102 calvizuri - original
+  sprintf(mod_dep,"%s_%03d",model,depth);                       // rename .out file
+  strcat(strcat(strcat(strcpy(tmp,eve),"/"),mod_dep),".out");   
+  //  strcat(strcat(strcat(strcpy(tmp,eve),"/"),dep),".out");   
   f_out=fopen(tmp,"w");
   fprintf(f_out,"Event %s Model %s FM %4d %9.6f %4d Mw %4.2f rms %9.3e %5d ERR %3d %3d %3d ISO %10.6f %3.2f CLVD %3.2f %3.2f VR %3.1f data2 %9.3e\n",eve,mod_dep,
 	  (int) rint(sol.meca.stk), sol.meca.dip, (int) rint(sol.meca.rak),
@@ -760,7 +760,6 @@ int main (int argc, char **argv) {
     }
   } 
 
-// vipul: this is new, what does it do, needs comment...
 for(obs=obs0,i=0;i<nda;i++,obs++) {
     for(j=0;j<NCP;j++) {
       k = NCP - 1 - j;
@@ -873,7 +872,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		int             norm
 		) {
   int	i, j, k, l, m, k1, kc, z0, z1, z2, ii, N, iso_len;
-  float mw_ran; // 20130730 celso - half-range for magnitude search (previously int)
+  float mw_ran; // half-range for magnitude search (previously int)
   int	i_stk, i_dip, i_rak, i_iso;
   float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3], m_par, del_dip, del_iso;
   float	*f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err, *rnd_stk, *rnd_dip, *rnd_rak, *rnd_iso, *rnd_clvd, *iso;
