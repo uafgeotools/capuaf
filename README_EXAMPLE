@@ -390,7 +390,7 @@ EXAMPLE 12: Bolivia event 20100516-063454, first motion polarity
 1. In cap.c change: only_first_motion=1
 2. Compile cap
 3. Run cap
-> ./cap.pl -F0.0 -I5/0/5 -J-90/90/-30/30 -Mutu06topo4p6_5/2.4 -E1 -K1 -Y2 -Zweight.dat 20100516063454464
+> ./cap.pl -F0.0 -I5/0/5 -J-90/90/-30/30 -Mutuhalf_5/2.4 -E1 -K1 -Y2 -Zweight.dat 20100516063454464
 
 4. Process misfit data output from cap (file out.misfit.fmp_)
 > python misfit2lune.py out.misfit.fmp_ > out.misfit_summary
@@ -409,17 +409,17 @@ PART 13.1. generate greens functions
 
 1. run the frequency-wavenumber code fk
 
-> mkdir -p $CAPRUN/models/utu06topo4p6
-> cd $CAPRUN/models/utu06topo4p6/
-> cp $CAPHOME/20100516063454464/utu06topo4p6 .
-> fk.pl -Mutu06topo4p6/5 -N16384/0.01 11 14 18 19 21 22 31 33 37 50
+> mkdir -p $CAPRUN/models/utuhalf
+> cd $CAPRUN/models/utuhalf/
+> cp $CAPHOME/20100516063454464/utuhalf .
+> fk.pl -Mutuhalf/5 -N16384/0.01 11 14 18 19 21 22 31 33 37 50
 
-note: this uses the "utu06topo4p6" 1D model for the Uturuncu region 
+note: this uses the "utuhalf" 1D model for the Uturuncu region 
 note: You do not need to run fk if you have a pre-computed library of Green's functions.
 
 2. run fk again to generate isotropic components
 
-> fk.pl -Mutu06topo4p6/5 -N16384/0.01 -S0 11 14 18 19 21 22 31 33 37 50
+> fk.pl -Mutuhalf/5 -N16384/0.01 -S0 11 14 18 19 21 22 31 33 37 50
 
 This will create 3 additional green functions for each distance of the form dist.grn.(a-c),
 eg. 11.grn.a, 11.grn.b, 11.grn.c
@@ -432,8 +432,8 @@ DIP will be gridded by considering equal spacing in cos(dip) space
 
 1. prepare data directory
 
-> mkdir -p $CAPRUN/inv/utu06topo4p6
-> cd $CAPRUN/inv/utu06topo4p6/
+> mkdir -p $CAPRUN/inv/utuhalf
+> cd $CAPRUN/inv/utuhalf/
 > rsync -av $CAPHOME/20100516063454464 .
 
 2. check the weight.dat file
@@ -450,12 +450,12 @@ note: all P arrivals times are specified
 4a. run cap and plot with absolute amplitudes
 
 > cd $CAPRUN/inv/utu06
-> cap.pl -H0.01 -PXXXXXX/2/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutu06topo4p6_5/2.4 -Zweight.dat 20100516063454464
+> cap.pl -H0.01 -PXXXXXX/2/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight.dat 20100516063454464
 
 4b. run cap with data and syn SEPARATELY scaled
 
 > cd $CAPRUN/inv/utu06
-> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutu06topo4p6_5/2.4 -Zweight.dat 20100516063454464
+> cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight.dat 20100516063454464
 
 note: plotting flag is set to -P0.5e+0.5/... which is a kludge for unnormalized plotting
 note: lune grid will NOT do a refined search, so pick -I accordingly (here: 5 deg inc on lune; 0.1 inc Mw)
@@ -475,48 +475,48 @@ We are able to specify the 0.0 to 4.0 s shifts with two changes:
 
 5. check output:
 
-> gv 20100516063454464/utu06topo4p6_005_fmt.ps &
-> gv $CAPHOME/20100516063454464_check/utu06topo4p6_005_fmt.ps &
-> diff 20100516063454464/utu06topo4p6_005.out $CAPHOME/20100516063454464_check/utu06topo4p6_005.out
+> gv 20100516063454464/utuhalf_005_fmt.ps &
+> gv $CAPHOME/20100516063454464_check/utuhalf_005_fmt.ps &
+> diff 20100516063454464/utuhalf_005.out $CAPHOME/20100516063454464_check/utuhalf_005.out
 
 6. try the same run, but with different weights:
 
 note: weights are set as 1 1 1 60 60 60, which gives all weight to surface waves
 
-> cap.pl -H0.01 -P0.5e+0.5/1/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutu06topo4p6_5/2.4 -Zweight_2.dat 20100516063454464
+> cap.pl -H0.01 -P0.5e+0.5/1/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_2.dat 20100516063454464
 
-> gv 20100516063454464/utu06topo4p6_005_fmt.ps &
-> gv $CAPHOME/20100516063454464_check/utu06topo4p6_005_fmt_2.ps &
+> gv 20100516063454464/utuhalf_005_fmt.ps &
+> gv $CAPHOME/20100516063454464_check/utuhalf_005_fmt_2.ps &
 
 7. try body waves only (+ polarities)
 
-> cap.pl -H0.01 -P0.5e+0.5/1/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutu06topo4p6_5/2.4 -Zweight_body.dat 20100516063454464
+> cap.pl -H0.01 -P0.5e+0.5/1/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_body.dat 20100516063454464
 
-> gv 20100516063454464/utu06topo4p6_005_fmt.ps &
-> gv $CAPHOME/20100516063454464_check/utu06topo4p6_005_fmt_body.ps &
+> gv 20100516063454464/utuhalf_005_fmt.ps &
+> gv $CAPHOME/20100516063454464_check/utuhalf_005_fmt_body.ps &
 
 8. try surface waves only (+ polarities)
 
-> cap.pl -H0.01 -P0.5e+0.5/1/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutu06topo4p6_5/2.4 -Zweight_surf.dat 20100516063454464
+> cap.pl -H0.01 -P0.5e+0.5/1/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_surf.dat 20100516063454464
 
-> gv 20100516063454464/utu06topo4p6_005_fmt.ps &
-> gv $CAPHOME/20100516063454464_check/utu06topo4p6_005_fmt_surf.ps &
+> gv 20100516063454464/utuhalf_005_fmt.ps &
+> gv $CAPHOME/20100516063454464_check/utuhalf_005_fmt_surf.ps &
 
 9. try body + surf but no polarities
 
 note: by not using polarities (to exclude large portions of misfit space), the search takes MUCH longer
 
-> cap.pl -H0.01 -P0.5e+0.5/1/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutu06topo4p6_5/2.4 -Zweight_nopol.dat 20100516063454464
+> cap.pl -H0.01 -P0.5e+0.5/1/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_nopol.dat 20100516063454464
 
-> gv 20100516063454464/utu06topo4p6_005_fmt.ps &
-> gv $CAPHOME/20100516063454464_check/utu06topo4p6_005_fmt_nopol.ps &
+> gv 20100516063454464/utuhalf_005_fmt.ps &
+> gv $CAPHOME/20100516063454464_check/utuhalf_005_fmt_nopol.ps &
 
 10. try body + surf + polarities BUT constrained to DC
 
-> cap.pl -H0.01 -P0.5e+0.5/1/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.1 -J0/0/0/0 -E1 -K1 -Y1 -Mutu06topo4p6_5/2.4 -Zweight.dat 20100516063454464
+> cap.pl -H0.01 -P0.5e+0.5/1/33 -S0.2/2.0/0 -T1.0/60 -D2/1/0.5 -C1/10/0.25/0.5 -F0.0 -L0.15 -W1 -I5/0.1 -J0/0/0/0 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight.dat 20100516063454464
 
-> gv 20100516063454464/utu06topo4p6_005_fmt.ps &
-> gv $CAPHOME/20100516063454464_check/utu06topo4p6_005_dc.ps &
+> gv 20100516063454464/utuhalf_005_fmt.ps &
+> gv $CAPHOME/20100516063454464_check/utuhalf_005_dc.ps &
 
 note: this MUST be a worse solution than the non-DC version, since this solution was considered in the non-DC search
 
