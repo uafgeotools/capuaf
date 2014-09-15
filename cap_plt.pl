@@ -104,7 +104,6 @@ sub plot {
       $amp = $am;}
   else{
       $amp = $am/$ampfact;}
-  print "----$am---";
   $stams = "$amp/0.";
   $stamb = "$am/0.";                                   # overwrite for absolute (to match default plotting)
   print "\namplitude scaling am = $am";
@@ -497,7 +496,7 @@ sub plot {
     # 0     1               2       3    4   5   6  7 8    9  
     open(PLT, $plt4_5);
     printf PLT "$x $y 12 0 0 0 @meca[0,1,2] and Depth $meca[3]\n"; $y-=$tgap;
-    printf PLT "$x $y 12 0 0 0 @meca[4..9, 17] %3.0f @meca[20] %3.0f @meca[10,11] VR %3.1f\n",@meca[18],@meca[21],@meca[24];$y-=$tgap;
+    printf PLT "$x $y 12 0 0 0 @meca[4] %d %d %d @meca[8,9, 17] %3.0f @meca[20] %3.0f @meca[10,11] VR %3.1f\n",@meca[5], @meca[6], @meca[7], @meca[18],@meca[21],@meca[24];$y-=$tgap;
     printf PLT "$x $y 12 0 0 0 $filterBand\n" ; $y-=$tgap;  # 20120719 - filter bands
     printf PLT "$x $y 12 0 0 0 @ncomp[1]" ;
     close(PLT);
