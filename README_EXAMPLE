@@ -598,30 +598,107 @@ EXAMPLE 14: Running Alaska Example (20090407201255351)
 > xe cap.pl 
 > $green = "/store/wf/FK_synthetics";       # standard models at UAF
 
-2. open cap.c and check that FTC_data=0 and FTC_green=0 (recompile if needed: make all >& make.log )
+2. open cap.c and check that FTC_data=1 and FTC_green=0 (recompile if needed: make all >& make.log )
 
 3. prepare run
 > mkdir -p $CAPRUN/inv/scak
 > cd $CAPRUN/inv/scak
-> rsync -av $CAPHOME/20090407201255351 .
+> rsync -av $CAPHOME/20090407201255351 
 
-4. run
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/100 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0 -Zweight111.dat -E1 -K1 -Y1 20090407201255351
+4. Eight different weight files options: weightijk.dat (Last three numbers are for (i)-body wave, (j)-surface waves, (k)-station choice)
+   i = 1 or 0 for whether body waves are used or not
+   j = 1 or 0 for whether surface waves are used or not
+   k = 0 for all stations, 1 for selected stations, 2 for AEC stations
 
-fixed solution (for plot testing)
-> cap.pl -H0.02 -P3e-8/20/60 -S3/10/0 -T15/100 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/5.0 -R20/20/42/42/-90/-90 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 20090407201255351
+ -> weight011.dat - only surface waves at selected good stations (M011)
+ -> weight012.dat - only surface waves at AEC stations (M012)
+ -> weight101.dat - only body waves at selected good stations (M101)
+ -> weight110.dat - both body and surface wave at all available stations (M110)
+ -> weight111.dat - both body and surface wave at selected good stations (M111)
+ -> weight112.dat - both body and surface wave at AEIC stations (M112)
+ -> az_sort_weight110.dat - same as weight110.dat but azimuthally sorted stations
+ -> az_sort_weight111.dat - same as weight111.dat but azimuthally sorted stations
 
-5. For azimuthally sorted stations:
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/100 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0 -Zaz_sort_weight111.dat -E1 -K1 -Y1 20090407201255351
+--------------------------------------------------------------------------------
+5. Example commands:
+a. Using body and surface waves at selected stations (M111)
+Using L1 norm:
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 20090407201255351
+> gv 20090407201255351/scak_041.ps
+> gv $CAPHOME/20090407201255351_check/20090407201255351_L1_M111.ps
 
-6. For all the available stations
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/100 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0 -Zweight110.dat -E1 -K1 -Y1 20090407201255351
+Depth test
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 -A30/50/2 20090407201255351
+> depth_test 20090407201255351 scak
+> gv dep_20090407201255351.ps
+> gv $CAPHOME/20090407201255351_check/dep_20090407201255351_L1_M111.ps
 
-7. Checking the solutions
-> gv 20090407201255351/scak_041.ps 
-> gv $CAPHOME/20090407201255351/scak_041_az.ps (for azimuth sorting) OR
-  gv $CAPHOME/20090407201255351_check/scak_041.ps & (for distance sorting)
-> diff 20090407201255351/scak_041.out $CAPHOME/20090407201255351_check/scak_041.out
+Using L2 norm: 
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y2 20090407201255351
+> gv 20090407201255351/scak_041.ps
+> gv $CAPHOME/20090407201255351_check/20090407201255351_L2_M111.ps
+
+Depth test
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y2 -A30/50/2 20090407201255351
+> depth_test 20090407201255351 scak
+> gv dep_20090407201255351.ps
+> gv $CAPHOME/20090407201255351_check/dep_20090407201255351_L2_M111.ps
+
+--------------------------------------------------------------------------------
+
+b. Using body and surface waves at all stations (M110)
+Using L1 norm:
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y1 20090407201255351
+> gv 20090407201255351/scak_041.ps
+> gv $CAPHOME/20090407201255351_check/20090407201255351_L1_M110.ps
+
+Depth test
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y1 -A30/50/2 20090407201255351
+> depth_test 20090407201255351 scak
+> gv dep_20090407201255351.ps
+> gv $CAPHOME/20090407201255351_check/dep_20090407201255351_L1_M110.ps
+
+Using L2 norm: 
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y2 20090407201255351
+> gv 20090407201255351/scak_041.ps
+> gv $CAPHOME/20090407201255351_check/20090407201255351_L2_M110.ps
+
+Depth test
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y2 -A30/50/2 20090407201255351
+> depth_test 20090407201255351 scak
+> gv dep_20090407201255351.ps
+> gv $CAPHOME/20090407201255351_check/dep_20090407201255351_L2_M110.ps
+--------------------------------------------------------------------------------
+
+6. Similarly run for other weight files. 
+a. Using body and surface waves at AEC stations (M112) and L1 norm
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight112.dat -E1 -K1 -Y1 20090407201255351
+> gv 20090407201255351/scak_041.ps
+> gv $CAPHOME/20090407201255351_check/20090407201255351_L1_M112.ps
+
+b. Using just body at selected stations (M101)
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_27/4.5 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20090407201255351
+> gv 20090407201255351/scak_027.ps
+> gv $CAPHOME/20090407201255351_check/20090407201255351_L1_M101.ps
+
+c. Using just surface waves at selected stations (M011)
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_47/4.5 -I10/0.1 -Zweight011.dat -E1 -K1 -Y1 20090407201255351
+> gv 20090407201255351/scak_047.ps
+> gv $CAPHOME/20090407201255351_check/20090407201255351_L1_M011.ps
+
+d. Using just the surface waves at AEC stations (M012)
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_47/4.5 -I10/0.1 -Zweight012.dat -E1 -K1 -Y1 20090407201255351
+> gv 20090407201255351/scak_047.ps
+> gv $CAPHOME/20090407201255351_check/20090407201255351_L1_M012.ps
+--------------------------------------------------------------------------------
+
+7. fixed solution (for plot testing)
+> cap.pl -H0.02 -P3e-8/20/60 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/5.0 -R20/20/42/42/-90/-90 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 20090407201255351
+
+8. For azimuthally sorted stations:
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0 -Zaz_sort_weight111.dat -E1 -K1 -Y1 20090407201255351
+> gv 20090407201255351/scak_041.ps
+> gv $CAPHOME/20090407201255351_check/20090407201255351_L1_M111_az.ps
 
 ====================================================================================
 TIPS
