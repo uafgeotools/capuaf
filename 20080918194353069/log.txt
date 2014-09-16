@@ -1,0 +1,511 @@
+Station  AFI is 8315.58 km (> 500.00 km) from the source
+Station AKBB is 1000.56 km (> 500.00 km) from the source
+Station AKGG is 996.00 km (> 500.00 km) from the source
+Station AKLV is 996.92 km (> 500.00 km) from the source
+Station AKRB is 1004.85 km (> 500.00 km) from the source
+Station  AKT is 989.93 km (> 500.00 km) from the source
+Station AKUT is 989.91 km (> 500.00 km) from the source
+Station AMKA is 1964.23 km (> 500.00 km) from the source
+Station ANMO is 4306.80 km (> 500.00 km) from the source
+Station  ARU is 6854.07 km (> 500.00 km) from the source
+Station ATKA is 1557.38 km (> 500.00 km) from the source
+Station BAGL is 606.52 km (> 500.00 km) from the source
+Station BARK is 583.58 km (> 500.00 km) from the source
+Station BARN is 638.88 km (> 500.00 km) from the source
+Station  BBB is 1733.32 km (> 500.00 km) from the source
+Station BBGH is 8938.97 km (> 500.00 km) from the source
+Station BBSR is 6864.70 km (> 500.00 km) from the source
+Station BERG is 517.10 km (> 500.00 km) from the source
+Station BESE is 1031.64 km (> 500.00 km) from the source
+Station  BFO is 7927.72 km (> 500.00 km) from the source
+Station BGLC is 537.54 km (> 500.00 km) from the source
+Station  BJT is 6336.99 km (> 500.00 km) from the source
+Station BORG is 5637.26 km (> 500.00 km) from the source
+Station BPAW is 521.00 km (> 500.00 km) from the source
+Station BRVK is 6943.38 km (> 500.00 km) from the source
+Station CASY is 16029.01 km (> 500.00 km) from the source
+Station CHTO is 9206.66 km (> 500.00 km) from the source
+Station  CMB is 3310.67 km (> 500.00 km) from the source
+Station COCO is 12312.51 km (> 500.00 km) from the source
+Station COLA is 650.85 km (> 500.00 km) from the source
+Station COLD is 870.47 km (> 500.00 km) from the source
+Station  COR is 2579.69 km (> 500.00 km) from the source
+Station CRAG is 1256.63 km (> 500.00 km) from the source
+Station CTAO is 10399.01 km (> 500.00 km) from the source
+Station  DAV is 8859.88 km (> 500.00 km) from the source
+Station DAWY is 868.26 km (> 500.00 km) from the source
+Station DGAR is 13093.33 km (> 500.00 km) from the source
+Station DLBC is 1308.47 km (> 500.00 km) from the source
+Station  DOT is 653.28 km (> 500.00 km) from the source
+Station DWPF is 6314.53 km (> 500.00 km) from the source
+Station  EFI is 14943.36 km (> 500.00 km) from the source
+Station EGAK is 842.47 km (> 500.00 km) from the source
+Station  ERM is 4696.07 km (> 500.00 km) from the source
+Station  ESK is 6989.94 km (> 500.00 km) from the source
+Station FALS is 823.38 km (> 500.00 km) from the source
+Station  FFC is 3045.94 km (> 500.00 km) from the source
+Station GAMB is 1104.35 km (> 500.00 km) from the source
+Station GCSA is 621.71 km (> 500.00 km) from the source
+Station  GNI is 8842.31 km (> 500.00 km) from the source
+Station GRIN is 536.80 km (> 500.00 km) from the source
+Station GRNC is 627.95 km (> 500.00 km) from the source
+Station GUMO is 7166.36 km (> 500.00 km) from the source
+Station  HIA is 5367.65 km (> 500.00 km) from the source
+Station  HNR is 8717.69 km (> 500.00 km) from the source
+Station IL31 is 662.44 km (> 500.00 km) from the source
+Station ILBB is 662.44 km (> 500.00 km) from the source
+Station INCN is 6000.40 km (> 500.00 km) from the source
+Station  INK is 1351.85 km (> 500.00 km) from the source
+Station ISLE is 594.37 km (> 500.00 km) from the source
+Station  JTS is 7782.23 km (> 500.00 km) from the source
+Station KAPI is 10339.65 km (> 500.00 km) from the source
+Station  KBS is 4607.91 km (> 500.00 km) from the source
+Station  KEV is 5663.41 km (> 500.00 km) from the source
+Station KHIT is 542.55 km (> 500.00 km) from the source
+Station KIAG is 598.90 km (> 500.00 km) from the source
+Station KIEV is 7785.04 km (> 500.00 km) from the source
+Station  KIP is 4249.42 km (> 500.00 km) from the source
+Station  KIV is 8449.19 km (> 500.00 km) from the source
+Station KONO is 6701.96 km (> 500.00 km) from the source
+Station KULT is 569.48 km (> 500.00 km) from the source
+Station KURK is 6938.18 km (> 500.00 km) from the source
+Station LBTB is 16170.93 km (> 500.00 km) from the source
+Station LOGN is 669.88 km (> 500.00 km) from the source
+Station  LSA is 8526.47 km (> 500.00 km) from the source
+Station  LSZ is 15094.32 km (> 500.00 km) from the source
+Station MAJO is 5434.44 km (> 500.00 km) from the source
+Station MBAR is 13464.63 km (> 500.00 km) from the source
+Station MBWA is 11869.17 km (> 500.00 km) from the source
+Station MCAR is 576.48 km (> 500.00 km) from the source
+Station  MCK is 513.52 km (> 500.00 km) from the source
+Station  MDJ is 5235.58 km (> 500.00 km) from the source
+Station  MDM is 652.41 km (> 500.00 km) from the source
+Station MESA is 611.84 km (> 500.00 km) from the source
+Station MIDW is 3948.06 km (> 500.00 km) from the source
+Station NICH is 500.61 km (> 500.00 km) from the source
+Station NIKH is 1228.03 km (> 500.00 km) from the source
+Station NIKO is 1231.29 km (> 500.00 km) from the source
+Station  NNA is 10368.43 km (> 500.00 km) from the source
+Station NWAO is 13092.89 km (> 500.00 km) from the source
+Station  OBN is 7268.05 km (> 500.00 km) from the source
+Station OKCE is 1160.00 km (> 500.00 km) from the source
+Station OKFG is 1148.55 km (> 500.00 km) from the source
+Station OKSO is 1164.95 km (> 500.00 km) from the source
+Station  PAB is 8649.95 km (> 500.00 km) from the source
+Station PALK is 11236.81 km (> 500.00 km) from the source
+Station  PAX is 550.68 km (> 500.00 km) from the source
+Station PAYG is 8559.56 km (> 500.00 km) from the source
+Station PD31 is 3463.28 km (> 500.00 km) from the source
+Station  PET is 3020.80 km (> 500.00 km) from the source
+Station  PFO is 3915.34 km (> 500.00 km) from the source
+Station  PIN is 706.00 km (> 500.00 km) from the source
+Station  PMG is 9296.60 km (> 500.00 km) from the source
+Station PMSA is 15630.83 km (> 500.00 km) from the source
+Station  PNL is 755.40 km (> 500.00 km) from the source
+Station POHA is 4418.66 km (> 500.00 km) from the source
+Station PS01 is 1214.61 km (> 500.00 km) from the source
+Station PS04 is 1007.97 km (> 500.00 km) from the source
+Station PS05 is 821.75 km (> 500.00 km) from the source
+Station PS06 is 724.81 km (> 500.00 km) from the source
+Station PS07 is 687.54 km (> 500.00 km) from the source
+Station PS08 is 642.12 km (> 500.00 km) from the source
+Station PS09 is 616.83 km (> 500.00 km) from the source
+Station PS10 is 574.68 km (> 500.00 km) from the source
+Station PTCN is 9601.65 km (> 500.00 km) from the source
+Station PTPK is 599.49 km (> 500.00 km) from the source
+Station  QIZ is 8608.88 km (> 500.00 km) from the source
+Station QSPA is 16597.02 km (> 500.00 km) from the source
+Station  RAO is 10104.08 km (> 500.00 km) from the source
+Station  RAR is 8968.08 km (> 500.00 km) from the source
+Station RCBR is 12054.80 km (> 500.00 km) from the source
+Station RKAV is 645.81 km (> 500.00 km) from the source
+Station  RPN is 10394.74 km (> 500.00 km) from the source
+Station RSSD is 3662.88 km (> 500.00 km) from the source
+Station SAMH is 676.53 km (> 500.00 km) from the source
+Station SAML is 10835.30 km (> 500.00 km) from the source
+Station  SBA is 15490.38 km (> 500.00 km) from the source
+Station SDDR is 7729.56 km (> 500.00 km) from the source
+Station SDPT is 652.73 km (> 500.00 km) from the source
+Station  SDV is 8717.68 km (> 500.00 km) from the source
+Station SHEL is 14482.18 km (> 500.00 km) from the source
+Station  SIT is 1057.03 km (> 500.00 km) from the source
+Station  SJG is 8101.14 km (> 500.00 km) from the source
+Station SKAG is 986.85 km (> 500.00 km) from the source
+Station  SMY is 2165.64 km (> 500.00 km) from the source
+Station SNZO is 11565.94 km (> 500.00 km) from the source
+Station SPIA is 1051.30 km (> 500.00 km) from the source
+Station SSBA is 863.27 km (> 500.00 km) from the source
+Station SSPA is 5417.18 km (> 500.00 km) from the source
+Station SUCK is 509.74 km (> 500.00 km) from the source
+Station  SUR is 16952.27 km (> 500.00 km) from the source
+Station TABL is 657.97 km (> 500.00 km) from the source
+Station TATO is 7409.86 km (> 500.00 km) from the source
+Station TEIG is 6656.27 km (> 500.00 km) from the source
+Station TGUH is 7295.11 km (> 500.00 km) from the source
+Station TIXI is 3546.83 km (> 500.00 km) from the source
+Station  TLY is 5909.67 km (> 500.00 km) from the source
+Station  TNA is 1026.25 km (> 500.00 km) from the source
+Station TRIS is 16255.27 km (> 500.00 km) from the source
+Station TRQA is 13597.98 km (> 500.00 km) from the source
+Station TSUM is 15463.36 km (> 500.00 km) from the source
+Station  TUC is 4320.39 km (> 500.00 km) from the source
+Station TX31 is 4968.41 km (> 500.00 km) from the source
+Station  ULN is 6093.00 km (> 500.00 km) from the source
+Station  UNV is 1047.10 km (> 500.00 km) from the source
+Station VRDI is 549.39 km (> 500.00 km) from the source
+Station WAKE is 5511.22 km (> 500.00 km) from the source
+Station  WHY is 1002.14 km (> 500.00 km) from the source
+Station WRAK is 1252.48 km (> 500.00 km) from the source
+Station WRAK is 1252.48 km (> 500.00 km) from the source
+Station  YAK is 3980.52 km (> 500.00 km) from the source
+Station YKW2 is 2062.53 km (> 500.00 km) from the source
+Station YKW3 is 2060.23 km (> 500.00 km) from the source
+Station  YSS is 4329.12 km (> 500.00 km) from the source
+Station AKBB is 1000.56 km (> 500.00 km) from the source
+Station AKGG is 996.00 km (> 500.00 km) from the source
+Station AKLV is 996.92 km (> 500.00 km) from the source
+Station AKRB is 1004.85 km (> 500.00 km) from the source
+Station  AKT is 989.93 km (> 500.00 km) from the source
+Station AKUT is 989.91 km (> 500.00 km) from the source
+Station AMKA is 1964.23 km (> 500.00 km) from the source
+Station ATKA is 1557.38 km (> 500.00 km) from the source
+Station BAGL is 606.52 km (> 500.00 km) from the source
+Station BARK is 583.58 km (> 500.00 km) from the source
+Station BARN is 638.88 km (> 500.00 km) from the source
+Station  BBB is 1733.32 km (> 500.00 km) from the source
+Station BERG is 517.10 km (> 500.00 km) from the source
+Station BGLC is 537.54 km (> 500.00 km) from the source
+Station BPAW is 521.00 km (> 500.00 km) from the source
+Station COLD is 870.47 km (> 500.00 km) from the source
+Station CRAG is 1256.63 km (> 500.00 km) from the source
+Station DAWY is 868.26 km (> 500.00 km) from the source
+Station DLBC is 1308.47 km (> 500.00 km) from the source
+Station  DOT is 653.28 km (> 500.00 km) from the source
+Station EGAK is 842.47 km (> 500.00 km) from the source
+Station FALS is 823.38 km (> 500.00 km) from the source
+Station GAMB is 1104.35 km (> 500.00 km) from the source
+Station GCSA is 621.71 km (> 500.00 km) from the source
+Station GRIN is 536.80 km (> 500.00 km) from the source
+Station GRNC is 627.95 km (> 500.00 km) from the source
+Station ILBB is 662.44 km (> 500.00 km) from the source
+Station  INK is 1351.85 km (> 500.00 km) from the source
+Station ISLE is 594.37 km (> 500.00 km) from the source
+Station KHIT is 542.55 km (> 500.00 km) from the source
+Station KIAG is 598.90 km (> 500.00 km) from the source
+Station KULT is 569.48 km (> 500.00 km) from the source
+Station LOGN is 669.88 km (> 500.00 km) from the source
+Station MCAR is 576.48 km (> 500.00 km) from the source
+Station  MCK is 513.52 km (> 500.00 km) from the source
+Station  MDM is 652.41 km (> 500.00 km) from the source
+Station MESA is 611.84 km (> 500.00 km) from the source
+Station NICH is 500.61 km (> 500.00 km) from the source
+Station NIKH is 1228.03 km (> 500.00 km) from the source
+Station NIKO is 1231.29 km (> 500.00 km) from the source
+Station OKCE is 1160.00 km (> 500.00 km) from the source
+Station OKFG is 1148.55 km (> 500.00 km) from the source
+Station OKSO is 1164.95 km (> 500.00 km) from the source
+Station  PAX is 550.68 km (> 500.00 km) from the source
+Station  PET is 3020.80 km (> 500.00 km) from the source
+Station  PNL is 755.40 km (> 500.00 km) from the source
+Station PS01 is 1214.61 km (> 500.00 km) from the source
+Station PS04 is 1007.97 km (> 500.00 km) from the source
+Station PS05 is 821.75 km (> 500.00 km) from the source
+Station PS06 is 724.81 km (> 500.00 km) from the source
+Station PS07 is 687.54 km (> 500.00 km) from the source
+Station PS08 is 642.12 km (> 500.00 km) from the source
+Station PS09 is 616.83 km (> 500.00 km) from the source
+Station PS10 is 574.68 km (> 500.00 km) from the source
+Station PTPK is 599.49 km (> 500.00 km) from the source
+Station RKAV is 645.81 km (> 500.00 km) from the source
+Station SAMH is 676.53 km (> 500.00 km) from the source
+Station SDPT is 652.73 km (> 500.00 km) from the source
+Station  SIT is 1057.03 km (> 500.00 km) from the source
+Station SKAG is 986.85 km (> 500.00 km) from the source
+Station  SMY is 2165.64 km (> 500.00 km) from the source
+Station SPIA is 1051.30 km (> 500.00 km) from the source
+Station SSBA is 863.27 km (> 500.00 km) from the source
+Station SUCK is 509.74 km (> 500.00 km) from the source
+Station TABL is 657.97 km (> 500.00 km) from the source
+Station TIXI is 3546.83 km (> 500.00 km) from the source
+Station  TNA is 1026.25 km (> 500.00 km) from the source
+Station  UNV is 1047.10 km (> 500.00 km) from the source
+Station VRDI is 549.39 km (> 500.00 km) from the source
+Station  WHY is 1002.14 km (> 500.00 km) from the source
+Station WRAK is 1252.48 km (> 500.00 km) from the source
+Station WRAK is 1252.48 km (> 500.00 km) from the source
+Station  YAK is 3980.52 km (> 500.00 km) from the source
+Station YKW2 is 2062.53 km (> 500.00 km) from the source
+Station YKW3 is 2060.23 km (> 500.00 km) from the source
+Station  YSS is 4329.12 km (> 500.00 km) from the source
+Station AKBB is 1000.56 km (> 500.00 km) from the source
+Station AKGG is 996.00 km (> 500.00 km) from the source
+Station AKLV is 996.92 km (> 500.00 km) from the source
+Station AKRB is 1004.85 km (> 500.00 km) from the source
+Station  AKT is 989.93 km (> 500.00 km) from the source
+Station AKUT is 989.91 km (> 500.00 km) from the source
+Station AMKA is 1964.23 km (> 500.00 km) from the source
+Station ATKA is 1557.38 km (> 500.00 km) from the source
+Station BAGL is 606.52 km (> 500.00 km) from the source
+Station BARK is 583.58 km (> 500.00 km) from the source
+Station BARN is 638.88 km (> 500.00 km) from the source
+Station  BBB is 1733.32 km (> 500.00 km) from the source
+Station BERG is 517.10 km (> 500.00 km) from the source
+Station BGLC is 537.54 km (> 500.00 km) from the source
+Station BPAW is 521.00 km (> 500.00 km) from the source
+Station COLD is 870.47 km (> 500.00 km) from the source
+Station CRAG is 1256.63 km (> 500.00 km) from the source
+Station DAWY is 868.26 km (> 500.00 km) from the source
+Station DLBC is 1308.47 km (> 500.00 km) from the source
+Station  DOT is 653.28 km (> 500.00 km) from the source
+Station EGAK is 842.47 km (> 500.00 km) from the source
+Station FALS is 823.38 km (> 500.00 km) from the source
+Station GAMB is 1104.35 km (> 500.00 km) from the source
+Station GCSA is 621.71 km (> 500.00 km) from the source
+Station GRIN is 536.80 km (> 500.00 km) from the source
+Station GRNC is 627.95 km (> 500.00 km) from the source
+Station ILBB is 662.44 km (> 500.00 km) from the source
+Station  INK is 1351.85 km (> 500.00 km) from the source
+Station ISLE is 594.37 km (> 500.00 km) from the source
+Station KHIT is 542.55 km (> 500.00 km) from the source
+Station KIAG is 598.90 km (> 500.00 km) from the source
+Station KULT is 569.48 km (> 500.00 km) from the source
+Station LOGN is 669.88 km (> 500.00 km) from the source
+Station MCAR is 576.48 km (> 500.00 km) from the source
+Station  MCK is 513.52 km (> 500.00 km) from the source
+Station  MDM is 652.41 km (> 500.00 km) from the source
+Station MESA is 611.84 km (> 500.00 km) from the source
+Station NICH is 500.61 km (> 500.00 km) from the source
+Station NIKH is 1228.03 km (> 500.00 km) from the source
+Station NIKO is 1231.29 km (> 500.00 km) from the source
+Station OKCE is 1160.00 km (> 500.00 km) from the source
+Station OKFG is 1148.55 km (> 500.00 km) from the source
+Station OKSO is 1164.95 km (> 500.00 km) from the source
+Station  PAX is 550.68 km (> 500.00 km) from the source
+Station  PET is 3020.80 km (> 500.00 km) from the source
+Station  PNL is 755.40 km (> 500.00 km) from the source
+Station PS01 is 1214.61 km (> 500.00 km) from the source
+Station PS04 is 1007.97 km (> 500.00 km) from the source
+Station PS05 is 821.75 km (> 500.00 km) from the source
+Station PS06 is 724.81 km (> 500.00 km) from the source
+Station PS07 is 687.54 km (> 500.00 km) from the source
+Station PS08 is 642.12 km (> 500.00 km) from the source
+Station PS09 is 616.83 km (> 500.00 km) from the source
+Station PS10 is 574.68 km (> 500.00 km) from the source
+Station PTPK is 599.49 km (> 500.00 km) from the source
+Station RKAV is 645.81 km (> 500.00 km) from the source
+Station SAMH is 676.53 km (> 500.00 km) from the source
+Station SDPT is 652.73 km (> 500.00 km) from the source
+Station  SIT is 1057.03 km (> 500.00 km) from the source
+Station SKAG is 986.85 km (> 500.00 km) from the source
+Station  SMY is 2165.64 km (> 500.00 km) from the source
+Station SPIA is 1051.30 km (> 500.00 km) from the source
+Station SSBA is 863.27 km (> 500.00 km) from the source
+Station SUCK is 509.74 km (> 500.00 km) from the source
+Station TABL is 657.97 km (> 500.00 km) from the source
+Station TIXI is 3546.83 km (> 500.00 km) from the source
+Station  TNA is 1026.25 km (> 500.00 km) from the source
+Station  UNV is 1047.10 km (> 500.00 km) from the source
+Station VRDI is 549.39 km (> 500.00 km) from the source
+Station  WHY is 1002.14 km (> 500.00 km) from the source
+Station WRAK is 1252.48 km (> 500.00 km) from the source
+Station WRAK is 1252.48 km (> 500.00 km) from the source
+Station  YAK is 3980.52 km (> 500.00 km) from the source
+Station YKW2 is 2062.53 km (> 500.00 km) from the source
+Station YKW3 is 2060.23 km (> 500.00 km) from the source
+Station  YSS is 4329.12 km (> 500.00 km) from the source
+Station COLA is 650.85 km (> 500.00 km) from the source
+Station COLA is 650.85 km (> 500.00 km) from the source
+WARNING: Wrong calib for KABU in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for KAKN in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for KDAK in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for MID in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for OHAK in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for PMR in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for PS11 in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for SPBG in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for SPCG in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for VMT in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for AUL in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for KABU in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for KAKN in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for KDAK in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for MID in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for OHAK in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for PMR in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for PS11 in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for SPBG in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for VMT in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for KABU in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for KAKN in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for KDAK in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for MID in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for OHAK in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for PMR in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for PS11 in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for PS12 in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for SPCG in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+WARNING: Wrong calib for VMT in wfdisc (18-Sep-2008 19:42:13)
+Apply calibration correction
+station  channel       database       response_file
+   BRLK     BHZ   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   CAST     BHZ   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+    CHI     BHZ   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   CHUM     BHZ   uaf_continuous 2008-09-18   cmg40t_60sec+dm24@50
+    DHY     BHZ   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   EYAK     BHZ   uaf_continuous 2008-09-18   cmg3t_120sec+dm24@50
+    FIB     BHZ   uaf_continuous 2008-09-18   cmg40t_30sec+dm24@50
+   GOAT     BHZ   uaf_continuous 2008-09-18   sts2_g1+q330_lb100c@50
+   KABU     BHZ   uaf_continuous 2008-09-18   CMG-6TD-T6054.80
+   KAKN     BHZ   uaf_continuous 2008-09-18   CMG-6TD-T6054.80
+   KDAK     BHZ   uaf_continuous 2008-09-18   Geotech_KS-54000_Borehole_Sei.99
+    MID     BHZ   uaf_continuous 2008-09-18   STS-2:Trident.1
+   OHAK     BHZ   uaf_continuous 2008-09-18   STS-2:Trident.1
+    PMR     BHZ   uaf_continuous 2008-09-18   STS-2:Trident.1
+   PPLA     BHZ   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   PS11     BHZ   uaf_continuous 2008-09-18   cmg3esp_60sec+q330_lb100c@50
+   PS12     BHZ   uaf_continuous 2008-09-18   cmg3esp_60sec+q330_lb100c@50
+    RAG     BHZ   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   RC01     BHZ   uaf_continuous 2008-09-18   cmg3esp_60sec+dm24@50
+    RND     BHZ   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+    SAW     BHZ   uaf_continuous 2008-09-18   cmg3esp_30sec+dm24@50
+    SKN     BHZ   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   SPBG     BHZ   uaf_continuous 2008-09-18   CMG-6TD-T6054.178
+   SPCG     BHZ   uaf_continuous 2008-09-18   CMG-6TD-T6054.178
+    SSN     BHZ   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+    SWD     BHZ   uaf_continuous 2008-09-18   cmg3esp_60sec+dm24@50
+    TRF     BHZ   uaf_continuous 2008-09-18   cmg3esp_60sec+dm24@50
+    VMT     BHZ   uaf_continuous 2008-09-18   cmg3esp_60sec+q330_lb100c@50
+    AUL     BHE   uaf_continuous 2008-09-18   CMG-6TD-T6054.4
+   BRLK     BHE   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   CAST     BHE   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+    CHI     BHE   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   CHUM     BHE   uaf_continuous 2008-09-18   cmg40t_60sec+dm24@50
+    DHY     BHE   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   EYAK     BHE   uaf_continuous 2008-09-18   cmg3t_120sec+dm24@50
+    FIB     BHE   uaf_continuous 2008-09-18   cmg40t_30sec+dm24@50
+   GOAT     BHE   uaf_continuous 2008-09-18   sts2_g1+q330_lb100c@50
+   KABU     BHE   uaf_continuous 2008-09-18   CMG-6TD-T6054.80
+   KAKN     BHE   uaf_continuous 2008-09-18   CMG-6TD-T6054.80
+   KDAK     BHE   uaf_continuous 2008-09-18   Geotech_KS-54000_Borehole_Sei.89
+    MID     BHE   uaf_continuous 2008-09-18   STS-2:Trident.1
+   OHAK     BHE   uaf_continuous 2008-09-18   STS-2:Trident.1
+    PMR     BHE   uaf_continuous 2008-09-18   STS-2:Trident.1
+   PPLA     BHE   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   PS11     BHE   uaf_continuous 2008-09-18   cmg3esp_60sec+q330_lb100c@50
+   PS12     BHE   uaf_continuous 2008-09-18   cmg3esp_60sec+q330_lb100c@50
+    RAG     BHE   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   RC01     BHE   uaf_continuous 2008-09-18   cmg3esp_60sec+dm24@50
+    RND     BHE   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+    SAW     BHE   uaf_continuous 2008-09-18   cmg3esp_30sec+dm24@50
+    SKN     BHE   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   SPBG     BHE   uaf_continuous 2008-09-18   CMG-6TD-T6054.178
+   SPCG     BHE   uaf_continuous 2008-09-18   CMG-6TD-T6054.178
+    SSN     BHE   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+    SWD     BHE   uaf_continuous 2008-09-18   cmg3esp_60sec+dm24@50
+    TRF     BHE   uaf_continuous 2008-09-18   cmg3esp_60sec+dm24@50
+    VMT     BHE   uaf_continuous 2008-09-18   cmg3esp_60sec+q330_lb100c@50
+   BRLK     BHN   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   CAST     BHN   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+    CHI     BHN   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   CHUM     BHN   uaf_continuous 2008-09-18   cmg40t_60sec+dm24@50
+    DHY     BHN   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   EYAK     BHN   uaf_continuous 2008-09-18   cmg3t_120sec+dm24@50
+    FIB     BHN   uaf_continuous 2008-09-18   cmg40t_30sec+dm24@50
+   GOAT     BHN   uaf_continuous 2008-09-18   sts2_g1+q330_lb100c@50
+   KABU     BHN   uaf_continuous 2008-09-18   CMG-6TD-T6054.80
+   KAKN     BHN   uaf_continuous 2008-09-18   CMG-6TD-T6054.80
+   KDAK     BHN   uaf_continuous 2008-09-18   Geotech_KS-54000_Borehole_Sei.95
+    MID     BHN   uaf_continuous 2008-09-18   STS-2:Trident.1
+   OHAK     BHN   uaf_continuous 2008-09-18   STS-2:Trident.1
+    PMR     BHN   uaf_continuous 2008-09-18   STS-2:Trident.1
+   PPLA     BHN   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   PS11     BHN   uaf_continuous 2008-09-18   cmg3esp_60sec+q330_lb100c@50
+   PS12     BHN   uaf_continuous 2008-09-18   cmg3esp_60sec+q330_lb100c@50
+    RAG     BHN   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   RC01     BHN   uaf_continuous 2008-09-18   cmg3esp_60sec+dm24@50
+    RND     BHN   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+    SAW     BHN   uaf_continuous 2008-09-18   cmg3esp_30sec+dm24@50
+    SKN     BHN   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+   SPBG     BHN   uaf_continuous 2008-09-18   CMG-6TD-T6054.178
+   SPCG     BHN   uaf_continuous 2008-09-18   CMG-6TD-T6054.178
+    SSN     BHN   uaf_continuous 2008-09-18   sts2_g3+q330_lb100c@50
+    SWD     BHN   uaf_continuous 2008-09-18   cmg3esp_60sec+dm24@50
+    TRF     BHN   uaf_continuous 2008-09-18   cmg3esp_60sec+dm24@50
+    VMT     BHN   uaf_continuous 2008-09-18   cmg3esp_60sec+q330_lb100c@50
+   ALPI     BHZ             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   AVAL     BHZ             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   BIGB     BHZ             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   BLAK     BHZ             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   DEVL     BHZ             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   HEAD     BHZ             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   HOPE     BHZ             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   KASH     BHZ             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   LSKI     BHZ             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   LSUM     BHZ             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   MPEN     BHZ             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   NSKI     BHZ             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   PERI     BHZ             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   RUSS     BHZ             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   SOLD     BHZ             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   TUPA     BHZ             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   ALPI     BHE             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   AVAL     BHE             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   BIGB     BHE             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   BLAK     BHE             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   DEVL     BHE             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   HEAD     BHE             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   HOPE     BHE             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   KASH     BHE             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   LSKI     BHE             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   LSUM     BHE             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   MPEN     BHE             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   NSKI     BHE             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   PERI     BHE             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   RUSS     BHE             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   SOLD     BHE             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   TUPA     BHE             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   ALPI     BHN             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   AVAL     BHN             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   BIGB     BHN             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   BLAK     BHN             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   DEVL     BHN             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   HEAD     BHN             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   HOPE     BHN             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   KASH     BHN             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   LSKI     BHN             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   LSUM     BHN             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   MPEN     BHN             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   NSKI     BHN             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   PERI     BHN             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   RUSS     BHN             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   SOLD     BHN             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50
+   TUPA     BHN             MOOS 2008-09-18   cmg3t+q330_Passcal_lc@50

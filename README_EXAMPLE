@@ -701,6 +701,57 @@ d. Using just the surface waves at AEC stations (M012)
 > gv $CAPHOME/20090407201255351_check/20090407201255351_L1_M111_az.ps
 
 ====================================================================================
+EXAMPLE 15: Running Alaska Example (20080918194353069) - Checking FTC data and green's outputs
+
+1. set the path to green's function library
+> xe cap.pl 
+> $green = "/store/wf/FK_synthetics";       # standard models at UAF
+
+2. open cap.c and set FTC_data=0 and FTC_green=0 and recompile 
+> make all
+
+3. prepare run
+> mkdir -p $CAPRUN/inv/scak
+> cd $CAPRUN/inv/scak
+> rsync -av $CAPHOME/20080918194353069
+
+4. run (Filter and Cut 'NOT applied' to data and synthetics both)
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_72/4.8 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20080918194353069
+
+5. Rename output files to prevent them from being overwritten
+> mv 20080918194353069/scak_072.ps 20080918194353069/scak_072_off.ps 
+
+6. open cap.c and set FTC_data=1 and FTC_green=1 and recompile 
+> make all
+
+7. run again (Filter and Cut 'applied' to data and synthetics both)
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_72/4.8 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20080918194353069
+
+8. mv 20080918194353069/scak_072.ps 20080918194353069/scak_072_on.ps 
+
+9. open cap.c and set FTC_data=1 and FTC_green=0 and recompile 
+> make all
+
+10. run again (Filter and Cut 'applied' only to data and NOT to synthetics)
+> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_72/4.8 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20080918194353069
+
+11. mv 20080918194353069/scak_072.ps 20080918194353069/scak_072_on_off.ps 
+
+12. Check results
+> gv 20080918194353069/scak_072_off.ps
+> gv $CAPHOME/20080918194353069_check/FTC_off.ps
+
+> gv 20080918194353069/scak_072_on.ps 
+> gv $CAPHOME/20080918194353069_check/FTC_on.ps
+
+> gv 20080918194353069/scak_072_on_off.ps 
+> gv $CAPHOME/20080918194353069_check/FTC_on_off.ps
+
+13. Similarly you can try with different weight files (> ls 20080918194353069/weight*.dat). Also try depth tests. See more results at the best depth:
+> ar $CAPHOME/20080918194353069_check/FTC_on_results.pdf
+> ar $CAPHOME/20080918194353069_check/FTC_off_results.pdf
+
+====================================================================================
 TIPS
 
 1. If running in debug mode, remember to remove all the log files otherwise they will be appended (not overwritten!).

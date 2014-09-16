@@ -97,7 +97,7 @@ int FTC_data=1, FTC_green=0;// for original CAP set FTC_data=0, FTC_green=0
 
 /* allows use of polarities even when weight=0.
  * Note CAP still needs at least 1 waveform for the inversion */
-int skip_zero_weights=0;    // for original CAP set skip_zero_weights=1
+int skip_zero_weights=1;    // for original CAP set skip_zero_weights=1
 
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search,norm;
