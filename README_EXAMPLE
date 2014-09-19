@@ -83,7 +83,7 @@ note: You do not need to run fk if you have a pre-computed library of Green's fu
 3. prepare data directory
 
 > cd $CAPRUN/inv/cus
-> rsync -av $CAPHOME/20080418093700 .
+> rsync -av $CAPHOME/EXAMPLES/20080418093700 .
 
 Check that you have new weight.dat file with 12 columns (3 extra for Pnl_window, surf_pick, surf_window).
 The old weight file is under the name weight_orig.dat
@@ -100,8 +100,8 @@ You should see a reasonable output for a moment tensor inversion.
 
 5. check the output files
 
-> gv $CAPHOME/20080418093700_check/cus_015.ps &
-> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015.out
+> gv $CAPHOME/EXAMPLES/20080418093700_check/cus_015.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015.out
 
 (The output from the last command should be blank.)
 
@@ -128,9 +128,9 @@ Run depth_test (script for calling depth.pl)
 
 5. check the depth test
 
-> diff junk1.out $CAPHOME/20080418093700_check/junk1_dc.out
-> diff junk2.out $CAPHOME/20080418093700_check/junk2_dc.out
-> gv $CAPHOME/20080418093700_check/depth_dc.ps &
+> diff junk1.out $CAPHOME/EXAMPLES/20080418093700_check/junk1_dc.out
+> diff junk2.out $CAPHOME/EXAMPLES/20080418093700_check/junk2_dc.out
+> gv $CAPHOME/EXAMPLES/20080418093700_check/depth_dc.ps &
 
 ====================================================================================
 EXAMPLE 2: Illinois event, DC with P wave polarities in weight file
@@ -216,8 +216,8 @@ note: -J0/0.1/0/0.1 means line search from (0,0) in increments of 0.1 in each di
 
 5. check the output files
 
-> gv $CAPHOME/20080418093700_check/cus_015_fmt_line.ps &
-> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_line.out
+> gv $CAPHOME/EXAMPLES/20080418093700_check/cus_015_fmt_line.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015_fmt_line.out
 
 (The output from the last command should be blank.)
 
@@ -231,9 +231,9 @@ Run depth_test (script for calling depth.pl)
 
 5. check the depth test
 
-> diff junk1.out $CAPHOME/20080418093700_check/junk1_fmt_line.out
-> diff junk2.out $CAPHOME/20080418093700_check/junk2_fmt_line.out
-> gv $CAPHOME/20080418093700_check/depth_fmt_line.ps &
+> diff junk1.out $CAPHOME/EXAMPLES/20080418093700_check/junk1_fmt_line.out
+> diff junk2.out $CAPHOME/EXAMPLES/20080418093700_check/junk2_fmt_line.out
+> gv $CAPHOME/EXAMPLES/20080418093700_check/depth_fmt_line.ps &
 
 ====================================================================================
 EXAMPLE 5: Illinois event, FMT with fixed focal mech (strike/dip/rake/iso/clvd/mag)
@@ -250,8 +250,8 @@ note: the solution is slightly better than the result in EXAMPLE 4 (why? precisi
 
 5. check the output files
 
-> gv $CAPHOME/20080418093700_check/cus_015_fmt_fixed.ps &
-> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_fixed.out
+> gv $CAPHOME/EXAMPLES/20080418093700_check/cus_015_fmt_fixed.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015_fmt_fixed.out
 
 ====================================================================================
 EXAMPLE 6: Illinois event, DC, full grid search (no line search)
@@ -274,8 +274,8 @@ note: -I here will use a 0.1 interval of Mw
 
 5. check the output files
 
-> gv $CAPHOME/20080418093700_check/cus_015_dc_grid.ps &
-> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_dc_grid.out
+> gv $CAPHOME/EXAMPLES/20080418093700_check/cus_015_dc_grid.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015_dc_grid.out
 
 ====================================================================================
 EXAMPLE 7: same as EXAMPLE 6 but with fixed magnitude
@@ -312,8 +312,8 @@ note: -I here will use a 0.2 interval of Mw and 10 degree for ISO and CLVD lune 
 
 5. check the output files
 
-> gv $CAPHOME/20080418093700_check/cus_015_fmt_grid.ps &
-> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_grid.out
+> gv $CAPHOME/EXAMPLES/20080418093700_check/cus_015_fmt_grid.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015_fmt_grid.out
 
 ====================================================================================
 EXAMPLE 9: Illinois event, Direct search FMT (LUNE parameterization) with fixed focal mech (strike/dip/rake/iso/clvd/mag)
@@ -330,8 +330,8 @@ note: the solution is slightly better than the result in EXAMPLE 4 (why? precisi
 
 5. check the output files
 
-> gv $CAPHOME/20080418093700_check/cus_015_fmt_fixed.ps &
-> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_fixed.out
+> gv $CAPHOME/EXAMPLES/20080418093700_check/cus_015_fmt_fixed.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015_fmt_fixed.out
 
 ====================================================================================
 EXAMPLE 10: Illinois event, DC with random sample search (optional: grid-search over Mw)
@@ -355,8 +355,8 @@ NOTES
 
 5. check the output files
 
-> gv $CAPHOME/20080418093700_check/cus_015_dc_rand.ps &
-> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_dc_rand.out
+> gv $CAPHOME/EXAMPLES/20080418093700_check/cus_015_dc_rand.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015_dc_rand.out
 
 ====================================================================================
 EXAMPLE 11: Illinois event, FMT-fixed-magnitude with random sample search (optional: grid-search over Mw)
@@ -381,8 +381,8 @@ NOTES
 
 6. check the output files
 
-> gv $CAPHOME/20080418093700_check/cus_015_fmt_rand.ps &
-> diff 20080418093700/cus_015.out $CAPHOME/20080418093700_check/cus_015_fmt_rand.out
+> gv $CAPHOME/EXAMPLES/20080418093700_check/cus_015_fmt_rand.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015_fmt_rand.out
 
 ====================================================================================
 EXAMPLE 12: Bolivia event 20100516-063454, first motion polarity
@@ -445,7 +445,7 @@ note: all P arrivals times are specified
 
 3. check that cap is compiled
 
-> ls -ltr $CAPHOME/EXAMPLES/cap
+> ls -ltr $CAPHOME/cap
 
 4a. run cap and plot with absolute amplitudes
 
@@ -603,7 +603,7 @@ EXAMPLE 14: Running Alaska Example (20090407201255351)
 3. prepare run
 > mkdir -p $CAPRUN/inv/scak
 > cd $CAPRUN/inv/scak
-> rsync -av $CAPHOME/20090407201255351 
+> rsync -av $CAPHOME/EXAMPLES/20090407201255351 
 
 4. Eight different weight files options: weightijk.dat (Last three numbers are for (i)-body wave, (j)-surface waves, (k)-station choice)
    i = 1 or 0 for whether body waves are used or not
@@ -625,24 +625,24 @@ a. Using body and surface waves at selected stations (M111)
 Using L1 norm:
 > cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 20090407201255351
 > gv 20090407201255351/scak_041.ps
-> gv $CAPHOME/20090407201255351_check/20090407201255351_L1_M111.ps
+> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M111.ps
 
 Depth test
 > cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 -A30/50/2 20090407201255351
 > depth_test 20090407201255351 scak
 > gv dep_20090407201255351.ps
-> gv $CAPHOME/20090407201255351_check/dep_20090407201255351_L1_M111.ps
+> gv $CAPHOME/EXAMPLES/20090407201255351_check/dep_20090407201255351_L1_M111.ps
 
 Using L2 norm: 
 > cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y2 20090407201255351
 > gv 20090407201255351/scak_041.ps
-> gv $CAPHOME/20090407201255351_check/20090407201255351_L2_M111.ps
+> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L2_M111.ps
 
 Depth test
 > cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y2 -A30/50/2 20090407201255351
 > depth_test 20090407201255351 scak
 > gv dep_20090407201255351.ps
-> gv $CAPHOME/20090407201255351_check/dep_20090407201255351_L2_M111.ps
+> gv $CAPHOME/EXAMPLES/20090407201255351_check/dep_20090407201255351_L2_M111.ps
 
 --------------------------------------------------------------------------------
 
@@ -650,46 +650,46 @@ b. Using body and surface waves at all stations (M110)
 Using L1 norm:
 > cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y1 20090407201255351
 > gv 20090407201255351/scak_041.ps
-> gv $CAPHOME/20090407201255351_check/20090407201255351_L1_M110.ps
+> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M110.ps
 
 Depth test
 > cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y1 -A30/50/2 20090407201255351
 > depth_test 20090407201255351 scak
 > gv dep_20090407201255351.ps
-> gv $CAPHOME/20090407201255351_check/dep_20090407201255351_L1_M110.ps
+> gv $CAPHOME/EXAMPLES/20090407201255351_check/dep_20090407201255351_L1_M110.ps
 
 Using L2 norm: 
 > cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y2 20090407201255351
 > gv 20090407201255351/scak_041.ps
-> gv $CAPHOME/20090407201255351_check/20090407201255351_L2_M110.ps
+> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L2_M110.ps
 
 Depth test
 > cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y2 -A30/50/2 20090407201255351
 > depth_test 20090407201255351 scak
 > gv dep_20090407201255351.ps
-> gv $CAPHOME/20090407201255351_check/dep_20090407201255351_L2_M110.ps
+> gv $CAPHOME/EXAMPLES/20090407201255351_check/dep_20090407201255351_L2_M110.ps
 --------------------------------------------------------------------------------
 
 6. Similarly run for other weight files. 
 a. Using body and surface waves at AEC stations (M112) and L1 norm
 > cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight112.dat -E1 -K1 -Y1 20090407201255351
 > gv 20090407201255351/scak_041.ps
-> gv $CAPHOME/20090407201255351_check/20090407201255351_L1_M112.ps
+> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M112.ps
 
 b. Using just body at selected stations (M101)
 > cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_27/4.5 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20090407201255351
 > gv 20090407201255351/scak_027.ps
-> gv $CAPHOME/20090407201255351_check/20090407201255351_L1_M101.ps
+> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M101.ps
 
 c. Using just surface waves at selected stations (M011)
 > cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_47/4.5 -I10/0.1 -Zweight011.dat -E1 -K1 -Y1 20090407201255351
 > gv 20090407201255351/scak_047.ps
-> gv $CAPHOME/20090407201255351_check/20090407201255351_L1_M011.ps
+> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M011.ps
 
 d. Using just the surface waves at AEC stations (M012)
 > cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_47/4.5 -I10/0.1 -Zweight012.dat -E1 -K1 -Y1 20090407201255351
 > gv 20090407201255351/scak_047.ps
-> gv $CAPHOME/20090407201255351_check/20090407201255351_L1_M012.ps
+> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M012.ps
 --------------------------------------------------------------------------------
 
 7. fixed solution (for plot testing)
@@ -698,7 +698,7 @@ d. Using just the surface waves at AEC stations (M012)
 8. For azimuthally sorted stations:
 > cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0 -Zaz_sort_weight111.dat -E1 -K1 -Y1 20090407201255351
 > gv 20090407201255351/scak_041.ps
-> gv $CAPHOME/20090407201255351_check/20090407201255351_L1_M111_az.ps
+> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M111_az.ps
 
 ====================================================================================
 EXAMPLE 15: Running Alaska Example (20080918194353069) - Checking FTC data and green's outputs
@@ -713,7 +713,7 @@ EXAMPLE 15: Running Alaska Example (20080918194353069) - Checking FTC data and g
 3. prepare run
 > mkdir -p $CAPRUN/inv/scak
 > cd $CAPRUN/inv/scak
-> rsync -av $CAPHOME/20080918194353069
+> rsync -av $CAPHOME/EXAMPLES/20080918194353069
 
 4. run (Filter and Cut 'NOT applied' to data and synthetics both)
 > cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_72/4.8 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20080918194353069
@@ -739,17 +739,17 @@ EXAMPLE 15: Running Alaska Example (20080918194353069) - Checking FTC data and g
 
 12. Check results
 > gv 20080918194353069/scak_072_off.ps
-> gv $CAPHOME/20080918194353069_check/FTC_off.ps
+> gv $CAPHOME/EXAMPLES/20080918194353069_check/FTC_off.ps
 
 > gv 20080918194353069/scak_072_on.ps 
-> gv $CAPHOME/20080918194353069_check/FTC_on.ps
+> gv $CAPHOME/EXAMPLES/20080918194353069_check/FTC_on.ps
 
 > gv 20080918194353069/scak_072_on_off.ps 
-> gv $CAPHOME/20080918194353069_check/FTC_on_off.ps
+> gv $CAPHOME/EXAMPLES/20080918194353069_check/FTC_on_off.ps
 
 13. Similarly you can try with different weight files (> ls 20080918194353069/weight*.dat). Also try depth tests. See more results at the best depth:
-> ar $CAPHOME/20080918194353069_check/FTC_on_results.pdf
-> ar $CAPHOME/20080918194353069_check/FTC_off_results.pdf
+> ar $CAPHOME/EXAMPLES/20080918194353069_check/FTC_on_results.pdf
+> ar $CAPHOME/EXAMPLES/20080918194353069_check/FTC_off_results.pdf
 
 ====================================================================================
 TIPS
