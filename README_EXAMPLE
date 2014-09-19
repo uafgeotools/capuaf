@@ -411,7 +411,7 @@ PART 13.1. generate greens functions
 
 > mkdir -p $CAPRUN/models/utuhalf
 > cd $CAPRUN/models/utuhalf/
-> cp $CAPHOME/20100516063454464/utuhalf .
+> cp $CAPHOME/EXAMPLES/20100516063454464/utuhalf .
 > fk.pl -Mutuhalf/5 -N16384/0.01 11 14 18 19 21 22 31 33 37 50
 
 note: this uses the "utuhalf" 1D model for the Uturuncu region 
@@ -434,7 +434,7 @@ DIP will be gridded by considering equal spacing in cos(dip) space
 
 > mkdir -p $CAPRUN/inv/utuhalf
 > cd $CAPRUN/inv/utuhalf/
-> rsync -av $CAPHOME/20100516063454464 .
+> rsync -av $CAPHOME/EXAMPLES/20100516063454464 .
 
 2. check the weight.dat file
 
@@ -445,16 +445,16 @@ note: all P arrivals times are specified
 
 3. check that cap is compiled
 
-> ls -ltr $CAPHOME/cap
+> ls -ltr $CAPHOME/EXAMPLES/cap
 
 4a. run cap and plot with absolute amplitudes
 
-> cd $CAPHOME
+> cd $CAPHOME/EXAMPLES
 > cap.pl -H0.01 -P2.66e-06/2/33 -S0.2/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight.dat 20100516063454464
 
 4b. run cap with data and syn SEPARATELY scaled
 
-> cd $CAPHOME
+> cd $CAPHOME/EXAMPLES
 > cap.pl -H0.01 -P0.5e+0.5/2/33 -S0.2/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.2/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight.dat 20100516063454464
 
 note: plotting flag is set to -P0.5e+0.5/... which is a kludge for unnormalized plotting
@@ -476,8 +476,8 @@ We are able to specify the 0.0 to 4.0 s shifts with two changes:
 5. check output:
 
 > gv 20100516063454464/utuhalf_005_fmt.ps &
-> gv $CAPHOME/20100516063454464_check/utuhalf_005_fmt.ps &
-> diff 20100516063454464/utuhalf_005.out $CAPHOME/20100516063454464_check/utuhalf_005.out
+> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt.ps &
+> diff 20100516063454464/utuhalf_005.out $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005.out
 
 6. try the same run, but with different weights:
 
@@ -486,21 +486,21 @@ note: weights are set as 1 1 1 60 60 60, which gives all weight to surface waves
 > cap.pl -H0.01 -P1e-6/1/33 -S0.2/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_2.dat 20100516063454464
 
 > gv 20100516063454464/utuhalf_005_fmt.ps &
-> gv $CAPHOME/20100516063454464_check/utuhalf_005_fmt_2.ps &
+> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_2.ps &
 
 7. try body waves only (+ polarities)
 
 > cap.pl -H0.01 -P0.5e+0.5/1/33 -S0.2/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_body.dat 20100516063454464
 
 > gv 20100516063454464/utuhalf_005_fmt.ps &
-> gv $CAPHOME/20100516063454464_check/utuhalf_005_fmt_body.ps &
+> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_body.ps &
 
 8. try surface waves only (+ polarities)
 
 > cap.pl -H0.01 -P1e-6/1/33 -S0.2/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_surf.dat 20100516063454464
 
 > gv 20100516063454464/utuhalf_005_fmt.ps &
-> gv $CAPHOME/20100516063454464_check/utuhalf_005_fmt_surf.ps &
+> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_surf.ps &
 
 9. try body + surf but no polarities
 
@@ -509,14 +509,14 @@ note: by not using polarities (to exclude large portions of misfit space), the s
 > cap.pl -H0.01 -P1.1e-6/1/33 -S0.2/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_nopol.dat 20100516063454464
 
 > gv 20100516063454464/utuhalf_005_fmt.ps &
-> gv $CAPHOME/20100516063454464_check/utuhalf_005_fmt_nopol.ps &
+> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_nopol.ps &
 
 10. try body + surf + polarities BUT constrained to DC
 
 > cap.pl -H0.01 -P0.5e+0.5/1/33 -p1e5 -S0.2/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1 -J0/0/0/0 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight.dat 20100516063454464
 
 > gv 20100516063454464/utuhalf_005_fmt.ps &
-> gv $CAPHOME/20100516063454464_check/utuhalf_005_dc.ps &
+> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_dc.ps &
 
 note: this MUST be a worse solution than the non-DC version, since this solution was considered in the non-DC search
 
@@ -528,7 +528,7 @@ Example with Uturuncu event 20110622023324299
 
 > mkdir -p $CAPRUN/inv/utuhalf
 > cd $CAPRUN/inv/utuhalf/
-> rsync -av $CAPHOME/20110622023324299 .
+> rsync -av $CAPHOME/EXAMPLES/20110622023324299 .
 
 1. Original cap mode. In cap.c set 
 FTC_data=0, FTC_green=0, compile cap, then run
@@ -537,7 +537,7 @@ FTC_data=0, FTC_green=0, compile cap, then run
 
 2. check output
 > gv 20110622023324299/utuhalf_009_fmt.ps &
-> gv $CAPHOME/20110622023324299_check/utuhalf_009_fmt_cut-filter.ps &
+> gv $CAPHOME/EXAMPLES/20110622023324299_check/utuhalf_009_fmt_cut-filter.ps &
 
 3. Filter-then-cut data. In cap.c set 
 FTC_data=1, FTC_green=0, compile cap, then run
@@ -546,7 +546,7 @@ FTC_data=1, FTC_green=0, compile cap, then run
 
 4. check output
 > gv 20110622023324299/utuhalf_009_fmt.ps &
-> gv $CAPHOME/20110622023324299_check/utuhalf_009_fmt_filter-cut-data.ps &
+> gv $CAPHOME/EXAMPLES/20110622023324299_check/utuhalf_009_fmt_filter-cut-data.ps &
 
 5. Filter-then-cut data and greens functions. In cap.c set 
 FTC_data=1, FTC_green=1, compile cap, then run
@@ -557,7 +557,7 @@ Note: plotting flag is set to -P0.5e+0.5/... since greens functions in this mode
 
 6. check output
 > gv 20110622023324299/utuhalf_009_fmt.ps &
-> gv $CAPHOME/20110622023324299_check/utuhalf_009_fmt_filter-cut-data-greens.ps &
+> gv $CAPHOME/EXAMPLES/20110622023324299_check/utuhalf_009_fmt_filter-cut-data-greens.ps &
 
 ------------
 PART 13.4. Compare CAP solutions using different components: 
@@ -572,7 +572,7 @@ PART 13.4. Compare CAP solutions using different components:
 
 1b. check output
 gv 20100516063454464/utuhalf_005_fmt.ps 
-gv $CAPHOME/20100516063454464_check/utuhalf_005_fmt_pv.ps &
+gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_pv.ps &
 
 2a. pol + PR only
 > cap.pl -H0.01 -P2e-06/1/33 -S0.2/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_pr.dat 20100516063454464
@@ -580,7 +580,7 @@ gv $CAPHOME/20100516063454464_check/utuhalf_005_fmt_pv.ps &
 2b. compare
 
 gv 20100516063454464/utuhalf_005_fmt.ps 
-gv $CAPHOME/20100516063454464_check/utuhalf_005_fmt_pr.ps &
+gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_pr.ps &
 
 3. pol + body only
 see above, Example #13.2.7 
