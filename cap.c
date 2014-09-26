@@ -93,7 +93,7 @@ int misfit_on_lune=0;       // waveform misfit. output misfit on the lune
 
 /* workaround for filter issues with small magnitude events (Uturuncu) */
 // this has not been tested with DIRECTIVITY option
-int FTC_data=1, FTC_green=0;// for original CAP set FTC_data=0, FTC_green=0
+int FTC_data=0, FTC_green=0;// for original CAP set FTC_data=0, FTC_green=0
 
 /* allows use of polarities even when weight=0.
  * Note CAP still needs at least 1 waveform for the inversion */
@@ -506,14 +506,17 @@ int main (int argc, char **argv) {
         }
         spt->npt = npt = n[j];
         spt->b = t0[j];
-        if (spt->on_off) {total_n+=npt; Nsta += spt->on_off;}
+ 
+	weight = pow(distance/dmin,bs[j]);  // Caution: This weight scales the amplitude of waveforms. w_pnl = 1 ALWAYS (make changes in cap.pl)
+	spt->on_off = (int)spt->on_off * w_pnl[j]; // multiply -Dflag to the weights
+	if (spt->on_off) {total_n+=npt; Nsta += spt->on_off;}  // Nsta = number of all the components
+
+	// count number of surface and body wave components
         if (j<3) {
-            weight = w_pnl[j]*pow(distance/dmin,bs[j])/sqrt(Ssamp[i]);
-            isurf += spt->on_off;
+	  isurf += spt->on_off;
         }
-        else {
-            weight = w_pnl[j]*pow(distance/dmin,bs[j])/sqrt(Psamp[i]);
-            ibody += spt->on_off;
+	else {
+	  ibody += spt->on_off;
         }
         istat += spt->on_off;
 
@@ -575,7 +578,7 @@ int main (int argc, char **argv) {
         }
         spt->rec2 = x2;
         if (norm==1) x2 = sqrt(x2);
-        rec2 += spt->on_off*x2;
+        rec2 += spt->on_off*x2/(spt->npt);
 
         /* FILTER+CUT options for greens functions */
         for(m=0,k=0;k<kc;k++) {
@@ -651,8 +654,8 @@ int main (int argc, char **argv) {
         //fprintf(stderr, "%s %e %e\n",obs->stn, spt->rec2, spt->syn2[j]);
         // fprintf(stderr, "%d %d %d %d \n",ibody,Nbody,isurf,Nsurf);
     } // end of loop over components
-    Nsurf += (isurf>0);
-    Nbody += (ibody>0);
+    Nsurf += isurf;
+    Nbody += ibody;
     Nstat += (istat>0);
 
     obs++;
