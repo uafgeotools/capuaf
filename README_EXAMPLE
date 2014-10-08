@@ -389,18 +389,20 @@ EXAMPLE 12: Bolivia event 20100516-063454, first motion polarity
 
 1. In cap.c change: only_first_motion=1
 2. Compile cap
-3. Run cap
-> ./cap.pl -F0.0 -I5/0/5 -J-90/90/-30/30 -Mutuhalf_5/2.4 -E1 -K1 -Y2 -Zweight.dat 20100516063454464
+3. To run cap
+> cd $CAPHOME/EXAMPLES
+> ./cap.pl -F0.0 -I5/0/5 -J-90/90/-30/30 -Mutuhalf_5/2.4 -E1 -K1 -Y1 -Zweight.dat 20100516063454464
 
-4. Process misfit data output from cap (file out.misfit.fmp_)
-> python misfit2lune.py out.misfit.fmp_ > out.misfit_summary
+4. This run should have produced file out.misfit.fmp_
+   Next compute summary of first motion polarities using this file
+> python $CAPHOME/misfit2lune.py out.misfit.fmp_ > out.misfit_summary
 
-5. Plot misfit on the lune with file out.misfit_summary
+5. Plot polarity misfit on the lune with file out.misfit_summary
 
 NOTES
-- Output file from cap run (step 3) will be out.misfit.fmp_
-    this file is 708M for grid spacing of 5 degrees
-- No figure should be created when running first motion polarity (run without -P flag)
+1. Output file from cap run (step 3) will be file: out.misfit.fmp_
+   This file is 708M for grid spacing of 5 degrees and can be deleted after computing summary
+2. No figure should be created when running first motion polarity (i.e. run cap without -P flag)
 
 ====================================================================================
 EXAMPLE 13: Bolivia event 20100516-063454, FMT with lune parameterization, full grid search (no line search)
