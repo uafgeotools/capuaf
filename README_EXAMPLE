@@ -387,8 +387,14 @@ NOTES
 ====================================================================================
 EXAMPLE 12: Bolivia event 20100516-063454, first motion polarity
 
+0. set cap.c to its original condition
+> cd $CAPHOME
+> svn revert cap.c 
+
 1. In cap.c change: only_first_motion=1
+
 2. Compile cap
+
 3. To run cap
 > cd $CAPHOME/EXAMPLES
 > ./cap.pl -F0.0 -I5/0/5 -J-90/90/-30/30 -Mutuhalf_5/2.4 -E1 -K1 -Y1 -Zweight.dat 20100516063454464
@@ -427,70 +433,79 @@ This will create 3 additional green functions for each distance of the form dist
 eg. 11.grn.a, 11.grn.b, 11.grn.c
 
 ------------
-PART 13.2. cap inversion (polarities + Pnl + Surface)
+PART 13.2. run cap inversion with polarities + Pnl + Surface data
 
-ISO will be gridded by considering equal spacing in sin(iso) space
-DIP will be gridded by considering equal spacing in cos(dip) space
+note:
+    ISO will be gridded by considering equal spacing in sin(iso) space
+    DIP will be gridded by considering equal spacing in cos(dip) space
 
-1. prepare data directory
-
-> mkdir -p $CAPRUN/inv/utuhalf
-> cd $CAPRUN/inv/utuhalf/
-> rsync -av $CAPHOME/EXAMPLES/20100516063454464 .
+1. go to run directory
+> cd $CAPHOME/EXAMPLES
 
 2. check the weight.dat file
-
 > more 20100516063454464/weight.dat
 
-note: weights are set as 1 1 1 1 1, which gives equal weight to body waves and surface waves
-note: all P arrivals times are specified
+note:
+    1. all weights should be set as 10 1 10 10 10, which gives higher weights to
+       PV component and surface waves
+    2. all P arrivals times were obtained from analyst picks
 
-3. check that cap is compiled
+3a. Make sure cap is set to original condition
+> cd $CAPHOME
+> svn revert cap.c 
 
-> ls -ltr $CAPHOME/cap
+3b. Make sure cap is compiled with the following flags
+    FTC_data=1, FTC_green=0
+    skip_zero_weights=0
 
-4a. run cap and plot with absolute amplitudes
+> make cap
+
+4a. Run cap and plot with absolute amplitudes
 
 > cd $CAPHOME/EXAMPLES
-> cap.pl -H0.01 -P1.16e-6/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight.dat 20100516063454464
+> cap.pl -H0.01 -P1.5e-5/1/30 -p0.1 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight.dat 20100516063454464
 
-4b. run cap with data and syn SEPARATELY scaled. 
-Note this requires additional workaround in cap_plt.pl, after line 108
-$stams = $stamb;
+4b. check output:
+> gv 20100516063454464/utuhalf_005_fmt.ps &
+> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R01_S10_scale_abs.ps &
 
+5a. Run cap and plot with data and syn amplitudes normalized to the same scale.
+    In cap_plt.plt insert the following line after line #108 ($stamb = "$am/0.") 
+> $stams = $stamb;
+
+5b. run cap
 > cd $CAPHOME/EXAMPLES
 > cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight.dat 20100516063454464 
 
-note: plotting flag is set to -P0.5e+0.5/... which is a kludge for unnormalized plotting
-note: lune grid will NOT do a refined search, so pick -I accordingly (here: 5 deg inc on lune; 0.1 inc Mw)
-note: because all P arrivals are hand-picked (to within 0.01 s), we can set the allowable time shift for P to 0.2 s
-note: -L gives the half-duration of the synthetics; this is a key command to get high-frequency synthetics in P (but not too high)
-note: the result is an improvement of the CIG2013 poster (same event)
-
-note:
-surface wave time shifts are allowed to be between 0.0 s and 4.0 s, which reflects our belief that either:
-   (a) the model is systematically too slow
-   (b) the depth is wrong
-   (c) the origin time is wrong
-We are able to specify the 0.0 to 4.0 s shifts with two changes:
-   (1) the relative surface time shifts are +/- 2.0, which is set as -S0.2/2.0/0
-   (2) the systematic S_shifts in weight file (last column) are set to 2.0 
-   --> the actual time shifts are then 0.0 s (-2.0 + 2.0) and 4.0 s (+2.0 + 2.0)
-
-5. check output:
+5c. check output:
 
 > gv 20100516063454464/utuhalf_005_fmt.ps &
-> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt.ps &
+> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R01_S10.ps &
 > diff 20100516063454464/utuhalf_005.out $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005.out
+
+Note:
+    1. plotting flag is set to -P0.5e+0.5/... which is a kludge for unnormalized plotting
+    2. lune grid will NOT do a refined search, so pick -I accordingly (here: 5 deg inc on lune; 0.1 inc Mw)
+    3. because all P arrivals are hand-picked (to within 0.01 s), we can set the allowable time shift for P to 0.1 s
+    4. -L gives the half-duration of the synthetics; this is a key command to get high-frequency synthetics in P (but not too high)
+    5. the result is an improvement of the BSSA2014 poster (same event)
+    6. surface wave time shifts are allowed to be between 0.0 s and 4.0 s, which reflects our belief that either:
+       (a) the model is systematically too slow
+       (b) the depth is wrong
+       (c) the origin time is wrong
+    7. We are able to specify the 0.0 to 4.0 s (*) shifts with two changes:
+       (1) the relative surface time shifts are +/- 2.0, which is set as -S0.2/2.0/0
+       (2) the systematic S_shifts in weight file (last column) are set to 2.0 
+       (*) actual time shifts are then 0.0 s (-2.0 + 2.0) and 4.0 s (+2.0 + 2.0)
 
 6. try the same run, but with different weights:
 
-note: weights are set as 1 1 1 60 60 60, which gives all weight to surface waves
+note: weights are set as 1 1 60 60 60, which gives all weight to surface waves
 
 > cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_2.dat 20100516063454464
 
 > gv 20100516063454464/utuhalf_005_fmt.ps &
-> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_2.ps &
+> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V01_R01_S60.ps &
 
 7. try body waves only (+ polarities)
 
