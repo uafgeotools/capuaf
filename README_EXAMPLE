@@ -385,7 +385,7 @@ NOTES
 > diff 20080418093700/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015_fmt_rand.out
 
 ====================================================================================
-EXAMPLE 12: Bolivia event 20100516-063454, first motion polarity
+EXAMPLE 12: Uturuncu event 20100516-063454464, first motion polarity
 
 0. set cap.c to its original condition
 > cd $CAPHOME
@@ -411,16 +411,12 @@ NOTES
 2. No figure should be created when running first motion polarity (i.e. run cap without -P flag)
 
 ====================================================================================
-EXAMPLE 13: Bolivia event 20100516-063454, FMT with lune parameterization, full grid search (no line search)
+EXAMPLE 13: Uturuncu event 20100516-063454464
+            Compare CAP solutions using different components 
+            FMT with lune parameterization
+            Full grid search (no line search)
 
-PART 13.3. Compare CAP solutions using different components: 
-    1. pol + PV only
-    2. pol + PR only
-    3. pol + body only
-    4. pol + surf only
-    5. pol + body + surf
-
-PART 13.1. generate greens functions
+PART 13.1 generate greens functions
 
 1. run the frequency-wavenumber code fk
 
@@ -447,9 +443,11 @@ note:
     DIP will be gridded by considering equal spacing in cos(dip) space
 
 1. go to run directory
+
 > cd $CAPHOME/EXAMPLES
 
 2. check values in the weight.dat file
+
 > more 20100516063454464/weight.dat
 
 note:
@@ -457,12 +455,15 @@ note:
        PV component and surface waves
     2. all P arrivals times were obtained from analyst picks
 
-3a. Make sure cap is set to original condition
+3a. Make sure cap is set to its original condition
+
 > cd $CAPHOME
 > svn revert cap.c 
 
-3b. Make sure cap is compiled with the following flags
-    FTC_data=1, FTC_green=0
+3b. Make sure cap is compiled with the following flags then compile
+
+    FTC_data=1
+    FTC_green=0
     skip_zero_weights=0
 
 > make cap
@@ -478,11 +479,12 @@ note:
 > gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R01_S10_scale_abs.ps &
 
 5a. Run cap and plot with data and syn amplitudes normalized to the same scale.
-    In cap_plt.plt insert the following line after line #108 ($stamb = "$am/0.") 
+    In cap_plt.plt (revision r2318) insert the following line after line #108 
+
 > $stams = $stamb;
 
 5b. run cap
-> cd $CAPHOME/EXAMPLES
+
 > cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S10.dat 20100516063454464 
 
 5c. compare results and verify .out file:
@@ -494,7 +496,7 @@ note:
 Note:
     1. plotting flag is set to -P0.5e+0.5/... which is a kludge for unnormalized plotting
     2. lune grid will NOT do a refined search, so pick -I accordingly (here: 5 deg inc on lune; 0.1 inc Mw)
-    3. because all P arrivals are hand-picked (to within 0.01 s), we can set the allowable time shift for P to 0.1 s
+    3. because all P arrivals are hand-picked (to within 0.01 s), we set the allowable time shift for P to 0.1 s
     4. -L gives the half-duration of the synthetics; this is a key command to get high-frequency synthetics in P (but not too high)
     5. the result is an improvement of the BSSA2014 poster (same event)
     6. surface wave time shifts are allowed to be between 0.0 s and 4.0 s, which reflects our belief that either:
@@ -518,38 +520,42 @@ note: weights are set as 1 1 60 60 60, which gives all weight to surface waves
 > gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V01_R01_S60.ps &
 
 7a. try polarities + component PV
+
 > cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R00_S00.dat 20100516063454464
 
 7b. compare results
-gv 20100516063454464/utuhalf_005_fmt.ps 
-gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_pv.ps &
+
+> gv 20100516063454464/utuhalf_005_fmt.ps 
+> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R00_S00.ps &
 
 8a. try polarities + component PR
+
 > cap.pl -H0.01 -P2e-06/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V00_R01_S00.dat 20100516063454464
 
 8b. compare results
 
 gv 20100516063454464/utuhalf_005_fmt.ps 
-gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_pr.ps &
+gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V00_R01_S00.ps &
 
-9a. try polarities + components V10 + R01
+9a. try polarities + components PV + PR
 
 > cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S00.dat 20100516063454464
 
 9b. compare results
+
 > gv 20100516063454464/utuhalf_005_fmt.ps &
 > gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R01_S00.ps &
 
-10a. try polarities + components S10 (surface waves)
+10a. try polarities + components S (Surface waves)
 
 > cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V00_R00_S10.dat 20100516063454464
 
 10b. compare results
 
 > gv 20100516063454464/utuhalf_005_fmt.ps &
-> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_surf.ps &
+> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V00_R00_S10.ps &
 
-11a. try NO polarities + components V10 + R01
+11a. try NO polarities + components PV + PR + S
 
 note: by not using polarities (to exclude large portions of misfit space), the search can take 2+ hours
 
@@ -560,7 +566,7 @@ note: by not using polarities (to exclude large portions of misfit space), the s
 > gv 20100516063454464/utuhalf_005_fmt.ps &
 > gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R01_S10_nopol.ps &
 
-12a. try polarities + components V10 + R01 + S10 BUT constrained to DC
+12a. try polarities + components PV + PR + S BUT constrained to DC
 
 > cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1 -J0/0/0/0 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S10.dat 20100516063454464 
 
@@ -571,15 +577,13 @@ note: by not using polarities (to exclude large portions of misfit space), the s
 
 note: this MUST be a worse solution than the non-DC version, since this solution was considered in the non-DC search
 
-------------
+====================================================================================
 
-PART 13.4. This example shows improvement gained when using filter-then-cut
-           during cap inversion.
-
-    1. Cut-then-filter (original) first cuts sections then filters each section
-    2. filter-then-cut first filters the entire seismogram, then cuts sections
-
-    Example with Uturuncu event 20110622023324299
+EXAMPLE 14. Uturuncu event 20110622-023324299
+            This example shows filter improvement for small signals when using
+            flag filter-then-cut during cap run.
+            1. FTC_data=0 (original) first cuts sections, then filters each section (cut-then-filter)
+            2. FTC_data=1 first filters the entire seismogram, then cuts sections (filter-then-cut)
 
 0. prepare run
 
@@ -587,41 +591,58 @@ PART 13.4. This example shows improvement gained when using filter-then-cut
 > cd $CAPRUN/inv/utuhalf/
 > rsync -av $CAPHOME/EXAMPLES/20110622023324299 .
 
-1a. Start from default cap. 
+1a. Start from default cap
+
 > cd $CAPHOME
 > svn revert cap.c
 
-1b. In cap.c set
-FTC_data=0, FTC_green=0, compile cap, then run
+1b. cut-then-filter data. In cap.c set the flags below, compile then run
 
+    FTC_data=0
+    FTC_green=0
+    skip_zero_weights=0
+
+> make cap
+> cd $CAPHOME/EXAMPLES
 > cap.pl -H0.01 -P2e-5/1/30 -S0.1/2.0/0 -T1.5/60.0 -D1/1/0.5 -C1/10/0.1/0.4 -W1 -Y1 -F0 -L0.05 -E1 -K1 -I5/0/5 -J33.748/33.748/40/40 -R215/215/69.41/69.41/40/40 -Mutuhalf_9/0.6 -Zweight.dat 20110622023324299 
 
-2. check output
+2. compare results
+
 > gv 20110622023324299/utuhalf_009_fmt.ps &
 > gv $CAPHOME/EXAMPLES/20110622023324299_check/utuhalf_009_fmt_cut-filter.ps &
 
-3. Filter-then-cut data. In cap.c set 
-FTC_data=1, FTC_green=0, compile cap, then run
+3. filter-then-cut data. In cap.c set the flags below, compile then run
 
+    FTC_data=1
+    FTC_green=0
+
+> make cap
+> cd $CAPHOME/EXAMPLES
 > cap.pl -H0.01 -P2e-5/1/30 -S0.1/2.0/0 -T1.5/60.0 -D1/1/0.5 -C1/10/0.1/0.4 -W1 -Y1 -F0 -L0.05 -E1 -K1 -I5/0/5 -J33.748/33.748/40/40 -R215/215/69.41/69.41/40/40 -Mutuhalf_9/0.6 -Zweight.dat 20110622023324299 
 
-4. check output
+4. compare results
+
 > gv 20110622023324299/utuhalf_009_fmt.ps &
 > gv $CAPHOME/EXAMPLES/20110622023324299_check/utuhalf_009_fmt_filter-cut-data.ps &
 
-5. Filter-then-cut data and greens functions. In cap.c set 
-FTC_data=1, FTC_green=1, compile cap, then run
+5. Filter-then-cut data and greens functions. In cap.c set the flags below, compile then run 
 
+    FTC_data=1
+    FTC_green=1
+
+> make cap
+> cd $CAPHOME/EXAMPLES
 > cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60.0 -D1/1/0.5 -C1/10/0.1/0.4 -W1 -Y1 -F0 -L0.05 -E1 -K1 -I5/0/5 -J33.748/33.748/40/40 -R215/215/69.41/69.41/40/40 -Mutuhalf_9/0.6 -Zweight.dat 20110622023324299 
 
 Note: plotting flag is set to -P0.5e+0.5/... since greens functions in this mode appear too small
 
-6. check output
+6. compare results
+
 > gv 20110622023324299/utuhalf_009_fmt.ps &
 > gv $CAPHOME/EXAMPLES/20110622023324299_check/utuhalf_009_fmt_filter-cut-data-greens.ps &
 
 ====================================================================================
-EXAMPLE 14: Running Alaska Example (20090407201255351)
+EXAMPLE 15: Running Alaska Example (20090407201255351)
 
 1. set the path to green's function library
 > xe cap.pl 
@@ -730,7 +751,7 @@ d. Using just the surface waves at AEC stations (M012)
 > gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M111_az.ps
 
 ====================================================================================
-EXAMPLE 15: Running Alaska Example (20080918194353069) - Checking FTC data and green's outputs
+EXAMPLE 16: Running Alaska Example (20080918194353069) - Checking FTC data and green's outputs
 
 1. set the path to green's function library
 > xe cap.pl 
@@ -781,7 +802,7 @@ EXAMPLE 15: Running Alaska Example (20080918194353069) - Checking FTC data and g
 > ar $CAPHOME/EXAMPLES/20080918194353069_check/FTC_off_results.pdf
 
 ====================================================================================
-EXAMPLE 14: Running Nenana triggering example (20120411092157440)
+EXAMPLE 17: Running Nenana triggering example (20120411092157440)
 
 1. set the path to green's function library
 > xe cap.pl 
