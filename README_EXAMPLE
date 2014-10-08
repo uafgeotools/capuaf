@@ -463,7 +463,7 @@ note:
 4a. Run cap and plot with absolute amplitudes
 
 > cd $CAPHOME/EXAMPLES
-> cap.pl -H0.01 -P1.5e-5/1/30 -p0.1 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight.dat 20100516063454464
+> cap.pl -H0.01 -P1.5e-5/1/30 -p0.1 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S10.dat 20100516063454464
 
 4b. check output:
 > gv 20100516063454464/utuhalf_005_fmt.ps &
@@ -475,7 +475,7 @@ note:
 
 5b. run cap
 > cd $CAPHOME/EXAMPLES
-> cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight.dat 20100516063454464 
+> cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S10.dat 20100516063454464 
 
 5c. check output:
 
@@ -502,7 +502,7 @@ Note:
 
 note: weights are set as 1 1 60 60 60, which gives all weight to surface waves
 
-> cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_2.dat 20100516063454464
+> cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V01_R01_S60.dat 20100516063454464
 
 > gv 20100516063454464/utuhalf_005_fmt.ps &
 > gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V01_R01_S60.ps &
@@ -525,14 +525,14 @@ note: weights are set as 1 1 60 60 60, which gives all weight to surface waves
 
 note: by not using polarities (to exclude large portions of misfit space), the search can take 2+ hours
 
-> cap.pl -H0.01 -P1.1e-6/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_nopol.dat 20100516063454464
+> cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S10_nopol.dat 20100516063454464
 
 > gv 20100516063454464/utuhalf_005_fmt.ps &
-> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_nopol.ps &
+> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R01_S10_nopol.ps &
 
 10. try body + surf + polarities BUT constrained to DC
 
-> cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1 -J0/0/0/0 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight.dat 20100516063454464 
+> cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1 -J0/0/0/0 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S10.dat 20100516063454464 
 
 > gv 20100516063454464/utuhalf_005_fmt.ps &
 > gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_dc.ps &
