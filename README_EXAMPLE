@@ -413,6 +413,13 @@ NOTES
 ====================================================================================
 EXAMPLE 13: Bolivia event 20100516-063454, FMT with lune parameterization, full grid search (no line search)
 
+PART 13.3. Compare CAP solutions using different components: 
+    1. pol + PV only
+    2. pol + PR only
+    3. pol + body only
+    4. pol + surf only
+    5. pol + body + surf
+
 PART 13.1. generate greens functions
 
 1. run the frequency-wavenumber code fk
@@ -442,7 +449,7 @@ note:
 1. go to run directory
 > cd $CAPHOME/EXAMPLES
 
-2. check the weight.dat file
+2. check values in the weight.dat file
 > more 20100516063454464/weight.dat
 
 note:
@@ -465,7 +472,8 @@ note:
 > cd $CAPHOME/EXAMPLES
 > cap.pl -H0.01 -P1.5e-5/1/30 -p0.1 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S10.dat 20100516063454464
 
-4b. check output:
+4b. compare results
+
 > gv 20100516063454464/utuhalf_005_fmt.ps &
 > gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R01_S10_scale_abs.ps &
 
@@ -477,7 +485,7 @@ note:
 > cd $CAPHOME/EXAMPLES
 > cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S10.dat 20100516063454464 
 
-5c. check output:
+5c. compare results and verify .out file:
 
 > gv 20100516063454464/utuhalf_005_fmt.ps &
 > gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R01_S10.ps &
@@ -498,50 +506,80 @@ Note:
        (2) the systematic S_shifts in weight file (last column) are set to 2.0 
        (*) actual time shifts are then 0.0 s (-2.0 + 2.0) and 4.0 s (+2.0 + 2.0)
 
-6. try the same run, but with different weights:
+6a. try the same run but with different weights:
 
 note: weights are set as 1 1 60 60 60, which gives all weight to surface waves
 
 > cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V01_R01_S60.dat 20100516063454464
 
+6b. compare results
+
 > gv 20100516063454464/utuhalf_005_fmt.ps &
 > gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V01_R01_S60.ps &
 
-7. try body waves only (+ polarities)
+7a. try polarities + component PV
+> cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R00_S00.dat 20100516063454464
+
+7b. compare results
+gv 20100516063454464/utuhalf_005_fmt.ps 
+gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_pv.ps &
+
+8a. try polarities + component PR
+> cap.pl -H0.01 -P2e-06/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V00_R01_S00.dat 20100516063454464
+
+8b. compare results
+
+gv 20100516063454464/utuhalf_005_fmt.ps 
+gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_pr.ps &
+
+9a. try polarities + components V10 + R01
 
 > cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S00.dat 20100516063454464
 
+9b. compare results
 > gv 20100516063454464/utuhalf_005_fmt.ps &
 > gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R01_S00.ps &
 
-8. try surface waves only (+ polarities)
+10a. try polarities + components S10 (surface waves)
 
 > cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V00_R00_S10.dat 20100516063454464
+
+10b. compare results
 
 > gv 20100516063454464/utuhalf_005_fmt.ps &
 > gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_surf.ps &
 
-9. try body + surf but no polarities
+11a. try NO polarities + components V10 + R01
 
 note: by not using polarities (to exclude large portions of misfit space), the search can take 2+ hours
 
 > cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S10_nopol.dat 20100516063454464
 
+11b. compare results
+
 > gv 20100516063454464/utuhalf_005_fmt.ps &
 > gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R01_S10_nopol.ps &
 
-10. try body + surf + polarities BUT constrained to DC
+12a. try polarities + components V10 + R01 + S10 BUT constrained to DC
 
 > cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1 -J0/0/0/0 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S10.dat 20100516063454464 
 
+12b. compare results
+
 > gv 20100516063454464/utuhalf_005_fmt.ps &
-> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_dc.ps &
+> gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_DC_V10_R01_S10.ps &
 
 note: this MUST be a worse solution than the non-DC version, since this solution was considered in the non-DC search
 
 ------------
-PART 13.3. Compare cap inversions cut-then-filter (original) vs filter-then-cut.
-Example with Uturuncu event 20110622023324299
+
+PART 13.4. This example shows improvement gained when using filter-then-cut
+           during cap inversion.
+
+    1. Cut-then-filter (original) first cuts sections then filters each section
+    2. filter-then-cut first filters the entire seismogram, then cuts sections
+
+    Example with Uturuncu event 20110622023324299
 
 0. prepare run
 
@@ -549,7 +587,11 @@ Example with Uturuncu event 20110622023324299
 > cd $CAPRUN/inv/utuhalf/
 > rsync -av $CAPHOME/EXAMPLES/20110622023324299 .
 
-1. Original cap mode. In cap.c set 
+1a. Start from default cap. 
+> cd $CAPHOME
+> svn revert cap.c
+
+1b. In cap.c set
 FTC_data=0, FTC_green=0, compile cap, then run
 
 > cap.pl -H0.01 -P2e-5/1/30 -S0.1/2.0/0 -T1.5/60.0 -D1/1/0.5 -C1/10/0.1/0.4 -W1 -Y1 -F0 -L0.05 -E1 -K1 -I5/0/5 -J33.748/33.748/40/40 -R215/215/69.41/69.41/40/40 -Mutuhalf_9/0.6 -Zweight.dat 20110622023324299 
@@ -577,38 +619,6 @@ Note: plotting flag is set to -P0.5e+0.5/... since greens functions in this mode
 6. check output
 > gv 20110622023324299/utuhalf_009_fmt.ps &
 > gv $CAPHOME/EXAMPLES/20110622023324299_check/utuhalf_009_fmt_filter-cut-data-greens.ps &
-
-------------
-PART 13.4. Compare CAP solutions using different components: 
-    1. pol + PV only
-    2. pol + PR only
-    3. pol + body only
-    4. pol + surf only
-    5. pol + body + surf
-
-1a. pol + PV only
-> cap.pl -H0.01 -P1e-06/1/33 -S0.2/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_pv.dat 20100516063454464
-
-1b. check output
-gv 20100516063454464/utuhalf_005_fmt.ps 
-gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_pv.ps &
-
-2a. pol + PR only
-> cap.pl -H0.01 -P2e-06/1/33 -S0.2/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_pr.dat 20100516063454464
-
-2b. compare
-
-gv 20100516063454464/utuhalf_005_fmt.ps 
-gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_pr.ps &
-
-3. pol + body only
-see above, Example #13.2.7 
-
-4. pol + surf only
-see above, Example #13.2.7 
-
-5. pol + body + surf
-see above, Example #13.2.4a 
 
 ====================================================================================
 EXAMPLE 14: Running Alaska Example (20090407201255351)
