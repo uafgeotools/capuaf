@@ -509,14 +509,14 @@ note: weights are set as 1 1 60 60 60, which gives all weight to surface waves
 
 7. try body waves only (+ polarities)
 
-> cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R10_S10.dat 20100516063454464
+> cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S00.dat 20100516063454464
 
 > gv 20100516063454464/utuhalf_005_fmt.ps &
 > gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R01_S00.ps &
 
 8. try surface waves only (+ polarities)
 
-> cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_surf.dat 20100516063454464
+> cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V00_R00_S10.dat 20100516063454464
 
 > gv 20100516063454464/utuhalf_005_fmt.ps &
 > gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_surf.ps &
