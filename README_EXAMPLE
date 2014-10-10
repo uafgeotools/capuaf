@@ -653,7 +653,7 @@ EXAMPLE 15: Running Alaska Example (20090407201255351)
 3. prepare run
 > mkdir -p $CAPRUN/inv/scak
 > cd $CAPRUN/inv/scak
-> rsync -av $CAPHOME/EXAMPLES/20090407201255351 
+> rsync -av $CAPHOME/EXAMPLES/20090407201255351 .
 
 4. Eight different weight files options: weightijk.dat (Last three numbers are for (i)-body wave, (j)-surface waves, (k)-station choice)
    i = 1 or 0 for whether body waves are used or not
@@ -673,23 +673,23 @@ EXAMPLE 15: Running Alaska Example (20090407201255351)
 5. Example commands:
 a. Using body and surface waves at selected stations (M111)
 Using L1 norm:
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 20090407201255351
+> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 20090407201255351
 > gv 20090407201255351/scak_041.ps
 > gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M111.ps
 
 Depth test
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 -A30/50/2 20090407201255351
+> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 -A30/50/2 20090407201255351
 > depth_test 20090407201255351 scak
 > gv dep_20090407201255351.ps
 > gv $CAPHOME/EXAMPLES/20090407201255351_check/dep_20090407201255351_L1_M111.ps
 
 Using L2 norm: 
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y2 20090407201255351
+> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y2 20090407201255351
 > gv 20090407201255351/scak_041.ps
 > gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L2_M111.ps
 
 Depth test
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y2 -A30/50/2 20090407201255351
+> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y2 -A30/50/2 20090407201255351
 > depth_test 20090407201255351 scak
 > gv dep_20090407201255351.ps
 > gv $CAPHOME/EXAMPLES/20090407201255351_check/dep_20090407201255351_L2_M111.ps
@@ -698,23 +698,23 @@ Depth test
 
 b. Using body and surface waves at all stations (M110)
 Using L1 norm:
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y1 20090407201255351
+> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y1 20090407201255351
 > gv 20090407201255351/scak_041.ps
 > gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M110.ps
 
 Depth test
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y1 -A30/50/2 20090407201255351
+> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y1 -A30/50/2 20090407201255351
 > depth_test 20090407201255351 scak
 > gv dep_20090407201255351.ps
 > gv $CAPHOME/EXAMPLES/20090407201255351_check/dep_20090407201255351_L1_M110.ps
 
 Using L2 norm: 
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y2 20090407201255351
+> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y2 20090407201255351
 > gv 20090407201255351/scak_041.ps
 > gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L2_M110.ps
 
 Depth test
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y2 -A30/50/2 20090407201255351
+> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y2 -A30/50/2 20090407201255351
 > depth_test 20090407201255351 scak
 > gv dep_20090407201255351.ps
 > gv $CAPHOME/EXAMPLES/20090407201255351_check/dep_20090407201255351_L2_M110.ps
@@ -722,31 +722,31 @@ Depth test
 
 6. Similarly run for other weight files. 
 a. Using body and surface waves at AEC stations (M112) and L1 norm
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight112.dat -E1 -K1 -Y1 20090407201255351
+> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight112.dat -E1 -K1 -Y1 20090407201255351
 > gv 20090407201255351/scak_041.ps
 > gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M112.ps
 
 b. Using just body at selected stations (M101)
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_27/4.5 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20090407201255351
+> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_27/4.5 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20090407201255351
 > gv 20090407201255351/scak_027.ps
 > gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M101.ps
 
 c. Using just surface waves at selected stations (M011)
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_47/4.5 -I10/0.1 -Zweight011.dat -E1 -K1 -Y1 20090407201255351
+> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_47/4.5 -I10/0.1 -Zweight011.dat -E1 -K1 -Y1 20090407201255351
 > gv 20090407201255351/scak_047.ps
 > gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M011.ps
 
 d. Using just the surface waves at AEC stations (M012)
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_47/4.5 -I10/0.1 -Zweight012.dat -E1 -K1 -Y1 20090407201255351
+> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_47/4.5 -I10/0.1 -Zweight012.dat -E1 -K1 -Y1 20090407201255351
 > gv 20090407201255351/scak_047.ps
 > gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M012.ps
 --------------------------------------------------------------------------------
 
 7. fixed solution (for plot testing)
-> cap.pl -H0.02 -P3e-8/20/60 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/5.0 -R20/20/42/42/-90/-90 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 20090407201255351
+> cap.pl -H0.02 -P1/20/60 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/5.0 -R20/20/42/42/-90/-90 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 20090407201255351
 
 8. For azimuthally sorted stations:
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0 -Zaz_sort_weight111.dat -E1 -K1 -Y1 20090407201255351
+> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0 -Zaz_sort_weight111.dat -E1 -K1 -Y1 20090407201255351
 > gv 20090407201255351/scak_041.ps
 > gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M111_az.ps
 
@@ -763,10 +763,10 @@ EXAMPLE 16: Running Alaska Example (20080918194353069) - Checking FTC data and g
 3. prepare run
 > mkdir -p $CAPRUN/inv/scak
 > cd $CAPRUN/inv/scak
-> rsync -av $CAPHOME/EXAMPLES/20080918194353069
+> rsync -av $CAPHOME/EXAMPLES/20080918194353069 .
 
 4. run (Filter and Cut 'NOT applied' to data and synthetics both)
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_72/4.8 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20080918194353069
+> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_72/4.8 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20080918194353069
 
 5. Rename output files to prevent them from being overwritten
 > mv 20080918194353069/scak_072.ps 20080918194353069/scak_072_off.ps 
@@ -775,7 +775,7 @@ EXAMPLE 16: Running Alaska Example (20080918194353069) - Checking FTC data and g
 > make all
 
 7. run again (Filter and Cut 'applied' to data and synthetics both)
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_72/4.8 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20080918194353069
+> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_72/4.8 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20080918194353069
 
 8. mv 20080918194353069/scak_072.ps 20080918194353069/scak_072_on.ps 
 
@@ -783,7 +783,7 @@ EXAMPLE 16: Running Alaska Example (20080918194353069) - Checking FTC data and g
 > make all
 
 10. run again (Filter and Cut 'applied' only to data and NOT to synthetics)
-> cap.pl -H0.02 -P3e-8/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_72/4.8 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20080918194353069
+> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_72/4.8 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20080918194353069
 
 11. mv 20080918194353069/scak_072.ps 20080918194353069/scak_072_on_off.ps 
 
@@ -814,10 +814,10 @@ EXAMPLE 17: Running Nenana triggering example (20120411092157440)
 3. prepare run
 > mkdir -p $CAPRUN/inv/scak
 > cd $CAPRUN/inv/scak
-> rsync -av $CAPHOME/EXAMPLES/20120411092157440
+> rsync -av $CAPHOME/EXAMPLES/20120411092157440 .
 
 4. run 
-> cap.pl -H0.02 -P2e-7/1/20 -S0.5/5/0 -T2/70 -D1/1/0.5 -C1/10/0.3/0.7 -W1 -Mtactmod_19/3.8 -Zweight111.dat -E1 -K1 -Y1 -A10/30/2 20120411092157440
+> cap.pl -H0.02 -P1/1/20 -S0.5/5/0 -T2/70 -D1/1/0.5 -C1/10/0.3/0.7 -W1 -Mtactmod_19/3.8 -Zweight111.dat -E1 -K1 -Y1 -A10/30/2 20120411092157440
 > depth_test 20120411092157440 tactmod
 
 5. Check results
