@@ -1,4 +1,5 @@
 # this subroutine plots waveform fits produced by source inversion srct
+use List::Util qw[min max];
 
 sub plot {
 
@@ -7,7 +8,7 @@ sub plot {
   local($nn,$tt,$plt1,$plt2,$plt3,$plt4,$i,$nam,$com1,$com2,$j,$x,$y,@aa,$rslt,@name,@aztk);
 
 # set this =1 if you want to plot time windows that have been excluded
-  local $keepBad = 1;
+  local $keepBad = 0;
   
   @trace = ("1/255/255/255","3/0/0/0");       # plot data trace
   @name = ("P V","P R","Surf V"," Surf R","Surf T");
@@ -28,12 +29,12 @@ sub plot {
   open(FFF,$outfile);    # 20130102 calvizuri - new file name
   @rslt = <FFF>;
   close(FFF);
-  @meca = split('\s+',shift(@rslt));
-  @hypo = split('\s+',shift(@rslt));
-  @tensor = split('\s+',$rslt[0]);
-  @others = grep(/^#/,@rslt);
-  @ncomp = grep(/^#/,@rslt);
-  @rslt=grep(!/^#/,@rslt);
+  @meca = split('\s+',shift(@rslt));   # Line 1
+  @hypo = split('\s+',shift(@rslt));   # Line 2
+  @tensor = split('\s+',$rslt[0]);     # Line 3
+  @others = grep(/^#/,@rslt);          # Line 4
+  @ncomp = grep(/^#/,@rslt);           # Line 5
+  @rslt=grep(!/^#/,@rslt);             # Remaing Lines
   $nrow = @rslt;
 
  # check if there are Input parameters in the last line
@@ -203,11 +204,17 @@ sub plot {
   $rak = @meca[2];
 
   # compute piercing points for beachballs
+  $P_val=0; # maximum aplitude for pssac plotting (-P flag)
   $i = 0; $j = 0;
   $pi = 3.14159265358979323846;
   @tklh=(); @tkuh=(); @staz=(); @az=();
   foreach (@rslt) {
     @aa = split;
+    if ($aa[7]>$P_val){$P_val=$aa[7];}   # maximum amplitude for pssac plotting (-P flag) [Maximum amplitude of vertical body wave]
+    if ($aa[14]>$P_val){$P_val=$aa[14];} # Maximum amplitude of radial body wave
+    if ($aa[21]>$P_val){$P_val=$aa[21];} # Maximum amplitude of vertical surface wave
+    if ($aa[28]>$P_val){$P_val=$aa[28];} # Maximum amplitude of radial surface wave
+    if ($aa[35]>$P_val){$P_val=$aa[35];} # maximum amplitude of love wave 
     $stnm = $aa[0];                              # station name
     #next if $aa[2] == 0;                        # skip if no body waves
     $x = `saclst az user1 f ${mdl}_$aa[0].0`;    # get the azimuth and P take-off angle
@@ -231,6 +238,18 @@ sub plot {
     $tklh[$i] = sprintf("%s %f %s\n",$aa[1],$rad,$stnm);        # lower hemisphere
     $i++;
   }
+#--------------------------compute pssac plotting info (scaling factor P_val)
+  print "$P_val \n";
+  if ($am==1){$am = $P_val;}
+  if ($am == 0x0){
+      $amp = $am;}
+  else{
+      $amp = $am/$ampfact;}
+  $stams = "$amp/0.";
+  $stamb = "$am/0.";                                   # overwrite for absolute (to match default plotting)
+  $plt1b = "| pssac2 -JX${widthb}i/${height}i -L${spib} -l${tscale_x}/${tscale_y}/1/0.075/8 -R0/$ttb/0/$nn -Y0.2i -Ent-2 -M$stamb -K -P >> $outps";
+  $plt1s = "| pssac2 -JX${widths}i/${height}i -L${spis} -l${tscale_x}/${tscale_y}/1/0.075/8 -R0/$tts/0/$nn -X${xoffset}i -Ent-2 -M$stams -O -K -P >> $outps";
+
 
   # remove the file if it exists
   unlink($outps) if -e $outps;
