@@ -9,7 +9,7 @@
 eve=$1;
 model=$2;
 
-grep -h Event $eve/$model_*.out > junk1.out
-grep -h tensor $eve/$model_*.out > junk2.out
+grep -h Event $eve/"$model"_*.out > junk1.out
+grep -h tensor $eve/"$model"_*.out > junk2.out
 
 depth.pl junk1.out junk2.out $1 > dep_$eve.ps
