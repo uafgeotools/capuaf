@@ -88,7 +88,15 @@ while (@event) {
 	$best=$ii;$min=$rms[$ii];
       }
       $ii++;
-    }
+  }
+      # Find the ymax range for plotting log(misfit)
+    #printf STDERR "%f %f \n",$rms[$ii-1],$min;
+    $max = log($rms[$ii-1]/$min);
+    if (log($rms[1]/$min) > log($rms[$ii-1]/$min)){
+	$max = log($rms[1]/$min);}
+    $max = sprintf("%1.2f",$max);   # suppress to 3 decimal places
+    #printf STDERR "%f\n",$max;
+
     $jj=1;
     foreach (grep(/tensor/,@data_fmt)) {
       # We will go for consistency with cap_plt.pl, which has this line:
@@ -115,7 +123,6 @@ while (@event) {
     for ($jj=1;$jj<$ii;$jj=$jj+1) {
 	$lerr[$jj] = $rms[$jj]/$rms[$best];
 	#$lerr[$jj] = log($lerr[$jj]);
-	printf STDERR "%f %f\n",$lerr[$jj],$lerr2[$jj];
 	#printf STDERR "%f %e %e %d %d %d\n",$lerr[$jj],$rms[$jj],$rms[$best],$dep[$best], $best,$ii;
     }
 
@@ -134,14 +141,14 @@ while (@event) {
     $adj=0.; $adj=0.001*$lerr[$best] if $lerr[$best-1] eq $lerr[$best] and $lerr[$best+1] eq $lerr[$best];
     $d1 = $dep[$best]-$dep[$best-1];
     $d2 = $dep[$best+1]-$dep[$best];
-    printf STDERR "%d %d %e %e %e %d\n",$d1,$d2,$lerr[$best-1],$lerr[$best],$lerr[$best+1], $best;
+    #printf STDERR "%d %d %e %e %e %d\n",$d1,$d2,$lerr[$best-1],$lerr[$best],$lerr[$best+1], $best;
     $sigma = $d1*$d2*($d1+$d2)/($d2*($lerr[$best-1]-$lerr[$best])+$d1*($lerr[$best+1]-$lerr[$best])+$adj*($d1+$d2));
     $depth = 0.5*($lerr[$best+1]-$lerr[$best-1])*$sigma/($d1+$d2);
     $min = $lerr[$best] - $depth*$depth/$sigma;
-    printf STDERR "%s \n H %5.1f %5.1f %f\n", $line[$best],$depth,$sigma,$min;
+    #printf STDERR "%s \n H %5.1f %5.1f %f\n", $line[$best],$depth,$sigma,$min;
     $sigma = sqrt($sigma*$min/$dof);
     $depth = $dep[$best] - $depth;
-    printf STDERR "%s H %5.1f %5.1f\n", $line[$best],$depth,$sigma;
+    #printf STDERR "%s H %5.1f %5.1f\n", $line[$best],$depth,$sigma;
 
     # compute best fit parabola
     #$dof = $bb[12];
@@ -169,8 +176,11 @@ while (@event) {
     $R = "-R$xmin/$xmax/$ymin/$ymax";
 
     # define $R2
-    $ymin2 = -.005; $ymax2 = .05;
+    $ymin2 = -.005; $ymax2 = $max;
     $R2 = "-R$xmin/$xmax/$ymin2/$ymax2";
+    $xtick1 = 5; $xtick2 = 1;
+    $ytick1 = $ymax2/5.; $ytick2 = $ymax2/10.;
+    $B2 = "-Ba${xtick1}f${xtick2}:\" \":/a${ytick1}f${ytick2}:\"ln(ERR / ERR_min)\":nW";
     #-------------------------------
 
     # plot the misfit curve
@@ -195,7 +205,7 @@ while (@event) {
       $l=$dep[$jj];
       $aa = log($rms[$jj]/$rms[$best]);
       printf PLT "%6.3f %6.3f\n",$l,$aa;
-      printf STDERR "%f %f %f\n",$l,$aa,$depth;
+      #printf STDERR "%f %f %f\n",$l,$aa,$depth;
     }
     close(PLT);
     $xy = "-K $B2 -O";
@@ -233,7 +243,7 @@ while (@event) {
       #$coordy=($rms[$l]-$min)/($min/$dof);  # y-coord for moment tensor
       $coordy=($lerr[$l]-$min)/($min/$dof);  # y-coord for moment tensor
       #$coordy=log($rms[$l]/$rms[$best]);
-      printf STDERR "%f %f \n",$coordx,$coordy;
+      #printf STDERR "%f %f \n",$coordx,$coordy;
       printf STDERR "%s \n", $line[$l];
       printf PLT "%6.1f %6.6f 0.0 %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %f 0.0 0.0 %4.2f\n",
         $coordx,$coordy,$mrr[$l], $mtt[$l], $mff[$l], $mrt[$l], $mrf[$l], $mtf[$l], $M0_exp[$l], $mw[$l];
