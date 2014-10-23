@@ -6,9 +6,10 @@
 # Usage depth.pl result_file event_dir_names ...
 #
 
-$ballsize = 3;		    # controls default beachball size (psmeca)
+$ballsize = 4;		    # controls default beachball size (psmeca)
 $min0 = 1.0e+19;		# impossibly large misfit value
 $Bscale = "-Ba5f1:\"\":/a20f5:\"\":";
+$onlydc = 0;
 
 #------------
 
@@ -77,15 +78,16 @@ while (@event) {
       $line[$ii]=$_;
       @bb=split;
       ($aa,$dep[$ii])=split('_',$bb[3]); # split cus_001 to get depth (= 001km) -- $dep is used for y-axis range
-      #    $strike[$ii]=$bb[5];    # not needed
-      #    $dip[$ii]=$bb[6];       # not needed
-      #    $rake[$ii]=$bb[7];      # not needed
+          $strike[$ii]=$bb[5];    # not needed
+          $dip[$ii]=$bb[6];       # not needed
+          $rake[$ii]=$bb[7];      # not needed
       $mw[$ii]=$bb[9];
       #    printf STDERR "debug. mw[$ii]=%lf\n",$mw[$ii];
       $rms[$ii]=$bb[11];
       $vr[$ii]=$bb[24];
       if ($min>$rms[$ii]) {
 	$best=$ii;$min=$rms[$ii];
+	$depth = $dep[$ii];
       }
       $ii++;
   }
@@ -114,43 +116,53 @@ while (@event) {
       $mrt[$jj] = $kk[6];	# m13
       $mrf[$jj] =-$kk[8];	# -m23
       $mtf[$jj] =-$kk[5];	# -m12
-      #    printf STDERR "debug. MT components: %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f M0_exp=%f\n",
-      #        $mrr[$jj], $mtt[$jj], $mff[$jj], $mrt[$jj], $mrf[$jj], $mtf[$jj],$M0_exp[$jj];
+          printf STDERR "debug. MT components: %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f M0_exp=%f\n",$mrr[$jj], $mtt[$jj], $mff[$jj], $mrt[$jj], $mrf[$jj], $mtf[$jj],$M0_exp[$jj];
       $jj++;
     }
 
     # compute a relative measure of error ($lerr = log(misfit/misfit_min))
     for ($jj=1;$jj<$ii;$jj=$jj+1) {
 	$lerr[$jj] = $rms[$jj]/$rms[$best];
-	#$lerr[$jj] = log($lerr[$jj]);
-	#printf STDERR "%f %e %e %d %d %d\n",$lerr[$jj],$rms[$jj],$rms[$best],$dep[$best], $best,$ii;
+	$lerr[$jj] = log($lerr[$jj]);
+	printf STDERR "%f %e %e %d %d %d\n",$lerr[$jj],$rms[$jj],$rms[$best],$dep[$best], $best,$ii;
     }
 
-    # compute best fit parabola
-    $dof = $bb[12];
-    $dof = 1;
-    next unless $ii>1;
-    if ($ii==2) {
-      $dep[0]=0.; $lerr[0]=$lerr[1];
-    } else {
-      $dep[0] = 2*$dep[1]-$dep[2];		$lerr[0]=$lerr[2];
-    }
-    $dep[$ii] = 2*$dep[$ii-1]-$dep[$ii-2];
-    $lerr[$ii] = $lerr[$ii-2];
-    $best++ if $best==1 && $ii>2 && $min==$lerr[2];
-    $adj=0.; $adj=0.001*$lerr[$best] if $lerr[$best-1] eq $lerr[$best] and $lerr[$best+1] eq $lerr[$best];
-    $d1 = $dep[$best]-$dep[$best-1];
-    $d2 = $dep[$best+1]-$dep[$best];
-    #printf STDERR "%d %d %e %e %e %d\n",$d1,$d2,$lerr[$best-1],$lerr[$best],$lerr[$best+1], $best;
-    $sigma = $d1*$d2*($d1+$d2)/($d2*($lerr[$best-1]-$lerr[$best])+$d1*($lerr[$best+1]-$lerr[$best])+$adj*($d1+$d2));
-    $depth = 0.5*($lerr[$best+1]-$lerr[$best-1])*$sigma/($d1+$d2);
-    $min = $lerr[$best] - $depth*$depth/$sigma;
-    #printf STDERR "%s \n H %5.1f %5.1f %f\n", $line[$best],$depth,$sigma,$min;
-    $sigma = sqrt($sigma*$min/$dof);
-    $depth = $dep[$best] - $depth;
-    #printf STDERR "%s H %5.1f %5.1f\n", $line[$best],$depth,$sigma;
+    # compute parabolic equation:  Y= aX^2 + bX + c (cleaner way to handle)
+    $x1 = $dep[$best-1]; $y1 = $lerr[$best-1];   #(x1,y1)
+    $x2 = $dep[$best]; $y2 = $lerr[$best];       #(x2,y2)
+    $x3 = $dep[$best+1]; $y3 = $lerr[$best+1];   #(x3,y3)
+    $denom = ($x1-$x2)*($x1-$x3)*($x2-$x3);
+    $a = (($x3*($y2-$y1))+($x2 * ($y1 - $y3)) + ($x1 * ($y3 - $y2))) / $denom;
+    $b = ($x3*$x3 * ($y1 - $y2) + $x2*$x2 * ($y3 - $y1) + $x1*$x1 * ($y2 - $y3)) / $denom;
+    $c = ($x2 * $x3 * ($x2 - $x3) * $y1 + $x3 * $x1 * ($x3 - $x1) * $y2 + $x1 * $x2 * ($x1 - $x2) * $y3) / $denom;
+    printf STDERR "point1 = (%f,%f); point2 = (%f,%f); point3 = (%f,%f)\n",$x1,$y1,$x2,$y2,$x3,$y3;
+    printf STDERR "a %f, b = %f, c = %f\n", $a,$b,$c;
 
-    # compute best fit parabola
+    # compute best fit parabola (NEW VERSION uses rms to compute parabola - complicated to debug
+    #$dof = $bb[12];
+    #$dof = 1;
+    #next unless $ii>1;
+    #if ($ii==2) {
+    # $dep[0]=0.; $lerr[0]=$lerr[1];
+    # } else {
+    #   $dep[0] = 2*$dep[1]-$dep[2];		$lerr[0]=$lerr[2];
+    # }
+    # $dep[$ii] = 2*$dep[$ii-1]-$dep[$ii-2];
+    # $lerr[$ii] = $lerr[$ii-2];
+    # $best++ if $best==1 && $ii>2 && $min==$lerr[2];
+    # $adj=0.; $adj=0.001*$lerr[$best] if $lerr[$best-1] eq $lerr[$best] and $lerr[$best+1] eq $lerr[$best];
+    # $d1 = $dep[$best]-$dep[$best-1];
+    # $d2 = $dep[$best+1]-$dep[$best];
+    # #printf STDERR "%d %d %e %e %e %d\n",$d1,$d2,$lerr[$best-1],$lerr[$best],$lerr[$best+1], $best;
+    # $sigma = $d1*$d2*($d1+$d2)/($d2*($lerr[$best-1]-$lerr[$best])+$d1*($lerr[$best+1]-$lerr[$best])+$adj*($d1+$d2));
+    # $depth = 0.5*($lerr[$best+1]-$lerr[$best-1])*$sigma/($d1+$d2);
+    # $min = $lerr[$best] - $depth*$depth/$sigma;
+    # #printf STDERR "%s \n H %5.1f %5.1f %f\n", $line[$best],$depth,$sigma,$min;
+    # $sigma = sqrt($sigma*$min/$dof);
+    # $depth = $dep[$best] - $depth;
+    # #printf STDERR "%s H %5.1f %5.1f\n", $line[$best],$depth,$sigma;
+
+    # compute best fit parabola (OLD VERSION uses rms to compute parabola - complicated to debug)
     #$dof = $bb[12];
     #next unless $ii>1;
     #if ($ii==2) {
@@ -171,7 +183,7 @@ while (@event) {
     #printf STDERR "%s H %5.1f %5.1f\n", $line[$best],$depth,$sigma;
 
     #-------------------------------
-    $xmin = $dep[0]; $xmax = $dep[$ii];
+    $xmin = $dep[1]; $xmax = $dep[$ii-1];
     $ymin = -10; $ymax = 100;
     $R = "-R$xmin/$xmax/$ymin/$ymax";
 
@@ -182,28 +194,46 @@ while (@event) {
     $ytick1 = $ymax2/5.; $ytick2 = $ymax2/10.;
     $B2 = "-Ba${xtick1}f${xtick2}:\" \":/a${ytick1}f${ytick2}:\"ln(ERR / ERR_min)\":nW";
     #-------------------------------
-
-    # plot the misfit curve
-    $xinc = 1;
-    $tmp = 1000;   # temporary variable (start with very large misfit value to find the uncertainty)
+    
+    $xinc = 0.5;
+    $tmp = 1000000;   # temporary variable (start with very large misfit value to find the uncertainty)
+    $err_ellipse = 0.01;   # to compute uncertainity (
     open(PLT, "| psxy $J $R2 $xx");     # key command that sets the scale (J) and region (R)
-    for ($l=$dep[0];$l<$dep[$ii];$l+=$xinc) {
-      $aa = ($l-$depth)/$sigma;
-      printf PLT "%6.3f %6.3f\n",$l,$aa*$aa; # plot parabola -- note: (depth) misfit function is not necessarily quadratic
-       if (abs($aa*$aa - 0.01) < $tmp){
-	  $tmp = abs($aa*$aa - 0.01);
-	  $unc = abs($l-$depth);
-      }
+    printf STDERR "---min_dep=%f max_dep=%f----\n", $dep[1],$dep[$ii-1];
+    for ($l=$dep[1];$l<$dep[$ii-1];$l+=$xinc) {
+	$xcord = $l;
+	$ycord = $a*$l*$l + $b*$l + $c;   # Y = ax^2 + bx + c
+	#printf STDERR "%f %f\n", $xcord,$ycord;
+	#$aa = ($l-$depth)/$sigma;
+	printf PLT "%6.3f %6.3f\n",$xcord, $ycord; # plot parabola -- note: (depth) misfit function is not necessarily quadratic
+	if (abs($ycord - $err_ellipse) < $tmp){
+	    $tmp = abs($ycord - 0.01);
+	    $unc = abs($l-$depth);
+	}
     }
     close(PLT);
-    printf STDERR "unc = %d \n",$unc;
+
+    # plot the misfit curve
+    # $xinc = 1;
+    # $tmp = 1000;   # temporary variable (start with very large misfit value to find the uncertainty)
+    # open(PLT, "| psxy $J $R2 $xx");     # key command that sets the scale (J) and region (R)
+    # for ($l=$dep[0];$l<$dep[$ii];$l+=$xinc) {
+    #   $aa = ($l-$depth)/$sigma;
+    #   printf PLT "%6.3f %6.3f\n",$l,$aa*$aa; # plot parabola -- note: (depth) misfit function is not necessarily quadratic
+    #    if (abs($aa*$aa - 0.01) < $tmp){
+    # 	  $tmp = abs($aa*$aa - 0.01);
+    # 	  $unc = abs($l-$depth);
+    #   }
+    # }
+    # close(PLT);
+    # printf STDERR "unc = %d \n",$unc;
 
     # plot the log(err/min_err) with depth
     $xy = "-K $B2 -P -O";
     open(PLT, "| psxy $J $R2 $xy -Sc0.25c -Gred");     # key command that sets the scale (J) and region (R)
     for ($jj=1;$jj<$ii;$jj+=1) {
       $l=$dep[$jj];
-      $aa = log($rms[$jj]/$rms[$best]);
+      $aa = $lerr[$jj];
       printf PLT "%6.3f %6.3f\n",$l,$aa;
       #printf STDERR "%f %f %f\n",$l,$aa,$depth;
     }
@@ -212,11 +242,10 @@ while (@event) {
     open(PLT, "| psxy $J $R2 $xy -Wthick,red");     # key command that sets the scale (J) and region (R)
     for ($jj=1;$jj<$ii;$jj+=1) {
       $l=$dep[$jj];
-      $aa = log($rms[$jj]/$rms[$best]);
+      $aa = $lerr[$jj];
       printf PLT "%6.3f %6.3f\n",$l,$aa;
     }
     close(PLT);
-    #printf PLT "pstext -JM7i -X5c -Y5c -R0/1/0/1 -G0/0/255 -K -N -O -V<<EOF\n0 0 10 90 1 LB hello\nEOF\n";
 
     # plot the VR (variance reduction) with depth
     $xy = "-K -O $B3";
@@ -238,11 +267,15 @@ while (@event) {
     # plot the beach balls
     #  open(PLT, "| psmeca -JX -R -O -K -Sa0.3");   # original
     open(PLT, "| psmeca $J $R2 -O -K -Sm${ballsize} -G100 -W0.5p,0 -P"); # plot Moment tensors
+    if ($onlydc==1){
+	open(PLT, "| psmeca $J $R2 -O -K -Sd${ballsize} -G100 -W0.5p,0 -P"); # plot Moment tensors
+    }
     for ($l=1; $l<$ii; $l++) {
       $coordx=$dep[$l];		            # x-coord for moment tensor
       #$coordy=($rms[$l]-$min)/($min/$dof);  # y-coord for moment tensor
-      $coordy=($lerr[$l]-$min)/($min/$dof);  # y-coord for moment tensor
+      #$coordy=($lerr[$l]-$min)/($min/$dof);  # y-coord for moment tensor
       #$coordy=log($rms[$l]/$rms[$best]);
+      $coordy=$lerr[$l];
       #printf STDERR "%f %f \n",$coordx,$coordy;
       printf STDERR "%s \n", $line[$l];
       printf PLT "%6.1f %6.6f 0.0 %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %f 0.0 0.0 %4.2f\n",
@@ -262,7 +295,7 @@ while (@event) {
     }
 
     # plot the title
-    $xtitle = $dep[0];
+    $xtitle = $dep[1];
     $ytitle = $ymax + ($ymax-$ymin)*0.05;
     $fsizet = $fsize+2;
     printf PLT "%f %f $fsizet 0 0 1 %s  h=%4.1f \261 %.1f km\n",$xtitle,$ytitle,$eve,$depth,$unc; # $sigma gives much larger estimation of uncertainties
