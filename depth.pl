@@ -116,7 +116,7 @@ while (@event) {
       $mrt[$jj] = $kk[6];	# m13
       $mrf[$jj] =-$kk[8];	# -m23
       $mtf[$jj] =-$kk[5];	# -m12
-          printf STDERR "debug. MT components: %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f M0_exp=%f\n",$mrr[$jj], $mtt[$jj], $mff[$jj], $mrt[$jj], $mrf[$jj], $mtf[$jj],$M0_exp[$jj];
+          #printf STDERR "debug. MT components: %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f M0_exp=%f\n",$mrr[$jj], $mtt[$jj], $mff[$jj], $mrt[$jj], $mrf[$jj], $mtf[$jj],$M0_exp[$jj];
       $jj++;
     }
 
@@ -124,7 +124,7 @@ while (@event) {
     for ($jj=1;$jj<$ii;$jj=$jj+1) {
 	$lerr[$jj] = $rms[$jj]/$rms[$best];
 	$lerr[$jj] = log($lerr[$jj]);
-	printf STDERR "%f %e %e %d %d %d\n",$lerr[$jj],$rms[$jj],$rms[$best],$dep[$best], $best,$ii;
+	#printf STDERR "%f %e %e %d %d %d\n",$lerr[$jj],$rms[$jj],$rms[$best],$dep[$best], $best,$ii;
     }
 
     # compute parabolic equation:  Y= aX^2 + bX + c (cleaner way to handle)
@@ -138,7 +138,7 @@ while (@event) {
     printf STDERR "point1 = (%f,%f); point2 = (%f,%f); point3 = (%f,%f)\n",$x1,$y1,$x2,$y2,$x3,$y3;
     printf STDERR "a %f, b = %f, c = %f\n", $a,$b,$c;
 
-    # compute best fit parabola (NEW VERSION uses rms to compute parabola - complicated to debug
+    # compute best fit parabola (NEW VERSION uses log(err/err_min) to compute parabola - complicated to debug
     #$dof = $bb[12];
     #$dof = 1;
     #next unless $ii>1;
@@ -188,7 +188,7 @@ while (@event) {
     $R = "-R$xmin/$xmax/$ymin/$ymax";
 
     # define $R2
-    $ymin2 = -.005; $ymax2 = $max;
+    $ymin2 = -$max/10; $ymax2 = $max;
     $R2 = "-R$xmin/$xmax/$ymin2/$ymax2";
     $xtick1 = 5; $xtick2 = 1;
     $ytick1 = $ymax2/5.; $ytick2 = $ymax2/10.;
