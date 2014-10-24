@@ -13,12 +13,10 @@ $onlydc = 1; # only plots DC mechanism (Removes psmeca bugs that arises when plo
 $imodel = 1; # to draws bars at layer interfaces
 
 #------------
-# Structural model info
+# Structural model info : depth of layer interface
 @tactmod = (3,11,24,31,76);
 @scak = (4,9,14,19,24,33,49,66);
 @cus =(1,10,20,30);
-
-
 #------------
 
 #($rsl,@event) = @ARGV;     # original
@@ -26,7 +24,6 @@ $imodel = 1; # to draws bars at layer interfaces
 
 open(RSL,"$rsl") or die "couldn't open inputfile1 $rsl\n";
 @aaa=<RSL>;
-#print STDERR "debug: aaa=@aaa\n";  # 20130103 calvizuri - ok to delete
 close(RSL);
 
 #-----------
@@ -106,35 +103,34 @@ while (@event) {
     elsif ($smodel eq "cus"){@model=@cus;}
 
 #=====================Compute parameters to be plotted=============================
-      # Find the ymax range for plotting log(misfit)
-    #printf STDERR "%f %f \n",$rms[$ii-1],$min;
+    # Find the ymax range for plotting log(misfit)
+     printf STDERR "%f %f \n",$rms[$ii-1],$min;
     $max = log($rms[$ii-1]/$min);
     if (log($rms[1]/$min) > log($rms[$ii-1]/$min)){
 	$max = log($rms[1]/$min);}
     $max = sprintf("%1.2f",$max);   # suppress to 3 decimal places
-    #printf STDERR "%f\n",$max;
 
     $jj=1;
     foreach (grep(/tensor/,@data_fmt)) {
-      # We will go for consistency with cap_plt.pl, which has this line:
+	# We will go for consistency with cap_plt.pl, which has this line:
       # printf PLT "0 0 0 @tensor[9,4,7,6] %f %f 17\n",-$tensor[8],-$tensor[5];
-      chop; # example input to chop: # tensor = 5.696e+23  0.838 -0.564 -0.335 -0.259  0.409 -0.185
-      @kk=split;
-      @dummy = split('\+',$kk[3]); # get only the exponent--needed for scaling beachballs on plot
-      #$M0_floor="1E+$dummy[1]";
-      #printf STDERR "debug. M0_floor=%e\n",2*$M0_floor;
-      #$M0_exp[$jj] = $dummy[1];
-      $M0_exp[$jj] = 17;	# see cap_plt.pl
-      $mrr[$jj] = $kk[9];	# mrr=m33 -- eg box 8.3, p.351 (L&W95)
-      $mtt[$jj] = $kk[4];	# m11
-      $mff[$jj] = $kk[7];	# m22
-      $mrt[$jj] = $kk[6];	# m13
-      $mrf[$jj] =-$kk[8];	# -m23
-      $mtf[$jj] =-$kk[5];	# -m12
-          #printf STDERR "debug. MT components: %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f M0_exp=%f\n",$mrr[$jj], $mtt[$jj], $mff[$jj], $mrt[$jj], $mrf[$jj], $mtf[$jj],$M0_exp[$jj];
-      $jj++;
+	chop; # example input to chop: # tensor = 5.696e+23  0.838 -0.564 -0.335 -0.259  0.409 -0.185
+	@kk=split;
+	@dummy = split('\+',$kk[3]); # get only the exponent--needed for scaling beachballs on plot
+	#$M0_floor="1E+$dummy[1]";
+	#printf STDERR "debug. M0_floor=%e\n",2*$M0_floor;
+	#$M0_exp[$jj] = $dummy[1];
+	$M0_exp[$jj] = 17;	# see cap_plt.pl
+	$mrr[$jj] = $kk[9];	# mrr=m33 -- eg box 8.3, p.351 (L&W95)
+	$mtt[$jj] = $kk[4];	# m11
+	$mff[$jj] = $kk[7];	# m22
+	$mrt[$jj] = $kk[6];	# m13
+	$mrf[$jj] =-$kk[8];	# -m23
+	$mtf[$jj] =-$kk[5];	# -m12
+	#printf STDERR "debug. MT components: %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f M0_exp=%f\n",$mrr[$jj], $mtt[$jj], $mff[$jj], $mrt[$jj], $mrf[$jj], $mtf[$jj],$M0_exp[$jj];
+	$jj++;
     }
-
+    
     #===================== compute a relative measure of error ($lerr = log(misfit/misfit_min))
     for ($jj=1;$jj<$ii;$jj=$jj+1) {
 	$lerr[$jj] = $rms[$jj]/$rms[$best];
@@ -157,50 +153,6 @@ while (@event) {
     $depth = -$b/(2*$a);   # minima occurs at this X
     $Ydepth = $a*$depth*$depth + $b*$depth +$c;  # Yaxis value of parabola at minima
 
-    # compute best fit parabola (NEW VERSION uses log(err/err_min) to compute parabola - complicated to debug
-    #$dof = $bb[12];
-    #$dof = 1;
-    #next unless $ii>1;
-    #if ($ii==2) {
-    # $dep[0]=0.; $lerr[0]=$lerr[1];
-    # } else {
-    #   $dep[0] = 2*$dep[1]-$dep[2];		$lerr[0]=$lerr[2];
-    # }
-    # $dep[$ii] = 2*$dep[$ii-1]-$dep[$ii-2];
-    # $lerr[$ii] = $lerr[$ii-2];
-    # $best++ if $best==1 && $ii>2 && $min==$lerr[2];
-    # $adj=0.; $adj=0.001*$lerr[$best] if $lerr[$best-1] eq $lerr[$best] and $lerr[$best+1] eq $lerr[$best];
-    # $d1 = $dep[$best]-$dep[$best-1];
-    # $d2 = $dep[$best+1]-$dep[$best];
-    # #printf STDERR "%d %d %e %e %e %d\n",$d1,$d2,$lerr[$best-1],$lerr[$best],$lerr[$best+1], $best;
-    # $sigma = $d1*$d2*($d1+$d2)/($d2*($lerr[$best-1]-$lerr[$best])+$d1*($lerr[$best+1]-$lerr[$best])+$adj*($d1+$d2));
-    # $depth = 0.5*($lerr[$best+1]-$lerr[$best-1])*$sigma/($d1+$d2);
-    # $min = $lerr[$best] - $depth*$depth/$sigma;
-    # #printf STDERR "%s \n H %5.1f %5.1f %f\n", $line[$best],$depth,$sigma,$min;
-    # $sigma = sqrt($sigma*$min/$dof);
-    # $depth = $dep[$best] - $depth;
-    # #printf STDERR "%s H %5.1f %5.1f\n", $line[$best],$depth,$sigma;
-
-    # compute best fit parabola (OLD VERSION uses rms to compute parabola - complicated to debug)
-    #$dof = $bb[12];
-    #next unless $ii>1;
-    #if ($ii==2) {
-    #  $dep[0]=0.; $rms[0]=$rms[1];
-    #} else {
-    #  $dep[0]   = 2*$dep[1]-$dep[2];		$rms[0]=$rms[2];
-    #}
-    #$dep[$ii] = 2*$dep[$ii-1]-$dep[$ii-2];	$rms[$ii]=$rms[$ii-2];
-    #$best++ if $best==1 && $ii>2 && $min==$rms[2];
-    #$adj=0.; $adj=0.001*$rms[$best] if $rms[$best-1] eq $rms[$best] and $rms[$best+1] eq $rms[$best];
-    #$d1 = $dep[$best]-$dep[$best-1];
-    #$d2 = $dep[$best+1]-$dep[$best];
-    #$sigma = $d1*$d2*($d1+$d2)/($d2*($rms[$best-1]-$rms[$best])+$d1*($rms[$best+1]-$rms[$best])+$adj*($d1+$d2));
-    #$depth = 0.5*($rms[$best+1]-$rms[$best-1])*$sigma/($d1+$d2);
-    #$min = $rms[$best] - $depth*$depth/$sigma;
-    #$sigma = sqrt($sigma*$min/$dof);
-    #$depth = $dep[$best] - $depth;
-    #printf STDERR "%s H %5.1f %5.1f\n", $line[$best],$depth,$sigma;
-
     #================GMT plotting ranges==========================
     $xmin = $dep[1]; $xmax = $dep[$ii-1];
     $ymin = -10; $ymax = 100;
@@ -212,7 +164,6 @@ while (@event) {
     $xtick1 = 5; $xtick2 = 1;
     $ytick1 = $ymax2/5.; $ytick2 = $ymax2/10.;
     $B2 = "-Ba${xtick1}f${xtick2}:\" \":/a${ytick1}f${ytick2}:\"ln(ERR / ERR_min)\":nW";
-    #-------------------------------
     
     #================== PLot misfit parabola
     $xinc = 0.1;
@@ -222,14 +173,15 @@ while (@event) {
     printf STDERR "---min_dep=%f max_dep=%f----\n", $dep[1],$dep[$ii-1];
     for ($l=$dep[1]; $l<$dep[$ii-1]; $l+=$xinc) {
 	$xcord = $l;
-	$ycord = $a*$l*$l + $b*$l + $c;   # Y = ax^2 + bx + c
+	$ycord = $a*$l*$l + $b*$l + $c;   # Y = ax^2 + bx + c  (value of Y at each $xcord using parabolic eq)
 	#printf STDERR "%f %f\n", $xcord,$ycord;
 	#$aa = ($l-$depth)/$sigma;
 	printf PLT "%f %f\n",$xcord, $ycord; # plot parabola -- note: (depth) misfit function is not necessarily quadratic
+	# compute the uncertainy based on $err_cent value 
 	if (abs($ycord - $err_cent) < $tmp){
 	    $tmp = abs($ycord - $err_cent);
 	    $unc = abs($l-$depth);
-	    $xcord2 = $l;
+	    $xcord2 = $l;      
 	    $ycord2 = $ycord;
 	}
     }
@@ -250,21 +202,6 @@ while (@event) {
     # printf PLT "%f %f\n",$xcord2, $ymin2;
     # printf PLT "%f %f\n",$xcord2, $err_cent;
     # close(PLT);
-
-    # ==============plot the misfit curve (OLD)
-    # $xinc = 1;
-    # $tmp = 1000;   # temporary variable (start with very large misfit value to find the uncertainty)
-    # open(PLT, "| psxy $J $R2 $xx");     # key command that sets the scale (J) and region (R)
-    # for ($l=$dep[0];$l<$dep[$ii];$l+=$xinc) {
-    #   $aa = ($l-$depth)/$sigma;
-    #   printf PLT "%6.3f %6.3f\n",$l,$aa*$aa; # plot parabola -- note: (depth) misfit function is not necessarily quadratic
-    #    if (abs($aa*$aa - 0.01) < $tmp){
-    # 	  $tmp = abs($aa*$aa - 0.01);
-    # 	  $unc = abs($l-$depth);
-    #   }
-    # }
-    # close(PLT);
-    # printf STDERR "unc = %d \n",$unc;
 
     # =============plot the log(err/min_err) with depth (perhaps don't need this)
     $xy = "-K $B2 -P -O";
