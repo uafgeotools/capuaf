@@ -9,7 +9,15 @@
 $ballsize = 4;		    # controls default beachball size (psmeca)
 $min0 = 1.0e+19;		# impossibly large misfit value
 $Bscale = "-Ba5f1:\"\":/a20f5:\"\":";
-$onlydc = 0;
+$onlydc = 1; # only plots DC mechanism (Removes psmeca bugs that arises when plotting DC mechs)
+$imodel = 1; # to draws bars at layer interfaces
+
+#------------
+# Structural model info
+@tactmod = (3,11,24,31,76);
+@scak = (4,9,14,19,24,33,49,66);
+@cus =(1,10,20,30);
+
 
 #------------
 
@@ -40,7 +48,7 @@ $B2 = "-Ba${xtick1}f${xtick2}:\" \":/a${ytick1}f${ytick2}:\"ln(ERR / ERR_min)\":
 # VR
 $xtick1 = 5; $xtick2 = 1;
 $ytick1 = 20; $ytick2 = 5;
-$B3 = "-Ba${xtick1}f${xtick2}:\"Depth, km\":/a${ytick1}f${ytick2}:\"VR\":ES";
+$B3 = "-Ba${xtick1}f${xtick2}:\"Depth, km\":/a${ytick1}f${ytick2}:\"VR (gray)\":ES";
 
 # size of plot
 $zoom=3;
@@ -60,6 +68,7 @@ open(FH,"$rsl2") or die "couldn't open inputfile2 $rsl2\n";
 #print STDERR "debug: data_fmt=@data_fmt\n";
 close(FH);
 
+#=====================READ output files=============================
 while (@event) {
   @aa = splice(@event,0,10); # 0=offset, 10=N elements (each element space separated)
   #print STDERR "debug. aa=@aa event=@event\n";
@@ -77,7 +86,7 @@ while (@event) {
       # Event 20080418093700 Model cus_001 FM 291 51 -13 Mw 5.10 rms 3.748e-02   110 ERR   2   5   8 ISO 0.16 0.11 CLVD 0.14 0.08
       $line[$ii]=$_;
       @bb=split;
-      ($aa,$dep[$ii])=split('_',$bb[3]); # split cus_001 to get depth (= 001km) -- $dep is used for y-axis range
+      ($smodel,$dep[$ii])=split('_',$bb[3]); # split cus_001 to get depth (= 001km) -- $dep is used for y-axis range
           $strike[$ii]=$bb[5];    # not needed
           $dip[$ii]=$bb[6];       # not needed
           $rake[$ii]=$bb[7];      # not needed
@@ -91,6 +100,12 @@ while (@event) {
       }
       $ii++;
   }
+
+    if ($smodel eq "tactmod"){@model=@tactmod;}
+    elsif ($smodel eq "scak"){@model=@scak;}
+    elsif ($smodel eq "cus"){@model=@cus;}
+
+#=====================Compute parameters to be plotted=============================
       # Find the ymax range for plotting log(misfit)
     #printf STDERR "%f %f \n",$rms[$ii-1],$min;
     $max = log($rms[$ii-1]/$min);
@@ -120,23 +135,27 @@ while (@event) {
       $jj++;
     }
 
-    # compute a relative measure of error ($lerr = log(misfit/misfit_min))
+    #===================== compute a relative measure of error ($lerr = log(misfit/misfit_min))
     for ($jj=1;$jj<$ii;$jj=$jj+1) {
 	$lerr[$jj] = $rms[$jj]/$rms[$best];
 	$lerr[$jj] = log($lerr[$jj]);
 	#printf STDERR "%f %e %e %d %d %d\n",$lerr[$jj],$rms[$jj],$rms[$best],$dep[$best], $best,$ii;
     }
 
-    # compute parabolic equation:  Y= aX^2 + bX + c (cleaner way to handle)
+    #====================== compute parabolic equation:  Y= aX^2 + bX + c (cleaner way to handle) Using best 3 points only
     $x1 = $dep[$best-1]; $y1 = $lerr[$best-1];   #(x1,y1)
     $x2 = $dep[$best]; $y2 = $lerr[$best];       #(x2,y2)
     $x3 = $dep[$best+1]; $y3 = $lerr[$best+1];   #(x3,y3)
     $denom = ($x1-$x2)*($x1-$x3)*($x2-$x3);
+    # Below are the standard equation (check any maths textbook)
     $a = (($x3*($y2-$y1))+($x2 * ($y1 - $y3)) + ($x1 * ($y3 - $y2))) / $denom;
     $b = ($x3*$x3 * ($y1 - $y2) + $x2*$x2 * ($y3 - $y1) + $x1*$x1 * ($y2 - $y3)) / $denom;
     $c = ($x2 * $x3 * ($x2 - $x3) * $y1 + $x3 * $x1 * ($x3 - $x1) * $y2 + $x1 * $x2 * ($x1 - $x2) * $y3) / $denom;
     printf STDERR "point1 = (%f,%f); point2 = (%f,%f); point3 = (%f,%f)\n",$x1,$y1,$x2,$y2,$x3,$y3;
     printf STDERR "a %f, b = %f, c = %f\n", $a,$b,$c;
+    # compute minima of parabola (at dY/dx = 0)
+    $depth = -$b/(2*$a);   # minima occurs at this X
+    $Ydepth = $a*$depth*$depth + $b*$depth +$c;  # Yaxis value of parabola at minima
 
     # compute best fit parabola (NEW VERSION uses log(err/err_min) to compute parabola - complicated to debug
     #$dof = $bb[12];
@@ -182,7 +201,7 @@ while (@event) {
     #$depth = $dep[$best] - $depth;
     #printf STDERR "%s H %5.1f %5.1f\n", $line[$best],$depth,$sigma;
 
-    #-------------------------------
+    #================GMT plotting ranges==========================
     $xmin = $dep[1]; $xmax = $dep[$ii-1];
     $ymin = -10; $ymax = 100;
     $R = "-R$xmin/$xmax/$ymin/$ymax";
@@ -195,25 +214,44 @@ while (@event) {
     $B2 = "-Ba${xtick1}f${xtick2}:\" \":/a${ytick1}f${ytick2}:\"ln(ERR / ERR_min)\":nW";
     #-------------------------------
     
-    $xinc = 0.5;
+    #================== PLot misfit parabola
+    $xinc = 0.1;
     $tmp = 1000000;   # temporary variable (start with very large misfit value to find the uncertainty)
-    $err_ellipse = 0.01;   # to compute uncertainity (
-    open(PLT, "| psxy $J $R2 $xx");     # key command that sets the scale (J) and region (R)
+    $err_cent = 0.01;   # to compute uncertainity (
+    open(PLT, "| psxy $J $R2 $xx -W1p,0/0/0,-");     # key command that sets the scale (J) and region (R)
     printf STDERR "---min_dep=%f max_dep=%f----\n", $dep[1],$dep[$ii-1];
-    for ($l=$dep[1];$l<$dep[$ii-1];$l+=$xinc) {
+    for ($l=$dep[1]; $l<$dep[$ii-1]; $l+=$xinc) {
 	$xcord = $l;
 	$ycord = $a*$l*$l + $b*$l + $c;   # Y = ax^2 + bx + c
 	#printf STDERR "%f %f\n", $xcord,$ycord;
 	#$aa = ($l-$depth)/$sigma;
-	printf PLT "%6.3f %6.3f\n",$xcord, $ycord; # plot parabola -- note: (depth) misfit function is not necessarily quadratic
-	if (abs($ycord - $err_ellipse) < $tmp){
-	    $tmp = abs($ycord - 0.01);
+	printf PLT "%f %f\n",$xcord, $ycord; # plot parabola -- note: (depth) misfit function is not necessarily quadratic
+	if (abs($ycord - $err_cent) < $tmp){
+	    $tmp = abs($ycord - $err_cent);
 	    $unc = abs($l-$depth);
+	    $xcord2 = $l;
+	    $ycord2 = $ycord;
 	}
     }
     close(PLT);
 
-    # plot the misfit curve
+    # ==============Plot bars for uncertainty
+    open(PLT, "| psxy $J $R2 -K -O -W2p,0/0/0");
+    printf PLT "%f %f\n",$depth, $err_cent;
+    printf PLT "%f %f\n",$xcord2, $err_cent;
+    close(PLT);
+
+    open(PLT, "| psxy $J $R2 -K -O -W1p,0/0/0,-");
+    printf PLT "%f %f\n",$depth, $Ydepth;
+    printf PLT "%f %f\n",$depth, $err_cent;
+    close(PLT);
+    
+    # open(PLT, "| psxy $J $R2 -K -O -W0.5p,0/0/0,-");
+    # printf PLT "%f %f\n",$xcord2, $ymin2;
+    # printf PLT "%f %f\n",$xcord2, $err_cent;
+    # close(PLT);
+
+    # ==============plot the misfit curve (OLD)
     # $xinc = 1;
     # $tmp = 1000;   # temporary variable (start with very large misfit value to find the uncertainty)
     # open(PLT, "| psxy $J $R2 $xx");     # key command that sets the scale (J) and region (R)
@@ -228,43 +266,52 @@ while (@event) {
     # close(PLT);
     # printf STDERR "unc = %d \n",$unc;
 
-    # plot the log(err/min_err) with depth
+    # =============plot the log(err/min_err) with depth (perhaps don't need this)
     $xy = "-K $B2 -P -O";
-    open(PLT, "| psxy $J $R2 $xy -Sc0.25c -Gred");     # key command that sets the scale (J) and region (R)
+    open(PLT, "| psxy $J $R2 $xy -Sc0.25c -Gred");     # key command that sets the scale (J) and region (R) - draws a circle
     for ($jj=1;$jj<$ii;$jj+=1) {
       $l=$dep[$jj];
       $aa = $lerr[$jj];
-      printf PLT "%6.3f %6.3f\n",$l,$aa;
+      printf PLT "%f %f\n",$l,$aa;
       #printf STDERR "%f %f %f\n",$l,$aa,$depth;
     }
-    close(PLT);
-    $xy = "-K $B2 -O";
-    open(PLT, "| psxy $J $R2 $xy -Wthick,red");     # key command that sets the scale (J) and region (R)
-    for ($jj=1;$jj<$ii;$jj+=1) {
-      $l=$dep[$jj];
-      $aa = $lerr[$jj];
-      printf PLT "%6.3f %6.3f\n",$l,$aa;
-    }
-    close(PLT);
+     close(PLT);
+     $xy = "-K $B2 -O";
+     open(PLT, "| psxy $J $R2 $xy -Wthick,black");     # key command that sets the scale (J) and region (R) - drays a line
+     for ($jj=1;$jj<$ii;$jj+=1) {
+       $l=$dep[$jj];
+       $aa = $lerr[$jj];
+       printf PLT "%f %f\n",$l,$aa;
+     }
+     close(PLT);
 
-    # plot the VR (variance reduction) with depth
+    #=================== plot the VR (variance reduction) with depth
     $xy = "-K -O $B3";
-    open(PLT, "| psxy $J $R $xy -Sc0.25c -Gblue");     # key command that sets the scale (J) and region (R)
+    open(PLT, "| psxy $J $R $xy -Sc0.25c -G150");     # key command that sets the scale (J) and region (R) - draws a circle
     for ($jj=1;$jj<$ii;$jj+=1) {
       $l=$dep[$jj];
       $aa = $vr[$jj];
-      printf PLT "%6.3f %6.3f\n",$l,$aa;
+      printf PLT "%f %f\n",$l,$aa;
     }
     close(PLT);
-    open(PLT, "| psxy $J $R $xy -Wthick,blue");     # key command that sets the scale (J) and region (R)
+    open(PLT, "| psxy $J $R $xy -Wthick,150");     # key command that sets the scale (J) and region (R)- drays a line
     for ($jj=1;$jj<$ii;$jj+=1) {
 	$l=$dep[$jj];
       $aa = $vr[$jj];
-      printf PLT "%6.3f %6.3f\n",$l,$aa;
+      printf PLT "%f %f\n",$l,$aa;
     }
     close(PLT);
+    
+    #================== Plot the bars where interface occurs in the structural model
+    if ($imodel==1){
+    for ($kk=0; $kk<=$#model; $kk++){
+	open(PLT, "| psxy $J $R $xy -W1p,blue");
+	printf PLT "%f %f\n",$model[$kk], -10;
+	printf PLT "%f %f\n",$model[$kk], 0;
+    close(PLT);}
+}
 
-    # plot the beach balls
+    #=============== plot the beach balls
     #  open(PLT, "| psmeca -JX -R -O -K -Sa0.3");   # original
     open(PLT, "| psmeca $J $R2 -O -K -Sm${ballsize} -G100 -W0.5p,0 -P"); # plot Moment tensors
     if ($onlydc==1){
@@ -278,7 +325,7 @@ while (@event) {
       $coordy=$lerr[$l];
       #printf STDERR "%f %f \n",$coordx,$coordy;
       printf STDERR "%s \n", $line[$l];
-      printf PLT "%6.1f %6.6f 0.0 %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %f 0.0 0.0 %4.2f\n",
+      printf PLT "%f %f 0.0 %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %f 0.0 0.0 %4.2f\n",
         $coordx,$coordy,$mrr[$l], $mtt[$l], $mff[$l], $mrt[$l], $mrf[$l], $mtf[$l], $M0_exp[$l], $mw[$l];
       # output values to screen
       printf STDERR "%6.1f %6.1f 0.0 %12.5e %12.5e %12.5e %12.5e %12.5e %12.5e %f 0.0 0.0 %4.2f\n",
@@ -286,7 +333,7 @@ while (@event) {
     }
     close(PLT);
 
-    # plot event id, best depth, misfit value
+    # ==============plot event id, best depth, misfit value
     if ($i < $#aa) {
       open(PLT, "| pstext -JX $R -N -O -K");
     }			# when doing the depth test for multiple events (output for various depths should be precomputed for each event)
@@ -298,7 +345,7 @@ while (@event) {
     $xtitle = $dep[1];
     $ytitle = $ymax + ($ymax-$ymin)*0.05;
     $fsizet = $fsize+2;
-    printf PLT "%f %f $fsizet 0 0 1 %s  h=%4.1f \261 %.1f km\n",$xtitle,$ytitle,$eve,$depth,$unc; # $sigma gives much larger estimation of uncertainties
+    printf PLT "%f %f $fsizet 0 0 1 %s  %s h=%4.1f \261 %.1f km\n",$xtitle,$ytitle,$eve,$smodel,$depth,$unc; # $sigma gives much larger estimation of uncertainties
     close(PLT);
     $xx = "-O -K -Y2 $B";           # shift up
     $i++;
