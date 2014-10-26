@@ -145,6 +145,8 @@ a. Run cap with all available polarities
 > cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat 
 ==> since all polarities are consistent with the waveform-only solution, the solution is the sames as in EXAMPLE 1
 
+CELSO, PLEASE ADD A FIGURE (AND OUTPUT FILE) TO CHECK HERE SINCE POLARITIES ARE IMPORTANT.
+
 b. run cap with only one polarity measurement
 > cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
 
