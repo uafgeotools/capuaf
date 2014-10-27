@@ -141,25 +141,32 @@ EXAMPLE 2: Illinois event, DC with P wave polarities in weight file
 
 0. Follow same step 3 EXAMPLE 1
 
+In cap.c skip_zero_weights=0 and compile
+
+> make cap
+
 a. Run cap with all available polarities
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat 
+> cap.pl -H0.2 -P1.5e-6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat 
 ==> since all polarities are consistent with the waveform-only solution, the solution is the sames as in EXAMPLE 1
 
-CELSO, PLEASE ADD A FIGURE (AND OUTPUT FILE) TO CHECK HERE SINCE POLARITIES ARE IMPORTANT.
+This will result can be used to compare results (b)-(d) below.
+> gv $CAPHOME/EXAMPLES/20080418093700/cus_015.ps &
+> gv $CAPHOME/EXAMPLES/20080418093700_check/cus_015_DC_pol.ps &
+> diff 20080418093700/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015_DC_pol.out
 
 b. run cap with only one polarity measurement
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
+> cap.pl -H0.2 -P1.5e-6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
 
 c. run cap with all polarities but one flipped: PVMO
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1.5e-6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 ==> solution is slightly worse, as PVMO was nearly nodal and is now within a colored quadrant
 
 d. run cap with all polarities but one flipped: WVT
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
+> cap.pl -H0.2 -P1.5e-6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
 ==> solution is significantly worse, since WVT was not nodal and is now within a colored quadrant
 
 e. run cap with all polarities but one flipped: BLO
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
+> cap.pl -H0.2 -P1.5e-6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
 ==> no solution is possible
 
 note: the command "-I10/0.1 -J0/0/0/0" could be added but will not affect the results
