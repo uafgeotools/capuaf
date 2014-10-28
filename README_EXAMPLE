@@ -141,7 +141,17 @@ EXAMPLE 2: Illinois event, DC with P wave polarities in weight file
 
 0. Follow same step 3 EXAMPLE 1
 
+NOTE: skip_zero_weights=1 (default) will not plot the polarity information but it will be used
+
 In cap.c skip_zero_weights=0 and compile
+
+NOTE: skip_zero_weights=1 is the default; CAP will not read an input seismogram with all-zero weights
+NOTE: skip_zero_weights=0 allows the use of polarities even when all of a station's weights =0 (in the input file);
+      CAP still needs at least 1 waveform for the inversion
+KEY NOTE: skip_zero_weights=0 every entry in the weight file needs to have either a polarity or a wiggle
+
+FUTURE: Whether skip_zero_weights=0 or 1, what we want is that if there is a station with all-zero weights and no polarity,
+        then we want CAP to simply skip over that station, as if it wasn't in the file.
 
 > make cap
 
@@ -150,7 +160,7 @@ a. Run cap with all available polarities
 ==> since all polarities are consistent with the waveform-only solution, the solution is the sames as in EXAMPLE 1
 
 This will result can be used to compare results (b)-(d) below.
-> gv $CAPHOME/EXAMPLES/20080418093700/cus_015.ps &
+> gv ./20080418093700/cus_015.ps &
 > gv $CAPHOME/EXAMPLES/20080418093700_check/cus_015_DC_pol.ps &
 > diff 20080418093700/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015_DC_pol.out
 
