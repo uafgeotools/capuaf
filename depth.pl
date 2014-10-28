@@ -89,7 +89,7 @@ while (@event) {
           $rake[$ii]=$bb[7];      # not needed
       $mw[$ii]=$bb[9];
       #    printf STDERR "debug. mw[$ii]=%lf\n",$mw[$ii];
-      $rms[$ii]=$bb[11]/$bb[26];
+      $rms[$ii]=$bb[11]/$bb[26];  # Normalized misfit = Residual/Data_norm
       $vr[$ii]=$bb[24];
       if ($min>$rms[$ii]) {
 	$best=$ii;$min=$rms[$ii];
