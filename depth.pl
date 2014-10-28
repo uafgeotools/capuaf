@@ -6,7 +6,7 @@
 # Usage depth.pl result_file event_dir_names ...
 #
 
-$ballsize = 4;		    # controls default beachball size (psmeca)
+$ballsize = 4;		        # controls default beachball size (psmeca)
 $min0 = 1.0e+19;		# impossibly large misfit value
 $Bscale = "-Ba5f1:\"\":/a20f5:\"\":";
 $onlydc = 1; # only plots DC mechanism (Removes psmeca bugs that arises when plotting DC mechs)
@@ -19,7 +19,7 @@ $imodel = 1; # to draws bars at layer interfaces
 @cus =(1,10,20,30);
 #------------
 
-#($rsl,@event) = @ARGV;     # original
+#($rsl,@event) = @ARGV;      # original
 ($rsl,$rsl2,@event) = @ARGV; # input Event and Tensor lines from files cus_NNN.out, and event id
 
 open(RSL,"$rsl") or die "couldn't open inputfile1 $rsl\n";
@@ -67,13 +67,13 @@ close(FH);
 
 #=====================READ output files=============================
 while (@event) {
-  @aa = splice(@event,0,10); # 0=offset, 10=N elements (each element space separated)
+  @aa = splice(@event,0,10);       # 0=offset, 10=N elements (each element space separated)
   #print STDERR "debug. aa=@aa event=@event\n";
   $i=0;
   #$xx = "-K -Ba50f5/a20f5WSne";   # original <-- not enough ticks+labeling
   #$xx = "-K ${Bscale}WS -P";
   $xx = "-K -P $xoffset $yoffset";
-  foreach $eve (@aa) {		# eve = current aa = event id
+  foreach $eve (@aa) {		   # eve = current aa = event id
     $ii=1;
     $best=1;
     $min=$min0;
@@ -89,7 +89,7 @@ while (@event) {
           $rake[$ii]=$bb[7];      # not needed
       $mw[$ii]=$bb[9];
       #    printf STDERR "debug. mw[$ii]=%lf\n",$mw[$ii];
-      $rms[$ii]=$bb[11];
+      $rms[$ii]=$bb[11]/$bb[26];
       $vr[$ii]=$bb[24];
       if ($min>$rms[$ii]) {
 	$best=$ii;$min=$rms[$ii];
@@ -108,12 +108,12 @@ while (@event) {
     $max = log($rms[$ii-1]/$min);
     if (log($rms[1]/$min) > log($rms[$ii-1]/$min)){
 	$max = log($rms[1]/$min);}
-    $max = sprintf("%1.2f",$max);   # suppress to 3 decimal places
+    $max = sprintf("%1.3f",$max);   # suppress to 3 decimal places
 
     $jj=1;
     foreach (grep(/tensor/,@data_fmt)) {
 	# We will go for consistency with cap_plt.pl, which has this line:
-      # printf PLT "0 0 0 @tensor[9,4,7,6] %f %f 17\n",-$tensor[8],-$tensor[5];
+	# printf PLT "0 0 0 @tensor[9,4,7,6] %f %f 17\n",-$tensor[8],-$tensor[5];
 	chop; # example input to chop: # tensor = 5.696e+23  0.838 -0.564 -0.335 -0.259  0.409 -0.185
 	@kk=split;
 	@dummy = split('\+',$kk[3]); # get only the exponent--needed for scaling beachballs on plot
@@ -167,8 +167,8 @@ while (@event) {
     
     #================== PLot misfit parabola
     $xinc = 0.1;
-    $tmp = 1000000;   # temporary variable (start with very large misfit value to find the uncertainty)
-    $err_cent = 0.01;   # to compute uncertainity (
+    $tmp = 1000000;     # temporary variable (start with very large misfit value to find the uncertainty)
+    $err_cent = 0.01;   # to compute uncertainity ($err_cent*100 percent confidence interval)
     open(PLT, "| psxy $J $R2 $xx -W1p,0/0/0,-");     # key command that sets the scale (J) and region (R)
     printf STDERR "---min_dep=%f max_dep=%f----\n", $dep[1],$dep[$ii-1];
     for ($l=$dep[1]; $l<$dep[$ii-1]; $l+=$xinc) {
@@ -231,7 +231,7 @@ while (@event) {
       printf PLT "%f %f\n",$l,$aa;
     }
     close(PLT);
-    open(PLT, "| psxy $J $R $xy -Wthick,150");     # key command that sets the scale (J) and region (R)- drays a line
+    open(PLT, "| psxy $J $R $xy -Wthick,150");        # key command that sets the scale (J) and region (R)- drays a line
     for ($jj=1;$jj<$ii;$jj+=1) {
 	$l=$dep[$jj];
       $aa = $vr[$jj];
