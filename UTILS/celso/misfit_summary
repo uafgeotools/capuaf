@@ -1,0 +1,33 @@
+#!/bin/bash
+# script to plot misfit and best solution on the lune
+# 
+# 2014-11-06 cralvizuri
+#-------------------------------------------
+
+# plot labels
+gmtset CHAR_ENCODING Standard+
+pstext label.txt -R0/8.5/0/11 -JPa1.5i -R0/360/0/1 -P -V -K -S2p,white -N -Xa0i -Ya5.85i > misfit_summary.ps
+
+# define colors
+misfit_min=`minmax -C out.misfit.wf_20110429191551352_009_1_IFAC_psmeca | awk '{print $5}'`
+misfit_max=`minmax -C out.misfit.wf_20110429191551352_009_1_IFAC_psmeca | awk '{print $6}'`
+misfit_del=`echo $misfit_min $misfit_max | awk '{printf "%5.2e", ($2-$1)/100}'`
+makecpt -Cpanoply -D -I -T$misfit_min/$misfit_max/$misfit_del > cpt_misfit
+
+# plot beachball
+psmeca out.misfit.wf_20110429191551352_009_kludge_best_sol -JPa1.5i -R0/360/0/1 -Xa0.85i -Ya6i -Sm1.7i -N -W1.0p,black -Zcpt_misfit -O -K >> misfit_summary.ps
+
+# stations on beachball
+awk '{if ($5==0) print $8, $10}' out.fmp_stndata_20110429191551352_d009 | psxy -JPa1.5i -R0/360/0/1 -Xa0.85i -Ya6i -Ss0.12i -N -W1p,black -Ggray -O -V -K >> misfit_summary.ps
+
+# stations
+awk '{ print $8, $10, 7, 0, 1, "CM", $2 }' out.fmp_stndata_20110429191551352_d009 | pstext -JPa1.5i -R0/360/0/1 -Xa0.85i -Ya6i -D0/0.12 -S1.5p,white -N -O -V -K  >> misfit_summary.ps
+
+# grid
+psbasemap -JH0/1i -R-30/30/-90/90 -Bg15/g30 -Gwhite -O -K -Xa2.7i -Ya6i  >> misfit_summary.ps
+
+# dots
+psxy out.misfit.wf_20110429191551352_009_1_IFAC_psmeca -JH0/1i -R-30/30/-90/90 -Sc0.15c -N -Ccpt_misfit -W0p,black -O -K -Xa2.7i -Ya6i >> misfit_summary.ps 
+
+# arcs
+psxy lune_ref -N -W0.7p,200 -JH0/1i -R-30/30/-90/90 -O -Xa2.7i -Ya6i >> misfit_summary.ps
