@@ -1,33 +1,58 @@
 #!/bin/bash
-# script to plot misfit and best solution on the lune
-# 
+# script to plot lune misfit and best solution
+#
 # 2014-11-06 cralvizuri
 #-------------------------------------------
 
-# plot labels
+evid=$1
+depth_inv=$2
+label_pol="$6" 
+label_weight="${label_pol} PV $3 PR $4 Surf $5"
+depth_inv=`echo ${depth_inv} | awk '{printf "%03d",$1}'`
+
+# files
+out="${evid}_${depth_inv}_V${3}_R${4}_S${5}_${label_pol}_misfit_mini.ps"
+data_stn="$evid/${evid}_${depth_inv}_out_fmp_stndata"
+data_misfit_wf="$evid/${evid}_${depth_inv}_out_misfit_wf_1_IFAC_psmeca"
+psmeca_best_sol="$evid/${evid}_${depth_inv}_out_misfit_wf_kludge_best_sol"
+
+# best solution
+best_sol=`sort -gr -k3,3 $data_misfit_wf | head -1 | awk '{print $1, $2}'`
+best_sol_clvd=`echo $best_sol | awk '{printf "CLVD %.0f", $1}'`
+best_sol_iso=`echo $best_sol  | awk '{printf "ISO %.0f", $2}'`
+
+# plot results
 gmtset CHAR_ENCODING Standard+
-pstext label.txt -R0/8.5/0/11 -JPa1.5i -R0/360/0/1 -P -V -K -S2p,white -N -Xa0i -Ya5.85i > misfit_summary.ps
+echo "0 2.4 10 0 0 LM $evid" | pstext -R0/8.5/0/11 -JPa1.5i -R0/360/0/1 -K -S2p,white -N -Xa0i -Ya5.85i -P > $outfile
+echo "0 2.1 10 0 0 LM $label_weight" | pstext -R0/8.5/0/11 -JPa1.5i -R0/360/0/1 -O -K -S2p,white -N -Xa0i -Ya5.85i >> $outfile
+echo "0 1.8 10 0 0 LM $best_sol_clvd\217" | pstext -R0/8.5/0/11 -JPa1.5i -R0/360/0/1 -O -K -S2p,white -N -Xa0i -Ya5.85i >> $outfile
+echo "30 2.08 10 0 0 LM $best_sol_iso\217" | pstext -R0/8.5/0/11 -JPa1.5i -R0/360/0/1 -O -K -S2p,white -N -Xa0i -Ya5.85i >> $outfile
 
-# define colors
-misfit_min=`minmax -C out.misfit.wf_20110429191551352_009_1_IFAC_psmeca | awk '{print $5}'`
-misfit_max=`minmax -C out.misfit.wf_20110429191551352_009_1_IFAC_psmeca | awk '{print $6}'`
-misfit_del=`echo $misfit_min $misfit_max | awk '{printf "%5.2e", ($2-$1)/100}'`
-makecpt -Cpanoply -D -I -T$misfit_min/$misfit_max/$misfit_del > cpt_misfit
+misfit_min=`minmax -C $data_misfit_wf | awk '{printf "%e",$5}' | sed 's/e/E/g'`
+misfit_max=`minmax -C $data_misfit_wf | awk '{printf "%e",$6}' | sed 's/e/E/g'`
+misfit_del=`echo $misfit_min $misfit_max | awk '{printf "%5.2e",($2-$1)/100}'`
 
-# plot beachball
-psmeca out.misfit.wf_20110429191551352_009_kludge_best_sol -JPa1.5i -R0/360/0/1 -Xa0.85i -Ya6i -Sm1.7i -N -W1.0p,black -Zcpt_misfit -O -K >> misfit_summary.ps
+makecpt -Cpanoply -D -I -T${misfit_min}/${misfit_max}/${misfit_del} > cpt_misfit
 
-# stations on beachball
-awk '{if ($5==0) print $8, $10}' out.fmp_stndata_20110429191551352_d009 | psxy -JPa1.5i -R0/360/0/1 -Xa0.85i -Ya6i -Ss0.12i -N -W1p,black -Ggray -O -V -K >> misfit_summary.ps
+bestsol=`sort -u -g -r -k3,3 ${data_misfit_wf} | head -1`
+minmisfit=`echo ${bestsol} | awk '{print $3}'`
 
-# stations
-awk '{ print $8, $10, 7, 0, 1, "CM", $2 }' out.fmp_stndata_20110429191551352_d009 | pstext -JPa1.5i -R0/360/0/1 -Xa0.85i -Ya6i -D0/0.12 -S1.5p,white -N -O -V -K  >> misfit_summary.ps
+psmeca ${psmeca_best_sol} -JPa1.5i -R0/360/0/1 -Xa0.85i -Ya6i -Sm1.7i -N -W1.0p,0/0/0 -Zcpt_misfit -O -K >> $outfile
 
-# grid
-psbasemap -JH0/1i -R-30/30/-90/90 -Bg15/g30 -Gwhite -O -K -Xa2.7i -Ya6i  >> misfit_summary.ps
+awk '{if($5>0) print $8, $10}' $data_stn | psxy -JPa1.5i -R0/360/0/1 -Xa0.85i -Ya6i -Sc0.12i -N -W1p -G0/175/255 -O -V -K >> $outfile
+awk '{if($5<0) print $8, $10}' $data_stn | psxy -JPa1.5i -R0/360/0/1 -Xa0.85i -Ya6i -Sc0.12i -N -W1p -G255/255/255 -O -V -K >> $outfile
+awk '{if ($5==0) print $8, $10}' $data_stn | psxy -JPa1.5i -R0/360/0/1 -Xa0.85i -Ya6i -Ss0.12i -N -W1p,black -Ggray -O -V -K >> $outfile
 
-# dots
-psxy out.misfit.wf_20110429191551352_009_1_IFAC_psmeca -JH0/1i -R-30/30/-90/90 -Sc0.15c -N -Ccpt_misfit -W0p,black -O -K -Xa2.7i -Ya6i >> misfit_summary.ps 
+echo "0 0" | psxy -JPa1.5i -R0/360/0/1 -Xa0.85i -Ya6i -S+0.1i -N -W1.5p,black -O -V -K >> $outfile
 
-# arcs
-psxy lune_ref -N -W0.7p,200 -JH0/1i -R-30/30/-90/90 -O -Xa2.7i -Ya6i >> misfit_summary.ps
+awk  '{ print $8, $10, 7, 0, 1, "CB", $2 }' $data_stn  | pstext -JPa1.5i -R0/360/0/1 -Xa0.85i -Ya6i -D0/0.12 -S1.5p,white -N -O -V -K  >> $outfile
+
+psbasemap -JH0/1i -R-30/30/-90/90 -Bg15/g30 -G255/255/255 -O -K -Xa2.7i -Ya6i  >> $outfile
+
+psxy $data_misfit_wf -JH0/1i -R-30/30/-90/90 -Sc0.15c -N -Ccpt_misfit -W0p,0/0/0 -O -K -Xa2.7i -Ya6i >> $outfile 
+
+(echo -30 35.2644 ; echo 30 54.7356)  | psxy -N -W1p,0 -JH0/1i -R-30/30/-90/90 -O -K -Xa2.7i -Ya6i >> $outfile
+(echo -30 -54.7356; echo 30 -35.2644) | psxy -N -W1p,0 -JH0/1i -R-30/30/-90/90 -O -K -Xa2.7i -Ya6i >> $outfile
+(echo -30 35.2644 ; echo 30 -35.2644) | psxy -N -W1p,0 -JH0/1i -R-30/30/-90/90 -O -K -Xa2.7i -Ya6i >> $outfile
+
+echo $best_sol | psxy -JH0/1i -R-30/30/-90/90 -Ss0.25c -N -W1.5p,0/255/0 -O -V -Xa2.7i -Ya6i >> $outfile
