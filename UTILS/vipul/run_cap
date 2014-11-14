@@ -1,0 +1,45 @@
+#!/bin/bash
+
+model=scak
+eid=$1  # get eid as input arguement 
+cd $eid
+#-----------------------------------------
+
+fname=$eid/"$eid"_event.dat
+
+read -r -a myArray < $fname
+dep_float=${myArray[3]}
+dep=${dep_float/.*}
+echo "dep=$dep"
+
+let dep_min="$dep-10"
+let dep_max="$dep+10"
+dep_inc=1
+#-----------------------------------------
+
+#wts=(101 011 112 012 110 111) # weight files identifier
+wts=(111)
+norms=(1)
+norms=(1 2)
+
+for ii in ${wts[@]}
+do
+    for norm in ${norms[@]}
+    do 
+	rm L$norm/M$ii/*
+	mkdir L$norm
+	mkdir -p L$norm/M$ii
+	rm "$eid"/"$model"*.out
+	rm "$eid"/"$model"*.ps
+	./inp_cmd
+	#cap.pl -H0.02 -P2e-6/20/60 -p1 -S2/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -M"$model"_$dep/5.0 -I10/0.1 -Zweight$ii.dat -E1 -K1 -Y$norm -A$dep_min/$dep_max/$dep_inc "$eid"
+	#pwd
+	#echo cap.pl -H0.02 -P2e-6/20/60 -p1 -S3/12/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -M"$model"_$dep/5.0 -I10/0.1 -Zweight$ii.dat -E1 -K1 -Y$norm -A$dep_min/$dep_max/$dep_inc "$eid"
+	depth_test "$eid" "$model"
+	mv "$eid"/"$model"*.out L$norm/M$ii/
+	mv "$eid"/"$model"*.ps L$norm/M$ii/
+	mv dep_"$eid".ps L$norm/M$ii/
+	mv junk1.out L$norm/M$ii/
+	mv junk2.out L$norm/M$ii/
+    done
+done

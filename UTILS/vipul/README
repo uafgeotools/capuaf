@@ -1,0 +1,19 @@
+Run these scripts in the directory containing the data. 
+Example of directory structure: 
+/home/vipul/CAP/inv/scak/SCAK/
+
+to run one event:
+./run_cap eid
+
+to run all event in a directory:
+./run_cap_all
+
+Parameters that can be changed inside run_cap:
+dep_min, dep_max, dep_inc - depth search change and increment
+weight files - using weight111.dat (or similar format)
+norm - L1 or L2 norm
+
+Files required
+Event data directory
+weight file
+inp_cmd (command for running CAP - this is self-generated after every CAP run)
