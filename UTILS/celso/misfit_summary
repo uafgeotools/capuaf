@@ -11,7 +11,7 @@ label_weight="${label_pol} PV $3 PR $4 Surf $5"
 depth_inv=`echo ${depth_inv} | awk '{printf "%03d",$1}'`
 
 # files
-out="${evid}_${depth_inv}_V${3}_R${4}_S${5}_${label_pol}_misfit_mini.ps"
+outfile="${evid}_${depth_inv}_V${3}_R${4}_S${5}_${label_pol}_misfit_mini.ps"
 data_stn="$evid/${evid}_${depth_inv}_out_fmp_stndata"
 data_misfit_wf="$evid/${evid}_${depth_inv}_out_misfit_wf_1_IFAC_psmeca"
 psmeca_best_sol="$evid/${evid}_${depth_inv}_out_misfit_wf_kludge_best_sol"
