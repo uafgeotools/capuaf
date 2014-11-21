@@ -5,4 +5,7 @@ When the item is fixed, just delete it from here.
 
 + CAP should be able to run fine with vertical components only, but at the moment you have to copy the files, then set the horizontal component weights to zero
 
++ Whether skip_zero_weights=0 or 1, what we want is that if there is a station with all-zero weights and no polarity, then we want CAP to simply skip over that station, as if it wasn't in the file. (See README_EXAMPLE)
+
 + CAP should exit with NO SOLUTION if the moment tensor hits the edge of the magnitude search range. The error messages should say, "Hitting the XX magnitude limits. Expand the magnitude search range."
+
