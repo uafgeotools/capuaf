@@ -5,14 +5,30 @@ Qingping Yu
 The weights directory includes the cleaned version for publication-ready figures.
 I follow the window selection criteria set in the google doc.
 
-Commands 
+====================================
+COMMANDS TO REPRODUCE RESULTS
 
-Individual solututions
+INDIVIDUAL SOLUTIONS
 
 cap.pl -H0.02 -P1e-6/20/60 -p1.1 -S1/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mtactmod_40/4.1 -I10/0.1 -Zweight_20110405002643000.dat -E1 -K1 -Y1 20110405002643000
 
-Depth tests
+DEPTH TESTS
 
 cap.pl -H0.02 -P1e-6/20/60 -p1.1 -S1/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_40/4.1 -I10/0.1 -Zweight_111_v3.dat -E1 -K1 -Y1 -A20/80/5 20110405002643000
 
 depth_test 20110405002643000 scak
+
+====================================
+NOTES FOR EACH EVENT
+
+20110405002643000
+For stations greater than 200 km, the observed P amplitudes are much larger than predictions; this effect is really bad beyond 350 km. A map showing amplification as a function of space might suggest a structural reason for this.
+Very stable solution across wide range of depths (deeper depths have larger magnitudes).
+Catalog depth: 39.67 km
+AEIC MT depth: 55 km
+CAP depth: 58.5 pm 4.7 km
+scak vs tactmod: DISCUSS HERE
+
+
+
+====================================
