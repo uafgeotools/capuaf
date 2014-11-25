@@ -1,0 +1,18 @@
+Notes for GEOS 488
+Fall 2014
+Qingping Yu
+
+The weights directory includes the cleaned version for publication-ready figures.
+I follow the window selection criteria set in the google doc.
+
+Commands 
+
+Individual solututions
+
+cap.pl -H0.02 -P1e-6/20/60 -p1.1 -S1/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mtactmod_40/4.1 -I10/0.1 -Zweight_20110405002643000.dat -E1 -K1 -Y1 20110405002643000
+
+Depth tests
+
+cap.pl -H0.02 -P1e-6/20/60 -p1.1 -S1/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_40/4.1 -I10/0.1 -Zweight_111_v3.dat -E1 -K1 -Y1 -A20/80/5 20110405002643000
+
+depth_test 20110405002643000 scak
