@@ -590,8 +590,20 @@ note: by not using polarities (to exclude large portions of misfit space), the s
 
 note: this MUST be a worse solution than the non-DC version, since this solution was considered in the non-DC search
 
-====================================================================================
+------------
+PART 13.3. Depth test
 
+1. Do inversions at each depth
+> for depth in 1 2 3 4 5 6 7 8 9 10; do cap.pl -W1 -Y1 -D1/1/0.5 -H0.01 -C2/10/0.25/0.5 -F0 -L0.1 -S0.1/2.0/0 -P0.5e+0.5/1/30 -T1.5/60 -E1 -K1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_$depth/2.8 -Zweight_utu63.dat 20100516063454464 ; done
+
+2. Plot the result
+> depth_test 20100516063454464 utuhalf
+
+3. Compare results
+> gv dep_20100516063454464.ps &
+> gv $CAPHOME/EXAMPLES/20100516063454464_check/dep_20100516063454464.ps &
+
+====================================================================================
 EXAMPLE 14. Uturuncu event 20110622-023324299
             This example shows filter improvement for small signals when using
             flag filter-then-cut during cap run.
