@@ -35,10 +35,78 @@ NOTES FOR EACH EVENT
 For stations greater than 200 km, the observed P amplitudes are much larger than predictions; this effect is really bad beyond 350 km. A map showing amplification as a function of space might suggest a structural reason for this.
 Very stable solution across wide range of depths (deeper depths have larger magnitudes).
 Catalog depth: 39.67 km
-AEIC MT depth: 55 km
+AEC MT depth: 55 km
 CAP depth: 58.5 pm 4.7 km
 scak vs tactmod: DISCUSS HERE
 
-
-
 ====================================
+20090117135640000
+Modified frenquency for plotting (Shallow events) with depth 
+> cap.pl -H0.02 -P2e-6/20/60 -p1.1 -S1/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_10/4.3 -I10/0.1 -Zweight_20090117135640000.dat -E1 -K1 -Y1 20090117135640000
+
+DEPTH TESTS 
+> cap.pl -H0.02 -P2e-6/20/60 -p1.1 -S1/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_10/4.3 -I10/0.1 -Zweight_20090117135640000.dat -E1 -K1 -Y1 -A4/40/2 20090117135640000
+
+> depth_test 20090117135640000 scak
+
+Very stable solution across wide range of depths
+Catalog depth: 9.31 km
+AEC MT depth: 5 km
+CAP depth: 10.4 +/- 0.9 km
+
+=====================================
+20090410055010000
+
+Catalog depth: 14.37 km
+AEC MT depth: 15 km
+CAP depth: 21.4 +/- 2.1 km
+
+Depth test showed that at depth 15, it is a normal fault, but at depth 20 it turned out to the thrust fault where matched the AEC MT solution.
+
+======================================
+20090828214219000
+Modified frenquency for plotting (Shallow events)
+> cap.pl -H0.02 -P2e-6/20/60 -p1.1 -S1/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_12/4.0 -I10/0.1 -Zweight_20090828214219000.dat -E1 -K1 -Y1 20090828214219000
+
+Catalog depth: 11.74 km
+AEC MT depth: 5 km
+CAP depth: 10.3 +/- 0.7 km
+
+The solution changed through the depth. The magitude remains same.
+
+======================================
+20100316122316000
+
+This event has less stations recorded data compared to the other events.The solution is stable across wide range of depths
+
+Catalog depth: 19.63 km
+AEC MT depth: 20 km
+CAP depth: 11.5 +/- 3.4 km
+
+========================================
+20100925120559000
+
+The solution is very stable then it showed on CAP the depth is ranging from 45 +/- 43 km
+
+Catlog depth: 84km
+AEC MT depth: 85km
+
+=======================================
+20101106143719000
+
+For stations greater than 145 km, the observed P amplitudes are much larger than predictions.
+
+========================================
+20101217120155000
+
+Stable solution through the depth
+Catalog depth: 16.34 km
+AEC MT depth: 10 km
+CAP depth: 10 +/- 7.8 km
+
+
+
+
+
+
+
