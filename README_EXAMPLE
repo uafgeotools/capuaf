@@ -667,7 +667,32 @@ Note: plotting flag is set to -P0.5e+0.5/... since greens functions in this mode
 > gv $CAPHOME/EXAMPLES/20110622023324299_check/utuhalf_009_fmt_filter-cut-data-greens.ps &
 
 ====================================================================================
-EXAMPLE 15: Running Alaska Example (20090407201255351)
+EXAMPLE 15: Uturuncu event 20100516063454464 
+            Run with velocity model utufcws
+
+Run WITHOUT polarities, full grid search, components 1-1-1
+> cap.pl -W1 -Y1 -D1/1/0.5 -H0.01 -C2/10/0.25/0.5 -F0 -L0.10 -S0.1/2.0/0 -T1.5/60 -E1 -K1 -I5/0.1/5 -J-90/90/-30/30  -Y1 -Mutufcws_4/2.8 -Zweight_V01_R01_S01_nots_np.dat 20100516063454464 
+
+Compare results
+gv 20100516063454464/utufcws_004_fmt.ps &
+gv 20100516063454464_check/utufcws_004_fmt_V01_R01_S01_np.ps
+
+Run with polarities, full grid search, components 1-1-1
+> cap.pl -W1 -Y1 -D1/1/0.5 -H0.01 -C2/10/0.25/0.5 -F0 -L0.10 -S0.1/2.0/0 -T1.5/60 -E1 -K1 -I5/0.1/5 -J-90/90/-30/30  -Y1 -Mutufcws_4/2.8 -Zweight_V01_R01_S01_nots.dat 20100516063454464 
+
+Compare results
+gv 20100516063454464/utufcws_004_fmt.ps &
+gv 20100516063454464_check/utufcws_004_fmt_V01_R01_S01.ps
+
+Run with polarities, full grid search, components 1-1-0
+> cap.pl -W1 -Y1 -D1/1/0.5 -H0.01 -C2/10/0.25/0.5 -F0 -L0.10 -S0.1/2.0/0 -T1.5/60 -E1 -K1 -I5/0.1/5 -J-90/90/-30/30  -Y1 -Mutufcws_4/2.8 -Zweight_V01_R01_S00_nots.dat 20100516063454464 
+
+Compare results
+gv 20100516063454464/utufcws_004_fmt.ps &
+gv 20100516063454464_check/utufcws_004_fmt_V01_R01_S00.ps
+
+====================================================================================
+EXAMPLE 16: Running Alaska Example (20090407201255351)
 
 1. open cap.c and check that FTC_data=1 and FTC_green=0 (recompile if needed: make all >& make.log )
 
@@ -772,7 +797,7 @@ d. Using just the surface waves at AEC stations (M012)
 > gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M111_az.ps & 
 
 ====================================================================================
-EXAMPLE 16: Running Alaska Example (20080918194353069) - Checking FTC data and green's outputs
+EXAMPLE 17: Running Alaska Example (20080918194353069) - Checking FTC data and green's outputs
 
 1. open cap.c and set FTC_data=0 and FTC_green=0 (Filter and Cut 'NOT applied' to data and synthetics both) and recompile 
 > make all
@@ -819,7 +844,7 @@ EXAMPLE 16: Running Alaska Example (20080918194353069) - Checking FTC data and g
 > evince $CAPHOME/EXAMPLES/20080918194353069_check/FTC_off_results.pdf
 
 ====================================================================================
-EXAMPLE 17: Running Nenana triggering example (20120411092157440)
+EXAMPLE 18: Running Nenana triggering example (20120411092157440)
 
 1. open cap.c and set FTC_data=0 and FTC_green=0 and recompile 
 > make all
