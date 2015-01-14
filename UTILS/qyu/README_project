@@ -2,6 +2,10 @@ Notes for GEOS 488
 Fall 2014
 Qingping Yu
 
+Path for results:
+/home/qyu/GEOTOOLS/tomo_util/cap/UTILS/qyu/weights
+
+
 0. Download data from MATLAB (check out these scirpts) 
       >getwaveform_input    (for user input data)
       >run_getwaveform      (download data)
@@ -103,8 +107,12 @@ Stable solution through the depth
 Catalog depth: 16.34 km
 AEC MT depth: 10 km
 CAP depth: 10 +/- 7.8 km
+========================================
+20110528134400000
+Thrust faults
 
-
+Catalog depth: 12.92 km
+CAP depth: 10.5 +/- 0.7 km
 
 
 
