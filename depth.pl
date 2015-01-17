@@ -101,6 +101,10 @@ while (@event)
 	    }
 	    $ii++;
 	}
+	open(OUT,"./$aa[0]/${smodel}_$dep[${best}].out");
+	@outfile=<OUT>;
+       (undef,undef,undef,$elat,undef,$elon,undef,$edep)  =split(" ",$outfile[1]);
+	printf STDERR "$edep";
     
 	# ------------------read MT parameters --------------------------
 	$jj=1;
@@ -263,12 +267,20 @@ while (@event)
 	{
 	    for ($kk=0; $kk<=$#model; $kk++)
 	    {
-		open(PLT, "| psxy $J $R $xy -W1p,blue");
+		open(PLT, "| psxy $J $R $xy -W2p,blue");
 		printf PLT "%f %f\n",$model[$kk], -10;
 		printf PLT "%f %f\n",$model[$kk], 0;
 		close(PLT);
 	    }
 	}
+
+	#================== Plot AEC catalog depth
+	open(PLT, "| psxy $J $R $xy -Si0.5c -G255/0/0 -W.05c");
+	printf PLT "%f %f\n",$edep, -7.5;
+	close(PLT);
+	open(PLT, "| psxy $J $R $xy -Si0.5c -G255/255/255 -W.05c");
+	printf PLT "%f %f\n",$depth, -7.5;
+	close(PLT);
 
 	#=============== plot the beach balls
 	#  open(PLT, "| psmeca -JX -R -O -K -Sa0.3");   # original
