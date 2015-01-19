@@ -124,6 +124,13 @@ int main (int argc, char **argv) {
   FM	*fm, *fm0;
   FM *fm_copy;  /*  copy of all first motions entered in weight file */
 
+  // variables to verify that Mw_best is not near search limits
+  float mw_center;      // input magnitude
+  float mw_limit_low;   // +- 0.5 for search=1
+  float mw_limit_high;  // 
+  FILE * fid_warn;        // output file for warnings
+  fid_warn = fopen("capout_warnings.txt","w");
+
   SOLN	sol;
   SACHEAD hd[NRC];
   FILE 	*f_out, *logf, *wt, *wt2 ;
@@ -211,6 +218,10 @@ int main (int argc, char **argv) {
 
   /** input grid-search range **/
   scanf("%f%f%f",&(mt[0].par),&(mt[0].dd),&(mt[1].dd)); mt[0].min =  1.;  mt[0].max = 10.;
+
+  // mt[0] is center magnitude. save copy for checking final result
+  mw_center = mt[0].par;
+  
   if(search) {      // use ranges for lune parameters
     scanf("%f%f",&(mt[1].min),&(mt[1].max));  // -90 to 90
     scanf("%f%f",&(mt[2].min),&(mt[2].max));  // -30 to 30
@@ -748,6 +759,23 @@ int main (int argc, char **argv) {
     rad[1]=0.0;
     rad[2]=0.0;
     sol.ms = 1;}
+
+  // output warning if best magnitude = magnitude limit in magnitude search.
+  mw_limit_high = mw_center + 0.4;  // +- 0.5 as used in search=1
+  mw_limit_low  = mw_center - 0.4;
+  if ( (mt[0].par <= mw_limit_low) || (mt[0].par >= mw_limit_high) )
+  {
+      fprintf(stderr,"WARNINGS generated. See file capout_warnings.txt\n");
+      fprintf(fid_warn, "***********************************************************************\n");
+      fprintf(fid_warn, "Warning: best magnitude near search limits.\n");
+      fprintf(fid_warn, "Consider increasing or decreasing center magnitude\n");
+      fprintf(fid_warn, "\nCenter mag= %4.1f / Best mag= %4.1f / Search limits= %4.1f/%4.1f\n\n",
+              mw_center, mt[0].par, mw_limit_low, mw_limit_high);
+      fprintf(fid_warn, "***********************************************************************\n");
+  }
+
+  fclose(fid_warn);
+
   //grid.n[0]=grid.n[1]=grid.n[2]=1;
   //grid.x0[0]=sol.meca.stk; grid.x0[1]=sol.meca.dip; grid.x0[2]=sol.meca.rak;
   //sol = error(nda,obs0,nfm,fm0,max_shft,m0,grid,fm_thr,tie);
@@ -1122,8 +1150,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       if (grid.n[1]==1)
 	del_dip=0.;
       else
-	del_dip=(cos(grid.x0[1]*PI/180.0)-cos((grid.x0[1]+(grid.n[1]-1)*grid.step[1])*PI/180.0))/(grid.n[1]-1);
-      sol.meca.dip=acos(cos(grid.x0[1]*PI/180.0)-(i_dip*del_dip))*(180.0/PI);   //dip from -1 to 1
+	del_dip=(cos(grid.x0[1]*PI/180.0)-cos((grid.x0[1]+(grid.n[1]-1)*grid.step[1])*PI/180.0))/(grid.n[1]-1); // explain ... (VIPUL)
+      sol.meca.dip=acos(cos(grid.x0[1]*PI/180.0)-(i_dip*del_dip))*(180.0/PI);   //dip from -1 to 1      // IS THIS SUPPOSED TO BE INSIDE "ELSE" ABOVE? (VIPUL)
       if (sol.meca.dip==0. || sol.meca.dip>90.)
       	continue;
       fprintf(std_range,"%f\t%f\t%f\n",((float)i_dip+1.)*grid.step[2],cos(sol.meca.dip*PI/180.),sol.meca.dip);
@@ -1227,34 +1255,48 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
           }
 
 		  if (best_sol.err>sol.err) {best_sol = sol;
-		    if (0) fprintf(stderr,"misfit for best sol = %f; stk=%3.1f, dip=%3.1f, rak=%3.1f, VR = %3.2f \n",best_sol.err,sol.meca.stk, sol.meca.dip, sol.meca.rak,100*(1.-(sol.err/data2)*(sol.err/data2)));
+
+          /*  use only during debugging. when do you need it? (VIPUL) */
+//		    if (0) fprintf(stderr,"misfit for best sol = %f; stk=%3.1f, dip=%3.1f, rak=%3.1f, VR = %3.2f \n",best_sol.err,sol.meca.stk, sol.meca.dip, sol.meca.rak,100*(1.-(sol.err/data2)*(sol.err/data2)));   
 		    mt[0].par=temp[0];
 		    mt[1].par=temp[1];
 		    mt[2].par=temp[2];
 		  }
 	       
+          /*  use only during debugging. when do you need it? (VIPUL)
 		  if (debug) { 
 		    logf = fopen(logfile,"a");                 // output log file
 		    fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
 		    //fprintf(stderr,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err,  temp[0], temp[1], temp[2]);
 		    fclose(logf);	  
 		  }
+          */
+
 		}   /* end stk loop */
 	      } /* end dip loop */
 	    
-	      if (sol.meca.stk==(grid.x0[0]+(grid.n[0]-1)*grid.step[0]) &&  sol.meca.dip==(grid.x0[1]+(grid.n[1]-1)*grid.step[1]) &&  sol.meca.rak==(grid.x0[2]+(grid.n[2]-1)*grid.step[2])){
-		loop++;
-		if (debug) {
-		  sprintf(logfile,"%s_%03d_%03d","log",edep,loop);  // changes the log file name for next sext search (for multiple log files - search over stk,dip and rake only)
-		  logf = fopen(logfile,"w");
-		  fclose(logf);
-		}
-		logf = fopen("log_diff","a"); /*fprintf(stderr,"completed stk,dip,rake loop\n");        //summary log file*/
-		fprintf(logf,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
-		fclose(logf);
-	      }
-	    }  /* end rak loop */
-	    if (1) fprintf(stderr,"Mw=%2.1f \t iso=%2.2f \t clvd=%2.2f\n",temp[0],temp[1],temp[2]);
+          // this part checks floats (not reliable)... also fix BEFORE loop starts?... (VIPUL)
+          if (sol.meca.stk==(grid.x0[0]+(grid.n[0]-1)*grid.step[0]) &&  sol.meca.dip==(grid.x0[1]+(grid.n[1]-1)*grid.step[1]) &&  sol.meca.rak==(grid.x0[2]+(grid.n[2]-1)*grid.step[2])){
+              loop++;
+
+          /*  use only during debugging (VIPUL)
+              if (debug) {
+                  sprintf(logfile,"%s_%03d_%03d","log",edep,loop);  // changes the log file name for next sext search (for multiple log files - search over stk,dip and rake only)
+                  logf = fopen(logfile,"w");
+                  fclose(logf);
+              }
+          */
+                /*  
+              logf = fopen("log_diff","a"); //fprintf(stderr,"completed stk,dip,rake loop\n");        //summary log file  // WHEN IS THIS NEEDED? (VIPUL)
+              fprintf(logf,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
+              fclose(logf);
+              */
+          } // END XYZ TEST... (VIPUL)
+          
+	    }  /* end rake loop */
+
+        // output values during grid search
+	    fprintf(stderr,"Mw=%2.1f \t iso=%2.2f \t clvd=%2.2f\n",temp[0],temp[1],temp[2]);
 
         /* output smallest misfit at each (gamma,delta) on the lune */
         if(misfit_on_lune)
@@ -1300,7 +1342,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     fprintf(stderr,"=======================");
     return(best_sol);
  
-  }
+  }     // end loop for option: search=1
  
   else{
     if ( npar ) {	// line-search for mw, iso, and clvd ================================
