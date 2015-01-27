@@ -3,9 +3,84 @@ README_EXAMPLE_utu
 See README_EXAMPLE first -- run the default example.
 
 ====================================================================================
-COMMANDS AND FIGURES FOR utu1D
-ALL FIGURES SAVED IN CAPHOME SHOULD HAVE A COMMAND BELOW
+COMMANDS AND FIGURES TO RECREATE INVERSION RESULTS IN PAPER
+            Uturuncu event 20100516063454464 
+            Velocity model utu1D
 
+Part 1. 
+
+1. Find best depth by running inversions for each depth
+
+> for depth in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 ; do cap.pl -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -D1/1/0.5 -H0.01 -C2/10/0.25/0.5 -S0.1/2.0/0 -T1.5/60 -L0.10 -F0 -Mutu1D_$depth/2.8 -Zw_utu1D_P01_V01_R01_S01.dat 20100516063454464 ; done
+
+2. compile summary figure
+> depth_test 20100516063454464 utu1D
+
+3. compare results
+> gv 20100516063454464_check/depth_test_20100516063454464_utu1D.ps
+> gv dep_20100516063454464.ps
+
+Part 2. check if cap is set correctly, verify inversion parameters
+
+1. go to run directory
+
+> cd $CAPHOME/EXAMPLES
+
+2. check values in the weight.dat file
+
+> more 20100516063454464/w_utu1D_P01_V01_R01_S01.dat
+
+note:
+    1. file name reflects weights for each station in the file, eg: 1-1-1-1-1
+    2. all P arrivals times were obtained from analyst picks
+    3. surface wave time shifts are set to 0.0 for utu1D
+
+3a. Make sure cap is set to its original condition
+
+> cd $CAPHOME
+> svn revert cap.c 
+
+3b. Make sure cap is compiled with the following flags then compile
+
+    FTC_data=1
+    FTC_green=0
+    skip_zero_weights=0
+
+> make cap
+
+Part 3. run cap inversions WITH and WITHOUT: polarities, body waves, surface waves
+
+1a. Run with polarities, full grid search, components 1-1-1 and plot with absolute amplitudes.
+
+> cd $CAPHOME/EXAMPLES
+> cap.pl -H0.01 -P1e-5/1/30 -p0.1 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutu1D_4/2.9 -Zw_utu1D_P01_V01_R01_S01.dat 20100516063454464
+
+1b. compare results and verify .out file:
+
+> gv 20100516063454464/utu1D_004_fmt.ps &
+> gv 20100516063454464_check/utu1D_004_fmt_P01_V01_R01_S01_scale_abs.ps &
+> diff 20100516063454464/utu1D_004.out 20100516063454464_check/utu1D_004_fmt_P01_V01_R01_S01.out
+
+2a. Run WITHOUT polarities, full grid search, components 1-1-1
+> cap.pl -H0.01 -P1e-5/1/30 -p0.1 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutu1D_4/2.9 -Zw_utu1D_P00_V01_R01_S01.dat 20100516063454464 
+
+2b. Compare results
+gv 20100516063454464/utu1D_004_fmt.ps &
+gv 20100516063454464_check/utu1D_004_fmt_P00_V01_R01_S01.ps
+
+3a. Run with polarities, full grid search, components 1-1-0
+> cap.pl -H0.01 -P1e-5/1/30 -p0.1 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutu1D_4/2.9 -Zw_utu1D_P01_V01_R01_S00.dat 20100516063454464 
+
+3b. Compare results
+gv 20100516063454464/utu1D_004_fmt.ps &
+gv 20100516063454464_check/utu1D_004_fmt_P01_V01_R01_S00.ps
+
+4a. Run WITHOUT polarities, full grid search, components 1-1-0
+> cap.pl -H0.01 -P1e-5/1/30 -p0.1 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutu1D_4/2.9 -Zw_utu1D_P00_V01_R01_S00.dat 20100516063454464 
+
+4b. Compare results
+gv 20100516063454464/utu1D_004_fmt.ps &
+gv 20100516063454464_check/utu1D_004_fmt_P00_V01_R01_S00.ps
 
 
 ====================================================================================
@@ -217,14 +292,14 @@ note: this MUST be a worse solution than the non-DC version, since this solution
 PART 13.3. Depth test
 
 1. Do inversions at each depth
-> for depth in 1 2 3 4 5 6 7 8 9 10; do cap.pl -W1 -Y1 -D1/1/0.5 -H0.01 -C2/10/0.25/0.5 -F0 -L0.1 -S0.1/2.0/0 -P0.5e+0.5/1/30 -T1.5/60 -E1 -K1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_$depth/2.8 -Zweight_utu63.dat 20100516063454464 ; done
+> for depth in 1 2 3 4 5 6 7 8 9 10; do cap.pl -W1 -Y1 -D1/1/0.5 -H0.01 -C2/10/0.25/0.5 -F0 -L0.1 -S0.1/2.0/0 -P0.5e+0.5/1/30 -T1.5/60 -E1 -K1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_$depth/2.8 -Zweight_V10_R01_S10.dat 20100516063454464 ; done
 
 2. Plot the result
 > depth_test 20100516063454464 utuhalf
 
 3. Compare results
-> gv dep_20100516063454464.ps &
-> gv $CAPHOME/EXAMPLES/20100516063454464_check/dep_20100516063454464.ps &
+> gv depth_test_20100516063454464.ps &
+> gv $CAPHOME/EXAMPLES/20100516063454464_check/depth_test_20100516063454464.ps &
 
 ====================================================================================
 EXAMPLE 14. Uturuncu event 20110622-023324299
@@ -290,26 +365,3 @@ Note: plotting flag is set to -P0.5e+0.5/... since greens functions in this mode
 > gv $CAPHOME/EXAMPLES/20110622023324299_check/utuhalf_009_fmt_filter-cut-data-greens.ps &
 
 ====================================================================================
-EXAMPLE 15: Uturuncu event 20100516063454464 
-            Run with velocity model utufcws
-
-Run WITHOUT polarities, full grid search, components 1-1-1
-> cap.pl -W1 -Y1 -D1/1/0.5 -H0.01 -C2/10/0.25/0.5 -F0 -L0.10 -S0.1/2.0/0 -T1.5/60 -E1 -K1 -I5/0.1/5 -J-90/90/-30/30  -Y1 -Mutufcws_4/2.8 -Zweight_V01_R01_S01_nots_np.dat 20100516063454464 
-
-Compare results
-gv 20100516063454464/utufcws_004_fmt.ps &
-gv 20100516063454464_check/utufcws_004_fmt_V01_R01_S01_np.ps
-
-Run with polarities, full grid search, components 1-1-1
-> cap.pl -W1 -Y1 -D1/1/0.5 -H0.01 -C2/10/0.25/0.5 -F0 -L0.10 -S0.1/2.0/0 -T1.5/60 -E1 -K1 -I5/0.1/5 -J-90/90/-30/30  -Y1 -Mutufcws_4/2.8 -Zweight_V01_R01_S01_nots.dat 20100516063454464 
-
-Compare results
-gv 20100516063454464/utufcws_004_fmt.ps &
-gv 20100516063454464_check/utufcws_004_fmt_V01_R01_S01.ps
-
-Run with polarities, full grid search, components 1-1-0
-> cap.pl -W1 -Y1 -D1/1/0.5 -H0.01 -C2/10/0.25/0.5 -F0 -L0.10 -S0.1/2.0/0 -T1.5/60 -E1 -K1 -I5/0.1/5 -J-90/90/-30/30  -Y1 -Mutufcws_4/2.8 -Zweight_V01_R01_S00_nots.dat 20100516063454464 
-
-Compare results
-gv 20100516063454464/utufcws_004_fmt.ps &
-gv 20100516063454464_check/utufcws_004_fmt_V01_R01_S00.ps
