@@ -20,6 +20,7 @@ Part 1.
 > gv 20100516063454464_check/depth_test_20100516063454464_utu1D.ps
 > gv dep_20100516063454464.ps
 
+-----------------------------------------------------------
 Part 2. check if cap is set correctly, verify inversion parameters
 
 1. go to run directory
@@ -48,7 +49,9 @@ note:
 
 > make cap
 
+-----------------------------------------------------------
 Part 3. run cap inversions WITH and WITHOUT: polarities, body waves, surface waves
+        NOTE runs without polarities can take hours to complete
 
 1a. Run with polarities, full grid search, components 1-1-1 and plot with absolute amplitudes.
 
@@ -82,6 +85,30 @@ gv 20100516063454464_check/utu1D_004_fmt_P01_V01_R01_S00.ps
 gv 20100516063454464/utu1D_004_fmt.ps &
 gv 20100516063454464_check/utu1D_004_fmt_P00_V01_R01_S00.ps
 
+-----------------------------------------------------------
+Part 4. run cap inversions WITH polarities, tests for individual components:
+            PV, PR, surface waves
+
+1a. Run cap with component PV only
+> cap.pl -H0.01 -P1e-5/1/30 -p0.1 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutu1D_4/2.9 -Zw_utu1D_P01_V01_R00_S00.dat 20100516063454464 
+
+1b. Compare results
+gv 20100516063454464/utu1D_004_fmt.ps &
+gv 20100516063454464_check/utu1D_004_fmt_P01_V01_R00_S00.ps
+
+2a. Run cap with component PR only
+> cap.pl -H0.01 -P1e-5/1/30 -p0.1 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutu1D_4/2.9 -Zw_utu1D_P01_V00_R01_S00.dat 20100516063454464 
+
+2b. Compare results
+gv 20100516063454464/utu1D_004_fmt.ps &
+gv 20100516063454464_check/utu1D_004_fmt_P01_V00_R01_S00.ps
+
+3a. Run cap with component Surf only
+> cap.pl -H0.01 -P1e-5/1/30 -p0.1 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutu1D_4/2.9 -Zw_utu1D_P01_V00_R00_S01.dat 20100516063454464 
+
+3b. Compare results
+gv 20100516063454464/utu1D_004_fmt.ps &
+gv 20100516063454464_check/utu1D_004_fmt_P01_V00_R00_S01.ps
 
 ====================================================================================
 EXAMPLE 12: Uturuncu event 20100516-063454464, first motion polarity
