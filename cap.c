@@ -107,7 +107,7 @@ int main (int argc, char **argv) {
   char	tmp[128],glib[128],dep[32],dst[16],eve[32],*c_pt;
   float	x,x1,x2,y,y1,amp,dt,rad[6],arad[4][3],fm_thr,tie,mtensor[3][3],rec2=0.,VR,evla,evlo,evdp;
   float	rms_cut[NCP], t0[NCP], tb[NRC], t1, t2, t3, t4, srcDelay;
-  float	con_shft[STN], s_shft, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN],syn_amp[200][NCP],dat_amp[200][NCP],kcc;
+  float	con_shft[STN], s_shft, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN],maxamp_syn[200][NCP],maxamp_obs[200][NCP],kcc;
   float	tstarP, tstarS, attnP[NFFT], attnS[NFFT];
   float *data[NRC], *green[NGR];
   float	bs_body,bs_surf,bs[NCP],weight,nof_per_samp;
@@ -834,24 +834,35 @@ for(obs=obs0,i=0;i<nda;i++,obs++){
       hd[0] = sachdr(dt, npt, spt->b);
       hd->dist = obs->dist; hd->az = obs->az; hd->user1 = obs->alpha;
       hd->a = hd->b;
-      dat_amp[i][j]=0.; // variable for finding the maximum data amplitude
+
+      // find the max amplitude from all stations [i], from all components [j]
+      // OBSERVED
+      maxamp_obs[i][j]=0.;
       for(l=0;l<npt;l++){
-	syn[l] = spt->rec[l]/amp;
-	if (fabs(spt->rec[l]/amp)>dat_amp[i][j]) dat_amp[i][j]=fabs(spt->rec[l]/amp); // maximum data amplitude
+          syn[l] = spt->rec[l]/amp; // QUESTION VIPUL WHAT IS THIS SCALING "/amp" ??
+          if (fabs(spt->rec[l]/amp) > maxamp_obs[i][j]){
+              maxamp_obs[i][j] = fabs(spt->rec[l]/amp); // OBSERVED maximum amplitude
+          }
       }
-      write_sac(tmp,hd[0],syn);   // generate data
+      write_sac(tmp,hd[0],syn);   // write observed to file (even though it says 'syn' it's observed)
       (*c_pt)++;
-      syn_amp[i][j]=0.;  // variable for finding the maximum synthetic amplitude
+
+      // SYNTHETIC
+      maxamp_syn[i][j]=0.;
       for(l=0;l<npt;l++) {
-	for(x2=0.,k=0;k<kc;k++) x2 += f_pt[k]*spt->syn[k][l];
-	syn[l] = sol.scl[i][j]*x2;
-	if (fabs(sol.scl[i][j]*x2)>syn_amp[i][j]) {syn_amp[i][j]=fabs(sol.scl[i][j]*x2);}  // maximum synthetic amplitude
+          for(x2=0.,k=0;k<kc;k++){
+              x2 += f_pt[k] * spt->syn[k][l];
+          }
+          syn[l] = sol.scl[i][j] * x2;    // QUESTION VIPUL WHAT IS THIS SCALING "*x2" ??
+          if (fabs(sol.scl[i][j] * x2) > maxamp_syn[i][j]) {
+              maxamp_syn[i][j] = fabs(sol.scl[i][j]*x2);  // SYNTHETIC maximum amplitude
+          }
       }
-      //kcc = log(dat_amp[i][j]/syn_amp[i][j]);
+      //kcc = log(maxamp_obs[i][j]/maxamp_syn[i][j]);
       //fprintf(stderr,"%.3f\t",kcc);
       hd->b -= (shft0[i][j]+con_shft[i]);
       hd->a = hd->b-sol.shft[i][j]*dt;
-      write_sac(tmp,hd[0],syn);   // generate synthetics
+      write_sac(tmp,hd[0],syn);   // write synthetics to file
       (*c_pt)++;
     }
  }
@@ -872,7 +883,7 @@ for(obs=obs0,i=0;i<nda;i++,obs++) {
       //               4    5    6    7     8     9     10 
       fprintf(f_out," %1d %6.2f %2d %5.2f %5.2f %8.2e %8.2e",
               obs->com[k].on_off, sol.error[i][k]*100/(Nsta*sol.err), kc, shft0[i][k]+dt*sol.shft[i][k], 
-              log(dat_amp[i][k]/syn_amp[i][k]), dat_amp[i][k], syn_amp[i][k]);
+              log(maxamp_obs[i][k]/maxamp_syn[i][k]), maxamp_obs[i][k], maxamp_syn[i][k]);
       
     }
     /* output observed polarity and predicted rad amplitude */
