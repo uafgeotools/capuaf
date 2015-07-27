@@ -93,7 +93,7 @@ int misfit_on_lune=0;       // waveform misfit. output misfit on the lune
 
 /* workaround for filter issues with small magnitude events (Uturuncu) */
 // this has not been tested with DIRECTIVITY option
-int FTC_data=1, FTC_green=0;// for original CAP set FTC_data=0, FTC_green=0
+int FTC_data=0, FTC_green=0;// for original CAP set FTC_data=0, FTC_green=0
 
 /* allows use of polarities even when weight=0.
  * Note CAP still needs at least 1 waveform for the inversion */
@@ -107,7 +107,7 @@ int main (int argc, char **argv) {
   char	tmp[128],glib[128],dep[32],dst[16],eve[32],*c_pt;
   float	x,x1,x2,y,y1,amp,dt,rad[6],arad[4][3],fm_thr,tie,mtensor[3][3],rec2=0.,VR,evla,evlo,evdp;
   float	rms_cut[NCP], t0[NCP], tb[NRC], t1, t2, t3, t4, srcDelay;
-  float	con_shft[STN], s_shft, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN],maxamp_syn[200][NCP],maxamp_obs[200][NCP],kcc, lamp_thresh, ppick[200];
+  float	con_shft[STN], s_shft, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN],maxamp_syn[200][NCP],maxamp_obs[200][NCP],kcc,lamp_thresh, ppick[200];
   float	tstarP, tstarS, attnP[NFFT], attnS[NFFT];
   float *data[NRC], *green[NGR];
   float	bs_body,bs_surf,bs[NCP],weight,nof_per_samp;
@@ -123,6 +123,13 @@ int main (int argc, char **argv) {
   DATA	*obs, *obs0;
   FM	*fm, *fm0;
   FM *fm_copy;  /*  copy of all first motions entered in weight file */
+
+  // variables to verify that Mw_best is not near search limits
+  float mw_center;      // input magnitude
+  float mw_limit_low;   // +- 0.5 for search=1
+  float mw_limit_high;  // 
+  FILE * fid_warn;        // output file for warnings
+  fid_warn = fopen("capout_warnings.txt","w");
 
   SOLN	sol;
   SACHEAD hd[NRC];
@@ -211,6 +218,10 @@ int main (int argc, char **argv) {
 
   /** input grid-search range **/
   scanf("%f%f%f",&(mt[0].par),&(mt[0].dd),&(mt[1].dd)); mt[0].min =  1.;  mt[0].max = 10.;
+
+  // mt[0] is center magnitude. save copy for checking final result
+  mw_center = mt[0].par;
+  
   if(search) {      // use ranges for lune parameters
     scanf("%f%f",&(mt[1].min),&(mt[1].max));  // -90 to 90
     scanf("%f%f",&(mt[2].min),&(mt[2].max));  // -30 to 30
@@ -274,7 +285,7 @@ int main (int argc, char **argv) {
   n_shft = 0;
   nfm = 0;
 
-  for(i=0;i<nda;i++) {
+ for(i=0;i<nda;i++) {
 
     /***** input station name and weighting factor ******/
     scanf("%s%s",tmp,dst);
@@ -283,8 +294,7 @@ int main (int argc, char **argv) {
       nup += obs->com[4-j].on_off;
     }
     scanf("%f%f%f%f%f",&x1,&Pnl_win,&ts,&surf_win,&s_shft);
-    
-    ppick[i] = x1;
+
     tsurf[i]=ts;
     tele = 0;
     bs[0] = bs[1] = bs[2] = bs_surf;
@@ -322,7 +332,7 @@ int main (int argc, char **argv) {
     c_pt = strrchr(tmp,(int) 't');
     for(j=0;j<NRC;j++){
       *c_pt = cm[j];
-      if ((data[j] = read_sac(tmp,&hd[j])) == NULL) return -1;      
+      if ((data[j] = read_sac(tmp,&hd[j])) == NULL) return -1;
       tb[j] = hd[j].b-hd[j].o;
       npts[j] = hd[j].npts;
     }
@@ -749,6 +759,23 @@ int main (int argc, char **argv) {
     rad[1]=0.0;
     rad[2]=0.0;
     sol.ms = 1;}
+
+  // output warning if best magnitude = magnitude limit in magnitude search.
+  mw_limit_high = mw_center + 0.4;  // +- 0.5 as used in search=1
+  mw_limit_low  = mw_center - 0.4;
+  if ( (mt[0].par <= mw_limit_low) || (mt[0].par >= mw_limit_high) )
+  {
+      fprintf(stderr,"WARNINGS generated. See file capout_warnings.txt\n");
+      fprintf(fid_warn, "***********************************************************************\n");
+      fprintf(fid_warn, "Warning: best magnitude near search limits.\n");
+      fprintf(fid_warn, "Consider increasing or decreasing center magnitude\n");
+      fprintf(fid_warn, "\nCenter mag= %4.1f / Best mag= %4.1f / Search limits= %4.1f/%4.1f\n\n",
+              mw_center, mt[0].par, mw_limit_low, mw_limit_high);
+      fprintf(fid_warn, "***********************************************************************\n");
+  }
+
+  fclose(fid_warn);
+
   //grid.n[0]=grid.n[1]=grid.n[2]=1;
   //grid.x0[0]=sol.meca.stk; grid.x0[1]=sol.meca.dip; grid.x0[2]=sol.meca.rak;
   //sol = error(nda,obs0,nfm,fm0,max_shft,m0,grid,fm_thr,tie);
@@ -765,7 +792,6 @@ int main (int argc, char **argv) {
   // convert Mw to M0 using GCMT convention (also in Aki and Richards, 2002)
   // this is very close to Kanamori1977 (16.1 vs 16.1010)
   amp=pow(10.,1.5*mt[0].par+16.1-20);
-  fprintf(stderr,"==============AMP = %f ==============\n",amp);
 
   if(search) {
     tt2cmt(mt[2].par, mt[1].par, 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
@@ -813,7 +839,7 @@ for(obs=obs0,i=0;i<nda;i++,obs++){
       // OBSERVED
       maxamp_obs[i][j]=0.;
       for(l=0;l<npt;l++){
-          syn[l] = spt->rec[l]; // QUESTION VIPUL WHAT IS THIS SCALING "/amp" ??
+          syn[l] = spt->rec[l]; // amp is the scaled down M0
           if (fabs(syn[l]) > maxamp_obs[i][j]){
               maxamp_obs[i][j] = fabs(syn[l]); // OBSERVED maximum amplitude
           }
@@ -824,13 +850,13 @@ for(obs=obs0,i=0;i<nda;i++,obs++){
       // SYNTHETIC
       maxamp_syn[i][j]=0.;
       for(l=0;l<npt;l++) {
-          for(x2=0.,k=0;k<kc;k++){
-              x2 += f_pt[k] * spt->syn[k][l];
-          }
-          syn[l] = sol.scl[i][j] * x2 *amp;    // QUESTION VIPUL WHAT IS THIS SCALING "*x2" ??
-          if (fabs(syn[l]) > maxamp_syn[i][j]) {
-              maxamp_syn[i][j] = fabs(syn[l]);  // SYNTHETIC maximum amplitude
-          }
+	for(x2=0.,k=0;k<kc;k++){
+	  x2 += f_pt[k] * spt->syn[k][l];
+	}
+	syn[l] = sol.scl[i][j] * x2 *amp;    // x2 is the green's funciton norm
+	if (fabs(syn[l]) > maxamp_syn[i][j]) {
+	  maxamp_syn[i][j] = fabs(syn[l]);  // SYNTHETIC maximum amplitude
+	}
       }
       //kcc = log(maxamp_obs[i][j]/maxamp_syn[i][j]);
       //fprintf(stderr,"%.3f\t",kcc);
@@ -841,66 +867,65 @@ for(obs=obs0,i=0;i<nda;i++,obs++){
     }
  }
 
-    // set fm_copy to start at beginning of array
-    if (skip_zero_weights==0){
-        for(i=0;i<nda;i++, fm_copy--);
-    }
-
-wt3 = fopen(strcat(strcat(strcpy(tmp,eve),"/"),"weight_run.dat"),"w");
-for(obs=obs0,i=0;i<nda;i++,obs++) {
-    //             stname /  distance / shift (what)
-    //              1     2     3
-    fprintf(f_out,"%-9s %5.1f/%-5.2f",obs->stn, obs->dist, con_shft[i]);
-    fprintf(wt3,"%s\t %d\t",obs->stn, dis[i]);
-    for(j=0;j<NCP;j++) {
-      k = NCP - 1 - j;
-      kc = sol.cfg[i][k]; if (kc<0) kc = 0;
-      //        on_off / station misfit % / kross-corr (what?) / t-shift / log(Aobs/Asyn) / Aobs / Asyn
-      //               4    5    6    7     8     9     10 
-      fprintf(f_out," %1d %6.2f %2d %5.2f %5.2f %8.2e %8.2e",
-              obs->com[k].on_off, sol.error[i][k]*100/(Nsta*sol.err), kc, shft0[i][k]+dt*sol.shft[i][k], 
-              log(maxamp_obs[i][k]/maxamp_syn[i][k]), maxamp_obs[i][k], maxamp_syn[i][k]);
-      if (k<3) lamp_thresh = 1.5;  // log(amplitude) threshold for surface waves
-      else lamp_thresh = 2.5;   // log(amplitude) threshold for body waves
-      if (log(maxamp_obs[i][k]/maxamp_syn[i][k]) > lamp_thresh){
-	fprintf(wt3,"%d\t",0);}
-      else{
-	fprintf(wt3,"%d\t",obs->com[k].on_off);}  
-    }
-    fprintf(wt3,"%3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n", ppick[i], 0., 0., 0., 0.);
-
-    /* output observed polarity and predicted rad amplitude */
-    if (skip_zero_weights==1){
-        fprintf(f_out, " 0 0\n"); // note leading space
-    } 
-    else {
-        /* if no polarity then output pol = 0 */
-        if ( (fm_copy->type == 0) ) {
-            fprintf(f_out," 0 %6.2f\n", radpmt(mtensor, fm_copy->alpha, fm_copy->az, 1)); 
-        }    
-        else {
-            fprintf(f_out, " %2d ", fm_copy->type);
-            fprintf(f_out, "%6.2f\n", radpmt(mtensor, fm_copy->alpha, fm_copy->az, 1)); 
-        }    
-        fm_copy++; 
-    }
+// set fm_copy to start at beginning of array
+ if (skip_zero_weights==0){
+   for(i=0;i<nda;i++, fm_copy--);
  }
-  fclose(f_out);
-  fclose(wt3);
 
-  //if ( ! plot ) return 0;
+ wt3 = fopen(strcat(strcat(strcpy(tmp,eve),"/"),"weight_run.dat"),"w");
+ for(obs=obs0,i=0;i<nda;i++,obs++) {
+   //             stname /  distance / shift (what)
+   //              1     2     3
+   fprintf(f_out,"%-9s %5.1f/%-5.2f",obs->stn, obs->dist, con_shft[i]);
+   fprintf(wt3,"%s\t %d\t",obs->stn, dis[i]);
+   for(j=0;j<NCP;j++) {
+     k = NCP - 1 - j;
+     kc = sol.cfg[i][k]; if (kc<0) kc = 0;
+     //        on_off / station misfit % / kross-corr (what?) / t-shift / log(Aobs/Asyn) / Aobs / Asyn
+     //               4    5    6    7     8     9     10 
+     fprintf(f_out," %1d %6.2f %2d %5.2f %5.2f %8.2e %8.2e",
+	     obs->com[k].on_off, sol.error[i][k]*100/(Nsta*sol.err), kc, shft0[i][k]+dt*sol.shft[i][k], 
+	     log(maxamp_obs[i][k]/maxamp_syn[i][k]), maxamp_obs[i][k], maxamp_syn[i][k]);
+     if (k<3) lamp_thresh = 1.5;  // log(amplitude) threshold for surface waves
+     else lamp_thresh = 2.5;   // log(amplitude) threshold for body waves
+     if (log(maxamp_obs[i][k]/maxamp_syn[i][k]) > lamp_thresh){
+       fprintf(wt3,"%d\t",0);}
+     else{
+       fprintf(wt3,"%d\t",obs->com[k].on_off);}  
+   }
+   fprintf(wt3,"%3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n", ppick[i], 0., 0., 0., 0.);
 
-  /**********ouput weight file -vipul**********/
-  wt = fopen(strcat(strcat(strcpy(tmp,eve),"/"),"weight_capout.dat"),"w");
-  wt2 = fopen(strcat(strcat(strcpy(tmp,eve),"/"),"weight_capin.dat"),"w");
-  for(obs=obs0,i=0;i<nda;i++,obs++){
-    fprintf(wt,"%s\t %d\t %d\t %d\t %d\t %d\t %d\t %3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n",obs->stn, dis[i], obs->com[4].on_off, obs->com[3].on_off, obs->com[2].on_off, obs->com[1].on_off, obs->com[0].on_off, P_pick[i], P_win[i], S_pick[i], S_win[i], S_shft[i]);
-    fprintf(wt2,"%s\t %d\t %d\t %d\t %d\t %d\t %d\t %3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n",obs->stn, dis[i], obs->com[4].on_off, obs->com[3].on_off, obs->com[2].on_off, obs->com[1].on_off, obs->com[0].on_off, P_pick[i]+0.2*mm[0]*dt, P_win[i], S_pick[i]+0.3*mm[1]*dt, S_win[i], S_shft[i]);
-  }
-  fclose(wt);
-  fclose(wt2);
-  
-  return 0;
+   /* output observed polarity and predicted rad amplitude */
+   if (skip_zero_weights==1){
+     fprintf(f_out, " 0 0\n"); // note leading space
+   } 
+   else {
+     /* if no polarity then output pol = 0 */
+     if ( (fm_copy->type == 0) ) {
+       fprintf(f_out," 0 %6.2f\n", radpmt(mtensor, fm_copy->alpha, fm_copy->az, 1)); 
+     }    
+     else {
+       fprintf(f_out, " %2d ", fm_copy->type);
+       fprintf(f_out, "%6.2f\n", radpmt(mtensor, fm_copy->alpha, fm_copy->az, 1)); 
+     }    
+     fm_copy++; 
+   }
+ }
+ fclose(f_out);
+ fclose(wt3);
+ //if ( ! plot ) return 0;
+
+ /**********ouput weight file **********/
+ wt = fopen(strcat(strcat(strcpy(tmp,eve),"/"),"weight_capout.dat"),"w");
+ wt2 = fopen(strcat(strcat(strcpy(tmp,eve),"/"),"weight_capin.dat"),"w");
+ for(obs=obs0,i=0;i<nda;i++,obs++){
+   fprintf(wt,"%s\t %d\t %d\t %d\t %d\t %d\t %d\t %3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n",obs->stn, dis[i], obs->com[4].on_off, obs->com[3].on_off, obs->com[2].on_off, obs->com[1].on_off, obs->com[0].on_off, P_pick[i], P_win[i], S_pick[i], S_win[i], S_shft[i]);
+   fprintf(wt2,"%s\t %d\t %d\t %d\t %d\t %d\t %d\t %3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n",obs->stn, dis[i], obs->com[4].on_off, obs->com[3].on_off, obs->com[2].on_off, obs->com[1].on_off, obs->com[0].on_off, P_pick[i]+0.2*mm[0]*dt, P_win[i], S_pick[i]+0.3*mm[1]*dt, S_win[i], S_shft[i]);
+ }
+ fclose(wt);
+ fclose(wt2);
+
+ return 0;
 }
 
 
@@ -974,7 +999,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       mt[0].dd=1.0;
     }
 
-    N=100000;
+    N=10000;
     rnd_stk = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_dip = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_rak = (float*)malloc(sizeof(int) * N*sizeof(float));
@@ -1041,8 +1066,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
 	    if (debug) { 
 	      logf = fopen(logfile,"a");                 // output log file
-	      //fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
-	      fprintf(logf,"%3.1f \t %3.1f \t %3.1f \t %e \t %e \t %2.2f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, sol.err, temp[0]);
+	      fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
 	      fclose(logf);
 	    }
 	  }
@@ -1099,7 +1123,6 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
         mt[0].max = mt[0].par;
     }
  
-    // if increment 0, set max and min to be the parameter value
     for (ii=0; ii<3; ii++){
     if (mt[ii].dd==0){
       mt[ii].max = mt[ii].par;
@@ -1111,9 +1134,6 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
     std_range = fopen(range_file,"w");
     //Output search ranges
-    // mt[0] = magnitude
-    // mt[1] = iso
-    // mt[2] = clvd
     fprintf(stderr,"=========GRID-SEARCH RANGE===========\n");
     for (ii=0; ii<3; ii=ii+2){
       if (ii==0)
@@ -1128,9 +1148,9 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     for(i_iso=0; i_iso<iso_len; i_iso++){
       if (iso_len==1)
 	  del_iso=0.;
-      else
-	del_iso=(sin(mt[1].max*PI/180.0)-sin(mt[1].min*PI/180.0))/(iso_len-1); // iso_increment = (max - min)/(number_of_points-1) //increments are in sin and not angles
-        temp[1]=asin(sin(mt[1].min*PI/180.0)+(i_iso*del_iso))*(180.0/PI); // dip in angles
+	else
+	  del_iso=(sin(mt[1].max*PI/180.0)-sin(mt[1].min*PI/180.0))/(iso_len-1);
+	temp[1]=asin(sin(mt[1].min*PI/180.0)+(i_iso*del_iso))*(180.0/PI);
 	if (temp[1]==-90. || temp[1]==90. || temp[1] != temp[1])
 	  continue;
 	fprintf(std_range,"%f\t%f\t%f\n",(((float)i_iso)*mt[1].dd)+mt[1].min,sin(temp[1]*PI/180.),temp[1]);
@@ -1150,10 +1170,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       if (grid.n[1]==1)
 	del_dip=0.;
       else
-	// max = cos(grid.x0[1]*PI/180.0)
-	// min = cos((grid.x0[1]+(grid.n[1]-1)*grid.step[1])*PI/180.0) 
-	del_dip=(cos(grid.x0[1]*PI/180.0)-cos((grid.x0[1]+(grid.n[1]-1)*grid.step[1])*PI/180.0))/(grid.n[1]-1); // dip_increment = (max - min)/(number_of_points-1)
-      sol.meca.dip=acos(cos(grid.x0[1]*PI/180.0)-(i_dip*del_dip))*(180.0/PI);   //dip from -1 to 1
+	del_dip=(cos(grid.x0[1]*PI/180.0)-cos((grid.x0[1]+(grid.n[1]-1)*grid.step[1])*PI/180.0))/(grid.n[1]-1); // equal increment in cosine(dip) space -> del_dip is in degrees, i.e. not equally spaced
+      sol.meca.dip=acos(cos(grid.x0[1]*PI/180.0)-(i_dip*del_dip))*(180.0/PI);   //dip from -1 to 1     
       if (sol.meca.dip==0. || sol.meca.dip>90.)
       	continue;
       fprintf(std_range,"%f\t%f\t%f\n",((float)i_dip+1.)*grid.step[2],cos(sol.meca.dip*PI/180.),sol.meca.dip);
@@ -1256,35 +1274,43 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
               }
           }
 
-		  if (best_sol.err>sol.err) {best_sol = sol;
-		    if (0) fprintf(stderr,"misfit for best sol = %f; stk=%3.1f, dip=%3.1f, rak=%3.1f, VR = %3.2f \n",best_sol.err,sol.meca.stk, sol.meca.dip, sol.meca.rak,100*(1.-(sol.err/data2)*(sol.err/data2)));
+		  if (best_sol.err>sol.err) {best_sol = sol; 
 		    mt[0].par=temp[0];
 		    mt[1].par=temp[1];
 		    mt[2].par=temp[2];
 		  }
 	       
+		  //  Generate log files of posterior uncertainty analysis
 		  if (debug) { 
 		    logf = fopen(logfile,"a");                 // output log file
-		    //fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
-		    fprintf(logf,"%3.1f \t %3.1f \t %3.1f \t %e \t %e \t %2.2f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, sol.err, temp[0]);
+		    fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
+		    //fprintf(stderr,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err,  temp[0], temp[1], temp[2]);
 		    fclose(logf);	  
 		  }
+
 		}   /* end stk loop */
 	      } /* end dip loop */
 	    
-	      if (sol.meca.stk==(grid.x0[0]+(grid.n[0]-1)*grid.step[0]) &&  sol.meca.dip==(grid.x0[1]+(grid.n[1]-1)*grid.step[1]) &&  sol.meca.rak==(grid.x0[2]+(grid.n[2]-1)*grid.step[2])){
-		loop++;
-		if (debug) {
-		  sprintf(logfile,"%s_%03d_%03d","log",edep,loop);  // changes the log file name for next sext search (for multiple log files - search over stk,dip and rake only)
-		  logf = fopen(logfile,"w");
-		  fclose(logf);
-		}
-		logf = fopen("log_diff","a"); /*fprintf(stderr,"completed stk,dip,rake loop\n");        //summary log file*/
-		fprintf(logf,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
-		fclose(logf);
-	      }
-	    }  /* end rak loop */
-	    if (1) fprintf(stderr,"Mw=%2.1f \t iso=%2.2f \t clvd=%2.2f\n",temp[0],temp[1],temp[2]);
+          // this part checks floats (not reliable)... Any suggestions?
+          if (sol.meca.stk==(grid.x0[0]+(grid.n[0]-1)*grid.step[0]) &&  sol.meca.dip==(grid.x0[1]+(grid.n[1]-1)*grid.step[1]) &&  sol.meca.rak==(grid.x0[2]+(grid.n[2]-1)*grid.step[2])){
+              loop++;
+
+	      // changes the log file name for next sext search (for multiple log files - search over stk,dip and rake only)
+              if (debug) {
+                  sprintf(logfile,"%s_%03d_%03d","log",edep,loop);
+                  logf = fopen(logfile,"w");
+                  fclose(logf);
+              }
+              
+              logf = fopen("log_diff","a"); //fprintf(stderr,"completed stk,dip,rake loop\n");        //summary log file - Minimum after each Mw search (and all orientations within it)
+              fprintf(logf,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
+              fclose(logf);
+          } // END XYZ TEST
+          
+	    }  /* end rake loop */
+
+        // output values during grid search
+	    fprintf(stderr,"Mw=%2.1f \t iso=%2.2f \t clvd=%2.2f\n",temp[0],temp[1],temp[2]);
 
         /* output smallest misfit at each (gamma,delta) on the lune */
         if(misfit_on_lune)
@@ -1330,7 +1356,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     fprintf(stderr,"=======================");
     return(best_sol);
  
-  }
+  }     // end loop for option: search=1
  
   else{
     if ( npar ) {	// line-search for mw, iso, and clvd ================================
