@@ -400,7 +400,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
 
       #     &plot($md_dep, $m1, $m2, $amplify, $ncom, $sec_per_inch); # 20130102 calvizuri - original
       &plot($md_dep, $m1, $m2, $amplify, $ampfact, $ncom, $spib, $spis, $filterBand, $fmt_flag); # 20130102 calvizuri - added filter freq bands
-      #unlink(<${md_dep}_*.?>) unless $keep;
+      unlink(<${md_dep}_*.?>) unless $keep;
       chdir("../");
     }
   }

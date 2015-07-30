@@ -84,7 +84,7 @@
 ****************************************************************/
 #include "cap.h"
 
-int total_n,loop=0,start=0,debug=0, Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
+int total_n,loop=0,start=0,debug=1, Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
 float data2=0.0;
 
 /* flags for computing uncertainty on the lune. 1==apply */
@@ -93,7 +93,7 @@ int misfit_on_lune=0;       // waveform misfit. output misfit on the lune
 
 /* workaround for filter issues with small magnitude events (Uturuncu) */
 // this has not been tested with DIRECTIVITY option
-int FTC_data=0, FTC_green=0;// for original CAP set FTC_data=0, FTC_green=0
+int FTC_data=1, FTC_green=0;// for original CAP set FTC_data=0, FTC_green=0
 
 /* allows use of polarities even when weight=0.
  * Note CAP still needs at least 1 waveform for the inversion */
@@ -999,7 +999,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       mt[0].dd=1.0;
     }
 
-    N=10000;
+    N=100000;
     rnd_stk = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_dip = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_rak = (float*)malloc(sizeof(int) * N*sizeof(float));
@@ -1066,7 +1066,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
 	    if (debug) { 
 	      logf = fopen(logfile,"a");                 // output log file
-	      fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
+	      fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[2][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
 	      fclose(logf);
 	    }
 	  }
@@ -1283,7 +1283,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		  //  Generate log files of posterior uncertainty analysis
 		  if (debug) { 
 		    logf = fopen(logfile,"a");                 // output log file
-		    fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
+		    fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[1][1], mtensor[2][2], mtensor[0][1], mtensor[0][2], mtensor[1][2]);
 		    //fprintf(stderr,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err,  temp[0], temp[1], temp[2]);
 		    fclose(logf);	  
 		  }
@@ -1417,7 +1417,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	    
 	    if (debug) { 
 	      logf = fopen(logfile,"a");
-	      fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.1f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, mt[0].par, mt[1].par, mt[2].par, amp*1.0e20, mtensor[0][0], mtensor[0][1], mtensor[0][2], mtensor[1][1], mtensor[1][2], mtensor[2][2] );
+	      fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.1f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, mt[0].par, mt[1].par, mt[2].par, amp*1.0e20, mtensor[0][0], mtensor[1][1], mtensor[2][2], mtensor[0][1], mtensor[0][2], mtensor[1][2]);
 	      fclose(logf);	  
 	    }
 	  } // loop for stk
