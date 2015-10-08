@@ -986,49 +986,57 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   // search range file
   sprintf(range_file,"search_range");
 
+  // RANDOM distribution of samples in MT space 
+  // Distribution is homogeneous on lune 
   if (search==2){
 
-    //--------newly added section-------------
     fprintf(stderr,"Mw=%f\n",mt[0].par);
-    mw_ran=1.0;
+    mw_ran=1.0; // Mw search range
     mt[0].max = mt[0].par+mw_ran;
-    mt[0].min = mt[0].par-mw_ran;;
-
+    mt[0].min = mt[0].par-mw_ran;
+ 
+    // if Mw search increment in -I flag is set to 0 then make Mw<min max> search range equal
     if (mt[0].dd==0){
       mt[0].max = mt[0].par;
       mt[0].min = mt[0].par;
       mt[0].dd=1.0;
     }
 
-    N=100000;
-    rnd_stk = (float*)malloc(sizeof(int) * N*sizeof(float));
+    N=100000; // Number of samples 
+    // preallocate arrays for MT paramters 
+    rnd_stk = (float*)malloc(sizeof(int) * N*sizeof(float));   
     rnd_dip = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_rak = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_iso = (float*)malloc(sizeof(int) * N*sizeof(float));
     rnd_clvd = (float*)malloc(sizeof(int) * N*sizeof(float));
     
+    // If space cannot be allocated 
     if (rnd_stk==NULL || rnd_stk==NULL || rnd_stk==NULL){
       fprintf(stderr,"Cannot allocate space for random number generation");}
 
+    // Generate homogeneously distributed samples (Lune parameterization)
+    // XXX same random samples are generated in every run (change drand (to srand) or add seed)
+    // drand return values bteween 0 and 1
     for(i=0;i<N;i++){
       rnd_stk[i]=0.0+360.0*drand48();
-      rnd_dip[i]=0.0+1.0*drand48();
+      rnd_dip[i]=0.0+1.0*drand48();     // because cos(dip) is homogeneous 
       rnd_rak[i]=-90.0+180.0*drand48();
-      if (mt[1].dd==0)
+      if (mt[1].dd==0) // for direct search at a particular CLVD
 	rnd_iso[i]=sin(mt[1].par*(PI/180.0));
       else
-	rnd_iso[i]=-1.0+2.0*drand48();
-      if (mt[2].dd==0)
+	rnd_iso[i]=-1.0+2.0*drand48();  // because sin(iso) is homogeneous 
+      if (mt[2].dd==0) // for direct search at a particular ISO
 	rnd_clvd[i]=mt[2].par;
       else
 	rnd_clvd[i]=-30.0+60.0*drand48();
     }
 
     best_sol.err = FLT_MAX;
-
+    
+    /* mt[0] = Mw    (temp[0] searches for best Mw)
+       mt[1] = ISO   (temp[1] searches for best ISO)
+       mt[2] = CLVD  (temp[2] searches for best CLVD)  */ 
      for(temp[0]=mt[0].min;temp[0]<=mt[0].max;temp[0]=temp[0]+mt[0].dd){ 
-
-	  //--------newly added section ends here-------------
 
 	  //==== the base case: grid-search for strike, dip, and rake =============
 	  amp = pow(10.,1.5*temp[0]+16.1-20);
@@ -1036,7 +1044,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
 	  //--------------random search loop-------------------------------------
 	  for(ii=0; ii<N; ii++) {
-	    temp[1]=asin(rnd_iso[ii])*(180.0/PI);
+	    temp[1]=asin(rnd_iso[ii])*(180.0/PI); 
 	    temp[2]=rnd_clvd[ii];
 	    sol.meca.rak=rnd_rak[ii];
 	    sol.meca.dip=acos(rnd_dip[ii])*(180.0/PI);
@@ -1044,34 +1052,37 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
 	    //nmtensor(mt[1].par,mt[2].par,sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor);
 	    //nmtensor(temp[1],temp[2],sol.meca.stk,sol.meca.dip,sol.meca.rak,mtensor);
-	    tt2cmt(temp[2], temp[1], 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
+	    tt2cmt(temp[2], temp[1], 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);   // get normalized mtensor from (CLVD,ISO,strike,dip, rake)
 	    if (check_first_motion(mtensor,fm,nfm,fm_thr)<0) {
 	      *grd_err++ = sol.err = FLT_MAX;
 	      continue;
 	    }
-
+	    // This gets executed only when bootstrapping is performed
 	    if (bootstrap && interp==0) fprintf(stderr,"BOOTSTRAPPING %5.2f %5.2f %5.2f %5.1f %5.1f %5.1f\n", mt[0].par, mt[1].par, mt[2].par, sol.meca.stk, sol.meca.dip, sol.meca.rak);
 	   
 	    //--------------KEY COMMAND---call misfit function------
 	    sol=calerr(nda,obs0,max_shft,tie,norm,mtensor,amp,sol);
 
-	    sol.err=sol.err/Nsta;
-	    *grd_err++ = sol.err;		/*error for this solution*/
-
+	    sol.err=sol.err/Nsta;               // normalize error by number of station
+	    *grd_err++ = sol.err;		// error for this solution
+	    
+	    // save the sample if it has the misfit lower than previous
 	    if (best_sol.err>sol.err) {best_sol = sol;
-	      if (debug) fprintf(stderr,"misfit for best sol = %f; stk=%3.1f, dip=%3.1f, rak=%3.1f \n",best_sol.err,sol.meca.stk, sol.meca.dip, sol.meca.rak);
+	      if (debug) fprintf(stderr,"misfit for best sol = %f; stk=%3.1f, dip=%3.1f, rak=%3.1f \n",best_sol.err,sol.meca.stk, sol.meca.dip, sol.meca.rak); // output on screen if in debug mode
 	      mt[0].par=temp[0];
 	      mt[1].par=temp[1];
 	      mt[2].par=temp[2];
 	    }
 
+	    // in debug mode it will save all samples in a logfile
 	    if (debug) { 
 	      logf = fopen(logfile,"a");                 // output log file
 	      fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[1][1], mtensor[2][2], mtensor[0][1], mtensor[0][2], mtensor[1][2] );
 	      fclose(logf);
 	    }
-	  }
+	  }  // number of samples (ii < N) loop ends
 
+	  // change the log filename for every depth
 	  if (debug) {
 	    loop++;
 	    sprintf(logfile,"%s_%03d_%03d","log",edep,loop);  // changes the log file name for next sext search
@@ -1079,23 +1090,22 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	    fclose(logf);
 	  }
 	  
-	  if (1){
+	  if (1){  // This saves only those samples which had misfit lower than previous sample
 	    logf = fopen("log_diff","a"); /*fprintf(stderr,"completed stk,dip,rake loop\n");        //summary log file*/
 	    fprintf(logf,"%d\t%d\t%3.1f\t%3.1f\t%3.1f\t%f\t%2.2f\t%2.2f\t%2.2f\n",loop,interp, best_sol.meca.stk, best_sol.meca.dip, best_sol.meca.rak, best_sol.err, mt[0].par, mt[1].par, mt[2].par);
 	    fclose(logf);
 	  }
 	  fprintf(stderr, "%d\t%3.2f\t%3.2f\t%3.2f\t%2.1f\t%2.1f\t%2.2f\n",ii+1,sol.meca.stk, sol.meca.dip,sol.meca.rak,temp[0],temp[1],temp[2]);
 	  
-     fprintf(stderr,"========================Minimum==================================\n");
+	  fprintf(stderr,"========================Minimum==================================\n"); // output the minimum misfit sample for every magnitude (Mw) searched
      fprintf(stderr, "%3.2f\t%3.2f\t%3.2f\t%2.1f\t%2.1f\t%2.2f\n",best_sol.meca.stk, best_sol.meca.dip,best_sol.meca.rak,temp[0],mt[1].par,mt[2].par);
-     }
-     // }
-     //}
+     } // magnitude search (mt[0]) loop ends
   
 
     if (debug) fprintf(stderr, "Mw=%5.2f  iso=%5.2f clvd=%5.2f misfit = %9.3e\n", mt[0].par, mt[1].par, mt[2].par, best_sol.err);
     if (interp==0) return(best_sol);
-    /* do interpolation */
+    /* do interpolation - But this is not implemented in random search yet - a gateway towards neighbourhood algorithm*/
+    // Code does not reach this part - return(best_sol) is happening before
     best_sol.err = grid3d(grid.err,&(grid.n[0]),s3d,&(best_sol.flag),&(best_sol.ms),best_sol.others);
     if (debug) fprintf(stderr, " interpolation  misfit = %9.3e\n", best_sol.err);
     best_sol.meca.stk = grid.x0[0]+s3d[0]*grid.step[0];
@@ -1107,7 +1117,6 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     best_sol.dev[5] = s3d[8]/(grid.step[1]*grid.step[2]);
     fprintf(stderr,"=======================");
     return(best_sol);
-
   }
 
   if (search==1){
@@ -1345,6 +1354,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     if (debug) fprintf(stderr, "Mw=%5.2f  iso=%5.2f clvd=%5.2f misfit = %9.3e\n", mt[0].par, mt[1].par, mt[2].par, best_sol.err);
     if (interp==0) return(best_sol);
     /* do interpolation */
+    // Code does not reach here - return(best_sol) is happening before
     best_sol.err = grid3d(grid.err,&(grid.n[0]),s3d,&(best_sol.flag),&(best_sol.ms),best_sol.others);
     if (debug) fprintf(stderr, " interpolation  misfit = %9.3e\n", best_sol.err);
     best_sol.meca.stk = grid.x0[0]+s3d[0]*grid.step[0];
