@@ -1,12 +1,4 @@
-KEY POINTS: (***FIX THIS)
-For 21 events (Part I) set FTC_data = 1; 
-For rest 85 events (Part II) set FTC_data = 1;
-
-Set -P flag to 1 (automatic scaling) - In the the newer version of CAP the amplitude scaling factor was removed from the denominator of observed seismogram and multipled to the numerator of synthetics. Moment tensor solution does not changes, but the amplitude of plotted seismogram changes. 
-
--------------------------------------------------------------------
 FINDIG THE MINIMUM; GRID AND RANDOM SEARCH
-XXX filesnames XXX
 
 EVENT 20090407201255351 (from SilwalTape2015)
 
@@ -22,7 +14,7 @@ depth_test 20090407201255351 scak
 -> Create a 'data directory' to store all the output files (*.ps, *.out, log* files)
 mkdir RESULTS_20090407201255351/
 
--> move files to the 'data directory'
+-> move files to the 'data directory' (These files are optional) 
 mv 20090407201255351/scak*out RESULTS_20090407201255351/
 mv 20090407201255351/scak*ps RESULTS_20090407201255351/
 mv dep_20090407201255351.ps RESULTS_20090407201255351/
@@ -33,14 +25,16 @@ mv junk2.out RESULTS_20090407201255351/
 Open cap.c and set 'debug=1' and recompile
 make all
 
--> Run random search  (Change -K flag to 2 (random); and -I flag to 2)
+-> Run random search  (Change -K flag to 2 (random); and -I flag to 2) - If you have too many sample points reduce -I to 1
 cap.pl -H0.02 -P1/20/60 -p2 -S2/10/0 -T15/120 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -W1 -Mscak_39/4.6 -I2/0 -Zweight111.dat -E1 -K2 -Y1 20090407201255351
 
--> save the log files in the 'data directory'
+-> save the log files in the 'data directory' (MATLAB script requires filename to be in this format)
 mv log_039_000 ./RESULTS_20090407201255351/log_039_rand
 
 -> Run grid search  (Change -K flag to 1 (grid); and -I flag to 5)
 cap.pl -H0.02 -P1/20/60 -p2 -S2/10/0 -T15/120 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -W1 -Mscak_39/4.6 -I5/0 -Zweight111.dat -E1 -K1 -Y1 20090407201255351
+
+-> save the log files in the 'data directory' (MATLAB script requires filename to be in this format)
 mv log_039_000 RESULTS_20090407201255351/log_039_grid
 mv 20090407201255351/scak_039.out ./RESULTS_20090407201255351/20090407201255351.out
 cp 20090407201255351/20090407201255351_event.dat ./RESULTS_20090407201255351/20090407201255351_event.dat
@@ -52,10 +46,10 @@ NOW WE WILL USE THESE FILES FOR UNCERTAINTY ANALYSIS
 -> Open MATLAB
 matlab &
 
--> 
+-> Run in MATLAB (KEY commands) - Files will be 
 eid = '20090407201255351';
 ddir =strcat('~/REPOSITORIES/cap/EXAMPLES/RESULTS_20090407201255351/'); 
-GMTdir = '~/REPOSITORIES/cap/EXAMPLES/RESULTS_20090407201255351/gmt/data2/';
+GMTdir = '~/REPOSITORIES/cap/EXAMPLES/RESULTS_20090407201255351/gmt/data/';
 Mref = [];
 [Mref, post_samples_info,unc_result]= CAP_unc(eid,Mref,ddir,GMTdir)
 MTbrick_Csection(eid,ddir,GMTdir,Mref);
@@ -64,6 +58,14 @@ MTbrick_Csection(eid,ddir,GMTdir,Mref);
 NOW PLOTTING THE RESULTS USING GMT
 
 script for plotting is here: SET YOUR PATH SO YOU CAN SEE THIS
+~/REPOSITORIES/GEOTOOLS/tomo_util/capsupp/CAP_summary_plot.pl 
+
+To be sure 
+-> which CAP_summary_plot.pl 
+
+Open this script and make sure 'datadir' is same as 'GMTdir' (as set in MATLAB)
+
 /home/vipul/REPOSITORIES/GEOTOOLS/tomo_util/capsupp/CAP_summary_plot.pl 
 
+-> run uncertainty plot
 CAP_summary_plot.pl 20090407201255351
