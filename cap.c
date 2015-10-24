@@ -84,7 +84,7 @@
 ****************************************************************/
 #include "cap.h"
 
-int total_n,loop=0,start=0,debug=1, Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
+int total_n,loop=0,start=0,debug=0, Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
 float data2=0.0;
 
 /* flags for computing uncertainty on the lune. 1==apply */
@@ -523,12 +523,12 @@ int main (int argc, char **argv) {
 	if (spt->on_off) {total_n+=npt; Nsta += spt->on_off;}  // Nsta = number of all the components
 
 	// count number of surface and body wave components
-        if (j<3) {
-	  isurf += spt->on_off;
-        }
-	else {
-	  ibody += spt->on_off;
-        }
+    if (j<3) {
+        if (spt->on_off >= 1) isurf ++;
+    }
+    else {
+        if (spt->on_off >= 1) ibody ++;
+    }
         istat += spt->on_off;
 
         /* FILTER+CUT options for data */
