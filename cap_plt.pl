@@ -107,6 +107,7 @@ sub plot {
       $amp = $am/$ampfact;}
   $stams = "$amp/0.";
   $stamb = "$am/0.";                                   # overwrite for absolute (to match default plotting)
+
   print "\namplitude scaling am = $am";
   print "\npssac2 amplitude scaling stam = $stam\n";
 #  $outps = "$mdl.ps";   # original
@@ -247,9 +248,13 @@ sub plot {
       $amp = $am/$ampfact;}
   $stams = "$amp/0.";
   $stamb = "$am/0.";                                   # overwrite for absolute (to match default plotting)
+
+  # 20151025 cralvizuri - uncomment this command to normalize surf waves
+  #                       This is for figures in Uturuncu FMT paper
+  #$stams = $stamb;
+
   $plt1b = "| pssac2 -JX${widthb}i/${height}i -L${spib} -l${tscale_x}/${tscale_y}/1/0.075/8 -R0/$ttb/0/$nn -Y0.2i -Ent-2 -M$stamb -K -P >> $outps";
   $plt1s = "| pssac2 -JX${widths}i/${height}i -L${spis} -l${tscale_x}/${tscale_y}/1/0.075/8 -R0/$tts/0/$nn -X${xoffset}i -Ent-2 -M$stams -O -K -P >> $outps";
-
 
   # remove the file if it exists
   unlink($outps) if -e $outps;
