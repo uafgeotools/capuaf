@@ -277,8 +277,13 @@ while (@event)
 	#================== Plot AEC catalog depth
 	open(PLT, "| psxy $J $R $xy -Si0.5c -G255/0/0 -W.05c");
 	printf PLT "%f %f\n",$edep, -7.5;
+    # Uncomment the following for FMT Uturuncu paper. Tweak to plot red triangle at catalog depth.
+    # depth test gives best depth 4.4km (rounded to 4km) below topo 4.6km.
+    # therefore inversion is done at 4km below topo, or 0.6km above sea level.
+    # Catalog depth is 0.6 BELOW sea level.
+    # printf PLT "%f %f\n",$edep + 4.6, -7.5;
 	close(PLT);
-	open(PLT, "| psxy $J $R $xy -Si0.5c -G255/255/255 -W.05c");
+    open(PLT, "| psxy $J $R $xy -Si0.5c -G255/255/255 -W.05c");
 	printf PLT "%f %f\n",$depth, -7.5;
 	close(PLT);
 
@@ -321,6 +326,8 @@ while (@event)
 	$ytitle = $ymax + ($ymax-$ymin)*0.05;
 	$fsizet = $fsize+2;
 	printf PLT "%f %f $fsizet 0 0 1 %s  %s h=%4.1f \261 %.1f km\n",$xtitle,$ytitle,$eve,$smodel,$depth,$unc; # $sigma gives much larger estimation of uncertainties
+    # Uncomment the following for FMT Uturuncu paper. replacing: 'h' with 'depth', 'utuhalf' with more descriptive 'halfspace'
+    # printf PLT "%f %f $fsizet 0 0 1 %s | halfspace | depth%4.1f \261 %.1f km\n",$xtitle,$ytitle, $eve,$depth,$unc; # $sigma gives much larger estimation of uncertainties
 	close(PLT);
 	$xx = "-O -K -Y2 $B";	# shift up
 	$i++;
