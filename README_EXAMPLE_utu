@@ -147,7 +147,7 @@ make all
 
 # 3. To run cap
 cd $CAPHOME/EXAMPLES
-./cap.pl -F0.0 -I5/0/5 -J-90/90/-30/30 -Mutuhalf_5/2.4 -E1 -K1 -Y1 -Zweight.dat 20100516063454464
+./cap.pl -F0.0 -I5/0/5 -J-90/90/-30/30 -Mutuhalf_4/2.4 -E1 -K1 -Y1 -Zweight.dat 20100516063454464
 
 # 4. This run should have produced file out.misfit.fmp_
 # Next compute summary of first motion polarities using this file
@@ -173,13 +173,13 @@ python $CAPHOME/misfit2lune.py out.misfit.fmp_ out.misfit_summary
 mkdir -p $CAPRUN/models/utuhalf
 cd $CAPRUN/models/utuhalf/
 cp $CAPHOME/EXAMPLES/20100516063454464/utuhalf .
-fk.pl -Mutuhalf/5 -N16384/0.01 11 14 18 19 21 22 31 33 37 50
+fk.pl -Mutuhalf/4 -N16384/0.01 11 14 18 19 21 22 31 33 37 50
 
 # NOTE  this uses the "utuhalf" 1D model for the Uturuncu region 
 # NOTE  You do not need to run fk if you have a pre-computed library of Green's functions.
 
 # 2. run fk again to generate isotropic components
-fk.pl -Mutuhalf/5 -N16384/0.01 -S0 11 14 18 19 21 22 31 33 37 50
+fk.pl -Mutuhalf/4 -N16384/0.01 -S0 11 14 18 19 21 22 31 33 37 50
 
 # This will create 3 additional green functions for each distance of the form dist.grn.(a-c),
 # eg. 11.grn.a, 11.grn.b, 11.grn.c
@@ -215,23 +215,23 @@ make cap
 
 # 4a. Run cap and plot with absolute amplitudes
 cd $CAPHOME/EXAMPLES
-cap.pl -H0.01 -P1.5e-5/1/30 -p0.1 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S10.dat 20100516063454464
+cap.pl -H0.01 -P1.5e-5/1/30 -p0.1 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zweight_V10_R01_S10.dat 20100516063454464
 
 # 4b. compare results
-gv 20100516063454464/utuhalf_005_fmt.ps &
-gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R01_S10_scale_abs.ps &
+gv 20100516063454464/utuhalf_004_fmt.ps &
+gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_004_fmt_V10_R01_S10_scale_abs.ps &
 
 # 5a. Run cap and plot with data and syn amplitudes normalized to the same scale.
 # In cap_plt.plt (revision r2318) insert the following line after line # 108 
 $stams = $stamb;
 
 # 5b. run cap
-cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S10.dat 20100516063454464 
+cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zweight_V10_R01_S10.dat 20100516063454464 
 
 # 5c. compare results and verify .out file:
-gv 20100516063454464/utuhalf_005_fmt.ps &
-gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R01_S10.ps &
-diff 20100516063454464/utuhalf_005.out $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005.out
+gv 20100516063454464/utuhalf_004_fmt.ps &
+gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_004_fmt_V10_R01_S10.ps &
+diff 20100516063454464/utuhalf_004.out $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_004.out
 
 # NOTE 
 # 1. plotting flag is set to -P0.5e+0.5/... which normalizes seismograms in each window
@@ -256,59 +256,59 @@ diff 20100516063454464/utuhalf_005.out $CAPHOME/EXAMPLES/20100516063454464_check
 # M2.9 is the best magnitude for this solution, and also happens to be 
 # the top limit in grid search (catalog mag = 2.4 +/- 0.5).
 
-cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V01_R01_S60.dat 20100516063454464
+cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zweight_V01_R01_S60.dat 20100516063454464
 
 # 6b. compare results
-gv 20100516063454464/utuhalf_005_fmt.ps &
-gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V01_R01_S60.ps &
+gv 20100516063454464/utuhalf_004_fmt.ps &
+gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_004_fmt_V01_R01_S60.ps &
 
 # 7a. try polarities + component PV
-cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R00_S00.dat 20100516063454464
+cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zweight_V10_R00_S00.dat 20100516063454464
 
 # 7b. compare results
-gv 20100516063454464/utuhalf_005_fmt.ps 
-gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R00_S00.ps &
+gv 20100516063454464/utuhalf_004_fmt.ps 
+gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_004_fmt_V10_R00_S00.ps &
 
 # 8a. try polarities + component PR
-cap.pl -H0.01 -P2e-06/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V00_R01_S00.dat 20100516063454464
+cap.pl -H0.01 -P2e-06/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zweight_V00_R01_S00.dat 20100516063454464
 
 # 8b. compare results
-gv 20100516063454464/utuhalf_005_fmt.ps 
-gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V00_R01_S00.ps &
+gv 20100516063454464/utuhalf_004_fmt.ps 
+gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_004_fmt_V00_R01_S00.ps &
 
 # 9a. try polarities + components PV + PR
-cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S00.dat 20100516063454464
+cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zweight_V10_R01_S00.dat 20100516063454464
 
 # 9b. compare results
-gv 20100516063454464/utuhalf_005_fmt.ps &
-gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R01_S00.ps &
+gv 20100516063454464/utuhalf_004_fmt.ps &
+gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_004_fmt_V10_R01_S00.ps &
 
 # 10a. try polarities + components S (Surface waves)
 # NOTE
 # This cap run is centered around M2.9 for peace of mind. See also Ex. 6.
 # M2.9 is the best magnitude for this solution, and also happens to be 
 # the top limit in grid search (catalog mag = 2.4 +/- 0.5).
-cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V00_R00_S10.dat 20100516063454464
+cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zweight_V00_R00_S10.dat 20100516063454464
 
 # 10b. compare results
-gv 20100516063454464/utuhalf_005_fmt.ps &
-gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V00_R00_S10.ps &
+gv 20100516063454464/utuhalf_004_fmt.ps &
+gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_004_fmt_V00_R00_S10.ps &
 
 # 11a. try NO polarities + components PV + PR + S
 # NOTE  by not using polarities (to exclude large portions of misfit space), the search can take 2+ hours
-cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S10_nopol.dat 20100516063454464
+cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zweight_V10_R01_S10_nopol.dat 20100516063454464
 
 # 11b. compare results
-gv 20100516063454464/utuhalf_005_fmt.ps &
-gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_fmt_V10_R01_S10_nopol.ps &
+gv 20100516063454464/utuhalf_004_fmt.ps &
+gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_004_fmt_V10_R01_S10_nopol.ps &
 
 # 12a. try polarities + components PV + PR + S BUT constrained to DC
 # NOTE  this MUST be a worse solution than the non-DC version, since this solution was considered in the non-DC search
-cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1 -J0/0/0/0 -E1 -K1 -Y1 -Mutuhalf_5/2.4 -Zweight_V10_R01_S10.dat 20100516063454464 
+cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1 -J0/0/0/0 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zweight_V10_R01_S10.dat 20100516063454464 
 
 # 12b. compare results
-gv 20100516063454464/utuhalf_005_fmt.ps &
-gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_005_DC_V10_R01_S10.ps &
+gv 20100516063454464/utuhalf_004_fmt.ps &
+gv $CAPHOME/EXAMPLES/20100516063454464_check/utuhalf_004_DC_V10_R01_S10.ps &
 
 # ==============================================================================
 # EXAMPLE 14. Uturuncu event 20110622023324299
