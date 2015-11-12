@@ -9,8 +9,8 @@
 $ballsize = 4;		    # controls default beachball size (psmeca)
 $min0 = 1.0e+19;	    # impossibly large misfit value
 $Bscale = "-Ba5f1:\"\":/a20f5:\"\":";
-$onlydc = 1; # only plots DC mechanism (Removes psmeca bugs that arises when plotting DC mechs)
-$imodel = 1; # to draws bars at layer interfaces
+$onlydc = 0; # only plots DC mechanism (Removes psmeca bugs that arises when plotting DC mechs)
+$imodel = 0; # to draws bars at layer interfaces
 
 #------------
 # Structural model info : depth of layer interface
@@ -277,11 +277,16 @@ while (@event)
 	#================== Plot AEC catalog depth
 	open(PLT, "| psxy $J $R $xy -Si0.5c -G255/0/0 -W.05c");
 	printf PLT "%f %f\n",$edep, -7.5;
-    # Uncomment the following for FMT Uturuncu paper. Tweak to plot red triangle at catalog depth.
-    # depth test gives best depth 4.4km (rounded to 4km) below topo 4.6km.
-    # therefore inversion is done at 4km below topo, or 0.6km above sea level.
-    # Catalog depth is 0.6 BELOW sea level.
-    # printf PLT "%f %f\n",$edep + 4.6, -7.5;
+
+    # Uncomment the following for depth test main event, FMT Uturuncu paper.
+    # This is a tweak to plot red triangle at catalog depth.
+    # NOTE Catalog depth for this event is 0.6 below sea level.
+    # The depth test for the main event gives a best depth of 4.4km, then rounded to 4km.
+    # But this is 4km from the surface, which is at elevation 4.6km. 
+    # Therefore the inversion is with respect to the elevation:
+    # 4.6 (elevation) - 4 (best depth) = 0.6 km above sea level.
+    #printf PLT "%f %f\n",$edep + 4.6, -7.5;   # uncomment here for plotting catalog depth
+
 	close(PLT);
     open(PLT, "| psxy $J $R $xy -Si0.5c -G255/255/255 -W.05c");
 	printf PLT "%f %f\n",$depth, -7.5;
@@ -325,9 +330,13 @@ while (@event)
 	$xtitle = $dep[1];
 	$ytitle = $ymax + ($ymax-$ymin)*0.05;
 	$fsizet = $fsize+2;
-	printf PLT "%f %f $fsizet 0 0 1 %s  %s h=%4.1f \261 %.1f km\n",$xtitle,$ytitle,$eve,$smodel,$depth,$unc; # $sigma gives much larger estimation of uncertainties
-    # Uncomment the following for FMT Uturuncu paper. replacing: 'h' with 'depth', 'utuhalf' with more descriptive 'halfspace'
-    # printf PLT "%f %f $fsizet 0 0 1 %s | halfspace | depth%4.1f \261 %.1f km\n",$xtitle,$ytitle, $eve,$depth,$unc; # $sigma gives much larger estimation of uncertainties
+
+    # $sigma gives much larger estimation of uncertainties
+    # NOTE  for figure in Uturuncu FMT paper replace 'h' with 'depth', 'utuhalf' with more descriptive 'halfspace'
+    #       Also follow comments #1 and #2 next
+    printf PLT "%f %f $fsizet 0 0 1 %s  %s h=%4.1f \261 %.1f km\n",$xtitle,$ytitle,$eve,$smodel,$depth,$unc;       # 1. comment for Uturuncu FMT paper
+    #printf PLT "%f %f $fsizet 0 0 1 %s | halfspace | depth%4.1f \261 %.1f km\n",$xtitle,$ytitle, $eve,$depth,$unc; # 2. uncomment for Uturuncu FMT paper
+
 	close(PLT);
 	$xx = "-O -K -Y2 $B";	# shift up
 	$i++;
