@@ -110,7 +110,7 @@ The old weight file is under the name weight_orig.dat
 
 4. run cap
 
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y2 20080418093700
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y2 20080418093700
 
 > gv 20080418093700/cus_015.ps &
 
@@ -291,7 +291,7 @@ This is aimed at performing a secondary analysis of uncertainties outside of CAP
 1.  run cap
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.1 -E1 -K1 -Y2 -J0/0/0/0 20080418093700
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.1 -E1 -K1 -Y2 -J0/0/0/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: -J0/0/0/0 means fixed ISO and CLVD components -- the command can be omitted and the result will be the same
@@ -310,7 +310,7 @@ EXAMPLE 7: same as EXAMPLE 6 but with fixed magnitude
 1. Run cap
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -E1 -K1 -Y2 -J0/0/0/0 20080418093700
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -E1 -K1 -Y2 -J0/0/0/0 20080418093700
 
 ====================================================================================
 EXAMPLE 8: Illinois event, FMT with lune parameterization, full grid search (no line search)
