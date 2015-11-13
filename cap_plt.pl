@@ -241,13 +241,18 @@ sub plot {
   }
 #--------------------------compute pssac plotting info (scaling factor P_val)
   print "$P_val \n";
-  if ($am==1){$am = $P_val;}
-  if ($am == 0x0){
-      $amp = $am;}
-  else{
+  if ($am>=1){
+      $am = $P_val/$am;
+  } # Three scale options:  # scale down: -P1e-5, -P1e-6,... seismograms scaled by this amplitude
+                            # scale up:   -P1, -P2,...       seismograms also scaled by amplitude but then enlarged by factor 1, 2,...
+                            # scale each window:  -P0.5e+0.5 seismograms will be scaled for each component window (all same size)
+  if ($am == 0x0) {         # check integer?
+      $amp = $am;
+  }
+  else{                     # 
       $amp = $am/$ampfact;}
   $stams = "$amp/0.";
-  $stamb = "$am/0.";                                   # overwrite for absolute (to match default plotting)
+  $stamb = "$am/0.";        # overwrite for absolute (to match default plotting)
 
   # 20151025 cralvizuri - uncomment this command to normalize surf waves
   #                       This is for figures in Uturuncu FMT paper
