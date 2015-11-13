@@ -9,16 +9,28 @@ Figures to check are in the directory 20080418093700_check_orig
 START-UP INSTRUCTIONS
 
 0. By default, do not run cap on a cluster (skip this step).
+The following instructions apply to the UAF pacman cluster.
 
-BUT: if on UAF cluster, check modules (GMT, netcdf, gfortran)
+0a. load environmental variables with this command (add it to your .bashrc file if you want):
 
-> module purge
-> module load PrgEnv-gnu/4.5.1 gmt/4.5.7
+> source /import/unsupported/erthquak/bashrc_seismo_util
+
+0b. check modules:
+
 > module list
 
-load environment variables
+pacman12 % module list
+Currently Loaded Modulefiles:
+  1) git/1.8.2.3               3) openmpi-gnu-4.7.3/1.4.3   5) netcdf/4.3.0.gnu-4.7.3
+  2) gcc/4.7.3                 4) PrgEnv-gnu/4.7.3
 
-> source $EUTIL/seismo_bashrc
+0c. check out a local copy of CAP
+
+git clone https://USERNAME@github.com/uafseismo/cap.git cap
+
+0d. assign $CAPHOME in your .bashrc, e.g., 
+
+export CAPHOME=$CENTER/CAP/src
 
 1. check paths (see .bashrc)
 
@@ -26,7 +38,7 @@ load environment variables
 
 Make sure that none of these is empty.
 
-note: by default at UAF you can set this in your .bashrc:
+note: by default at UAF these are set in /home/admin/share/global_bashrc
 
 export GEOTOOLS=$HOME/GEOTOOLS
 export SUTIL=/usr/local/seismo
@@ -37,7 +49,7 @@ export PATH=$CAPHOME:$PATH
 export CAPRUN=$HOME/PROJECTS/CAP
 export PATH=$PATH:$SUTIL/bin:$HOME/bin:.
 
-source the file after making changes
+If you make any changes to your .bashrc variables, be sure to source the file:
 
 > source ~/.bashrc
 
