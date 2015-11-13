@@ -13,7 +13,7 @@
 # 
 # 20151110 celso alvizuri - cralvizuri@alaska.edu 
 # ==============================================================================
- 
+
 
 # ==============================================================================
 # Part 0. generate Green's functions 
@@ -68,7 +68,7 @@ more 20100516063454464/w_utuhalf_P01_V10_R01_S10.dat
 # 1. go to the data directory and run cap. 
 # NOTE fits for body waves will be scaled by an absolute amplitude, then multiplied by a factor of 3. (this is done with flag "-P3/...")
 cd $CAPHOME/EXAMPLES
-cap.pl -H0.01 -P3/1/30 -p0.1 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zw_utuhalf_P01_V10_R01_S10.dat 20100516063454464
+cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zw_utuhalf_P01_V10_R01_S10.dat 20100516063454464
 
 # 2. compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
@@ -79,7 +79,7 @@ gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V10_R01_S10_fmt_amp
 # $stams = $stamb;
 
 # 4. run cap
-cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zw_utuhalf_P01_V10_R01_S10.dat 20100516063454464 
+cap.pl -H0.01 -P0.5e+0.5/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zw_utuhalf_P01_V10_R01_S10.dat 20100516063454464 
 
 # 5. compare results and verify .out file
 gv 20100516063454464/utuhalf_004_fmt.ps &
@@ -104,7 +104,7 @@ diff 20100516063454464/utuhalf_004.out 20100516063454464_check/20100516063454464
 # -----------------------------------------------------------
 # Run cap but using different weights for  waveform components
 # NOTE Weights are set as 1 1 60 60 60, which gives most weight to surface waves
-cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zw_utuhalf_P01_V01_R01_S60.dat 20100516063454464 
+cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zw_utuhalf_P01_V01_R01_S60.dat 20100516063454464 
 
 # 6b. compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
@@ -115,12 +115,12 @@ gv 20100516063454464_check/utuhalf_004_fmt_V01_R01_S60.ps &
 
 # 1. Run cap inversions at each depth
 # NOTE this task takes about 30min to complete
-for depth in 1 2 3 4 5 6 7 8 9 10; do cap.pl -W1 -Y1 -D1/1/0.5 -H0.01 -C2/10/0.25/0.5 -F0 -L0.1 -S0.05/2.0/0 -P0.5e+0.5/1/30 -T1.5/60 -E1 -K1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_$depth/2.8 -Zw_utuhalf_P01_V10_R01_S10.dat 20100516063454464 ; done
+#for depth in 1 2 3 4 5 6 7 8 9 10; do cap.pl -W1 -Y1 -D1/1/0.5 -H0.01 -C2/10/0.25/0.5 -F0 -L0.1 -S0.05/2.0/0 -P0.5e+0.5/1/30 -T1.5/60 -E1 -K1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_$depth/2.8 -Zw_utuhalf_P01_V10_R01_S10.dat 20100516063454464 ; done
 
 # 2. Plot the result
 # NOTE to reproduce figure in the Uturuncu FMT paper open script depth.pl and 
 # set flag "$onlydc = 0" to plot beachballs as full moment tensors. Then
-# uncomment lines #288, and toggle comments in lines #337 and #338 (see also notes there)
+# uncomment lines #288, and comment line #337 and uncomment #338 (or follow instruction there)
 depth_test 20100516063454464 utuhalf
 
 # 3. Compare results
@@ -128,124 +128,113 @@ gv dep_20100516063454464.ps &
 gv 20100516063454464_check/depth_test_20100516063454464_utuhalf_L_dt.eps &
 
 # -----------------------------------------------------------
-# Part 4. run cap inversions WITH and WITHOUT polarities, with body waves. Then with body waves + surface waves.
-# NOTE runs without polarities can take hours to complete
+# Part 4. run cap inversions with and without polarities, with body waves. Then with body waves + surface waves.
+# NOTE runs without polarities take about 3.5 hours to complete.
 
-# 1a. Run with polarities + body waves + surface waves. Component weights 10-1-10. Plot with absolute amplitudes.
-cap.pl -H0.01 -P1e-5/1/30 -p0.1 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V10_R01_S10.dat 20100516063454464
+# 1. Run cap with body waves + surface waves. No polarities. Component weights 10-1-10
+# NOTE runs without polarities take about 3.5 hours to complete.
+#cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P00_V10_R01_S10.dat 20100516063454464 
 
-# 1b. compare results and verify .out file:
-gv 20100516063454464/utuhalf_004_fmt.ps &
-gv 20100516063454464_check/utuhalf_004_fmt_P01_V10_R01_S10_scale_abs.ps &
-diff 20100516063454464/utuhalf_004.out 20100516063454464_check/utuhalf_004_fmt_P01_V10_R01_S10.out
-
-# 2a. Run WITHOUT polarities, with body waves + surface waves. Component weights 10-1-10
-# NOTE this inversion is without polarities, it takes about 3.5hrs to complete
-cap.pl -H0.01 -P1e-5/1/30 -p0.1 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P00_V10_R01_S10.dat 20100516063454464 
-
-# 2b. Compare results
+# 2. Compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
 gv 20100516063454464_check/utuhalf_004_fmt_P00_V10_R01_S10.ps
 
-# 3a. Run with polarities + body waves. No surface waves. Component weights 10-1-0
-cap.pl -H0.01 -P1e-5/1/30 -p0.1 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V10_R01_S00.dat 20100516063454464 
+# 3. Run cap with polarities + body waves. No surface waves. Component weights 10-1-0
+cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V10_R01_S00.dat 20100516063454464 
 
-# 3b. Compare results
+# 4. Compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
-gv 20100516063454464_check/utuhalf_004_fmt_P01_V10_R01_S00.ps
+gv 20100516063454464_check/utuhalf_004_fmt_P01_V10_R01_S00.ps &
 
-# 4a. Run WITHOUT polarities, with body waves + surface waves. Component weights 10-1-0
-# NOTE this inversion is without polarities, it takes about 3.5hrs to complete
-cap.pl -H0.01 -P1e-5/1/30 -p0.1 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P00_V10_R01_S00.dat 20100516063454464 
+# 5. Run with body waves only. No surface waves. No polarities. Component weights 10-1-0
+# NOTE runs without polarities take about 3.5 hours to complete.
+#cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P00_V10_R01_S00.dat 20100516063454464 
 
-# 4b. Compare results
+# 6. Compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
 gv 20100516063454464_check/utuhalf_004_fmt_P00_V10_R01_S00.ps
 
 # -----------------------------------------------------------
 # Part 5. run cap inversions with individual components. All inversions with polarities.
-# 1a. Run cap with component PV only
-cap.pl -H0.01 -P1e-5/1/30 -p0.1 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V10_R00_S00.dat 20100516063454464 
+# 1. Run cap with component PV only
+cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V10_R00_S00.dat 20100516063454464 
 
-# 1b. Compare results
+# 2. Compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
-gv 20100516063454464_check/utuhalf_004_fmt_P01_V10_R00_S00.ps
+gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V10_R00_S00_fmt.ps &
 
-# 2a. Run cap with component PR only
-cap.pl -H0.01 -P1e-5/1/30 -p0.1 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V00_R01_S00.dat 20100516063454464 
+# 3. Run cap with component PR only
+cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.4 -Zw_utuhalf_P01_V00_R01_S00.dat 20100516063454464 
 
-# 2b. Compare results
+# 4. Compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
-gv 20100516063454464_check/utuhalf_004_fmt_P01_V00_R01_S00.ps
+gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V00_R01_S00_fmt.ps &
 
-# 3a. Run cap with component Surf only
-cap.pl -H0.01 -P1e-5/1/30 -p0.1 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V00_R00_S10.dat 20100516063454464 
+# 5. Run cap with component Surf only
+cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V00_R00_S10.dat 20100516063454464 
 
-# 3b. Compare results
+# 6. Compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
-gv 20100516063454464_check/utuhalf_004_fmt_P01_V00_R00_S10.ps
+gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V00_R00_S10_fmt.ps 
 
 # -----------------------------------------------------------
 # Part 6. run cap inversions with combinations of components. All inversions with polarities.
-# 9a. polarities + PV + PR
-cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zw_utuhalf_P01_V10_R01_S00.dat 20100516063454464
+# 1. polarities + body waves (PV + PR)
+cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zw_utuhalf_P01_V10_R01_S00.dat 20100516063454464
 
-# 9b. compare results
+# 2. compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
-gv 20100516063454464_check/utuhalf_004_fmt_V10_R01_S00.ps &
+gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V10_R01_S00_fmt.ps &
 
-# 10a. polarities + Surface waves
-# ************************
-# CHECK -- NOTE this inversion is centered around M2.9 M2.9 is the best magnitude for this solution, and also happens to be 
-# ************************
-# the top limit in grid search (catalog mag = 2.4 +/- 0.5).
-cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V00_R00_S10.dat 20100516063454464
+# 3. polarities + Surface waves
+cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V00_R00_S10.dat 20100516063454464
 
-# 10b. compare results
+# 4. compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
-gv 20100516063454464_check/utuhalf_004_fmt_V00_R00_S10.ps &
+gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V00_R00_S10_fmt.ps &
 
-# 11a. PV + PR + Surf. NO POLARITIES
-# NOTE  by not using polarities (to exclude large portions of misfit space), the inversion runs about 3.5 hours
-cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zw_utuhalf_P00_V10_R01_S10_nopol.dat 20100516063454464
+# 5. PV + PR + Surf. No polarities
+# NOTE runs without polarities take about 3.5 hours to complete.
+#cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zw_utuhalf_P00_V10_R01_S10_nopol.dat 20100516063454464
 
-# 11b. compare results
+# 6. compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
-gv 20100516063454464_check/utuhalf_004_fmt_V10_R01_S10_nopol.ps &
-
-# 12a. try polarities + components PV + PR + S BUT constrained to DC
-# NOTE  this MUST be a worse solution than the non-DC version, since this solution was considered in the non-DC search
-cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1 -J0/0/0/0 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zw_utuhalf_P01_V10_R01_S10.dat 20100516063454464 
-
-# 12b. compare results
-gv 20100516063454464/utuhalf_004_fmt.ps &
-gv 20100516063454464_check/utuhalf_004_DC_V10_R01_S10.ps &
+gv 20100516063454464_check/utuhalf_004_P00_V10_R01_S10_fmt.ps &
 
 # -----------------------------------------------------------
 # Part 7. run cap inversions for specific physical models:  double couple, opening crack, closing crack
 # Inversions are with polarities + body waves.
 
-# 1a. Run cap for double couple (dc). NOTE I flag needs only two parameters
-cap.pl -H0.01 -P1e-5/1/30 -p0.1 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1 -J0/0/0/0 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V10_R01_S00.dat 20100516063454464 
+# 1. polarities + PV + PR + Surf. Constrained to DC.
+# NOTE flag -I needs only two parameters, flag -J does not need to be specified
+# NOTE the full grid search considered the DC solution but found a non-DC solution with lower misfit.
+cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V10_R01_S10.dat 20100516063454464
 
-# 1b. Compare results
+# 2. compare results
 gv 20100516063454464/utuhalf_004.ps &
-gv 20100516063454464_check/utuhalf_004_dc_P01_V10_R01_S00.ps
+gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V10_R01_S10_dc.ps &
 
-# 2a. Run cap for opening crack (oc)
+# 3. polarities + PV + PR. No surface waves. Constrained to DC.
+cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V10_R01_S00.dat 20100516063454464 
+
+# 4. Compare results
+gv 20100516063454464/utuhalf_004.ps &
+gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V10_R01_S00_dc.ps &
+
+# 5. Run cap for opening crack (oc)
 # NOTE start magnitude is 2.4
-cap.pl -H0.01 -P1e-4/1/30 -p0.1 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/-30 -Mutuhalf_4/2.4 -Zw_utuhalf_P01_V10_R01_S00.dat 20100516063454464 
+cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/-30 -Mutuhalf_4/2.4 -Zw_utuhalf_P01_V10_R01_S00.dat 20100516063454464 
 
-# 2b. Compare results
+# 6. Compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
-gv 20100516063454464_check/utuhalf_004_oc_P01_V10_R01_S00.ps
+gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V10_R01_S00_co.ps &
 
-# 3a. Run cap for closing crack (cc)
-cap.pl -H0.01 -P2e-5/1/30 -p0.1 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V10_R01_S00.dat 20100516063454464 
+# 7. Run cap for closing crack (cc)
+cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V10_R01_S00.dat 20100516063454464 
 
-# 3b. Compare results
+# 8. Compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
-gv 20100516063454464_check/utuhalf_004_cc_P01_V10_R01_S00.ps
+gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V10_R01_S00_cc.ps &
 
 # -----------------------------------------------------------
 # Part 8. Uturuncu event 20100516063454464, first motion polarity
