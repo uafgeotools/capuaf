@@ -1,3 +1,9 @@
+README_EXAMPLE_utu
+
+See README_EXAMPLE first -- run the default example.
+
+====================================================================================
+
 EXAMPLE 1: Running Alaska Example (20090407201255351)
 
 1. open cap.c and check that FTC_data=1 and FTC_green=0 (recompile if needed: make all >& make.log )

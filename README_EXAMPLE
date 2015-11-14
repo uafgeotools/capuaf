@@ -136,7 +136,7 @@ Run cap for different depths by setting the range and increment for which you wa
 One output (.out) file should be generated for each depth.
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y2 -A5/30/5 20080418093700
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y2 -A5/30/5 20080418093700
 
 Run depth_test (script for calling depth.pl)
 > depth_test 20080418093700 cus 
@@ -168,7 +168,7 @@ FUTURE: Whether skip_zero_weights=0 or 1, what we want is that if there is a sta
 > make cap
 
 a. Run cap with all available polarities
-> cap.pl -H0.2 -P1.5e-6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat 
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat 
 ==> since all polarities are consistent with the waveform-only solution, the solution is the sames as in EXAMPLE 1
 
 This will result can be used to compare results (b)-(d) below.
@@ -177,18 +177,18 @@ This will result can be used to compare results (b)-(d) below.
 > diff 20080418093700/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015_DC_pol.out
 
 b. run cap with only one polarity measurement
-> cap.pl -H0.2 -P1.5e-6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
 
 c. run cap with all polarities but one flipped: PVMO
-> cap.pl -H0.2 -P1.5e-6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 ==> solution is slightly worse, as PVMO was nearly nodal and is now within a colored quadrant
 
 d. run cap with all polarities but one flipped: WVT
-> cap.pl -H0.2 -P1.5e-6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
 ==> solution is significantly worse, since WVT was not nodal and is now within a colored quadrant
 
 e. run cap with all polarities but one flipped: BLO
-> cap.pl -H0.2 -P1.5e-6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
 ==> no solution is possible
 
 note: the command "-I10/0.1 -J0/0/0/0" could be added but will not affect the results
@@ -209,24 +209,24 @@ fm_thr=-1.0, -0.2, -0.1, 0, 0.4, 1.0 (see cap flag -F to set thresholds).
 1. Run cap with with 
 
 a. no MT grid point is rejected, so the solution is same as EXAMPLE 1 (PVMO obs does not match PVMO pred)
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-1.0 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F-1.0 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 b. a relatively small number of MT grid points are rejected that have large-amplitude mismatch of polarities;
    this solution, with PVMO not matching PVMO pred, is not rejected beacause the PVMO is low amplitude
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-0.2 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F-0.2 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 c. PVMO is "just" inside the colored quadrant
    note: PVMO could be "just" inside the white quadrant as well
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F-0.1 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F-0.1 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 d. PVMO is "just" inside the colored quadrant (PVMO obs does match PVMO pred)
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F0.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F0.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 e. the solution seeks to maximize the minimum amplitude associated with any (correct) polarity (PVMO obs does match PVMO pred)
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F0.4  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F0.4  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 f. no solution, since every MT grid point is rejected with some station having too small an amplitude
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F1.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F1.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 ====================================================================================
 EXAMPLE 4: Illinois event, FMT with Zhu line search
@@ -238,7 +238,7 @@ ISO and CLVD will be searched for in their general range: (-1 < ISO < +1) and (-
 However you can change the increment by using -J flag in the input command line.
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -J0/0.1/0/0.1 20080418093700
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -J0/0.1/0/0.1 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: -J0/0.1/0/0.1 means line search from (0,0) in increments of 0.1 in each direction
@@ -252,7 +252,7 @@ note: -J0/0.1/0/0.1 means line search from (0,0) in increments of 0.1 in each di
 
 3. perform the depth test (Green's functions already computed)
 
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y2 -J0/0.1/0/0.1 -A5/30/5 20080418093700
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y2 -J0/0.1/0/0.1 -A5/30/5 20080418093700
 
 Run depth_test (script for calling depth.pl)
 > depth_test 20080418093700 cus 
@@ -270,7 +270,7 @@ EXAMPLE 5: Illinois event, FMT with fixed focal mech (strike/dip/rake/iso/clvd/m
 0. Follow same step 3 EXAMPLE 1
 
 1. run cap
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -E0 -K0 -Y2 -R296/296/84/84/6/6 -J0.16/0/0.04/0 -I10/0 20080418093700
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -E0 -K0 -Y2 -R296/296/84/84/6/6 -J0.16/0/0.04/0 -I10/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: the solution is slightly better than the result in EXAMPLE 4 (why? precision?)
@@ -311,6 +311,10 @@ EXAMPLE 7: same as EXAMPLE 6 but with fixed magnitude
 
 > cd $CAPRUN/inv/cus
 > cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -E1 -K1 -Y2 -J0/0/0/0 20080418093700
+> gv 20080418093700/cus_015_fmt.ps &
+
+> gv $CAPHOME/EXAMPLES/20080418093700_check/cus_015_dc_fixed.ps
+> diff 20080418093700/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015_dc_fixed.out
 
 ====================================================================================
 EXAMPLE 8: Illinois event, FMT with lune parameterization, full grid search (no line search)
@@ -325,7 +329,7 @@ ISO and CLVD will be searched for in their general range (-90 < ISO < +90 ; -30 
 However you can change the increment by using -J flag in the input command line.
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.2/10 -E1 -K1 -Y2 -J-90/90/-30/30 20080418093700
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.2/10 -E1 -K1 -Y2 -J-90/90/-30/30 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: -J0/5/0/5 means 5 deg increment in ISO (delta) and 5 deg increment in CLVD (longitude); the 0's are ignored in this mode
@@ -342,7 +346,7 @@ EXAMPLE 9: Illinois event, Direct search FMT (LUNE parameterization) with fixed 
 0. Follow same step 3 EXAMPLE 1
 
 1. run cap
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -E1 -K1 -Y2 -R296/296/84/84/6/6 -J-30/30/10/10 -I10/0/0 20080418093700
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -E1 -K1 -Y2 -R296/296/84/84/6/6 -J-30/30/10/10 -I10/0/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 note: the solution is slightly better than the result in EXAMPLE 4 (why? precision?)
@@ -360,7 +364,7 @@ EXAMPLE 10: Illinois event, DC with random sample search (optional: grid-search 
 1. Run cap
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0 -E1 -K2 -Y2 -J0/0/0/0 20080418093700
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0 -E1 -K2 -Y2 -J0/0/0/0 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 NOTES
@@ -383,7 +387,7 @@ EXAMPLE 11: Illinois event, FMT-fixed-magnitude with random sample search (optio
 1. Run cap
 
 > cd $CAPRUN/inv/cus
-> cap.pl -H0.2 -P1.5e-7 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0/10 -E1 -K2 -Y2 -J0/1/0/1 20080418093700
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0/10 -E1 -K2 -Y2 -J0/1/0/1 20080418093700
 > gv 20080418093700/cus_015_fmt.ps &
 
 NOTES
@@ -398,183 +402,24 @@ NOTES
 > diff 20080418093700/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015_fmt_rand.out
 
 ====================================================================================
+EXAMPLE 12: Illinois event, Fixed FMT (direct search at any ISO, CLVD point)
+
+0. Follow same step 3 EXAMPLE 6
+
+1. Run cap
+> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0/10 -E1 -K1 -Y1 -J10/10/5/5 20080418093700
+> 20080418093700/cus_015_fmt.ps 
+
+2. check the output files
+> gv $CAPHOME/EXAMPLES/20080418093700_check/cus_015_fmt_fixed.ps
+> diff 20080418093700/cus_015.out 20080418093700_check/cus_015_fmt_fixed.out
+
+====================================================================================
 
 FOR UTURUNCU EXAMPLES, SEE README_EXAMPLE_utu
 
 ====================================================================================
-EXAMPLE 16: Running Alaska Example (20090407201255351)
-
-1. open cap.c and check that FTC_data=1 and FTC_green=0 (recompile if needed: make all >& make.log )
-
-2. prepare run
-> mkdir -p $CAPRUN/inv/scak
-> cd $CAPRUN/inv/scak
-> rsync -av $CAPHOME/EXAMPLES/20090407201255351 .
-
-3. Eight different weight files options: weightijk.dat (Last three numbers are for (i)-body wave, (j)-surface waves, (k)-station choice)
-   i = 1 or 0 for whether body waves are used or not
-   j = 1 or 0 for whether surface waves are used or not
-   k = 0 for all stations, 1 for selected stations, 2 for AEC stations
-
- -> weight011.dat - only surface waves at selected good stations (M011)
- -> weight012.dat - only surface waves at AEC stations (M012)
- -> weight101.dat - only body waves at selected good stations (M101)
- -> weight110.dat - both body and surface wave at all available stations (M110)
- -> weight111.dat - both body and surface wave at selected good stations (M111)
- -> weight112.dat - both body and surface wave at AEIC stations (M112)
- -> az_sort_weight110.dat - same as weight110.dat but azimuthally sorted stations
- -> az_sort_weight111.dat - same as weight111.dat but azimuthally sorted stations
-
---------------------------------------------------------------------------------
-4. Example commands:
-a. Using body and surface waves at selected stations (M111)
-Using L1 norm:
-> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 20090407201255351
-> gv 20090407201255351/scak_041.ps &
-> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M111.ps &
-
-Depth test
-> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 -A30/50/2 20090407201255351
-> depth_test 20090407201255351 scak
-> gv dep_20090407201255351.ps &
-> gv $CAPHOME/EXAMPLES/20090407201255351_check/dep_20090407201255351_L1_M111.ps &
-
-Using L2 norm: 
-> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y2 20090407201255351
-> gv 20090407201255351/scak_041.ps &
-> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L2_M111.ps &
-
-Depth test
-> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight111.dat -E1 -K1 -Y2 -A30/50/2 20090407201255351
-> depth_test 20090407201255351 scak
-> gv dep_20090407201255351.ps &
-> gv $CAPHOME/EXAMPLES/20090407201255351_check/dep_20090407201255351_L2_M111.ps &
-
---------------------------------------------------------------------------------
-
-b. Using body and surface waves at all stations (M110)
-Using L1 norm:
-> cap.pl -H0.02 -P2e-6/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y1 20090407201255351
-> gv 20090407201255351/scak_041.ps & 
-> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M110.ps &
-
-Depth test
-> cap.pl -H0.02 -P2e-6/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y1 -A30/50/2 20090407201255351
-> depth_test 20090407201255351 scak
-> gv dep_20090407201255351.ps & 
-> gv $CAPHOME/EXAMPLES/20090407201255351_check/dep_20090407201255351_L1_M110.ps & 
-
-Using L2 norm: 
-> cap.pl -H0.02 -P2e-6/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y2 20090407201255351
-> gv 20090407201255351/scak_041.ps & 
-> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L2_M110.ps & 
-
-Depth test
-> cap.pl -H0.02 -P2e-6/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight110.dat -E1 -K1 -Y2 -A30/50/2 20090407201255351
-> depth_test 20090407201255351 scak
-> gv dep_20090407201255351.ps & 
-> gv $CAPHOME/EXAMPLES/20090407201255351_check/dep_20090407201255351_L2_M110.ps & 
---------------------------------------------------------------------------------
-
-5. Similarly run for other weight files. 
-a. Using body and surface waves at AEC stations (M112) and L1 norm
-> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0.1 -Zweight112.dat -E1 -K1 -Y1 20090407201255351
-> gv 20090407201255351/scak_041.ps & 
-> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M112.ps & 
-
-b. Using just body at selected stations (M101)
-> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_27/4.5 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20090407201255351
-> gv 20090407201255351/scak_027.ps & 
-> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M101.ps & 
-
-c. Using just surface waves at selected stations (M011)
-> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_47/4.5 -I10/0.1 -Zweight011.dat -E1 -K1 -Y1 20090407201255351
-> gv 20090407201255351/scak_047.ps & 
-> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M011.ps & 
-
-d. Using just the surface waves at AEC stations (M012)
-> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_47/4.5 -I10/0.1 -Zweight012.dat -E1 -K1 -Y1 20090407201255351
-> gv 20090407201255351/scak_047.ps & 
-> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M012.ps & 
---------------------------------------------------------------------------------
-
-6. fixed solution (for plot testing)
-> cap.pl -H0.02 -P1/20/60 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/5.0 -R20/20/42/42/-90/-90 -I10/0.1 -Zweight111.dat -E1 -K1 -Y1 20090407201255351
-
-7. For azimuthally sorted stations:
-> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0 -Zaz_sort_weight111.dat -E1 -K1 -Y1 20090407201255351
-> gv 20090407201255351/scak_041.ps & 
-> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M111_az.ps & 
-
-====================================================================================
-EXAMPLE 17: Running Alaska Example (20080918194353069) - Checking FTC data and green's outputs
-
-1. open cap.c and set FTC_data=0 and FTC_green=0 (Filter and Cut 'NOT applied' to data and synthetics both) and recompile 
-> make all
-
-2. prepare run
-> mkdir -p $CAPRUN/inv/scak
-> cd $CAPRUN/inv/scak
-> rsync -av $CAPHOME/EXAMPLES/20080918194353069 .
-
-3. run (Filter and Cut 'NOT applied' to data and synthetics both)
-> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_72/4.8 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20080918194353069
-
-4. Rename output files to prevent them from being overwritten
-> mv 20080918194353069/scak_072.ps 20080918194353069/scak_072_off.ps 
-
-5. open cap.c and set FTC_data=1 and FTC_green=1 and recompile 
-> make all
-
-6. run again (Filter and Cut 'applied' to data and synthetics both)
-> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_72/4.8 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20080918194353069
-
-7. mv 20080918194353069/scak_072.ps 20080918194353069/scak_072_on.ps 
-
-8. open cap.c and set FTC_data=1 and FTC_green=0 and recompile 
-> make all
-
-9. run again (Filter and Cut 'applied' only to data and NOT to synthetics)
-> cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_72/4.8 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 20080918194353069
-
-10. mv 20080918194353069/scak_072.ps 20080918194353069/scak_072_on_off.ps 
-
-11. Check results
-> gv 20080918194353069/scak_072_off.ps &
-> gv $CAPHOME/EXAMPLES/20080918194353069_check/FTC_off.ps &
-
-> gv 20080918194353069/scak_072_on.ps &
-> gv $CAPHOME/EXAMPLES/20080918194353069_check/FTC_on.ps &
-
-> gv 20080918194353069/scak_072_on_off.ps &
-> gv $CAPHOME/EXAMPLES/20080918194353069_check/FTC_on_off.ps &
-
-12. Similarly you can try with different weight files (> ls 20080918194353069/weight*.dat). Also try depth tests. See more results at the best depth:
-> evince $CAPHOME/EXAMPLES/20080918194353069_check/FTC_on_results.pdf
-> evince $CAPHOME/EXAMPLES/20080918194353069_check/FTC_off_results.pdf
-
-====================================================================================
-EXAMPLE 18: Running Nenana triggering example (20120411092157444)
-
-1. open cap.c and set FTC_data=1 and FTC_green=0 and recompile 
-> make all
-
-2. prepare run
-> mkdir -p $CAPRUN/inv/scak
-> cd $CAPRUN/inv/scak
-> rsync -av $CAPHOME/EXAMPLES/20120411092157444 .
-
-3. run 
-> cap.pl -H0.02 -P2e-5/1/15 -p1.5 -S0.5/2/0 -T2/40 -D1/1/0.5 -C1/10/0.3/0.6 -W1 -Mtactmod_16/3.6 -Zweight111.dat -E1 -K1 -Y1 20120411092157444 -A10/30/1 
-> depth_test 20120411092157444 tactmod
-
-4. Check results
-> gv dep_20120411092157444.ps & 
-> gv $CAPHOME/EXAMPLES/20120411092157444_check/dep_20120411092157444.ps & 
-(check that the best depth is 16 km)
-
-> gv 20120411092157444/tactmod_016.ps & 
-> gv $CAPHOME/EXAMPLES/20120411092157444_check/tactmod_016.ps & 
+FOR ALASKA EXAMPLES, SEE README_EXAMPLE_alaska
 
 ====================================================================================
 TIPS

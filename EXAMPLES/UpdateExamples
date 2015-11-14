@@ -17,7 +17,6 @@ deps=(5 10 15 20 25 30)
 #
 for dep in ${deps[@]}
 do
-    #printf -v dep "%02d" $dep; echo $dep
     cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_$dep/5.0 -E0 -K0 -Y2 20080418093700
     # Save the files
     printf -v dep "%03d" $dep; echo $dep
@@ -35,12 +34,39 @@ cp junk2.out $ExampleDir/junk2_dc.out
 # TO BE ADDED 
 #==================================================================================
 ## EXAMPLE 2: Illinois event, DC with P wave polarities in weight file
+cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat
+cp 20080418093700/cus_015.ps $ExampleDir/cus_015_DC_pol.ps
+cp 20080418093700/cus_015.out $ExampleDir/cus_015_DC_pol.out
 
 #==================================================================================
 ## EXAMPLE 3: Illinois event, DC with P wave polarities in weight file
+# Nothing to check
 
 #==================================================================================
 ## EXAMPLE 4: Illinois event, FMT with Zhu line search
+# depth search range for the Illinois event (FMT) - Zhu and BenZoin parameterization
+deps=(5 10 15 20 25 30)
+#
+for dep in ${deps[@]}
+do
+    cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_$dep/5.0 -E0 -K0 -J0/0.1/0/0.1 20080418093700
+    # Save the files
+    printf -v dep "%03d" $dep; echo $dep
+    #cp 20080418093700/cus_${dep}.ps $ExampleDir/cus_${dep}.ps
+    #cp 20080418093700/cus_${dep}.out $ExampleDir/cus_${dep}.out
+    #cp 20080418093700/cus_${dep}_beach.ps $ExampleDir/cus_${dep}_beach.ps
+done
+# perform depth test
+depth_test 20080418093700 cus 
+
+# Copy only the best solution file
+cp 20080418093700/cus_015_fmt.ps $ExampleDir/cus_015_fmt_line.ps
+cp 20080418093700/cus_015.out $ExampleDir/cus_015_fmt_line.out
+cp 20080418093700/cus_015_beach_fmt.ps $ExampleDir/cus_015_beach_fmt_line.ps
+# Copy the depth result files
+cp dep_20080418093700.ps $ExampleDir/depth_fmt_line.ps
+cp junk1.out $ExampleDir/junk1_fmt_line.out
+cp junk2.out $ExampleDir/junk2_fmt_line.out
 
 #==================================================================================
 ## EXAMPLE 5: Illinois event, FMT with fixed focal mech (strike/dip/rake/iso/clvd/mag)
@@ -55,6 +81,13 @@ cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus
 cp 20080418093700/cus_015_fmt.ps $ExampleDir/cus_015_dc_grid.ps 
 cp 20080418093700/cus_015.out $ExampleDir/cus_015_dc_grid.out
 cp 20080418093700/cus_015_beach_fmt.ps $ExampleDir/cus_015_beach_dc_grid.ps 
+
+#==================================================================================
+## EXAMPLE 7: same as EXAMPLE 6 but with fixed magnitude
+cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -E1 -K1 -Y2 -J0/0/0/0 20080418093700
+cp 20080418093700/cus_015_fmt.ps $ExampleDir/cus_015_dc_fixed.ps
+cp 20080418093700/cus_015.out $ExampleDir/cus_015_dc_fixed.out
+cp 20080418093700/cus_015_beach_fmt.ps $ExampleDir/cus_015_beach_dc_fixed.ps
 
 #==================================================================================
 ## EXAMPLE 8: Illinois event, FMT with lune parameterization, full grid search (no line search)
@@ -88,3 +121,10 @@ cp 20080418093700/cus_015_fmt.ps $ExampleDir/cus_015_fmt_rand.ps
 cp 20080418093700/cus_015.out $ExampleDir/cus_015_fmt_rand.out
 cp 20080418093700/cus_015_beach_fmt.ps $ExampleDir/cus_015_beach_fmt_rand.ps
 
+#==================================================================================
+## EXAMPLE 12: Illinois event, Fixed FMT (direct search at any ISO, CLVD point)
+
+cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0/10 -E1 -K1 -Y1 -J10/10/5/5 20080418093700
+cp 20080418093700/cus_015_fmt.ps $ExampleDir/cus_015_fmt_fixed.ps
+cp 20080418093700/cus_015.out $ExampleDir/cus_015_fmt_fixed.out
+cp 20080418093700/cus_015_beach_fmt.ps $ExampleDir/cus_015_beach_fmt_fixed.ps
