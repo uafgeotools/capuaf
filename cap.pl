@@ -130,14 +130,15 @@ $usage =
     Here m1, m2 are the maximum lengths for the Pnl and surface waves windows
     (see the -T options below).
 
-  Usage: cap.pl -Mmodel_depth/mag [-A<dep_min/dep_max/dep_inc>][-B] [-C<f1_pnl/f2_pnl/f1_sw/f2_sw>]
+=====================================================================================================
+  Usage: cap.pl -Mmodel_depth/mag [-A<dep_min/dep_max/dep_inc>] [-B] [-C<f1_pnl/f2_pnl/f1_sw/f2_sw>]
                   [-D<w1/p1/p2>] [-E<search>] [-F<thr>] [-Ggreen] [-Hdt] [-Idd[/dm]]
-                  [-J[iso[/diso[/clvd[/dclvd]]]]] [-L<tau>] [-N<n>] [-O]
-                  [-P[<Yscale[/Xscale_b[/Xscale_s[/k]]]]>] [-Qnof]
+                  [-J[iso[/diso[/clvd[/dclvd]]]]] [-K<search_type>] [-L<tau>] [-M$model_$dep/$mw][-N<n>]
+                  [-O] [-P[<Yscale[/Xscale_b[/Xscale_s[/k]]]]>] [-Qnof]
                   [-R<strike1/strike2/dip1/dip2/rake1/rake2>] [-S<s1/s2[/tie]>] [-T<m1/m2>]
-                  [-V<vp/vl/vr>] [-Udirct] [-Wi] [-Xn] [-Zstring] event_dirs
+                  [-Udirct] [-V<vp/vl/vr>] [-Wi] [-Xn] [-Y<norm>] [-Zstring] event_dirs
 
-    -A  run cap for different depths. (dep_min/dep_max/dep_inc). 
+    -A  run cap for different depths. (dep_min/dep_max/dep_inc).
     -B  output misfit errors of all solutions for bootstrapping late ($bootrap).
     -C  filters for Pnl and surface waves, specified by the corner
 	frequencies of the band-pass filter. ($f1_pnl/$f2_pnl/$f1_sw/$f2_sw).
@@ -150,21 +151,27 @@ $usage =
 	the station name, e.g. LHSA/+1/-3 means that P is up and SH is CCW.
 	The Green functions need to have take-off angles stored in the SAC
 	header.
+        threshold should be NEGATIVE if polarities are allowed to conflict expected polarity (as mentioned in weight file).
     -G  Green's function library location ($green).
     -H  dt ($dt).
-    -I  search interval in strike/dip/rake and mag ($deg/$dm/$dlune). If dm<0, the gain of each station will be determined by inversion. $dlune is ommited in case of search=0.
-    -J  (if search=0)include isotropic and CLVD search using steps diso and dclvd (0/0/0/0). (if increament set to 0 then acts as direct search)
+    -I  search interval in orientation (strike/dip/rake) and mag(dm)and non-DC(dlune) ($dorient/$dm/$dlune).
+        If dm<0, the gain of each station will be determined by inversion. $dlune is ommited in case of search=0.
+    -J  (if search=0)include isotropic and CLVD search using steps diso and dclvd (0/0/0/0).
         (if search=1,2) iso and clvd search range (lune parameterization)
+        example -J10/10/5/5 will perform a direct search; and -J-10/10/-5/5 will perform a grid search (or the random search) wihtin the subset
     -K  Kind of search (0=line search; 1=Grid search; 2=random search)
     -L  source duration (estimate from mw, can put a sac file name here).
     -M	specify the model, source depth and initial magnitude.
     -N  repeat the inversion n times and discard bad traces ($repeat).
     -O  output CAP input (off).
-    -P	generate waveform-fit plot with plotting scale.
+    -P	generate waveform-fit plot with plotting scale. ([-P<Yscale>/<XscaleBody>/<XscaleSurf>](/k))
     	Yscale: amplitude in inch for the first trace of the page ($amplify).
+        # scale down: -P1e-5, -P1e-6,... seismograms scaled by this amplitude (smaller the number larger the waveform)
+        # scale up:   -P1, -P2,...       seismograms also scaled by amplitude but then enlarged by factor 1, 2, (anything greater than 1)... (larger the number larger the waveform)
+        # scale each window:  -P0.5e+0.5 seismograms will be scaled for each component window (all same size) - Normalized scaling
 	Xscale: seconds per inch. (body: $spib, surface:$spis).
 	append k if one wants to keep those waveforms.
-    -p  (small p) For amplitude scaling of surface waves (relative to body waves)
+    -p  (small p) For amplitude scaling of surface waves; example: If set to 2 surface waves amplitude will be multipled by twice 
     -Q  number of freedom per sample ($nof)
     -R	grid-search range for strike/dip/rake (0/360/0/90/-90/90).
     -S	max. time shifts in sec for Pnl and surface waves ($max_shft1/$max_shift2) and
@@ -179,6 +186,7 @@ $usage =
     -Y  specify norm (1 - L1 norm; 2 - L2 norm)
     -Z  specify a different weight file name ($weight).
 
+=====================================================================================================
 Examples:
 > cap.pl -H0.2 -P0.3 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700
   which finds the best focal mechanism and moment magnitude of tbe 2008/4/18 Southern Illinois earthquake
@@ -190,14 +198,19 @@ Event 20080418093700 Model cus_15 FM 115 90  -2 Mw 5.19 rms 1.341e-02   110 ERR 
   axial lengths of the 1-sigma error ellipsoid of 1, 3, and 4 degrees.
   The rest of the files shows rms, cross-correlation coef., and time shift of individual waveforms.
   The waveform fits are plotted in file cus_15.ps in the event directory.
-
+------------------------------------------------------------------------------------------------------
   To find the best focal depth, repeat the inversion for different focal depths:
-> for h in 05 10 15 20 25 30; do ./cap.pl -H0.2 -P0.3 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_\$h/5.0 20080418093700; done
+> for h in 5 10 15 20 25 30; do cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_$h/5.0 -E0 -K0 -Y2 20080418093700; done
   and store all the results in a temporary file:
+------------------------------------------------------------------------------------------------------
 > grep -h Event 20080418093700/cus_*.out > junk1.out
 > grep -h tensor 20080418093700/cus_*.out > junk2.out
   and then run
 > ./depth.pl junk1.out junk2.out 20080418093700 > junk.ps
+------------------------------------------------------------------------------------------------------
+Instead of this you can run
+> depth_test 20080418093700 cus
+------------------------------------------------------------------------------------------------------
   The output from the above command
 Event 20080418093700 Model cus_15 FM 115 90  -2 Mw 5.19 rms 1.341e-02   110 ERR   1   3   4 H  14.8 0.6
   shows that the best focal depth is 14.8 +/- 0.6 km.
