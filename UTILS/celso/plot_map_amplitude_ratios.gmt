@@ -1,0 +1,130 @@
+#!/bin/bash
+# 
+# script to plot log amplitude ratios for each station/event
+#
+#
+# 20150112 cralvizuri - based on code to plot amp ratios:
+#----------------------------------------------------------
+# If you use this code for your own research, please cite:
+# 
+# @article{AlvizuriTape2016,
+#      AUTHOR = {C. Alvizuri and C. Tape},
+#      TITLE = {{Full moment tensors for small events ($\mw < 3$) at Uturuncu volcano, Bolivia}},
+#      JOURNAL = {Geophys.~J.~Int. \rm(in prep.)},
+#      PAGES = {},
+#      VOLUME = {},
+#      NUMBER = {},
+#      EID = {},
+#      DOI = {},
+#      YEAR = {2015}
+# }
+#
+#-----------------------------------------------------------
+
+ampratios=$1
+
+if [ ! -e "$ampratios" ]
+then
+    printf "$0: abort: input file not found:  \"${ampratios}\"\n"
+    printf "usage: $0 inputfile\n"
+    exit 1
+fi
+
+# clean up input variables
+depth=`printf "%03d" $depth`
+
+# define data directories input/output
+epicenter="/home/alvizuri/REPOSITORIES/GEOTOOLS/matlab_util/util_data_syn/uturuncu/rs_bolivia_utu63.txt"
+  stndata="/home/alvizuri/REPOSITORIES/GEOTOOLS/matlab_util/util_data_syn/uturuncu/stations_plutons"
+
+dir_grd="/home/alvizuri/GMT/data/SRTM"
+data_grid="${dir_grd}/srtm_23_17.grid"
+data_grad="${dir_grd}/srtm_23_17.grad"
+
+outfile="${ampratios}_map.ps"
+
+# define output filenames
+        out_body_v2v="${outdir}/${evid}_${model}_${depth}_amps_body_v2v"
+        out_body_r2r="${outdir}/${evid}_${model}_${depth}_amps_body_r2r"
+    out_body_obs_v2r="${outdir}/${evid}_${model}_${depth}_amps_body_obs_v2r"
+    out_body_syn_v2r="${outdir}/${evid}_${model}_${depth}_amps_body_syn_v2r"
+
+    out_rayleigh_v2v="${outdir}/${evid}_${model}_${depth}_amps_rayleigh_v2v"
+    out_rayleigh_r2r="${outdir}/${evid}_${model}_${depth}_amps_rayleigh_r2r"
+out_rayleigh_obs_v2r="${outdir}/${evid}_${model}_${depth}_amps_rayleigh_obs_v2r"
+out_rayleigh_syn_v2r="${outdir}/${evid}_${model}_${depth}_amps_rayleigh_syn_v2r"
+
+#-----------------------------------------------------------
+# define GMT parameters
+#-----------------------------------------------------------
+# colors
+utucpt="/home/alvizuri/GMT/data/cpt/cpt_gray_srtm_utu"
+gmtset D_FORMAT %7.3f
+col_palette="polar"
+#col_palette="seis"
+#col_palette="rainbow"
+#makecpt -C${col_palette} -D -T0/2/0.01 > cpt_stdev
+#makecpt -C${col_palette} -D -T0/2/0.01 > cpt_median
+minmax="2"
+ddel="0.1"
+makecpt -C${col_palette} -D -I -T-${minmax}/${minmax}/${ddel} > cpt_stdev
+makecpt -C${col_palette} -D -I -T-${minmax}/${minmax}/${ddel} > cpt_median
+
+psxy_symbol="-Sc0.2c"
+
+gmtdefaults -D > .gmtdefaults4
+gmtset MEASURE_UNIT inch
+gmtset PAGE_ORIENTATION portrait
+gmtset PAPER_MEDIA letter
+gmtset ANNOT_FONT_PRIMARY Helvetica
+gmtset ANNOT_FONT_SECONDARY Helvetica
+gmtset ANNOT_FONT_SIZE_PRIMARY 10       # ticks
+gmtset ANNOT_FONT_SIZE_SECONDARY 12     # ??
+gmtset HEADER_FONT_SIZE 10              # title
+gmtset LABEL_FONT_SIZE 10
+gmtset HEADER_OFFSET 2p
+gmtset BASEMAP_TYPE plain
+gmtset PLOT_DEGREE_FORMAT -D.xx
+gmtset D_FORMAT %5.1f
+gmtset NAN_RECORDS skip
+
+area="-R-67.75/-66.75/-22.8/-21.8"     # uturuncu stations
+proj="-Jm2.3"
+flags="-O -V -K"
+
+ shift_vmed="-Xa1.0 -Ya6.0"
+ shift_vstd="-Xa4.8 -Ya6.0"
+shift_scale="-Xa0.0 -Ya0.3"
+
+#-----------------------------------------------------------
+# begin plotting
+#-----------------------------------------------------------
+
+# plot MEDIAN amp ratios
+grdview $data_grid -I$data_grad $area $proj $shift_vmed -K -C${utucpt} -Qi200 > $outfile
+psbasemap $area $proj $shift_vmed -O -V -K -Ba0.5f0.1g5WSne -L-66.9/-22.68/-22.75/10+fwhite+u2+pblack  >> $outfile
+awk '{print $2, $3, $5}'              ${ampratios} | pscontour $area $proj $shift_vmed $flags -Ccpt_median -I >> $outfile
+awk '{print $2, $3, 6, 0, 1, 15, $1}' ${ampratios} | pstext    $area $proj $shift_vmed $flags -S1p,white >> $outfile
+awk '{print $2, $3, $5}'              ${ampratios} | psxy      $area $proj $shift_vmed $flags -Ccpt_median $psxy_symbol -Gblack -W0.1p,black >> $outfile
+
+# plot epicenters
+awk '{print $2, $3}' ${epicenter} | psxy $area $proj $shift_vmed $flags -Sc0.1c -Gblack -W0.1p,black >> $outfile
+
+### plot STD amp ratios
+#grdview $data_grid -I$data_grad $area $proj $shift_vstd -O -K -C${utucpt} -Qi200 >> $outfile
+#psbasemap $area $proj $shift_vstd -O -V -K -Ba0.5f0.1g5SWne -L-66.9/-22.68/-22.75/10+fwhite+u2+pblack  >> $outfile
+#awk '{print $2, $3, $7}' ${ampratios}               | pscontour $area $proj $shift_vstd $flags -Ccpt_stdev -I >> $outfile
+#awk '{print $2, $3, 6, 0, 1, 15, $1}' ${ampratios}  | pstext    $area $proj $shift_vstd $flags -S1p,white >> $outfile
+#awk '{print $2, $3, $7}' ${ampratios}               | psxy      $area $proj $shift_vstd $flags -Ccpt_stdev $psxy_symbol -Gblack -W0.1p,black >> $outfile
+
+## plot epicenters
+#awk '{print $2, $3}' ${epicenter}                   | psxy      $area $proj $shift_vstd $flags -Sc0.1c -Gblack -W0.1p,black >> $outfile
+
+# psscale -Ccpt_stdev  -Al -D5.9/5.0/4c/0.3ch -Bf0.5a1:"St Dev ln(Aobs/Asyn)": -Ef -O -V -N $shift_scale >> $outfile
+# psscale -Ccpt_median -Al -D2.1/5.1/4c/0.3ch -Bf0.5a1:"Median ln(Aobs/Asyn)": -E  -O -V -N $shift_scale >> $outfile
+ psscale -Ccpt_median -Al -D2.1/8.7/4c/0.3ch -Bf0.5a1:"Median ln(Aobs/Asyn)": -E  -O -V -N $shift_scale >> $outfile
+# psscale -Ccpt_median -Al -D3.9/6.8/4c/0.3c -Bf0.5a1:"Median ln(Aobs/Asyn)": -E  -O -V -N $shift_scale >> $outfile
+
+ps2raster -Te -A $outfile
+printf "\n$0: output: $outfile\n\n"
+

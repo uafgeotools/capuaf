@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# 20150109 celso alvizuri - cralvizuri@alaska.edu
+#
+#-----------------------------------------------------------
+# If you use this code for your own research, please cite:
+# 
+# @article{AlvizuriTape2016,
+#      AUTHOR = {C. Alvizuri and C. Tape},
+#      TITLE = {{Full moment tensors for small events ($\mw < 3$) at Uturuncu volcano, Bolivia}},
+#      JOURNAL = {Geophys.~J.~Int. \rm(in prep.)},
+#      PAGES = {},
+#      VOLUME = {},
+#      NUMBER = {},
+#      EID = {},
+#      DOI = {},
+#      YEAR = {2015}
+# }
+#
+#-----------------------------------------------------------
+
+# input
+datadir="/home/alvizuri/REPOSITORIES/GEOTOOLS/matlab_util/util_data_syn/uturuncu"
+stndata="${datadir}/utu_eid_dep_focus_sta_ll"
+epicenters="${datadir}/utu_eid_dep_focus_ll"
+epicenters_utu63="${datadir}/rs_bolivia_utu63.txt"
+data_psmeca_iso="${datadir}/utu_eid_dep_focus_iso_psmeca" 
+data_psmeca_cracks="${datadir}/utu_eid_dep_focus_cracks_psmeca"
+data_psmeca_cluster="${datadir}/utu_eid_dep_focus_cluster_psmeca"
+data_event_ll_iso="${datadir}/utu_eid_dep_focus_iso_ll"
+data_event_ll_cracks="${datadir}/utu_eid_dep_focus_cracks_ll"
+data_event_ll_cluster="${datadir}/utu_eid_dep_focus_cluster_ll"
+grid="/home/alvizuri/shared/data/gmt/srtm_23_17.grid"
+grad="/home/alvizuri/shared/data/gmt/srtm_23_17.grad"
+data_stations="/home/alvizuri/shared/data/gmt/data.plutons.stn2"
+
+out="map_utu63_focus_v4.ps"
+
+# gmt
+gmtdefaults -D > .gmtdefaults4
+gmtset MEASURE_UNIT inch
+gmtset PAPER_MEDIA letter
+gmtset BASEMAP_TYPE plain
+gmtset ANNOT_FONT_SIZE_PRIMARY 10
+gmtset PLOT_DEGREE_FORMAT ddd.x
+
+grdview $grid -I$grad -R-67.41/-67.00/-22.55/-22.177 -Jm10 -Y2 -K -Csrtm_utu_gray.cpt -Qi100 -P > $out
+psbasemap -R-67.41/-67.00/-22.55/-22.177 -Jm10 -O -V -K -Ba0.2f0.1WSne -L-67.08/-22.20/-22.4/5/5+p1p,0/0/0+fwhite  >> $out
+
+# plot stations
+awk '{print $2,$3,8,0,1,15,$1}' $stndata \
+    | pstext -R-67.41/-67.00/-22.55/-22.177 -Jm10 -O -V -K -S2p,white >> $out
+awk '{print $2, $3}' $stndata \
+    | psxy -R-67.41/-67.00/-22.55/-22.177 -Jm10 -O -V -K -Si0.25c -W2p,black -Gwhite >> $out
+
+# cross at uturuncu
+echo "-67.186424 -22.264361" | psxy -R-67.41/-67.00/-22.55/-22.177 -Jm10 -S+40c -W0p,-- -O -V -K >> $out
+
+# seismicity
+psxy ${epicenters_utu63} -R-67.41/-67.00/-22.55/-22.177 -Jm10 -Sc4p -W0p,black -Gblack -O -V -K >> $out
+
+# plot beachballs
+psmeca ${data_psmeca_iso} -R-67.41/-67.00/-22.55/-22.177 -Jm10 -N -M     -Sm0.4c -G0/100/255 -L -W0.1p,black -O -V -K -C >> $out
+psmeca ${data_psmeca_cracks} -R-67.41/-67.00/-22.55/-22.177 -Jm10 -N -M  -Sm0.4c -G0/255/0 -L -W0.1p,black -O -V -K -C >> $out
+psmeca ${data_psmeca_cluster} -R-67.41/-67.00/-22.55/-22.177 -Jm10 -N -M -Sm0.4c -G255/0/0 -L -W0.1p,black -O -V -K -C >> $out
+
+# plot inset
+pscoast -R-67.75/-66.7/-22.75/-21.75 -Jm1.2 -W2p,red -Gwhite -Bf0 -O -V -K >> $out
+awk '{print $3,$2}' $data_stations | psxy -R-67.75/-66.7/-22.75/-21.75 -Jm1.2 -O -V -K -Si0.15c -Gwhite -W1.2p,black >> $out
+psxy ${epicenters_utu63} -R-67.75/-66.7/-22.75/-21.75 -Jm1.2 -Sc2p -W0p,black -Gblack -O -V -K >> $out
+echo "-67.186424 -22.264361" | psxy -R-67.75/-66.7/-22.75/-21.75 -Jm1.2 -S+40c -W0p,-- -O -V -K >> $out
+awk '{print $2, $3}' ${data_event_ll_iso} | psxy -R-67.75/-66.7/-22.75/-21.75 -Jm1.2 -Sc6p -W0p,black -G0/100/255 -O -V -K >> $out
+awk '{print $2, $3}' ${data_event_ll_cracks} | psxy -R-67.75/-66.7/-22.75/-21.75 -Jm1.2 -Sc6p -W0p,black -G0/255/0 -O -V -K >> $out
+awk '{print $2, $3}' ${data_event_ll_cluster} | psxy -R-67.75/-66.7/-22.75/-21.75 -Jm1.2 -Sc6p -W0p,black -G255/0/0 -O -V >> $out
+
+# convert to eps
+ps2eps $out
+# uncomment to replace figure in paper
+#cp map_utu63_focus_v4.eps /home/alvizuri/manuscripts/2015/fmt_uturuncu/figures/map_utu63_focus_v4.eps
+echo "figure saved to:  $out"
+
