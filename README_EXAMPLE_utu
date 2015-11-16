@@ -115,7 +115,7 @@ gv 20100516063454464_check/utuhalf_004_fmt_V01_R01_S60.ps &
 
 # 1. Run cap inversions at each depth
 # NOTE this task takes about 30min to complete
-#for depth in 1 2 3 4 5 6 7 8 9 10; do cap.pl -W1 -Y1 -D1/1/0.5 -H0.01 -C2/10/0.25/0.5 -F0 -L0.1 -S0.05/2.0/0 -P0.5e+0.5/1/30 -T1.5/60 -E1 -K1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_$depth/2.8 -Zw_utuhalf_P01_V10_R01_S10.dat 20100516063454464 ; done
+for depth in 1 2 3 4 5 6 7 8 9 10; do cap.pl -W1 -Y1 -D1/1/0.5 -H0.01 -C2/10/0.25/0.5 -F0 -L0.1 -S0.05/2.0/0 -P0.5e+0.5/1/30 -T1.5/60 -E1 -K1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_$depth/2.8 -Zw_utuhalf_P01_V10_R01_S10.dat 20100516063454464 ; done
 
 # 2. Plot the result
 # NOTE to reproduce figure in the Uturuncu FMT paper open script depth.pl and 
@@ -133,7 +133,7 @@ gv 20100516063454464_check/depth_test_20100516063454464_utuhalf_L_dt.eps &
 
 # 1. Run cap with body waves + surface waves. No polarities. Component weights 10-1-10
 # NOTE runs without polarities take about 3.5 hours to complete.
-#cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P00_V10_R01_S10.dat 20100516063454464 
+cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P00_V10_R01_S10.dat 20100516063454464 
 
 # 2. Compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
@@ -148,7 +148,7 @@ gv 20100516063454464_check/utuhalf_004_fmt_P01_V10_R01_S00.ps &
 
 # 5. Run with body waves only. No surface waves. No polarities. Component weights 10-1-0
 # NOTE runs without polarities take about 3.5 hours to complete.
-#cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P00_V10_R01_S00.dat 20100516063454464 
+cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P00_V10_R01_S00.dat 20100516063454464 
 
 # 6. Compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
@@ -195,7 +195,7 @@ gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V00_R00_S10_fmt.ps 
 
 # 5. PV + PR + Surf. No polarities
 # NOTE runs without polarities take about 3.5 hours to complete.
-#cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zw_utuhalf_P00_V10_R01_S10_nopol.dat 20100516063454464
+cap.pl -H0.01 -P3/1/30 -p0.15 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zw_utuhalf_P00_V10_R01_S10.dat 20100516063454464
 
 # 6. compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
