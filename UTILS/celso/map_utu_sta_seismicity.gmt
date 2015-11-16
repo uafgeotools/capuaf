@@ -41,7 +41,7 @@ gmtset ANNOT_FONT_SIZE_PRIMARY 10
 gmtset PLOT_DEGREE_FORMAT ddd.x
 
 grdview $grid -I$grad -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -Csrtm_utu_gray.cpt -Qi200 -K > $out
-pscoast -A0/1/1000 -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -O -V -K -Di -Sblue >> $out
+pscoast -Di -A1000/0/1 -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -O -V -K -Sblue >> $out
 
 # plot borders of focus area 
 (echo "-66.9 -22.1" ; echo "-67.4 -22.1") | psxy -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -W0.5p,black -O -V -K >> $out
@@ -61,8 +61,11 @@ awk '{print $3,$2,8,0,1, 14 ,$1}' $data_stations \
 awk '{print $3,$2}' $data_stations \
     | psxy -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -O -V -K -Si0.25c -Gwhite -W1p,black >> $out
 
+# inset map
 settings="-R-90/-45/-40/15 -Jm0.015"
-pscoast $settings -O -V -K -N1/0p -Di -W0p -Ggray -Swhite -Bf0 -A0/1/1000 -Xa0i -Ya2.1 >> $out
+coastlineinfo="-W0.25p,0/0/0"
+borderinfo="-N1/0.25p,0/0/0"
+pscoast $settings -O -V -K $borderinfo $coastlineinfo -Dl -A1000/0/1 -Ggray -Swhite -Bf0 -Xa0i -Ya2.1 >> $out
 echo "-67.2 -22.2" | psxy $settings -Ss0.3c -W2p,red -O -V -K -Xa0i -Ya2.1 >> $out
 
 # top panel - lon vs depth
@@ -92,7 +95,8 @@ pshistogram $data_epicenters -Jx0.0667i/0.0046 -R-5/10/0/220 -T2 -W1 -G175 -L0p,
 
 
 # prepare figure for paper
-ps2eps $out
+ps2eps -f $out
+gv $out &
 # uncomment to replace figure in the paper
 #cp seismicity_utu.eps /home/alvizuri/manuscripts/2015/fmt_uturuncu/figures/seismicity_utu.eps
 echo "figure saved to:  $out"
