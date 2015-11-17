@@ -11,11 +11,7 @@ START-UP INSTRUCTIONS
 0. By default, do not run cap on a cluster (skip this step).
 The following instructions apply to the UAF pacman cluster.
 
-0a. load environmental variables with this command (add it to your .bashrc file if you want):
-
-> source /import/unsupported/erthquak/bashrc_seismo_util
-
-0b. check modules:
+0a. check modules:
 
 > module list
 
@@ -24,7 +20,7 @@ Currently Loaded Modulefiles:
   1) git/1.8.2.3               3) openmpi-gnu-4.7.3/1.4.3   5) netcdf/4.3.0.gnu-4.7.3
   2) gcc/4.7.3                 4) PrgEnv-gnu/4.7.3
 
-0c. set up your directories
+0b. set up your directories
 
 > cd $CENTER
 > mkdir -p CAP
@@ -37,6 +33,12 @@ git clone https://USERNAME@github.com/uafseismo/cap.git src
 0d. assign $CAPHOME in your .bashrc, e.g., 
 
 export CAPHOME=$CENTER/CAP/src
+
+0e. load environmental variables with this command (add it to your .bashrc file if you want):
+
+> source /import/unsupported/erthquak/bashrc_seismo_util
+
+note that $CAPHOME must be assigned prior to sourcing bashrc_seismo_util
 
 ------------------------------------------------------
 
