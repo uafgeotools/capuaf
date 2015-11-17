@@ -1,0 +1,96 @@
+#!/bin/bash
+# This script automatically updates all the Alaska examples 
+# CAUTION must be payed since input command might need to be updated 
+# Runs and save in the Example_check Direcotry
+# MIGHT want to rename the previous Example_check directory and save it (just in case)
+
+# > cap.pl (to know what each command flag means)
+
+# Directory for saving the examples (CAUTION: ExampleDir will be overwritten)
+
+#====================================================================================
+# EXAMPLE 1: Running Alaska Example (20090407201255351)
+# These figures were used in SilwalTape2016 and the supplementary data stored in ScholarWorks@UA collections
+
+cd $CAPHOME
+git checkout cap.c
+# open cap.c and set: 
+# FTC_data=1
+# FTC_green=0 and recompile 
+make all
+
+eid=20090407201255351
+model=scak
+mw=4.5
+dep=39
+
+ExampleDir=$CAPHOME/EXAMPLES/${eid}_check2
+mkdir $ExampleDir
+
+#========main paper figure (subset of stations)======================
+cap.pl -H0.02 -P1/15/60 -p2 -S2/10/0 -T15/120 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -W1 -M"$model"_$dep/$mw -I10/0.1 -Zweight111_subset.dat -E1 -K1 -Y1 $eid
+cp ${eid}/scak_039.ps $ExampleDir/${eid}_main.ps
+cp ${eid}/scak_039.out $ExampleDir/${eid}_main.out
+cp ${eid}/scak_039_beach.ps $ExampleDir/${eid}_beach_main.ps
+
+#=====supplement figure====================
+wts=(101 011 112 012 110 111) # weight files identifier
+#wts=(111)
+norms=(1 2)
+#norms=(1)
+dep_min=15
+dep_max=75
+dep_inc=2
+
+# Run for all weights and norms
+for ii in ${wts[@]}
+do
+    for norm in ${norms[@]}
+    do 
+	rm "$eid"/"$model"*.out
+	rm "$eid"/"$model"*.ps
+	mkdir -p L$norm/M$ii
+	cap.pl -H0.02 -P1/15/60 -p2 -S2/10/0 -T15/120 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -W1 -M"$model"_41/$mw -I10/0.1 -Zweight$ii.dat -E1 -K1 -Y$norm -A$dep_min/$dep_max/$dep_inc $eid
+	depth_test "$eid" "$model"
+	mv "$eid"/"$model"*.out L$norm/M$ii/
+	mv "$eid"/"$model"*.ps L$norm/M$ii/
+	mv dep_"$eid".ps L$norm/M$ii/
+	mv junk1.out L$norm/M$ii/
+	mv junk2.out L$norm/M$ii/
+	# Find the best solution (minimum misfit depth and fault plane solution) and move the output files for that depth to the ExampleDir (also rename: see mindep.pl)
+	./mindep.pl $eid $norm $ii $ExampleDir
+    done
+done
+
+#====================================================================================
+# Azimuthal soritng example
+cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0 -Zaz_sort_weight111.dat -E1 -K1 -Y1 $eid
+cp "$eid"/scak_041.ps $ExampleDir/20090407201255351_L1_M111_az.ps 
+cp "$eid"/scak_041.out $ExampleDir/20090407201255351_L1_M111_az.out
+
+#====================================================================================
+# EXAMPLE 2: Running Alaska Example (20080918194353069) - Checking FTC data and green's outputs
+
+
+#====================================================================================
+# EXAMPLE 3: Running Nenana triggering example (20120411092157444)
+# This was used in Tape2013 (Nenana eq triggering paper) and Tape2015 (MFSZ paper)
+# Plots are slightly different because older version (not documented which one) was used
+# for making the paper figures.
+# Figures here are improvement over the paper figures
+
+# open cap.c and set FTC_data=1 and FTC_green=0 and recompile 
+# > make all
+
+eid=20120411092157444
+model=tactmod
+ExampleDir=$CAPHOME/EXAMPLES/${eid}_check2
+mkdir $ExampleDir
+
+rm -f $eid/"$model"*ps
+rm -f $eid/"$model"*out
+cap.pl -H0.02 -P1/1/15 -p1.5 -S0.5/2/0 -T2/40 -D1/1/0.5 -C1/10/0.3/0.6 -W1 -M"$model"_16/3.6 -Zweight111.dat -E1 -K1 -Y1 -A10/30/1 $eid 
+depth_test $eid "$model"
+cp $eid/"$model"*ps $ExampleDir
+cp $eid/"$model"*out $ExampleDir
+cp dep_$eid.ps $ExampleDir

@@ -1,10 +1,14 @@
 README_EXAMPLE_utu
 
 See README_EXAMPLE first -- run the default example.
+The figures generated here were used in following papers (See these papers for more details):
+- SilwalTape2016 paper (JGR)
+- Tape2013 (EPSL)
 
 ====================================================================================
 
 EXAMPLE 1: Running Alaska Example (20090407201255351)
+# These figures were used in SilwalTape2016 and the supplementary data stored in ScholarWorks@UA collections
 
 1. open cap.c and check that FTC_data=1 and FTC_green=0 (recompile if needed: make all >& make.log )
 
@@ -156,7 +160,12 @@ EXAMPLE 2: Running Alaska Example (20080918194353069) - Checking FTC data and gr
 > evince $CAPHOME/EXAMPLES/20080918194353069_check/FTC_off_results.pdf
 
 ====================================================================================
-EXAMPLE 3: Running Nenana triggering example (20120411092157444)
+EXAMPLE 3: Running Nenana triggering example (20120411092157
+# This was used in Tape2013 (Nenana eq triggering paper) and Tape2015 (MFSZ paper)
+# Plots are slightly different because older version (not documented which one) was used
+# for making the paper figures.
+# Figures here are improvement over the paper figures444)
+
 
 1. open cap.c and set FTC_data=1 and FTC_green=0 and recompile 
 > make all
@@ -167,7 +176,7 @@ EXAMPLE 3: Running Nenana triggering example (20120411092157444)
 > rsync -av $CAPHOME/EXAMPLES/20120411092157444 .
 
 3. run 
-> cap.pl -H0.02 -P2e-5/1/15 -p1.5 -S0.5/2/0 -T2/40 -D1/1/0.5 -C1/10/0.3/0.6 -W1 -Mtactmod_16/3.6 -Zweight111.dat -E1 -K1 -Y1 20120411092157444 -A10/30/1 
+> cap.pl -H0.02 -P1/1/15 -p1.5 -S0.5/2/0 -T2/40 -D1/1/0.5 -C1/10/0.3/0.6 -W1 -Mtactmod_16/3.6 -Zweight111.dat -E1 -K1 -Y1 20120411092157444 -A10/30/1 
 > depth_test 20120411092157444 tactmod
 
 4. Check results

@@ -4,11 +4,14 @@
 # Runs and save in the Example_check Direcotry
 # MIGHT want to rename the previous Example_check directory and save it (just in case)
 
+# open cap.c and check FTC_data=0 and FTC_green=0 and recompile 
+# > make all
+
 # > cap.pl (to know what each command flag means)
 
-# Directory for saving the examples
-ExampleDir=$CAPHOME/EXAMPLES/20080418093700_check
-mkdir $ExampleDir
+# Directory for saving the examples (CAUTION: ExampleDir will be overwritten)
+ExampleDir=$CAPHOME/EXAMPLES/20080418093700_check5
+mkdir -p $ExampleDir
 
 #==================================================================================
 ## EXAMPLE 1: Illinois event, double couple (DC)
@@ -31,7 +34,6 @@ cp dep_20080418093700.ps $ExampleDir/depth_dc.ps
 cp junk1.out $ExampleDir/junk1_dc.out
 cp junk2.out $ExampleDir/junk2_dc.out
 
-# TO BE ADDED 
 #==================================================================================
 ## EXAMPLE 2: Illinois event, DC with P wave polarities in weight file
 cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat
@@ -44,7 +46,7 @@ cp 20080418093700/cus_015.out $ExampleDir/cus_015_DC_pol.out
 
 #==================================================================================
 ## EXAMPLE 4: Illinois event, FMT with Zhu line search
-# depth search range for the Illinois event (FMT) - Zhu and BenZoin parameterization
+# depth search range for the Illinois event (FMT) - Zhu and BenZion parameterization
 deps=(5 10 15 20 25 30)
 #
 for dep in ${deps[@]}
