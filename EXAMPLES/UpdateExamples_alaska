@@ -12,12 +12,14 @@
 # EXAMPLE 1: Running Alaska Example (20090407201255351)
 # These figures were used in SilwalTape2016 and the supplementary data stored in ScholarWorks@UA collections
 
-cd $CAPHOME
-git checkout cap.c
+#!!!!!!!! MAKE CHANGES IN CAP.C!!!!!!!!!!!!!
+# cd $CAPHOME
+# git checkout cap.c
 # open cap.c and set: 
 # FTC_data=1
-# FTC_green=0 and recompile 
-make all
+# FTC_green=0 
+# then recompile 
+# make all
 
 eid=20090407201255351
 model=scak
@@ -71,6 +73,47 @@ cp "$eid"/scak_041.out $ExampleDir/20090407201255351_L1_M111_az.out
 #====================================================================================
 # EXAMPLE 2: Running Alaska Example (20080918194353069) - Checking FTC data and green's outputs
 
+# NOTE: To run Example 2 you will have to copy paste commands from here and make changes to cap.c after
+#!!!!!!!! MAKE CHANGES IN CAP.C!!!!!!!!!!!!!
+# cd $CAPHOME
+# git checkout cap.c
+# open cap.c and set: 
+# FTC_data=0
+# FTC_green=0 
+# then recompile 
+# make all
+
+eid=20080918194353069
+model=scak
+ExampleDir=$CAPHOME/EXAMPLES/${eid}_check2
+mkdir $ExampleDir
+
+cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -M"$model"_72/4.8 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 $eid
+cp $eid/scak_072.ps $ExampleDir/FTC_off.ps
+
+#!!!!!!!! MAKE CHANGES IN CAP.C!!!!!!!!!!!!!! 
+# cd $CAPHOME
+# git checkout cap.c
+# open cap.c and set: 
+# FTC_data=1
+# FTC_green=1 
+# then recompile 
+# make all
+
+cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -M"$model"_72/4.8 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 $eid
+cp $eid/scak_072.ps $ExampleDir/FTC_on.ps
+
+#!!!!!!!! MAKE CHANGES IN CAP.C!!!!!!!!!!!!!
+# cd $CAPHOME
+# git checkout cap.c
+# open cap.c and set: 
+# FTC_data=1
+# FTC_green=0 
+# then recompile 
+# make all
+
+cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -M"$model"_72/4.8 -I10/0.1 -Zweight101.dat -E1 -K1 -Y1 $eid
+cp $eid/scak_072.ps $ExampleDir/FTC_on_off.ps
 
 #====================================================================================
 # EXAMPLE 3: Running Nenana triggering example (20120411092157444)
@@ -79,8 +122,14 @@ cp "$eid"/scak_041.out $ExampleDir/20090407201255351_L1_M111_az.out
 # for making the paper figures.
 # Figures here are improvement over the paper figures
 
-# open cap.c and set FTC_data=1 and FTC_green=0 and recompile 
-# > make all
+#!!!!!!!! MAKE CHANGES IN CAP.C!!!!!!!!!!!!!
+# cd $CAPHOME
+# git checkout cap.c
+# open cap.c and set: 
+# FTC_data=1
+# FTC_green=0 
+# then recompile 
+# make all
 
 eid=20120411092157444
 model=tactmod
