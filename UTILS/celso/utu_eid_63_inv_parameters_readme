@@ -1,0 +1,33 @@
+# The following files contain those parameters in the full moment tensor 
+# inversion that are not constant for all inversions.
+# Except for waveform weighting, all other inversion parameters such as
+# filter frequencies are the same for all inversions.
+#
+# For more details see the following paper
+# 
+# @article{AlvizuriTape2016,
+#      AUTHOR = {C. Alvizuri and C. Tape},
+#      TITLE = {{Full moment tensors for small events ($\mw < 3$) at Uturuncu volcano, Bolivia}},
+#      JOURNAL = {Geophys.~J.~Int. \rm(in prep.)},
+#      PAGES = {},
+#      VOLUME = {},
+#      NUMBER = {},
+#      EID = {},
+#      DOI = {},
+#      YEAR = {2015}
+# }
+#-----------------------------------------------------------
+
+# main files
+utu_eid_63_inv_parameters_utu1D   
+utu_eid_63_inv_parameters_utuhalf 
+
+# The columns in each file are
+# EVID  MODEL   DEPTH   CENTER_MAG  SOURCE_DURATION
+#
+# eg 
+# 20100516063454464 utuhalf 4 2.8 0.10
+# 20100516085611725 utuhalf 10 2.6 0.15
+#
+
+#
