@@ -36,11 +36,3 @@ if (1){
 }
 print "$eid/L$norm/M$wts/scak_$mindep.out\n";
 
-# 2. Create summary of solutions
-if (0){
-    $summary_file = sprintf("$resultdir/$eid/summary.dat",$eid);
-    print "$summary_file\n";
-    open(my $sum,'>>',$summary_file);
-    say $sum "$norm $wts $beststrike $bestdip $bestrake $bestMw $mindep $bestVR";
-    close $sum;
-}
