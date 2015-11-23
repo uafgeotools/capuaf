@@ -1,4 +1,6 @@
 #!/usr/bin/env perl
+# if on pacman uncomment the following
+#use v5.10;
 #
 # A user-friendly PERL interface to the CAP source inversion code cap
 #
@@ -23,8 +25,8 @@ $inp_cmd = "inp_cmd";
 
 # green's function location
 #$green = "$home/data/models/Glib";        # original
-$green = "/store/wf/FK_synthetics";        # standard models at UAF
-#$green = "$caprun/models";                # user testing
+#$green = "/store/wf/FK_synthetics";        # standard models at UAF
+$green = "$caprun/models";                # user testing
 
 $repeat = 0;
 $bootstrap = 0;
