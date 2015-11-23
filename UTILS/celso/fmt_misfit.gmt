@@ -102,6 +102,9 @@ if [ -z "${datadir_fmt_top}" ] ; then
     datadir_fmt_top="inv20150618_utuhalf_P01_V10_R01_S10_L_dt"
 fi
 
+datadir_main="/home/alvizuri/shared/plutons/inversions/inv20151024_mainevent_tests"
+datadir_main="/home/alvizuri/shared/plutons/inversions/inv20151028_utupaper_FMP_effects"
+datadir_main="/home/alvizuri/shared/plutons/inversions/inv20150618_utuhalf_P00_V10_R01_S10_L_dt"
 datadir_main="/home/alvizuri/shared/plutons/inversions/inv20150618_utuhalf_P01_V10_R01_S10_L_dt"
 datadir_top="${datadir_main}"
 datadir_job="job_${evid}${job_name}"
