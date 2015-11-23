@@ -1,0 +1,102 @@
+#!/bin/bash
+#------------------------------------------------
+# Map for Uturuncu FM project.
+# includes station map, seismicity, focus events
+# 
+# 
+# 20141013 celso alvizuri - cralvizuri@alaska.edu
+#------------------------------------------------
+# If you use this code for your own research, please cite:
+# 
+# @article{AlvizuriTape2016,
+#      AUTHOR = {C. Alvizuri and C. Tape},
+#      TITLE = {{Full moment tensors for small events ($\mw < 3$) at Uturuncu volcano, Bolivia}},
+#      JOURNAL = {Geophys.~J.~Int. \rm(in prep.)},
+#      PAGES = {},
+#      VOLUME = {},
+#      NUMBER = {},
+#      EID = {},
+#      DOI = {},
+#      YEAR = {2015}
+# }
+#
+#-----------------------------------------------------------
+
+out="seismicity_utu.ps"
+
+# data 
+grid="/home/alvizuri/shared/data/gmt/srtm_23_17.grid"
+grad="/home/alvizuri/shared/data/gmt/srtm_23_17.grad"
+datadir="/home/alvizuri/REPOSITORIES/GEOTOOLS/matlab_util/util_data_syn/uturuncu"
+data_epicenters="${datadir}/utu_crustal_psxy_isort1"
+data_epicenters_focus="${datadir}/rs_bolivia_utu63.txt"
+data_stations="/home/alvizuri/shared/data/gmt/data.plutons.stn2"
+
+# gmt
+gmtdefaults -Ds > .gmtdefaults4
+gmtset MEASURE_UNIT inch
+gmtset BASEMAP_TYPE plain
+gmtset LABEL_FONT_SIZE 10
+gmtset ANNOT_FONT_SIZE_PRIMARY 10
+gmtset PLOT_DEGREE_FORMAT ddd.x
+
+grdview $grid -I$grad -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -Csrtm_utu_gray.cpt -Qi200 -K > $out
+pscoast -Di -A1000/0/1 -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -O -V -K -Sblue >> $out
+
+# plot borders of focus area 
+(echo "-66.9 -22.1" ; echo "-67.4 -22.1") | psxy -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -W0.5p,black -O -V -K >> $out
+(echo "-66.9 -22.6" ; echo "-67.4 -22.6") | psxy -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -W0.5p,black -O -V -K >> $out
+(echo "-67.4 -22.6" ; echo "-67.4 -22.1") | psxy -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -W0.5p,black -O -V -K >> $out
+(echo "-66.9 -22.6" ; echo "-66.9 -22.1") | psxy -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -W0.5p,black -O -V -K >> $out
+
+# seismicity
+psxy $data_epicenters -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -O -V -K -Sc2.0p -W0.5p,0/0/0 -Gblack >> $out
+
+# epicenters utu63
+psxy $data_epicenters_focus -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -O -V -K -Sc4.0p -W0.5p,0/0/0 -G255/0/0 >> $out
+
+# station locations, names
+awk '{print $3,$2,8,0,1, 14 ,$1}' $data_stations \
+    | pstext -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -O -V -K -S1p,white >> $out
+awk '{print $3,$2}' $data_stations \
+    | psxy -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -O -V -K -Si0.25c -Gwhite -W1p,black >> $out
+
+# inset map
+settings="-R-90/-45/-40/15 -Jm0.015"
+coastlineinfo="-W0.25p,0/0/0"
+borderinfo="-N1/0.25p,0/0/0"
+pscoast $settings -O -V -K $borderinfo $coastlineinfo -Dl -A1000/0/1 -Ggray -Swhite -Bf0 -Xa0i -Ya2.1 >> $out
+echo "-67.2 -22.2" | psxy $settings -Ss0.3c -W2p,red -O -V -K -Xa0i -Ya2.1 >> $out
+
+# top panel - lon vs depth
+awk '{print $1,$3}' $data_epicenters \
+    | psxy -R-67.75/-66.7/-5/10 -Jx2.8/0.0667i -Sc2.0p -W0.5p,0/0/0 -Gblack \
+    -Ba0.5f0.1/:"Depth (km)":a5Wens -O -V -K -Xa0.0i -Ya3.01i >> $out
+(echo "-66.9 -5" ; echo "-66.9 10") | psxy -R-67.75/-66.7/-5/10 -Jx2.8/0.0667i -Xa0.0i -Ya3.01i -W0.5p,black -O -V -K >> $out
+(echo "-67.4 -5" ; echo "-67.4 10") | psxy -R-67.75/-66.7/-5/10 -Jx2.8/0.0667i -Xa0.0i -Ya3.01i -W0.5p,black -O -V -K >> $out
+
+# epicenters utu63
+awk '{print $1,$3}' $data_epicenters_focus \
+    | psxy -R-67.75/-66.7/-5/10 -Jx2.8/0.0667i -Sc4.0p -W0.5p,0/0/0 -G255/0/0 -O -V -K -Xa0.0i -Ya3.01i >> $out
+
+# side panel - lat vs depth
+awk '{print $3,$2}' $data_epicenters \
+    | psxy -R-5/10/-22.75/-21.75 -Jx0.0667i/3.01 -Sc2.0p -W0.5p,0/0/0 -Gblack \
+    -Ba5/a0.5f0.1Snew -O -V -K -Xa2.94i -Ya0.0i >> $out
+(echo "-5 -22.1" ; echo "10 -22.1") | psxy -R-5/10/-22.75/-21.75 -Jx0.0667i/3.01 -Xa2.94i -Ya0.0i -W0.5p,black -O -V -K >> $out
+(echo "-5 -22.6" ; echo "10 -22.6") | psxy -R-5/10/-22.75/-21.75 -Jx0.0667i/3.01 -Xa2.94i -Ya0.0i -W0.5p,black -O -V -K >> $out
+
+# epicenters utu63
+awk '{print $3,$2}' $data_epicenters_focus \
+    | psxy -R-5/10/-22.75/-21.75 -Jx0.0667i/3.01 -Sc4.0p -W0.5p,0/0/0 -G255/0/0 -O -V -K -Xa2.94i -Ya0.0i >> $out
+
+psbasemap -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -O -V -K -Ba0.5f0.1WSne -L-67.62/-22.64/-22.64/10+fwhite+u2+pblack >> $out
+pshistogram $data_epicenters -Jx0.0667i/0.0046 -R-5/10/0/220 -T2 -W1 -G175 -L0p,black -B5s -O -Xa2.94i -Ya3.01i >> $out
+
+
+# prepare figure for paper
+ps2eps -f $out
+gv $out &
+# uncomment to replace figure in the paper
+#cp seismicity_utu.eps /home/alvizuri/manuscripts/2015/fmt_uturuncu/figures/seismicity_utu.eps
+echo "figure saved to:  $out"

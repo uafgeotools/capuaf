@@ -1,0 +1,65 @@
+#!/bin/bash
+# 
+# README_EXAMPLE_utu
+#
+# COMMANDS TO RECREATE INVERSION RESULTS
+# Uturuncu event 20100516063454464 
+# Velocity model utuhalf
+# FMT with lune parameterization
+# Full grid search (no line search)
+#
+# 
+# See README_EXAMPLE first -- run the default example.
+# 
+# 20151110 celso alvizuri - cralvizuri@alaska.edu 
+# ==============================================================================
+
+# Part 1. Uturuncu event 20110622023324299
+#
+# This example shows filter improvement for small signals when using flag filter-then-cut, 
+# as opposed to the default CAP which first cuts the data and then filters it (cut-then-filter).
+#
+# NOTE FTC_data=0 (original CAP) first cuts the waveform windows, then filters each windows (cut-then-filter).
+# NOTE FTC_data=1 first filters the waveform, then cuts the waveform into windows (filter-then-cut).
+
+# 0. go to cap directory and make sure cap is set to its default condition
+cd $CAPHOME
+git checkout cap.c
+
+# 1. Use option cut-then-filter. In cap.c set the flags below, then compile and run
+# FTC_data=0
+# FTC_green=0
+# skip_zero_weights=0
+make cap
+cd EXAMPLES
+cap.pl -H0.01 -P2e-7/1/30 -p0.15 -S0.1/2.0/0 -T1.5/60.0 -D1/1/0.5 -C2/10/0.1/0.4 -W1 -Y1 -F0 -L0.05 -E1 -K1 -I5/0/5 -J33.748/33.748/40/40 -R215/215/69.41/69.41/40/40 -Mutuhalf_9/0.6 -Zweight.dat 20110622023324299 
+
+# 2. compare results
+gv 20110622023324299/utuhalf_009_fmt.ps &
+gv 20110622023324299_check/utuhalf_009_fmt_cut_then_filter.ps &
+
+# 3. Use option filter-then-cut. In cap.c set the flags below, then compile and run
+# FTC_data=1
+# FTC_green=0
+make cap
+cd $CAPHOME/EXAMPLES
+cap.pl -H0.01 -P2e-7/1/30 -p0.15 -S0.1/2.0/0 -T1.5/60.0 -D1/1/0.5 -C2/10/0.1/0.4 -W1 -Y1 -F0 -L0.05 -E1 -K1 -I5/0/5 -J33.748/33.748/40/40 -R215/215/69.41/69.41/40/40 -Mutuhalf_9/0.6 -Zweight.dat 20110622023324299 
+
+# 4. compare results
+gv 20110622023324299/utuhalf_009_fmt.ps &
+gv 20110622023324299_check/utuhalf_009_fmt_filter_then_cut_obs.ps &
+
+# 5. Use option filter-then-cut for both data and greens. In cap.c set the flags below, then compile and run 
+# NOTE plotting flag is set to -P0.5e+0.5/... which normalizes seismograms in each window
+# FTC_data=1
+# FTC_green=1
+make cap
+cd $CAPHOME/EXAMPLES
+cap.pl -H0.01 -P0.5e+0.5/1/30 -S0.1/2.0/0 -T1.5/60.0 -D1/1/0.5 -C1/10/0.1/0.4 -W1 -Y1 -F0 -L0.05 -E1 -K1 -I5/0/5 -J33.748/33.748/40/40 -R215/215/69.41/69.41/40/40 -Mutuhalf_9/0.6 -Zweight.dat 20110622023324299 
+
+# 6. compare results
+gv 20110622023324299/utuhalf_009_fmt.ps &
+gv 20110622023324299_check/utuhalf_009_fmt_filter_then_cut_obs_greens.ps &
+
+# ==============================================================================
+
