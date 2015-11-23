@@ -56,11 +56,11 @@ if [ -n "$4" ] & [ -n "$5" ] & [ -n "$6" ] & [ -n "$7" ] ; then
     echo ${filename_add} ${inputdir_add}
 
     if [ "$4" == "1" ] || [ "$4" == "01" ] ; then
-        # comment out for Figure 10 uturuncu FMT
+        # comment the next line for Figure 10 uturuncu FMT
         #inversion_type="p PV $5 PR $6 Surf $7"
         echo
     elif [ "$4" == "0" ] || [ "$4" == "00" ] ; then
-        # comment out for Figure 10 uturuncu FMT
+        # comment the next line for Figure 10 uturuncu FMT
         #inversion_type="np PV $5 PR $6 Surf $7"
         echo
     else
@@ -89,6 +89,9 @@ label_depth="$depth"
 depth=`printf "%03d" $depth`
 
 # data directories
+datadir_main="/home/alvizuri/shared/plutons/inversions/inv20151024_mainevent_tests"
+datadir_main="/home/alvizuri/shared/plutons/inversions/inv20151028_utupaper_FMP_effects"
+datadir_main="/home/alvizuri/shared/plutons/inversions/inv20150618_utuhalf_P00_V10_R01_S10_L_dt"
 datadir_main="/home/alvizuri/shared/plutons/inversions/inv20150618_utuhalf_P01_V10_R01_S10_L_dt"
 datadir_top="${datadir_main}"
 datadir_job="job_${evid}${job_name}"
@@ -167,15 +170,16 @@ if [ "$flag_make_cpt" == "yes" ] ; then
 fi
 
 # Labels
-echo "0 2.60 10 0 0 LM $evid" | pstext -R0/8.5/0/11 -JX8/11 -K -Xa0.85i -Ya6.00i -N > $out
-echo "0 2.40 10 0 0 LM $label_best_sol" | pstext -R0/8.5/0/11 -JX8/11 -O -K -Xa0.85i -Ya6.00i -N >> $out
-echo "0 2.20 10 0 0 LM $label_mod_dep_mag" | pstext -R0/8.5/0/11 -JX8/11 -O -K -Xa0.85i -Ya6.00i -N >> $out
-echo "0 2.00 10 0 0 LM $inversion_type" | pstext -R0/8.5/0/11 -JX8/11 -O -K -Xa0.85i -Ya6.00i -N >> $out
 #echo "0 1.80 10 0 0 LM $label_extra"       | pstext -R0/8.5/0/11 -JX8/11 -O -K -Xa0.85i -Ya6.00i -N >> $out
 label_vr_min=`printf "%.0f" ${misfit_min}`
 label_vr_max=`printf "%.0f" ${misfit_max}`
 label_vr="VR = ${label_vr_max} (${label_vr_min} to ${label_vr_max})"
+
+echo "0 2.60 10 0 0 LM $evid" | pstext -R0/8.5/0/11 -JX8/11 -K -Xa0.85i -Ya6.00i -N > $out
+echo "0 2.40 10 0 0 LM $label_best_sol" | pstext -R0/8.5/0/11 -JX8/11 -O -K -Xa0.85i -Ya6.00i -N >> $out
+echo "0 2.20 10 0 0 LM $label_mod_dep_mag" | pstext -R0/8.5/0/11 -JX8/11 -O -K -Xa0.85i -Ya6.00i -N >> $out
 echo "0 2.00 10 0 0 LM  ${label_vr}" | pstext -R0/8.5/0/11 -JX8/11 -O -K -Xa0.85i -Ya6.00i -N >> $out
+echo "0 1.80 10 0 0 LM $inversion_type" | pstext -R0/8.5/0/11 -JX8/11 -O -K -Xa0.85i -Ya6.00i -N >> $out
 
 # beachball with lowest misfit/highest VR
 printf "$0: plotting solution with lowest misfit\n"
@@ -215,6 +219,6 @@ psxy ${data_misfit_wf_best_sol} -R-30/30/-90/90 -JH0/1i -N -S+16p -W5p,black -Xa
 psxy ${data_misfit_wf_best_sol} -R-30/30/-90/90 -JH0/1i -N -S+14p -W2p,white -Xa2.70i -Ya6.00i -O >>$out
 
 # prepare figure for paper
-ps2eps $out
+ps2eps -f $out
 echo "figure saved to:  $out"
 
