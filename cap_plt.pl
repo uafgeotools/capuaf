@@ -205,17 +205,18 @@ sub plot {
   $rak = @meca[2];
 
   # compute piercing points for beachballs
-  $P_val=0; # maximum aplitude for pssac plotting (-P flag)
+  $P_val=0; # maximum aplitude for pssac plotting (-P flag) - Body
+  $S_val=0; # maximum aplitude for pssac plotting (-P flag) - Surface
   $i = 0; $j = 0;
   $pi = 3.14159265358979323846;
   @tklh=(); @tkuh=(); @staz=(); @az=();
   foreach (@rslt) {
     @aa = split;
-    if ($aa[7]>$P_val){$P_val=$aa[7];}   # maximum amplitude for pssac plotting (-P flag) [Maximum amplitude of vertical body wave]
-    if ($aa[14]>$P_val){$P_val=$aa[14];} # Maximum amplitude of radial body wave
-    if ($aa[21]>$P_val){$P_val=$aa[21];} # Maximum amplitude of vertical surface wave
-    if ($aa[28]>$P_val){$P_val=$aa[28];} # Maximum amplitude of radial surface wave
-    if ($aa[35]>$P_val){$P_val=$aa[35];} # maximum amplitude of love wave 
+    if ($aa[7]>$P_val && $aa[2]!=0){$P_val=$aa[7];}   # maximum amplitude for pssac plotting (-P flag) [Maximum amplitude of vertical body wave]
+    if ($aa[14]>$P_val && $aa[9]!=0){$P_val=$aa[14];} # Maximum amplitude of radial body wave
+    if ($aa[21]>$S_val && $aa[16]!=0){$S_val=$aa[21];} # Maximum amplitude of vertical surface wave
+    if ($aa[28]>$S_val && $aa[23]!=0){$S_val=$aa[28];} # Maximum amplitude of radial surface wave
+    if ($aa[35]>$S_val && $aa[30]!=0){$S_val=$aa[35];} # maximum amplitude of love wave 
     $stnm = $aa[0];                              # station name
     #next if $aa[2] == 0;                        # skip if no body waves
     $x = `saclst az user1 f ${mdl}_$aa[0].0`;    # get the azimuth and P take-off angle
@@ -240,20 +241,27 @@ sub plot {
     $i++;
   }
 #--------------------------compute pssac plotting info (scaling factor P_val)
-  print "$P_val \n";
+  print "Maximum body wave amplitude = $P_val \n";
+  print "Maximum surface wave amplitude = $S_val \n";
+#---------------------------------------
   if ($am>=1){
-      $am = $P_val/$am;
-  } # Three scale options:  # scale down: -P1e-5, -P1e-6,... seismograms scaled by this amplitude
+      $am1 = $P_val/$am;
+      $am2 = $S_val/$ampfact;
+  } 
+  else { # if less than 1 but defined
+      $am1 = $am;
+      $am2 = $am/$ampfact;} # if $am >=1
+# Three scale options:  # scale down: -P1e-5, -P1e-6,... seismograms scaled by this amplitude
                             # scale up:   -P1, -P2,...       seismograms also scaled by amplitude but then enlarged by factor 1, 2,...
                             # scale each window:  -P0.5e+0.5 seismograms will be scaled for each component window (all same size)
-  if ($am == 0x0) {         # check integer?
-      $amp = $am;
+  if ($am == 0x0) {         # -P not specified (proxy for NULL)
+      $am1 = $P_val/$am;
+      $am2 = $S_val/$am;
   }
-  else{                     # 
-      $amp = $am/$ampfact;}
-  $stams = "$amp/0.";
-  $stamb = "$am/0.";        # overwrite for absolute (to match default plotting)
-
+  $stams = "$am2/0.";
+  $stamb = "$am1/0.";        # overwrite for absolute (to match default plotting)
+  
+#---------------------------------------
   # 20151025 cralvizuri - uncomment this command to normalize surf waves
   #                       This is for figures in Uturuncu FMT paper
   #$stams = $stamb;
