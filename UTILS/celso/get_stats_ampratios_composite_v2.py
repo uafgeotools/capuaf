@@ -178,6 +178,7 @@ if compare_components == "a2a":
 else:
     plt.xlabel('Observed ln(V/R)')  # V / R
 
+plt.ylabel('Count')
 plt.ylim([0, ymax_hist])
 plt.xlim([-xmax_hist, xmax_hist])
 
