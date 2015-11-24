@@ -47,9 +47,9 @@ axHistx = plt.axes(rect_histx)
 axHisty = plt.axes(rect_histy)
 
 # histograms, set bar ranges
-xlim0, xlimf, dbinx = 0, 70, 5      # all figures
-ylim0, ylimf, dbiny = -12, 1, 1     # NP vs P (0d, 1d)
-#ylim0, ylimf, dbiny = -12, 12, 1    # NP vs P (0d, 1d)
+xlim0, xlimf, dbinx = -5, 70, 5      # all figures
+ylim0, ylimf, dbiny = -14, 1, 1     # NP vs P (0d, 1d)  # Figure 9, S2a
+#ylim0, ylimf, dbiny = -14, 13, 1    # NP vs P (0d, 1d)  # Figure S2b
 #ylim0, ylimf, dbiny = -12.5, 1, 1   # NP vs P (0d, 1d)
 #ylim0, ylimf, dbiny = -25, 25, 5    # 0d vs 1d (NP, P)
 #ylim0, ylimf, dbiny = -10.5, 2.5, 1 # 0d vs 1d (NP, P)
@@ -83,8 +83,16 @@ axHisty.barh(bin_edges_y[:-1], hist_y, height=dbiny, color=color_bars)
 # no labels for histograms
 nullfmt   = NullFormatter() 
 axScatter.set_xlabel(r'$\theta$')
-axScatter.set_ylabel(r'$VR_{np} - VR_{p}$')    # theta_dvr_eid_utuhalf or theta_dvr_eid_utu1d
-#axScatter.set_ylabel(r'$VR_{half} - VR_{1d}$') # theta_dvr_eid_utuhalf_utu1d_pol
+
+# Figure 9, S2a
+# NP vs P, utuhalf theta_dvr_eid_utuhalf
+# NP vs P. utu1D theta_dvr_eid_utu1d
+axScatter.set_ylabel(r'$VR_{\mathrm{np}}\/-\/VR_{\mathrm{p}}$')
+
+# utuhalf vs utu1d, both with polarities, file theta_dvr_eid_utuhalf_utu1d_pol
+# Figure S2b
+#axScatter.set_ylabel(r'$VR_{\mathrm{half}}\/-\/VR_{\mathrm{1d}}$')
+
 #axScatter.axhline(y=0)
 
 # ticks
