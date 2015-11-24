@@ -1,6 +1,57 @@
-Fig. script name                      file name
-
-1    eps file from TapeTape2013       
-2a   map_utu_sta_seismicity.gmt       
-2b   paper_utu.m                      
-2c   paper_utu.m                      
+Fig.    script name                                file name
+------------------------------------------------------------
+1       eps file from TapeTape2013       
+2a      map_utu_sta_seismicity.gmt                 seismicity_utu
+2b      paper_utu.m                                paper_utu_stations_vs_time 
+2c      paper_utu.m                                paper_utu_GR1 
+3a      get_stats_ampratios_composite_v2.py        amp_ratios_histo_utuhalf_P01_V01_R01_S01_L_dt 
+3b      get_stats_ampratios_composite_v2.py        amp_ratios_histo_utuhalf_P01_V10_R01_S10_L_dt 
+3       cap.pl                                     20100516063454464_utuhalf_004_P01_V10_R01_S10_fmt 
+4       cap.pl                                     depth_test_20100516063454464_utuhalf_L_dt.eps
+5       fmt_misfit.gmt                             20100516063454464_utuhalf_004_P01_V10_R01_S10_L_dt_misfit
+7a      fmt_misfit_mini.gmt                        20100516063454464_utuhalf_004_P01_V10_R01_S10_L_dt_misfit_mini_const_cpt 
+7b      fmt_misfit_mini.gmt                        20100516063454464_utuhalf_004_P00_V10_R01_S10_L_dt_misfit_mini 
+7c      fmt_misfit_mini.gmt                        20100516063454464_utuhalf_004_P01_V10_R01_S00_L_dt_misfit_mini 
+7d      fmt_misfit_mini.gmt                        20100516063454464_utuhalf_004_P00_V10_R01_S00_L_dt_misfit_mini
+8a      fmt_misfit_mini.gmt                        20100516063454464_utuhalf_004_P01_V10_R00_S00_L_dt_misfit_mini 
+8b      fmt_misfit_mini.gmt                        20100516063454464_utuhalf_004_P01_V00_R01_S00_L_dt_misfit_mini 
+8c      fmt_misfit_mini.gmt                        20100516063454464_utuhalf_004_P01_V00_R00_S10_L_dt_misfit_mini 
+8d      fmt_misfit_mini.gmt                        20100516063454464_utuhalf_004_P01_V10_R01_S10_L_dt_misfit_mini 
+9       utu63_scatter_histo.py                     scatter_histo_theta_dvr_utuhalf_V10_R01_S10
+10a     fmt_misfit_mini.gmt                        20110528061823523_utuhalf_009_P00_V10_R01_S10_misfit_mini 
+10a     fmt_misfit_mini.gmt                        20110528061823523_utuhalf_009_P01_V10_R01_S10_misfit_mini 
+10b     fmt_misfit_mini.gmt                        20110708145821435_utuhalf_009_P00_V10_R01_S10_misfit_mini 
+10b     fmt_misfit_mini.gmt                        20110708145821435_utuhalf_009_P01_V10_R01_S10_misfit_mini 
+10c     fmt_misfit_mini.gmt                        20110823072642794_utuhalf_009_P00_V10_R01_S10_misfit_mini 
+10c     fmt_misfit_mini.gmt                        20110823072642794_utuhalf_009_P01_V10_R01_S10_misfit_mini 
+10d     fmt_misfit_mini.gmt                        20110823072700783_utuhalf_009_P00_V10_R01_S10_misfit_mini 
+10d     fmt_misfit_mini.gmt                        20110823072700783_utuhalf_009_P01_V10_R01_S10_misfit_mini 
+11a     lune.pl                                    lune_hammer_iplot3 
+11b     lune.pl                                    lune_hammer_iplot1 
+12      fmt_misfit_mini.gmt                        20110430155647801_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
+12      fmt_misfit_mini.gmt                        20110809032109852_utuhalf_010_P01_V10_R01_S10_L_dt_misfit_mini 
+12      fmt_misfit_mini.gmt                        20110823072642794_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
+12      fmt_misfit_mini.gmt                        20111224035332713_utuhalf_010_P01_V10_R01_S10_L_dt_misfit_mini 
+12      fmt_misfit_mini.gmt                        20111224064906473_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
+12      fmt_misfit_mini.gmt                        20111224172941331_utuhalf_010_P01_V10_R01_S10_L_dt_misfit_mini 
+13      fmt_misfit_mini.gmt                        20110425035005648_utuhalf_008_P01_V10_R01_S10_L_dt_misfit_mini 
+13      fmt_misfit_mini.gmt                        20110429191551352_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
+13      fmt_misfit_mini.gmt                        20110708145821435_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
+13      fmt_misfit_mini.gmt                        20111222231621860_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
+13      fmt_misfit_mini.gmt                        20111224064311431_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini  
+14      fmt_misfit_mini.gmt                        20100930095232848_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
+14      fmt_misfit_mini.gmt                        20100930095413030_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
+14      fmt_misfit_mini.gmt                        20100930095612039_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
+14      fmt_misfit_mini.gmt                        20100930102501621_utuhalf_010_P01_V10_R01_S10_L_dt_misfit_mini 
+14      fmt_misfit_mini.gmt                        20100930114531523_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
+14      fmt_misfit_mini.gmt                        20100930155702647_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
+14      fmt_misfit_mini.gmt                        20100930163913172_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
+14      fmt_misfit_mini.gmt                        20100930172333129_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
+14      fmt_misfit_mini.gmt                        20100930183517772_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
+14      fmt_misfit_mini.gmt                        20100930215912435_utuhalf_010_P01_V10_R01_S10_L_dt_misfit_mini 
+14      fmt_misfit_mini.gmt                        20101001111055009_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
+14      fmt_misfit_mini.gmt                        20101001111242832_utuhalf_010_P01_V10_R01_S10_L_dt_misfit_mini 
+14      fmt_misfit_mini.gmt                        20101005032124419_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
+14      fmt_misfit_mini.gmt                        20111028072530002_utuhalf_010_P01_V10_R01_S10_L_dt_misfit_mini 
+15      plot_map_focus_events_v2.gmt               solutions_lune_focus_events 
+16      paper_utu.m                                paper_utu_CDChists
