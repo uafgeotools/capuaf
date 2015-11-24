@@ -53,5 +53,7 @@ Fig.    script name                                file name
 14      fmt_misfit_mini.gmt                        20101001111242832_utuhalf_010_P01_V10_R01_S10_L_dt_misfit_mini 
 14      fmt_misfit_mini.gmt                        20101005032124419_utuhalf_009_P01_V10_R01_S10_L_dt_misfit_mini 
 14      fmt_misfit_mini.gmt                        20111028072530002_utuhalf_010_P01_V10_R01_S10_L_dt_misfit_mini 
-15      plot_map_focus_events_v2.gmt               solutions_lune_focus_events 
+15a     plot_map_focus_events_v2.gmt               map_utu63_focus_v4
+15b     plot_lune_focus_events.gmt                 solutions_lune_focus_events
 16      paper_utu.m                                paper_utu_CDChists
+
