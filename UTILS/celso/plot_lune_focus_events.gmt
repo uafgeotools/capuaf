@@ -1,0 +1,66 @@
+#!/bin/bash
+#
+# plot focus events beachballs on the lune
+#
+# If you use this code for your own research, please cite:
+# 
+# @article{AlvizuriTape2016,
+# AUTHOR = {C. Alvizuri and C. Tape},
+# TITLE = {{Full moment tensors for small events ($\mw < 3$) at Uturuncu volcano, Bolivia}},
+# JOURNAL = {Geophys.~J.~Int. \rm(in prep.)},
+# PAGES = {},
+# VOLUME = {},
+# NUMBER = {},
+# EID = {},
+# DOI = {},
+# YEAR = {2015}
+# }
+#
+# 20150109 celso alvizuri - cralvizuri@alaska.edu
+#-----------------------------------------------------------
+
+datadir="~/REPOSITORIES/manuscripts/alvizuri/papers/2014fmt/data"
+bb_cluster=${datadir}/uturuncu_cluster_psmeca
+bb_cracks=${datadir}/uturuncu_crack_psmeca
+bb_iso=${datadir}/uturuncu_iso_psmeca
+out="solutions_lune_focus_events.ps"
+
+# gmt
+gmtdefaults -D > .gmtdefaults4
+gmtset LABEL_FONT_SIZE 12
+
+# background
+psbasemap -JH0/3.0 -R-30/30/-90/90 -Bf10g10/f10g10 -G255 -V -K -P > $out
+(echo -30 35.2644 ; echo 30 54.7356) | psxy -N -W1.0p,black -JH0/3.0 -R-30/30/-90/90 -O -K >> $out
+(echo -30 -54.7356; echo 30 -35.2644) | psxy -N -W1.0p,black -JH0/3.0 -R-30/30/-90/90 -O -K >> $out
+(echo -30 35.2644 ; echo 30 -35.2644) | psxy -N -W1.0p,100/100/100 -JH0/3.0 -R-30/30/-90/90 -O -K >> $out
+echo 0.0000 -90.0000 | psxy -N -Sp4p -W1p,0 -JH0/3.0 -R-30/30/-90/90 -O -K >> $out 
+echo -30.0000 -54.7356 | psxy -N -Sp4p -W1p,0 -JH0/3.0 -R-30/30/-90/90 -O -K >> $out
+echo -30.0000 0.0000 | psxy -N -Sp4p -W1p,0 -JH0/3.0 -R-30/30/-90/90 -O -K >> $out
+echo -30.0000 35.2644 | psxy -N -Sp4p -W1p,0 -JH0/3.0 -R-30/30/-90/90 -O -K >> $out
+echo 0.0000 90.0000 | psxy -N -Sp4p -W1p,0 -JH0/3.0 -R-30/30/-90/90 -O -K >> $out
+echo 30.0000 54.7356 | psxy -N -Sp4p -W1p,0 -JH0/3.0 -R-30/30/-90/90 -O -K >> $out
+echo 30.0000 0.0000 | psxy -N -Sp4p -W1p,0 -JH0/3.0 -R-30/30/-90/90 -O -K >> $out
+echo 30.0000 -35.2644 | psxy -N -Sp4p -W1p,0 -JH0/3.0 -R-30/30/-90/90 -O -K >> $out
+echo " 0.0000 -90.0000 8 0 1 CT (-1,-1,-1)" | pstext -N -JH0/3.0 -R-30/30/-90/90 -O -K -D0p/-10p >> $out
+echo "-30.0000 0.0000 8 0 1 RM (2,-1,-1)" | pstext -N -JH0/3.0 -R-30/30/-90/90 -O -K -D-10p/0p >> $out
+echo "-30.0000 35.2644 8 0 1 RM (1,0,0)" | pstext -N -JH0/3.0 -R-30/30/-90/90 -O -K -D-10p/0p >> $out
+echo " 0.0000 90.0000 8 0 1 CB (1,1,1)" | pstext -N -JH0/3.0 -R-30/30/-90/90 -O -K -D0p/10p >> $out
+echo " 30.0000 54.7356 8 0 1 LM (1,1,0)" | pstext -N -JH0/3.0 -R-30/30/-90/90 -O -K -D10p/0p >> $out
+echo " 30.0000 0.0000 8 0 1 LM (1,1,-2)" | pstext -N -JH0/3.0 -R-30/30/-90/90 -O -K -D10p/0p >> $out
+echo " 30.0000 -35.2644 8 0 1 LM (0,0,-1)" | pstext -N -JH0/3.0 -R-30/30/-90/90 -O -K -D10p/0p >> $out
+echo "-30.0000 -54.7356 8 0 1 RM (0,-1,-1)" | pstext -N -JH0/3.0 -R-30/30/-90/90 -O -K -D-10p/0p >> $out
+echo 0.0 -90.0 8 0 1 CB ISO | pstext -N -JH0/3.0 -R-30/30/-90/90 -O -K -D0p/-25p >> $out
+echo 0.0 90.0 8 0 1 CB ISO | pstext -N -JH0/3.0 -R-30/30/-90/90 -O -K -D0p/20p >> $out
+echo -30.0 0.0 8 0 1 RM CLVD | pstext -N -JH0/3.0 -R-30/30/-90/90 -O -K -D-10p/-10p >> $out
+echo 30.0 0.0 8 0 1 LM CLVD | pstext -N -JH0/3.0 -R-30/30/-90/90 -O -K -D10p/-10p >> $out
+
+# solutions on the lune
+psmeca $bb_cluster -JH0/3.0 -R-30/30/-90/90 -N -M -Sm10p -G255/0/0 -L -W0.1p,black -O -V -K -C >> $out
+psmeca $bb_iso -JH0/3.0 -R-30/30/-90/90 -N -M -Sm10p -G0/100/255 -L -W0.1p,black -O -V -K -C >> $out
+psmeca $bb_cracks -JH0/3.0 -R-30/30/-90/90 -N -M  -Sm10p -G0/255/0 -L -W0.1p,black -O -V -C >> $out
+
+# convert to eps
+ps2eps -f $out
+printf "$0: done. output file: $out\n"
+
