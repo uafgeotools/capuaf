@@ -258,8 +258,10 @@ sub plot {
       $am1 = $P_val/$am;
       $am2 = $S_val/$am;
   }
-  $stams = "$am2/0.";
-  $stamb = "$am1/0.";        # overwrite for absolute (to match default plotting)
+#  $stams = "$am2/0.";
+#  $stamb = "$am1/0.";        # overwrite for absolute (to match default plotting)
+  $stams = "$am2/-0.15";
+  $stamb = "$am1/-0.22";        # overwrite for absolute (to match default plotting)
   
 #---------------------------------------
   # 20151025 cralvizuri - uncomment this command to normalize surf waves
