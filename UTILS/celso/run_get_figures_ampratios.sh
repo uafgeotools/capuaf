@@ -1,6 +1,21 @@
 #!/bin/bash
-# 
-# generate histograms of amplitude ratios
+#
+# Commands to generate histograms and scatter plots. Figures 3 and 9, and
+# Supplement figures S2, S3, S4. 
+# For more details see
+#
+# @article{AlvizuriTape2016,
+#      AUTHOR = {C. Alvizuri and C. Tape},
+#      TITLE = {{Full moment tensors for small events ($\mw < 3$) at Uturuncu volcano, Bolivia}},
+#      JOURNAL = {Geophys.~J.~Int. \rm(in prep.)},
+#      PAGES = {},
+#      VOLUME = {},
+#      NUMBER = {},
+#      EID = {},
+#      DOI = {},
+#      YEAR = {2015}
+# }
+#
 # 
 # 20151115 celso alvizuri - cralvizuri@alaska.edu 
 #-----------------------------------------------------------
