@@ -19,7 +19,7 @@
 # 20150109 celso alvizuri - cralvizuri@alaska.edu
 #-----------------------------------------------------------
 
-datadir="~/REPOSITORIES/manuscripts/alvizuri/papers/2014fmt/data"
+datadir="/home/alvizuri/REPOSITORIES/manuscripts/alvizuri/papers/2014fmt/data"
 bb_cluster=${datadir}/uturuncu_cluster_psmeca
 bb_cracks=${datadir}/uturuncu_crack_psmeca
 bb_iso=${datadir}/uturuncu_iso_psmeca
