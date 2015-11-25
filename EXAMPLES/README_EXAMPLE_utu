@@ -1,32 +1,49 @@
 #!/bin/bash
 # 
-# README_EXAMPLE_utu
-#
-# COMMANDS TO RECREATE INVERSION RESULTS
-# Uturuncu event 20100516063454464 
-# Velocity model utuhalf
-# FMT with lune parameterization
-# Full grid search (no line search)
-#
+# This README_EXAMPLE_utu shows full moment tensor inversions of the Uturuncu main event. 
+# See README_EXAMPLE first for inversion of the Illinois event and for overview
+# of CAP commands and settings.
 # 
-# See README_EXAMPLE first -- run the default example.
+# Other reference scripts
+#   README_EXAMPLE_utu_fk   -- compute library of Greens functions for Uturuncu main event
+#   README_EXAMPLE_utu_fmp  -- get summary of first motion polarities after a CAP run
+#   README_EXAMPLE_utu_FTC  -- shows improvement of waveform filtering when applying filter filter-then-cut
+# 
+# NOTE
+#   This README can run as a shell script (see flags below prior to inversion),
+#   except for Part 2, example 3 which requires changes to the plotting script
+#   cap_plt.pl.
+#
+# For more details see
+#
+# @article{AlvizuriTape2016,
+#      AUTHOR = {C. Alvizuri and C. Tape},
+#      TITLE = {{Full moment tensors for small events ($\mw < 3$) at Uturuncu volcano, Bolivia}},
+#      JOURNAL = {Geophys.~J.~Int. \rm(in prep.)},
+#      PAGES = {},
+#      VOLUME = {},
+#      NUMBER = {},
+#      EID = {},
+#      DOI = {},
+#      YEAR = {2015}
+# }
+# 
 # 
 # 20151110 celso alvizuri - cralvizuri@alaska.edu 
 # ==============================================================================
 
 # flags to set if running this file as a shell script.
 # 0 = FALSE, 1 = TRUE
-
 run_nopol=0         # skip inversions without first motion polarities (3.5 hrs to complete)
 run_depth=0         # skip depth test (30 min to complete)
-replace=0           # replace figures in 
+replace=0           # replace figures in 20100516063454464_check  
 
 # ==============================================================================
 # Part 1. check that cap.c is compiled with the right flags, verify weight files
 
 # 1. go to cap directory and make sure cap is set to its default condition
 cd $CAPHOME
-#git checkout cap.c
+git checkout cap.c
 
 # 2. Make sure cap.c is compiled with the following flags, then compile.
 # NOTE The following examples will run with these set of flags, except for first
@@ -68,7 +85,7 @@ gv 20100516063454464/utuhalf_004_fmt.ps &
 gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V10_R01_S10_fmt_amp_abs.ps &
 
 # 3. Run cap but with all waveform fits normalized within each window. ("relative" scale)
-# In cap_plt.plt uncomment line #259 to ensure that relative scaling also applies to surface waves
+# In cap_plt.pl uncomment line #269 to ensure that relative scaling also applies to surface waves
 # $stams = $stamb;
 
 # 4. run cap
@@ -99,7 +116,7 @@ diff 20100516063454464/utuhalf_004.out 20100516063454464_check/20100516063454464
 # (*) actual time shifts are then 0.0 s (-2.0 + 2.0) and 4.0 s (+2.0 + 2.0)
  
 # -----------------------------------------------------------
-# Run cap but using different weights for  waveform components
+# 6. Run cap but using different weights for  waveform components
 # NOTE Weights are set as 1 1 60 60 60, which gives most weight to surface waves
 cap.pl -H0.01 -P1/1/30 -p1 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zw_utuhalf_P01_V01_R01_S60.dat 20100516063454464 
 if [ $replace -eq 1 ] ; then 
@@ -107,7 +124,7 @@ cp 20100516063454464/utuhalf_004_fmt.ps 20100516063454464_check/2010051606345446
 cp 20100516063454464/utuhalf_004.out 20100516063454464_check/20100516063454464_utuhalf_004_P01_V01_R01_S60.out
 fi
 
-# 6b. compare results
+# 7. compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
 gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V01_R01_S60_fmt.ps &
 
