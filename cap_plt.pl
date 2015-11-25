@@ -260,8 +260,8 @@ sub plot {
   }
 #  $stams = "$am2/0.";
 #  $stamb = "$am1/0.";        # overwrite for absolute (to match default plotting)
-  $stams = "$am2/-0.15";
-  $stamb = "$am1/-0.22";        # overwrite for absolute (to match default plotting)
+  $stams = "$am2/-0.15";    # Scale amplitudes so they show slightly smaller in the final plot. As requested.
+  $stamb = "$am1/-0.22";    # 
   
 #---------------------------------------
   # 20151025 cralvizuri - uncomment this command to normalize surf waves
