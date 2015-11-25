@@ -177,6 +177,10 @@ fi
 # Part 5. run cap inversions with individual components. All inversions with polarities.
 # 1. Run cap with component PV only
 cap.pl -H0.01 -P1/1/30 -p1 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V10_R00_S00.dat 20100516063454464 
+if [ $replace -eq 1 ] ; then 
+cp 20100516063454464/utuhalf_004_fmt.ps 20100516063454464_check/20100516063454464_utuhalf_004_P01_V10_R00_S00_fmt.ps
+cp 20100516063454464/utuhalf_004.out 20100516063454464_check/20100516063454464_utuhalf_004_P01_V10_R00_S00.out
+fi
 
 # 2. Compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
@@ -184,6 +188,10 @@ gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V10_R00_S00_fmt.ps 
 
 # 3. Run cap with component PR only
 cap.pl -H0.01 -P1/1/30 -p1 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.4 -Zw_utuhalf_P01_V00_R01_S00.dat 20100516063454464 
+if [ $replace -eq 1 ] ; then 
+cp 20100516063454464/utuhalf_004_fmt.ps 20100516063454464_check/20100516063454464_utuhalf_004_P01_V00_R01_S00_fmt.ps
+cp 20100516063454464/utuhalf_004.out 20100516063454464_check/20100516063454464_utuhalf_004_P01_V00_R01_S00.out
+fi
 
 # 4. Compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
@@ -191,10 +199,14 @@ gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V00_R01_S00_fmt.ps 
 
 # 5. Run cap with component Surf only
 cap.pl -H0.01 -P1/1/30 -p1 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V00_R00_S10.dat 20100516063454464 
+if [ $replace -eq 1 ] ; then 
+cp 20100516063454464/utuhalf_004_fmt.ps 20100516063454464_check/20100516063454464_utuhalf_004_P01_V00_R00_S10_fmt.ps
+cp 20100516063454464/utuhalf_004.out 20100516063454464_check/20100516063454464_utuhalf_004_P01_V00_R00_S10.out
+fi
 
 # 6. Compare results
 gv 20100516063454464/utuhalf_004_fmt.ps &
-gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V00_R00_S10_fmt.ps 
+gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V00_R00_S10_fmt.ps &
 
 # -----------------------------------------------------------
 # Part 6. run cap inversions with combinations of components. All inversions with polarities.
