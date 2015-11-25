@@ -1,51 +1,62 @@
 #!/bin/bash
 # 
-# README_EXAMPLE_utu
+# This README_EXAMPLE_utu_fmp runs CAP in FMP mode and computes a summary of
+# first motion polarities for the Uturuncu main event.
 #
-# COMMANDS TO RECREATE INVERSION RESULTS
-# Uturuncu event 20100516063454464 
-# Velocity model utuhalf
-# FMT with lune parameterization
-# Full grid search (no line search)
+# NOTE
+#   The CAP run in this example creates file out.misfit.fmp_
 #
+#   This file (out.misfit.fmp_) is 700+ MB for a grid spacing of 5 degrees (lune
+#   and orientation) and can be deleted after computing summary
+#
+#   Other reference scripts
+#       README_EXAMPLE_utu_fk   -- compute library of Greens functions for Uturuncu main event
+#       README_EXAMPLE_utu_FTC  -- shows improvement of waveform filtering when applying filter filter-then-cut
 # 
-# See README_EXAMPLE first -- run the default example.
+# For more details see
+#
+# @article{AlvizuriTape2016,
+#      AUTHOR = {C. Alvizuri and C. Tape},
+#      TITLE = {{Full moment tensors for small events ($\mw < 3$) at Uturuncu volcano, Bolivia}},
+#      JOURNAL = {Geophys.~J.~Int. \rm(in prep.)},
+#      PAGES = {},
+#      VOLUME = {},
+#      NUMBER = {},
+#      EID = {},
+#      DOI = {},
+#      YEAR = {2015}
+# }
 # 
 # 20151110 celso alvizuri - cralvizuri@alaska.edu 
 # ==============================================================================
 
-
-# Part 1. Uturuncu event 20100516063454464, first motion polarity
-
-# 0. Set cap.c to its original condition
+# 1. Set cap.c to its original condition
 cd $CAPHOME
 git checkout cap.c 
 
-# 1. Make sure cap is compiled with the following flags, then compile
-# NOTE this run should produce the file out.misfit.fmp_
+# 2. Make sure cap is compiled with the following flags, then compile
 #
+# only_first_motion=1
+# misfit_on_lune=0
 # FTC_data=1
 # FTC_green=0
 # skip_zero_weights=0
-# only_first_motion=1
-#
-# Compile cap
-make all
 
-# 3. Run cap
-cd $CAPHOME/EXAMPLES
-cap.pl -F0.0 -I5/0/5 -J-90/90/-30/30 -Mutuhalf_4/2.4 -E1 -K1 -Y1 -Zw_utuhalf_P01_V10_R01_S10.dat 20100516063454464
+# 3. Compile cap
+make cap
 
-# Next compute summary of first motion polarities using the output file
-python $CAPHOME/misfit2lune.py out.misfit.fmp_ out.misfit_summary
+# 4. Run cap
+# NOTE this run produces file out.misfit.fmp_ 
+cd EXAMPLES
+cap.pl -E1 -K1 -Y1 -J-90/90/-30/30 -I5/0/5 -Mutuhalf_4/2.8 -Zw_utuhalf_P01_V10_R01_S10.dat 20100516063454464
+
+# 5. Compute summary of first motion polarities using the output file computed above.
+# NOTE when finished python will create the summary file:
+# out_misfit_fmp_summary, this file 
+python $CAPHOME/UTILS/celso/get_fmt_misfit_fmp.py out.misfit.fmp_
 
 # 4. Plot polarity misfit on the lune with file out.misfit_summary
 # PENDING
-
-# NOTE
-# 1. Output file from cap run (step 3) will be file: out.misfit.fmp_
-# This file is 708M for grid spacing of 5 degrees and can be deleted after computing summary
-# 2. No figure should be created when running first motion polarity (i.e. run cap without -P flag)
 
 # ==============================================================================
 
