@@ -261,7 +261,7 @@ sub plot {
       $am1 = $am;
   }
   # -p flag for the surface waves
-  if ($ampfact>=0.1){        # scale by the maximum body wave amplitude ($S_val) and then scale by $ampfact factor (-p flag) 
+  if ($ampfact>=0.1){        # scale by the maximum surface wave amplitude ($S_val) and then scale by $ampfact factor (-p flag) 
       $am2 = $S_val/$ampfact;
   }
   elsif ($ampfact==0){      # Normalized plotting (using the pssac2 bug) -- data and synthetics have same maximum amplitude
