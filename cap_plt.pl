@@ -243,26 +243,38 @@ sub plot {
 #--------------------------compute pssac plotting info (scaling factor P_val)
   print "Maximum body wave amplitude = $P_val \n";
   print "Maximum surface wave amplitude = $S_val \n";
-#---------------------------------------
-  if ($am>=1){
+##---------------------------------------
+# Three options for plotting (and scaling) the waveforms using -P flag (body waves) and -p flag (surface wave)
+# Default for both -P and -p flag is 1 (i.e. option 1 in the following comments and using the scaling_factor=1)
+# 1. Normalize by maximum body and surface amplitude separatetly, then apply a scaling factor
+# 2. Normalized plotting -- data and synthetics have same maximum amplitude for all waveforms
+# 3. The default plotting -- scale waveforms by given amplitude
+
+  # -P flag for the body waves
+  if ($am>=0.1){             # scale by the maximum body wave amplitude ($P_val) and then scale by $am factor (-P flag)
       $am1 = $P_val/$am;
-      $am2 = $S_val/$ampfact;
-  } 
-  else { # if less than 1 but defined
+    }
+  elsif ($am==0){           # Normalized plotting (using the pssac2 bug) -- data and synthetics have same maximum amplitude
+      $am1 = "0.5e+0.5";
+    }
+  else {                     # default plotting (FUTURE: find a better way to differentiate b/w exponents and rational number) -- scale by given amplitude $am  (-P flag)
       $am1 = $am;
-      $am2 = $am/$ampfact;} # if $am >=1
-# Three scale options:  # scale down: -P1e-5, -P1e-6,... seismograms scaled by this amplitude
-                            # scale up:   -P1, -P2,...       seismograms also scaled by amplitude but then enlarged by factor 1, 2,...
-                            # scale each window:  -P0.5e+0.5 seismograms will be scaled for each component window (all same size)
-  if ($am == 0x0) {         # -P not specified (proxy for NULL)
-      $am1 = $P_val/$am;
-      $am2 = $S_val/$am;
   }
-#  $stams = "$am2/0.";
-#  $stamb = "$am1/0.";        # overwrite for absolute (to match default plotting)
-  $stams = "$am2/-0.15";    # Scale amplitudes so they show slightly smaller in the final plot. As requested.
-  $stamb = "$am1/-0.22";    # 
-  
+  # -p flag for the surface waves
+  if ($ampfact>=0.1){        # scale by the maximum body wave amplitude ($S_val) and then scale by $ampfact factor (-p flag) 
+      $am2 = $S_val/$ampfact;
+  }
+  elsif ($ampfact==0){      # Normalized plotting (using the pssac2 bug) -- data and synthetics have same maximum amplitude
+      $am2 = "0.5e+0.5";
+  }
+  else {                     # default plotting (FUTURE: find a better way to differentiate b/w exponents and rational number) -- scale by given amplitude $ampfact  (-P flag)
+      $am2 = $ampfact;
+  }
+  $stamb = "$am1/0.";        # set the parameters
+  $stams = "$am2/0.";
+
+  print "pssac2 input for normalizing body waves = $am1 \n";
+  print "pssac2 input for normalizing surface waves = $am2 \n";
 #---------------------------------------
   # 20151025 cralvizuri - uncomment this command to normalize surf waves
   #                       This is for figures in Uturuncu FMT paper

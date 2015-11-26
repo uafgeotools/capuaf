@@ -39,7 +39,7 @@ $fmt_flag="false";
 
 # plotting
 $plot = 0;
-$amplify = 0.5;
+$amplify = 1;
 $spib = 40; # sec per inch, body waves
 $spis = 45; # spi, surface waves
 $keep = 0;
