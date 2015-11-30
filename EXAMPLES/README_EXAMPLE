@@ -78,7 +78,7 @@ fk.pl -Mcus/15 -N512/0.4/2 -S0 140 145 205 230 260 275 295 410
 # 3. prepare data directory and directory for storing the results ($ExampleDir). Copy the the data to directory where you will be running cap
 # All commands will be run form here (Alternatively, one could run from $CAPHOME/EXAMPLES/ without copying the data)
 # (CAUTION: ExampleDir will be overwritten)
-ExampleDir=$CAPRUN/inv/cus/20080418093700_check_new27
+ExampleDir=$CAPRUN/inv/cus/20080418093700_check_new25
 mkdir -p $ExampleDir
 
 cd $CAPRUN/inv/cus
@@ -89,8 +89,8 @@ rsync -av $CAPHOME/EXAMPLES/20080418093700 .
 more 20080418093700/weight.dat
 
 # 4. Run cap 
-echo "cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y1 20080418093700"
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y2 20080418093700
+echo "cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y1 20080418093700"
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y2 20080418093700
 # save results
 cp 20080418093700/cus_015.ps $ExampleDir/cus_015.ps
 cp 20080418093700/cus_015.out $ExampleDir/cus_015.out
@@ -116,7 +116,7 @@ rm $eid/cus*.out
 
 # 2. Run cap for different depths by setting the range and increment for which you want to run depth test using -A flag (-Adep_min/dep_max/dep_inc).
 # One output (.out) file should be generated for each depth.
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y2 -A5/30/5 20080418093700
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y2 -A5/30/5 20080418093700
 
 # 3. perform depth test
 depth_test 20080418093700 cus 
@@ -152,7 +152,7 @@ diff $ExampleDir/junk1_dc.out $CAPHOME/EXAMPLES/20080418093700_check/junk1_dc.ou
 
 # Run cap with :
 # a.  available polarities
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_all.dat
 cp 20080418093700/cus_015.ps $ExampleDir/cus_015_DC_pol.ps
 cp 20080418093700/cus_015.out $ExampleDir/cus_015_DC_pol.out
 
@@ -164,21 +164,21 @@ echo "diff $ExampleDir/cus_015_DC_pol.out $CAPHOME/EXAMPLES/20080418093700_check
 #-----------------------------------------------------------------------------------
 
 # b. run cap with only one polarity measurement
-> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
+> cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
 # gv ./20080418093700/cus_015.ps &
 
 # c. run cap with all polarities but one flipped: PVMO
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 # gv ./20080418093700/cus_015.ps &
 #==> solution is slightly worse, as PVMO was nearly nodal and is now within a colored quadrant
 
 # d. run cap with all polarities but one flipped: WVT
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badWVT.dat 
 # gv ./20080418093700/cus_015.ps &
 # ==> solution is significantly worse, since WVT was not nodal and is now within a colored quadrant
 
 # e. run cap with all polarities but one flipped: BLO
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badBLO.dat 
 # gv ./20080418093700/cus_015.ps &
 # ==> no solution is possible
 
@@ -199,24 +199,24 @@ cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y
 # 1. Run cap with with 
 
 # a. no MT grid point is rejected, so the solution is same as EXAMPLE 1 (PVMO obs does not match PVMO pred)
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F-1.0 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F-1.0 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 # b. a relatively small number of MT grid points are rejected that have large-amplitude mismatch of polarities;
 #    this solution, with PVMO not matching PVMO pred, is not rejected beacause the PVMO is low amplitude
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F-0.2 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F-0.2 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 # c. PVMO is "just" inside the colored quadrant
 #    note: PVMO could be "just" inside the white quadrant as well
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F-0.1 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F-0.1 -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 # d. PVMO is "just" inside the colored quadrant (PVMO obs does match PVMO pred)
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F0.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F0.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 # e. the solution seeks to maximize the minimum amplitude associated with any (correct) polarity (PVMO obs does match PVMO pred)
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F0.4  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F0.4  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 
 # f. no solution, since every MT grid point is rejected with some station having too small an amplitude
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F1.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F1.0  -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_badPVMO.dat 
 #==================================================================================
 ## EXAMPLE 4: Illinois event, FMT with Zhu line search
 #  Follow [STEP 0]
@@ -234,7 +234,7 @@ rm $eid/cus*.out
 
 # 2. Run cap for different depths by setting the range and increment for which you want to run depth test using -A flag (-Adep_min/dep_max/dep_inc).
 # One output (.out) file should be generated for each depth.
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -J0/0.1/0/0.1 -A5/30/5 20080418093700
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -J0/0.1/0/0.1 -A5/30/5 20080418093700
 
 # 3. perform depth test
 depth_test 20080418093700 cus 
@@ -264,7 +264,7 @@ echo "diff $CAPHOME/EXAMPLES/20080418093700_check/junk1_fmt_line.out $ExampleDir
 ## EXAMPLE 5: Illinois event, FMT with fixed focal mech (strike/dip/rake/iso/clvd/mag)
 #  Follow [STEP 0]
 
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -E0 -K0 -Y2 -R296/296/84/84/6/6 -J0.16/0/0.04/0 -I10/0 20080418093700
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -E0 -K0 -Y2 -R296/296/84/84/6/6 -J0.16/0/0.04/0 -I10/0 20080418093700
 cp 20080418093700/cus_015_fmt.ps $ExampleDir/cus_015_fmt_fixed_zhu.ps
 cp 20080418093700/cus_015.out $ExampleDir/cus_015_fmt_fixed_zhu.out
 cp 20080418093700/cus_015_beach_fmt.ps $ExampleDir/cus_015_beach_fmt_fixed_zhu.ps
@@ -281,7 +281,7 @@ echo "diff $ExampleDir/cus_015_fmt_fixed_zhu.out $CAPHOME/EXAMPLES/2008041809370
 # This is aimed at performing a secondary analysis of uncertainties outside of CAP.
 
 # 1. Run cap 
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.1 -E1 -K1 -Y2 -J0/0/0/0 20080418093700
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.1 -E1 -K1 -Y2 -J0/0/0/0 20080418093700
 cp 20080418093700/cus_015_fmt.ps $ExampleDir/cus_015_dc_grid.ps 
 cp 20080418093700/cus_015.out $ExampleDir/cus_015_dc_grid.out
 cp 20080418093700/cus_015_beach_fmt.ps $ExampleDir/cus_015_beach_dc_grid.ps 
@@ -300,7 +300,7 @@ echo "diff $ExampleDir/cus_015_dc_grid.out $CAPHOME/EXAMPLES/20080418093700_chec
 #  Follow [STEP 0]
 
 # 1. Run cap 
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -E1 -K1 -Y2 -J0/0/0/0 20080418093700
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I10/0 -E1 -K1 -Y2 -J0/0/0/0 20080418093700
 cp 20080418093700/cus_015_fmt.ps $ExampleDir/cus_015_dc_fixed.ps
 cp 20080418093700/cus_015.out $ExampleDir/cus_015_dc_fixed.out
 cp 20080418093700/cus_015_beach_fmt.ps $ExampleDir/cus_015_beach_dc_fixed.ps
@@ -320,7 +320,7 @@ echo "diff $ExampleDir/cus_015_dc_grid.out $CAPHOME/EXAMPLES/20080418093700_chec
 # 1.  run cap (this will take a couple minutes)
 # ISO and CLVD will be searched for in their general range (-90 < ISO < +90 ; -30 < CLVD < +30) (lune parameters).
 # However you can change the increment by using -J flag in the input command line.
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.2/10 -E1 -K1 -Y2 -J-90/90/-30/30 20080418093700
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -I10/0.2/10 -E1 -K1 -Y2 -J-90/90/-30/30 20080418093700
 cp 20080418093700/cus_015_fmt.ps $ExampleDir/cus_015_fmt_grid.ps
 cp 20080418093700/cus_015.out $ExampleDir/cus_015_fmt_grid.out
 cp 20080418093700/cus_015_beach_fmt.ps $ExampleDir/cus_015_beach_fmt_grid.ps
@@ -340,7 +340,7 @@ echo "diff $ExampleDir/cus_015_fmt_grid.out $CAPHOME/EXAMPLES/20080418093700_che
 #  Follow [STEP 0]
 
 # 1. Run cap 
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -E1 -K1 -Y2 -R296/296/84/84/6/6 -J-30/30/10/10 -I10/0/0 20080418093700
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.21 -E1 -K1 -Y2 -R296/296/84/84/6/6 -J-30/30/10/10 -I10/0/0 20080418093700
 cp 20080418093700/cus_015_fmt.ps $ExampleDir/cus_015_fmt_fixed_lune.ps
 cp 20080418093700/cus_015.out $ExampleDir/cus_015_fmt_fixed_lune.out
 cp 20080418093700/cus_015_beach_fmt.ps $ExampleDir/cus_015_beach_fmt_fixed_lune.ps
@@ -358,7 +358,7 @@ echo "diff $ExampleDir/cus_015_fmt_fixed_lune.out $CAPHOME/EXAMPLES/200804180937
 #  Follow [STEP 0]
 
 # 1. Run cap 
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0 -E1 -K2 -Y2 -J0/0/0/0 20080418093700
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0 -E1 -K2 -Y2 -J0/0/0/0 20080418093700
 cp 20080418093700/cus_015_fmt.ps $ExampleDir/cus_015_dc_rand.ps
 cp 20080418093700/cus_015.out $ExampleDir/cus_015_dc_rand.out
 cp 20080418093700/cus_015_beach_fmt.ps $ExampleDir/cus_015_beach_dc_rand.ps
@@ -381,7 +381,7 @@ echo "diff $ExampleDir/cus_015_fmt_fixed_lune.out $CAPHOME/EXAMPLES/200804180937
 #  Follow [STEP 0]
 
 # 1. Run cap 
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0/10 -E1 -K2 -Y2 -J0/1/0/1 20080418093700
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0/10 -E1 -K2 -Y2 -J0/1/0/1 20080418093700
 cp 20080418093700/cus_015_fmt.ps $ExampleDir/cus_015_fmt_rand.ps
 cp 20080418093700/cus_015.out $ExampleDir/cus_015_fmt_rand.out
 cp 20080418093700/cus_015_beach_fmt.ps $ExampleDir/cus_015_beach_fmt_rand.ps
@@ -403,7 +403,7 @@ echo "diff $ExampleDir/cus_015_fmt_rand.out $CAPHOME/EXAMPLES/20080418093700_che
 #  Follow [STEP 0]
 
 # 1. Run cap 
-cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0/10 -E1 -K1 -Y1 -J10/10/5/5 20080418093700
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.2 -I2/0/10 -E1 -K1 -Y1 -J10/10/5/5 20080418093700
 cp 20080418093700/cus_015_fmt.ps $ExampleDir/cus_015_fmt_fixed.ps
 cp 20080418093700/cus_015.out $ExampleDir/cus_015_fmt_fixed.out
 cp 20080418093700/cus_015_beach_fmt.ps $ExampleDir/cus_015_beach_fmt_fixed.ps
