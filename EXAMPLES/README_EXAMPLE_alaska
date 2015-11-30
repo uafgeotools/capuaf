@@ -70,7 +70,7 @@ rsync -av $CAPHOME/EXAMPLES/$eid .
 
 #========main paper figure (subset of stations)======================
 # 3. Run cap
-cap.pl -H0.02 -P1/15/60 -p2 -S2/10/0 -T15/120 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -W1 -M"$model"_$dep/$mw -I10/0.1 -Zweight111_subset.dat -E1 -K1 -Y1 $eid
+cap.pl -H0.02 -P1/15/60 -p1 -S2/10/0 -T15/120 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -W1 -M"$model"_$dep/$mw -I10/0.1 -Zweight111_subset.dat -E1 -K1 -Y1 $eid
 
 # 4. Save output files for comparison
 cp ${eid}/scak_039.ps $ExampleDir/${eid}_main.ps
@@ -115,7 +115,7 @@ do
 	rm "$eid"/"$model"*.out
 	rm "$eid"/"$model"*.ps
 	mkdir -p L$norm/M$ii
-	cap.pl -H0.02 -P1/15/60 -p2 -S2/10/0 -T15/120 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -W1 -M"$model"_41/$mw -I10/0.1 -Zweight$ii.dat -E1 -K1 -Y$norm -A$dep_min/$dep_max/$dep_inc $eid
+	cap.pl -H0.02 -P1/15/60 -p1 -S2/10/0 -T15/120 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -W1 -M"$model"_41/$mw -I10/0.1 -Zweight$ii.dat -E1 -K1 -Y$norm -A$dep_min/$dep_max/$dep_inc $eid
 	depth_test "$eid" "$model"
 	mv "$eid"/"$model"*.out L$norm/M$ii/
 	mv "$eid"/"$model"*.ps L$norm/M$ii/
@@ -137,7 +137,7 @@ diff $ExampleDir/20090407201255351_L1_M111.out $CAPHOME/EXAMPLES/200904072012553
 
 # 8. Plot waveforms sorted by azimuth
 # Azimuthal soritng example
-cap.pl -H0.02 -P1/20/60 -p2 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0 -Zaz_sort_weight111.dat -E1 -K1 -Y1 $eid
+cap.pl -H0.02 -P1/20/60 -p1 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41/4.5 -I10/0 -Zaz_sort_weight111.dat -E1 -K1 -Y1 $eid
 cp "$eid"/scak_041.ps $ExampleDir/20090407201255351_L1_M111_az.ps 
 cp "$eid"/scak_041.out $ExampleDir/20090407201255351_L1_M111_az.out
 #-------- To check the result make sure both files are same (if running from the terminal, you will have to replace $ExampleDir with the path above (search $ExampleDir)-----------
@@ -177,7 +177,7 @@ rsync -av $CAPHOME/EXAMPLES/$eid .
 rm -f $eid/"$model"*ps
 rm -f $eid/"$model"*out
 # 3. Run cap
-cap.pl -H0.02 -P1/1/15 -p1.5 -S0.5/2/0 -T2/40 -D1/1/0.5 -C1/10/0.3/0.6 -W1 -M"$model"_16/3.6 -Zweight111.dat -E1 -K1 -Y1 -A10/30/1 $eid 
+cap.pl -H0.02 -P1/1/15 -p1 -S0.5/2/0 -T2/40 -D1/1/0.5 -C1/10/0.3/0.6 -W1 -M"$model"_16/3.6 -Zweight111.dat -E1 -K1 -Y1 -A10/30/1 $eid 
 depth_test $eid "$model"
 
 # 4. Save output files for comparison
