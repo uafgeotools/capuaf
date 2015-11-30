@@ -40,6 +40,8 @@ export CAPHOME=$CENTER/CAP/src
 
 note that $CAPHOME must be assigned prior to sourcing bashrc_seismo_util
 
+0f. uncomment $green in cap.pl to point to FK_synthetics on UAF cluster
+
 ------------------------------------------------------
 
 1. check paths (see .bashrc)

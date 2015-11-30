@@ -24,9 +24,11 @@ $cmd = "cap";
 $inp_cmd = "inp_cmd";
 
 # green's function location
-#$green = "$home/data/models/Glib";        # original
-$green = "/store/wf/FK_synthetics";        # standard models at UAF
-#$green = "$caprun/models";                # user testing
+# within each of these directories are subdirectories of models (cus, scak, utuhalf, etc)
+#$green = "$home/data/models/Glib";               # original
+$green = "/store/wf/FK_synthetics";               # UAF linux network
+$green = "/import/c/d/ERTHQUAK/FK_synthetics ";   # UAF cluster
+#$green = "$caprun/models";                       # user testing
 
 $repeat = 0;
 $bootstrap = 0;
