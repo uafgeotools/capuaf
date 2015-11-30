@@ -32,8 +32,11 @@
 #====================================================================================
 # To run these examples green's functions needs to be pre-computed (see README_EXAMPLE for how to generate green's function)
 # Make this change in cap.pl: (uncomment #standard models at UAF" and comment the "#user testing")
-# $green = "/store/wf/FK_synthetics";        # standard models at UAF (use precomputed green's function)
-# # $green = "$caprun/models";               # user testing (generate your own green's function)
+# $green = "/store/wf/FK_synthetics";               # UAF linux network
+# # $green = "$caprun/models";                      # user testing (generate your own green's function)
+# If you running CAP on cluster (pacman) uncomment the following:
+# $green = "/import/c/d/ERTHQUAK/FK_synthetics ";   # UAF cluster
+
 ###################################################################################################
 
 # EXAMPLE 1: Running Alaska Example (20090407201255351)
