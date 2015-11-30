@@ -101,13 +101,19 @@ cp 20080418093700/cus_015.out $ExampleDir/cus_015.out
 echo "diff $ExampleDir/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015.out"
 diff $ExampleDir/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015.out
 
+#====================================================================================
+# From here on out in README_EXAMPLE, we assume that the Green's functions are pre-computed.
+# To run these examples green's functions needs to be pre-computed (see README_EXAMPLE for how to generate green's function)
+# Make this change in cap.pl: (uncomment #standard models at UAF" and comment the "#user testing")
+# $green = "/store/wf/FK_synthetics";               # UAF linux network
+# # $green = "$caprun/models";                      # user testing (generate your own green's function)
+# If you running CAP on cluster (pacman) uncomment the following:
+# $green = "/import/c/d/ERTHQUAK/FK_synthetics ";   # UAF cluster
+
+###################################################################################################
+
 # -------------[EXAMPLES BEGIN]----------------------------------
 ## EXAMPLE 1: Illinois event, double couple (DC)
-# From here on out in README_EXAMPLE, we assume that the Green's functions are pre-computed.
-
-# Make this change in cap.pl: (uncomment "# standard models at UAF" and comment the "# user testing")
-# $green = "/store/wf/FK_synthetics";        # standard models at UAF
-# # $green = "$caprun/models";                # user testing
 
 # perform the depth test
 # 1. First make sure there are not other *.out files
