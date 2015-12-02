@@ -101,10 +101,11 @@ $usage =
   time set at the origin time and epicentral distance and azimuth
   set in the SAC header. There should be another file called $weight
   in the same directory, in the following format:
-	station_name dist w1 w2 w3 w4 w5 tp ts
+	station_name dist w1 w2 w3 w4 w5 tp tp_w ts ts_w ti
   where dist specifies the names of Green functions (dist.grn.?) to be used.
   w1 to w5 are the weights for 5 segments of waveforms: PnlZ, PnlR, Z, R, T.
-  tp is first P arrival time if it's set to a positive value. ts is the initial
+  tp is first P arrival time if it's set to a positive value. tp_w is the body wave window.
+  ts is the arrival time for surface waves. ts_w is the surface wave window. ti is the initial
   time shift for the surface waves, positive means that the data is delayed w.r.t. the model.
   If w2 is set to -1, it indicates that the station is at teleseimic distances and only
   the P (PnlZ) and SH (T) are used. In this case, ts is the S arrival time when it is positive.

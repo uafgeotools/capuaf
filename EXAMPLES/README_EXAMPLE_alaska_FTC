@@ -33,7 +33,7 @@ eid=20080918194353069
 model=scak
 
 ExampleDir=$CAPRUN/inv/"$model"/${eid}_check2
-mkdir $ExampleDir
+mkdir -p $ExampleDir
 
 # Prepare data directory. Copy the the data to directory where you will be running cap
 # All commands will be run form here (Alternatively, one could run from $CAPHOME/EXAMPLES/ without copying the data)

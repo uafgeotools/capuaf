@@ -133,13 +133,29 @@ note: You do not need to run fk if you have a pre-computed library of Green's fu
 > rsync -av $CAPHOME/EXAMPLES/20080418093700 .
 
 Check that you have new weight.dat file with 12 columns
-XXX EXPLAIN 12 COLUMNS HERE XXX
-
 > more 20080418093700/weight.dat
+%----------------------------------------------------------
+Column 1: Station Name
+Column 2: Epicentral Distance (Use slash (/) and add first motion polarity info (if available)) - defualt 0 (use from SAC header)
+Column 3: PV_weight (weight for vertical component of body wave)
+Column 4: PR_weight (weight for radial component of body wave)
+Column 5: SurfV_weight (weight for vertical component of surface wave)
+Column 6: SurfR_weight (weight for radial component of surface wave)
+Column 7: SurfT_weight (weight for transverse component of surface wave)
+Column 8: Body wave arrival time (first-arrival time) - default 0 
+Column 9: Length of body wave window - default 0 (use same as all other stations (based on input command -T flag))
+Column 10: Surface wave arrival time - default 0 
+Column 11: Length of surface wave window - default 0 (use same as all other stations (based on input command -T flag))
+Column 12: Initial time-shift - default 0
+
+Note:
+Zero weight means not to use that particular component.
+Negative weight is for teleseismic stations (only P and SH are used).
+%----------------------------------------------------------
 
 4. run cap
 
-> cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y2 20080418093700
+> cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 -E0 -K0 -Y2 20080418093700
 
 > gv 20080418093700/cus_015.ps &
 
@@ -149,8 +165,6 @@ You should see a reasonable output for a moment tensor inversion.
 
 > gv $CAPHOME/EXAMPLES/20080418093700_check/cus_015.ps &
 > diff 20080418093700/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015.out
-
-XXX BODY WAVE AMPLITUDES TOO LARGE -- SEE SAVED FIGURE XXX
 
 (The output from the last command should be blank.)
 
