@@ -126,7 +126,7 @@ do
 	mv junk1.out L$norm/M$ii/
 	mv junk2.out L$norm/M$ii/
 	# Find the best solution (minimum misfit depth and fault plane solution) and move the output files for that depth to the ExampleDir (also rename: see mindep.pl)
-	./mindep.pl $eid $norm $ii $ExampleDir
+	$CAPHOME/EXAMPLES/mindep.pl $eid $norm $ii $ExampleDir
     done
 done
 

@@ -78,7 +78,7 @@ fk.pl -Mcus/15 -N512/0.4/2 -S0 140 145 205 230 260 275 295 410
 # 3. prepare data directory and directory for storing the results ($ExampleDir). Copy the the data to directory where you will be running cap
 # All commands will be run form here (Alternatively, one could run from $CAPHOME/EXAMPLES/ without copying the data)
 # (CAUTION: ExampleDir will be overwritten)
-ExampleDir=$CAPRUN/inv/cus/20080418093700_check_new25
+ExampleDir=$CAPRUN/inv/cus/20080418093700_check2
 mkdir -p $ExampleDir
 
 cd $CAPRUN/inv/cus
@@ -170,7 +170,7 @@ echo "diff $ExampleDir/cus_015_DC_pol.out $CAPHOME/EXAMPLES/20080418093700_check
 #-----------------------------------------------------------------------------------
 
 # b. run cap with only one polarity measurement
-> cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
+cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -E1 -K1 -Y2 -Mcus_15/5.0 20080418093700 -Zweight_pfm_one.dat 
 # gv ./20080418093700/cus_015.ps &
 
 # c. run cap with all polarities but one flipped: PVMO
