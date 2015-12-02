@@ -2,6 +2,8 @@
 ###################################################################################################
 # This script serves as a README doc and also automatically updates the Illinois example
 # 
+# You might want to check ../README_EXAMPLE first 
+#
 # Other scripts to refer: 
 # README_EXAMPLE_alaska (for Alaska events) - events used in SilwalTape2016 and Tape2015
 # README_EXAMPLE_alaska_FTC - For testing Filter-then-Cut option
@@ -37,6 +39,7 @@ model=cus
 
 #==================================================================================
 # --[EXAMPLE 0]---[PREPARE GENERATE GREEN'S FUNCTIONS and DATA]---------------
+# This is same as the example in ../README_EXAMPLE
 # modify cap.pl to indicate that you want to compute your own Green's functions
 # Uncomment the following line in cap.pl
 # $green = "$caprun/models";                # user testing

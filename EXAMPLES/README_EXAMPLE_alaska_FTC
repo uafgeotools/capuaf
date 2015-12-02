@@ -7,7 +7,7 @@
 # See README_EXAMPLE first -- run the default example.
 #
 # Other scripts to refer: 
-# README_EXAMPLE (for Illinois events)
+# README_EXAMPLE_illinois (for Illinois events)
 # README_EXAMPLE_alaska (for Alaska events) - events used in SilwalTape2016 and Tape2015
 # README_EXAMPLE_utu (for Uturunku events) - events used in Alvizuri2016
 # mindep.pl (supplemental script called by this script to automate depth test)

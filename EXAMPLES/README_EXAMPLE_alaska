@@ -10,7 +10,7 @@
 # See README_EXAMPLE first (For setting up CAP)
 #
 # Other scripts to refer: 
-# README_EXAMPLE (for Illinois events)
+# README_EXAMPLE_illinois (for Illinois events)
 # README_EXAMPLE_utu (for Uturunku events) - events used in Alvizuri2016
 # README_EXAMPLE_alaska_FTC - For testing Filter-then-Cut option
 # mindep.pl (supplemental script called by this script to automate depth test)

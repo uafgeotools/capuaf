@@ -1,7 +1,7 @@
 #!/bin/bash
 # 
 # This README_EXAMPLE_utu shows full moment tensor inversions of the Uturuncu main event. 
-# See README_EXAMPLE first for inversion of the Illinois event and for overview
+# See README_EXAMPLE_illinois first for inversion of the Illinois event and for overview
 # of CAP commands and settings.
 # 
 # Other reference scripts
