@@ -3,13 +3,11 @@ README_EXAMPLE
 Test examples for CAP.
 The default example should always be run, prior to committing any changes to the code.
 
-Figures to check are in the directory 20080418093700_check_orig
-
 ====================================================================================
-START-UP INSTRUCTIONS
+EXTRA START-UP INSTRUCTIONS FOR UAF CLUSTER
 
 0. By default, do not run cap on a cluster (skip this step).
-The following instructions apply to the UAF pacman cluster.
+The following instructions apply to the UAF cluster.
 
 0a. check modules:
 
@@ -42,7 +40,8 @@ note that $CAPHOME must be assigned prior to sourcing bashrc_seismo_util
 
 0f. uncomment $green in cap.pl to point to FK_synthetics on UAF cluster
 
-------------------------------------------------------
+====================================================================================
+START-UP INSTRUCTIONS FOR UAF LINUX NETWORK
 
 1. check paths (see .bashrc)
 
@@ -50,7 +49,15 @@ note that $CAPHOME must be assigned prior to sourcing bashrc_seismo_util
 
 Make sure that none of these is empty.
 
+2015-12-01 test:
+echo "GMTHOME =" $GMTHOME
+CAPHOME = /home/carltape/REPOSITORIES/cap
+CAPRUN = /home/carltape/PROJECTS/CAP
+NRHOME_C = /usr/local/seismo/grp-utils/nr/NR_C302/legacy/nr2/C_211_mod
+GMTHOME = /usr/local/gmt
+
 note: by default at UAF these are set in /home/admin/share/global_bashrc
+      so you should not have to set these yourself
 
 export GEOTOOLS=$HOME/GEOTOOLS
 export SUTIL=/usr/local/seismo
@@ -86,6 +93,15 @@ note: "make clean" before compilation if you have a previously compiled cap
 
 Make sure that none of these is missing.
 
+2015-12-01 test:
+/usr/local/seismo/bin/fk
+/usr/local/seismo/bin/pssac2
+~/REPOSITORIES/cap/cap
+~/REPOSITORIES/cap/cap.pl
+~/REPOSITORIES/cap/cap_plt.pl
+~/REPOSITORIES/cap/depth.pl
+~/REPOSITORIES/cap/depth_test
+
 ====================================================================================
 DEFAULT EXAMPLE 1: Illinois event, double couple (DC)
 
@@ -116,8 +132,8 @@ note: You do not need to run fk if you have a pre-computed library of Green's fu
 > cd $CAPRUN/inv/cus
 > rsync -av $CAPHOME/EXAMPLES/20080418093700 .
 
-Check that you have new weight.dat file with 12 columns (3 extra for Pnl_window, surf_pick, surf_window).
-The old weight file is under the name weight_orig.dat
+Check that you have new weight.dat file with 12 columns
+XXX EXPLAIN 12 COLUMNS HERE XXX
 
 > more 20080418093700/weight.dat
 
@@ -133,6 +149,8 @@ You should see a reasonable output for a moment tensor inversion.
 
 > gv $CAPHOME/EXAMPLES/20080418093700_check/cus_015.ps &
 > diff 20080418093700/cus_015.out $CAPHOME/EXAMPLES/20080418093700_check/cus_015.out
+
+XXX BODY WAVE AMPLITUDES TOO LARGE -- SEE SAVED FIGURE XXX
 
 (The output from the last command should be blank.)
 
