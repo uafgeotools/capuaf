@@ -4,7 +4,7 @@ https://github.com/uafseismo/cap
 a private github repository within the organization uafseismo
 contact: Carl Tape (ctape@alaska.edu)
 
-This repository started as cap2.0, a software package by Lupei Zhu, who emailed it to Carl Tape on 12/15/2012. This repository shows the developments made by Vipul Silwal and Celso Alvizuri since the first commit on 12/28/2012.
+This repository started as cap2.0, a software package by Lupei Zhu, who emailed it to Carl Tape on 12/15/2012. This repository shows the developments made by Vipul Silwal and Celso Alvizuri since the first commit on 12/28/2012. The official version of CAP is available for download from the website of Lupei Zhu (http://www.eas.slu.edu/People/LZhu/home.html -- last accessed 12/3/2015).
 
 Example check-out command from UAF linux network:
 git clone https://GITHUBUSERNAME@github.com/uafseismo/cap.git cap
