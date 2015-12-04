@@ -1,0 +1,28 @@
+cap
+https://github.com/uafseismo/cap
+"cut-and-paste" seismic moment tensor inversion code
+a private github repository within the organization uafseismo
+contact: Carl Tape (ctape@alaska.edu)
+
+This repository started as cap2.0, a software package by Lupei Zhu, who emailed it to Carl Tape on 12/15/2012. This repository shows the developments made by Vipul Silwal and Celso Alvizuri since the first commit on 12/28/2012.
+
+Example check-out command from UAF linux network:
+git clone https://GITHUBUSERNAME@github.com/uafseismo/cap.git cap
+You need to have (1) a github account and (2) permission to read the repository.
+This checkout takes awhile, since you get the full history of the repository.
+If you just want the latest version, then try this:
+git clone --depth=1 https://GITHUBUSERNAME@github.com/uafseismo/cap.git cap
+
+README_orig                -- original README with CAP (Lupei Zhu)
+README_EXAMPLE             -- step-by-step instructions for Illinois example
+README_EXAMPLE_uncertainty -- uncertainty analysis
+
+For more examples, see EXAMPLES/README
+
+Reference:
+Zhu and Helmberger, 1996, BSSA 86, 1645-1641
+
+These references may also be appropriate:
+Zhu and Ben-Zion, 2013, GJI
+Silwal and Tape, 2016, submitted
+Alvizuri and Tape, 2016, submitted
