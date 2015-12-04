@@ -1,43 +1,22 @@
 #!/bin/bash
-###################################################################################################
-# This script serves as a README doc and also automatically updates the Alaska examples 
-# Runs and saves results in the $ExampleDir
-# MIGHT want to rename the previous $ExampleDir and save it (if you don't want to overwrite results)
+#==================================================================================
+# Alaska examples 
+#
 # The figures generated here were used in following papers (See these papers for more details):
 # - SilwalTape2016 paper (JGR)
 # - Tape2013 (EPSL)
-#
-# See README_EXAMPLE first (For setting up CAP)
-#
-# Other scripts to refer: 
-# README_EXAMPLE_illinois (for Illinois events)
-# README_EXAMPLE_utu (for Uturunku events) - events used in Alvizuri2016
-# README_EXAMPLE_alaska_FTC - For testing Filter-then-Cut option
-# mindep.pl (supplemental script called by this script to automate depth test)
 #
 # $eid = 20090407201255351 (Anchorage event) - SilwalTape2016 paper (JGR)
 # $eid = 20120411092157444 (Nenana triggered event) - Tape2013 (EPSL)
 # $CAPHOME - Directory where cap.c is located
 # $CAPRUN/inv/cus - Directory from where you will be running cap
-#==================================================================================================
 # $ExampleDir - Directory where you want to generate new plots and output files
+#
+# Runs and save in the $ExampleDir
+# MIGHT want to rename the previous $ExampleDir and save it (just in case)
 # Search $ExampleDir and make sure it does not overwrite anything
-#==================================================================================================
-#---------------------------KEY--------------------------------------------------------------------
 # You will be comparing the results between $ExampleDir and $CAPHOME/EXAMPLES/20080418093700_check
-#--------------------------------------------------------------------------------------------------
-
-# > cap.pl (to know what each command flag means)
-
 #====================================================================================
-# To run these examples green's functions needs to be pre-computed (see README_EXAMPLE for how to generate green's function)
-# Make this change in cap.pl: (uncomment #standard models at UAF" and comment the "#user testing")
-# $green = "/store/wf/FK_synthetics";               # UAF linux network
-# # $green = "$caprun/models";                      # user testing (generate your own green's function)
-# If you running CAP on cluster (pacman) uncomment the following:
-# $green = "/import/c/d/ERTHQUAK/FK_synthetics ";   # UAF cluster
-
-###################################################################################################
 
 # EXAMPLE 1: Running Alaska Example (20090407201255351)
 # These figures were used in SilwalTape2016 and the supplementary data stored in ScholarWorks@UA collections
@@ -46,7 +25,7 @@
 # cap.c is in $CAPRUN (see README_EXAMPLE) OR
 # > which cap.c
 
-#!!!!!!!! MAKE CHANGES IN CAP.C!!!!!!!!!!!!!
+#!!!!!!!! MAKE CHANGES IN cap.c !!!!!!!!!!!!!
 # > cd $CAPHOME
 # > git checkout cap.c
 # > open cap.c and set: 

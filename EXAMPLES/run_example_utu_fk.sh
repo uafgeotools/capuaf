@@ -1,19 +1,11 @@
 #!/bin/bash
-# 
-# README_EXAMPLE_utu
 #
 # COMMANDS TO RECREATE INVERSION RESULTS
 # Uturuncu event 20100516063454464 
 # Velocity model utuhalf
 # FMT with lune parameterization
 # Full grid search (no line search)
-#
-# 
-# See README_EXAMPLE_illinois first -- run the default example.
-# 
-# 20151110 celso alvizuri - cralvizuri@alaska.edu 
 # ==============================================================================
-
 
 # Part 0. generate Green's functions 
 # NOTE "utuhalf" is a homogeneous half-space
@@ -29,6 +21,3 @@ fk.pl -Mutuhalf/4 -N16384/0.01 11 14 18 19 21 23 31 33 37 50
 # This will create 3 additional green functions for each distance of the form dist.grn.(a-c),
 # eg. 11.grn.a, 11.grn.b, 11.grn.c
 fk.pl -Mutuhalf/4 -N16384/0.01 -S0 11 14 18 19 21 23 31 33 37 50
-
-# ==============================================================================
-

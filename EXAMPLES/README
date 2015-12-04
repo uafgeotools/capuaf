@@ -1,13 +1,31 @@
 EXAMPLES for CAP
 
-20080418093700 -- original example; Illinois event by Hongfeng Yang and Lupei Zhu (Yang-Zhu-Chu. BSSA 2009)
-
+20080418093700    -- original example; Illinois event by Hongfeng Yang and Lupei Zhu (Yang-Zhu-Chu. BSSA 2009)
 20090407201255351 -- southern Alaska event by Vipul Silwal
-
 20080918194353069 -- southern Alaska event by Vipul Silwal to test FTC options
-
 20100516063454464 -- Uturuncu event by Celso Alvizuri
-
 20110622023324299 -- Uturuncu event by Celso Alvizuri to test FTC options
-
 20120411092157440 -- Nenana triggering event by Vipul Silwal (Tape-West-Silwal-Ruppert, EPSL 2013)
+
+mindep.pl         -- utility for depth search (called in Alaska examples)
+
+=========================================
+
+NEW USERS:
+
+1. try out the step-by-step instructions in ../README_EXAMPLE
+
+2. try out the same instructions in run_example_illinois.sh
+
+3. pick any of the other examples
+
+run_example_alaska.sh      -- Alaska examples
+run_example_alaska_FTC.sh  -- tests the effect of FTC (filter-then-cut)
+run_example_utu.sh         -- full moment tensor inversions of the Uturuncu main event
+run_example_utu_fk.sh      -- compute library of Greens functions for Uturuncu main event
+run_example_utu_fmp.sh     -- get summary of first motion polarities after a CAP run
+run_example_utu_FTC.sh     -- tests the effect of FTC (filter-then-cut)
+
+Read the instructions at the top.
+
+=========================================

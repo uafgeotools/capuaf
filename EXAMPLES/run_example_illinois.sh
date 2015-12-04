@@ -1,13 +1,6 @@
 #!/bin/bash
-###################################################################################################
-# This script serves as a README doc and also automatically updates the Illinois example
-# 
-# You might want to check ../README_EXAMPLE first 
-#
-# Other scripts to refer: 
-# README_EXAMPLE_alaska (for Alaska events) - events used in SilwalTape2016 and Tape2015
-# README_EXAMPLE_alaska_FTC - For testing Filter-then-Cut option
-# README_EXAMPLE_utu (for Uturunku events) - events used in Alvizuri2016
+#==================================================================================
+# Illinois example
 #
 # $eid = 20080418093700
 # $model = cus (central US)
@@ -16,13 +9,11 @@
 # $CAPHOME/EXAMPLES/20080418093700 - data directory (this will be copied (rsync) to $CAPRUN/inv/cus
 # $CAPHOME/EXAMPLES/20080418093700_check - Results (plots and output files) provided for comparison
 # $ExampleDir - Directory where you want to generate new plots and output files
-
-#---------------------------KEY-----------------------------------------
-# You will be comparing the results between $ExampleDir and $CAPHOME/EXAMPLES/20080418093700_check
-#-----------------------------------------------------------------------
 #
-# MIGHT want to rename the previous $ExampleDir directory (just in case -- prevents overwritting)
-
+# Runs and save in the $ExampleDir
+# MIGHT want to rename the previous $ExampleDir and save it (just in case)
+# Search $ExampleDir and make sure it does not overwrite anything
+# You will be comparing the results between $ExampleDir and $CAPHOME/EXAMPLES/20080418093700_check
 #==================================================================================
 eid=20080418093700
 model=cus 

@@ -1,51 +1,19 @@
 #!/bin/bash
-# 
-# This README_EXAMPLE_utu shows full moment tensor inversions of the Uturuncu main event. 
-# See README_EXAMPLE_illinois first for inversion of the Illinois event and for overview
-# of CAP commands and settings.
-# 
-# Other reference scripts
-#   README_EXAMPLE_utu_fk   -- compute library of Greens functions for Uturuncu main event
-#   README_EXAMPLE_utu_fmp  -- get summary of first motion polarities after a CAP run
-#   README_EXAMPLE_utu_FTC  -- shows improvement of waveform filtering when applying filter filter-then-cut
-# 
-# NOTE
-#   This README can run as a shell script (see flags below prior to inversion),
-#   except for Part 2, example 3 which requires changes to the plotting script
-#   cap_plt.pl.
-#
-# For more details see
-#
-# @article{AlvizuriTape2016,
-#      AUTHOR = {C. Alvizuri and C. Tape},
-#      TITLE = {{Full moment tensors for small events ($\mw < 3$) at Uturuncu volcano, Bolivia}},
-#      JOURNAL = {Geophys.~J.~Int. \rm(in prep.)},
-#      PAGES = {},
-#      VOLUME = {},
-#      NUMBER = {},
-#      EID = {},
-#      DOI = {},
-#      YEAR = {2015}
-# }
-# 
-# 
-# 20151110 celso alvizuri - cralvizuri@alaska.edu 
-# ==============================================================================
+# full moment tensor inversions of the Uturuncu main event
 
 # flags to set if running this file as a shell script.
 # 0 = FALSE, 1 = TRUE
-run_nopol=0         # run or not inversions without first motion polarities (3.5 hrs to complete, per event)
-run_depth=0         # run or not depth test (30 min to complete) 
-replace=0           # replace or not figures in 20100516063454464_check 
+run_nopol=0  # run or not inversions without first motion polarities (3.5 hrs to complete, per event)
+run_depth=0  # run or not depth test (30 min to complete) 
+replace=0    # replace or not figures in 20100516063454464_check 
 
 # ==============================================================================
 # Part 1. check that cap.c is compiled with the right flags, verify weight files
 
 # 1. go to cap directory and make sure cap is set to its default condition
 cd $CAPHOME
-#git checkout cap.c
 
-# 2. Make sure cap.c is compiled with the following flags, then compile.
+# 2. Make sure cap.c (git checkout cap.c) is compiled with the following flags, then compile.
 # NOTE The following examples will run with these set of flags, except for first
 # motion polarity example and runs for event 20110622023324299
 # FTC_data=1
@@ -83,10 +51,6 @@ cp 20100516063454464/utuhalf_004_fmt.ps 20100516063454464_check/2010051606345446
 fi
 gv 20100516063454464/utuhalf_004_fmt.ps &
 gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V10_R01_S10_fmt_amp_abs.ps &
-
-# 3. Run cap but with all waveform fits normalized within each window. ("relative" scale)
-# In cap_plt.pl uncomment line #269 to ensure that relative scaling also applies to surface waves
-# $stams = $stamb;
 
 # 4. run cap
 cap.pl -H0.01 -P0/1/30 -p0 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zw_utuhalf_P01_V10_R01_S10.dat 20100516063454464 
@@ -228,7 +192,7 @@ gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V00_R00_S10_fmt.ps 
 # -----------------------------------------------------------
 # Part 6. run cap inversions with combinations of components. All inversions with polarities.
 # 1. polarities + body waves (PV + PR)
-# NOTE this is the same inversion as in Part 4, example 3: Run cap with body waves. No surface waves. No polarities. Component weights 10-1-0
+# NOTE this is the same inversion as in Part 4, step 3: Run cap with body waves. No surface waves. No polarities. Component weights 10-1-0
 # The example is repeated here to have a complete set of tests.
 cap.pl -H0.01 -P0.58/1/30 -p0.67 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -E1 -K1 -Y1 -I5/0.1/5 -J-90/90/-30/30 -Mutuhalf_4/2.9 -Zw_utuhalf_P01_V10_R01_S00.dat 20100516063454464
 
@@ -249,7 +213,7 @@ gv 20100516063454464_check/20100516063454464_utuhalf_004_P01_V00_R00_S10_fmt.ps 
 
 # 5. PV + PR + Surf. No polarities
 # NOTE runs without polarities take about 3.5 hours to complete.
-# NOTE this is the same inversion as in Part 4, example 1: Run cap body waves + surface waves. No polarities. Component weights 10-1-10
+# NOTE this is the same inversion as in Part 4, step 1: Run cap body waves + surface waves. No polarities. Component weights 10-1-10
 # The example is repeated here to have a complete set of tests.
 if [ $run_nopol -eq 1 ] ; then
 cap.pl -H0.01 -P0.58/1/30 -p0.67 -S0.05/2.0/0 -T1.5/60 -D1/1/0.5 -C2/10/0.25/0.5 -F0.0 -L0.1 -W1 -I5/0.1/5 -J-90/90/-30/30 -E1 -K1 -Y1 -Mutuhalf_4/2.4 -Zw_utuhalf_P00_V10_R01_S10.dat 20100516063454464

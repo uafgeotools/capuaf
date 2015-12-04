@@ -1,6 +1,5 @@
 #!/bin/bash
-# 
-# This README_EXAMPLE_utu_fmp runs CAP in FMP mode and computes a summary of
+# ==============================================================================
 # first motion polarities for the Uturuncu main event.
 #
 # NOTE
@@ -8,26 +7,6 @@
 #
 #   This file (out.misfit.fmp_) is 700+ MB for a grid spacing of 5 degrees (lune
 #   and orientation) and can be deleted after computing summary
-#
-#   Other reference scripts
-#       README_EXAMPLE_utu_fk   -- compute library of Greens functions for Uturuncu main event
-#       README_EXAMPLE_utu_FTC  -- shows improvement of waveform filtering when applying filter filter-then-cut
-# 
-# For more details see
-#
-# @article{AlvizuriTape2016,
-#      AUTHOR = {C. Alvizuri and C. Tape},
-#      TITLE = {{Full moment tensors for small events ($\mw < 3$) at Uturuncu volcano, Bolivia}},
-#      JOURNAL = {Geophys.~J.~Int. \rm(in prep.)},
-#      PAGES = {},
-#      VOLUME = {},
-#      NUMBER = {},
-#      EID = {},
-#      DOI = {},
-#      YEAR = {2015}
-# }
-# 
-# 20151110 celso alvizuri - cralvizuri@alaska.edu 
 # ==============================================================================
 
 # 1. Set cap.c to its original condition
@@ -59,4 +38,3 @@ python $CAPHOME/UTILS/celso/get_fmt_misfit_fmp.py out.misfit.fmp_
 # PENDING
 
 # ==============================================================================
-

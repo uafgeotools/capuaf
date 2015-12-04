@@ -1,30 +1,16 @@
 #!/bin/bash
-# This script tests results of FTC (Filter-then-Cut)
-
-# Runs and save in the $ExampleDir
-# MIGHT want to rename the previous $ExampleDir and save it (just in case)
-#
-# See README_EXAMPLE first -- run the default example.
-#
-# Other scripts to refer: 
-# README_EXAMPLE_illinois (for Illinois events)
-# README_EXAMPLE_alaska (for Alaska events) - events used in SilwalTape2016 and Tape2015
-# README_EXAMPLE_utu (for Uturunku events) - events used in Alvizuri2016
-# mindep.pl (supplemental script called by this script to automate depth test)
+#====================================================================================
+# tests results of FTC (Filter-then-Cut)
 #
 # $eid = 20080918194353069 (southern Alaska event for FTC testing)
 # $CAPHOME - Directory where cap.c is located
 # $CAPRUN/inv/cus - Directory from where you will be running cap
-#====================================================
 # $ExampleDir - Directory where you want to generate new plots and output files
+#
+# Runs and save in the $ExampleDir
+# MIGHT want to rename the previous $ExampleDir and save it (just in case)
 # Search $ExampleDir and make sure it does not overwrite anything
-#====================================================
-#---------------------------KEY-----------------------------------------
 # You will be comparing the results between $ExampleDir and $CAPHOME/EXAMPLES/20080418093700_check
-#-----------------------------------------------------------------------
-
-# > cap.pl (to know what each command flag means)
-
 #====================================================================================
 # EXAMPLE 1: Running Alaska Example (20080918194353069) - Checking FTC data and green's outputs
 

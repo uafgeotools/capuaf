@@ -1,38 +1,14 @@
 #!/bin/bash
-# 
-# This README_EXAMPLE_utu_FTC shows filter improvement for small signals and
-# short time windoes when using flag filter-then-cut, as opposed to the default
-# CAP which first cuts the data and then filters it (cut-then-filter).
+# ==============================================================================
+# shows filter improvement for small signals and short time windoes when using flag filter-then-cut,
+# as opposed to the default CAP which first cuts the data and then filters it (cut-then-filter)
 #
 # Uturuncu event 20110622023324299
 #
-# NOTE this README should not be run as a script since each example requires to
-# compile CAP with different flags
+# NOTE this should NOT be run as a script since each example requires to compile CAP with different flags
+#
 # NOTE FTC_data=0 (original CAP) first cuts the waveform windows, then filters each windows (cut-then-filter).
 # NOTE FTC_data=1 first filters the waveform, then cuts the waveform into windows (filter-then-cut).
-#
-# Other reference scripts
-#   README_EXAMPLE_utu_fk   -- compute library of Greens functions for Uturuncu main event
-#   README_EXAMPLE_utu_fmp  -- get summary of first motion polarities after a CAP run
-#   README_EXAMPLE_utu_FTC  -- shows improvement of waveform filtering when applying filter filter-then-cut
-#
-# See README_EXAMPLE_illinois first -- run the default example.
-#
-# For more details see
-#
-# @article{AlvizuriTape2016,
-#      AUTHOR = {C. Alvizuri and C. Tape},
-#      TITLE = {{Full moment tensors for small events ($\mw < 3$) at Uturuncu volcano, Bolivia}},
-#      JOURNAL = {Geophys.~J.~Int. \rm(in prep.)},
-#      PAGES = {},
-#      VOLUME = {},
-#      NUMBER = {},
-#      EID = {},
-#      DOI = {},
-#      YEAR = {2015}
-# }
-#
-# 20151110 celso alvizuri - cralvizuri@alaska.edu 
 #==============================================================================
 
 # 0. go to cap directory and make sure cap is set to its default condition
