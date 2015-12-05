@@ -67,6 +67,6 @@ sh fmt_misfit.gmt 20111224172941331 utuhalf 10 0.7
 sh fmt_misfit.gmt 20120107133800237 utuhalf 9 0.7
 sh fmt_misfit.gmt 20120108082720474 utuhalf 9 0.6
 sh fmt_misfit.gmt 20120126201937383 utuhalf 9 0.6
-sh fmt_misfit.gmt 20120202125816847 utuhalf 13 0.8
+sh fmt_misfit.gmt 20120202125816847 utuhalf 12 0.7
 sh fmt_misfit.gmt 20120204025800727 utuhalf 15 0.6
 
