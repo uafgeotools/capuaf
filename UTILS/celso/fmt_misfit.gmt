@@ -123,13 +123,14 @@ size_lune_bb=0.32   # KLUDGE = 0.11. non kludge=0.32
 #-----------------------------------------------------------
 data_stations="${datadir_fmt}/${evid}_${model}_${depth}_toa_az_stn_fmp"
 data_misfit_fmp="${datadir_fmt}/${evid}_${model}_${depth}_fmp_summary"
-data_misfit_wf="${datadir_fmt}/${evid}_${model}_${depth}_misfit_wf_psmeca"
+#data_misfit_wf="${datadir_fmt}/${evid}_${model}_${depth}_misfit_wf_psmeca"
+data_misfit_wf="${datadir_fmt}/${evid}_${model}_${depth}_misfit_wf_psmeca_fix"
 data_misfit_wf_best_solbb="${datadir_fmt}/${evid}_${model}_${depth}_misfit_wf_psmeca_best_sol"
 data_misfit_wf_best_sol="${datadir_fmt}/${evid}_${model}_${depth}_misfit_wf_psmeca_best_sol"
 data_inv_result="${datadir_fmt}/../${model}_${depth}.out"
 
-data_psmeca_legend="${datadir_fmt}/${evid}_${model}_${depth}_psmeca_legend_psmeca_Mw"
-#     data_psmeca_legend="${datadir_fmt}/${evid}_${model}_${depth}_psmeca_legend_IEXP_psmeca"
+#data_psmeca_legend="${datadir_fmt}/${evid}_${model}_${depth}_psmeca_legend_psmeca_Mw"
+data_psmeca_legend="${datadir_fmt}/${evid}_${model}_${depth}_psmeca_legend_IEXP_psmeca_custom"
 #     data_psmeca_legend="${datadir_fmt}/${evid}_IEXP_custom"
 #     data_psmeca_legend="${datadir_fmt}/${evid}_IEXP_psmeca_custom"
 #     data_psmeca_legend="${datadir_fmt}/../../../${evid}_IEXP_psmeca_custom"
@@ -169,6 +170,9 @@ printf "\n$0: event data: $data_inv_result: $evlon $evlat $evdep $evmag\n"
 
 label_evll="Lon $evlon, Lat $evlat"
 label_evdp="Dep ${evdep} km (inversion ${depth_label} km)"
+
+# mid bb size in scales should have same sizes
+size_lune_bb=`awk 'NR==2 {printf "%f", 0.0021291531* ($13)^2 - 0.0211156419*($13) + 0.1369811941}' $data_psmeca_legend`
 
 # ONLY FOR MAIN EVENT (uturuncu FMT paper) -- inversion depth is from depth test
 # which we only did for the main event for this paper
@@ -334,7 +338,9 @@ area_lune_wf="-R-30/30/-90/90"
 
 # plot background grid
 psbasemap $proj_lune_wf $area_lune_wf -Bf10g10/f10g10 -G255 -O -K $shiftf  >> $out
-psscale -Ccpt_misfit -D2.8/9/1/0.2 -Al -Bf1a5:"VR (%)": -E $shiftf -O -K >> $out
+# show 5 labels in scale (may vary depending on scale range)
+tick_major=`echo $misfit_min $misfit_max | awk '{printf "%.0f", ($2-$1)/5}'`
+psscale -Ccpt_misfit -D2.8/9/1/0.2 -Al -Bf1a${tick_major}:"VR (%)": -E $shiftf -O -K >> $out
 
 # plot misfit
 pscontour ${data_misfit_wf} $proj_lune_wf $area_lune_wf -O -K -Ccpt_misfit -I -N $shiftf >> $out
