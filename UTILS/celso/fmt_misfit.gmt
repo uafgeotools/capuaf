@@ -340,7 +340,7 @@ area_lune_wf="-R-30/30/-90/90"
 psbasemap $proj_lune_wf $area_lune_wf -Bf10g10/f10g10 -G255 -O -K $shiftf  >> $out
 # show 5 labels in scale (may vary depending on scale range)
 tick_major=`echo $misfit_min $misfit_max | awk '{printf "%.0f", ($2-$1)/5}'`
-psscale -Ccpt_misfit -D2.8/9/1/0.2 -Al -Bf1a${tick_major}:"VR (%)": -E $shiftf -O -K >> $out
+psscale -Ccpt_misfit -D2.8/9/1/0.2 -Al -Bf1a${tick_major}:"VR (@~L@~)": -E $shiftf -O -K >> $out
 
 # plot misfit
 pscontour ${data_misfit_wf} $proj_lune_wf $area_lune_wf -O -K -Ccpt_misfit -I -N $shiftf >> $out
