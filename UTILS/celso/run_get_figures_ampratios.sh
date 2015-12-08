@@ -45,19 +45,19 @@ mv amp_ratios_plot_scatter.eps  /home/alvizuri/manuscripts/2015/fmt_uturuncu/fig
 # histogram+scatter comparing influence of first motion polarities on moment tensor inversions
 
 # figure 9
-# NOTE adjust plot limits in the python script: Lines 51, 90
-python utu63_scatter_histo.py /home/alvizuri/REPOSITORIES/manuscripts/alvizuri/papers/2014fmt/data/theta_dvr_eid_utuhalf
+# opt = pnp
+python utu63_scatter_histo.py /home/alvizuri/REPOSITORIES/manuscripts/alvizuri/papers/2014fmt/data/theta_dvr_eid_utuhalf pnp
 mv output.eps /home/alvizuri/manuscripts/2015/fmt_uturuncu/figures/scatter_histo_theta_dvr_utuhalf_V10_R01_S10.eps
 # figure S2a
-# NOTE adjust plot limits in the python script: Lines 51, 90
-python utu63_scatter_histo.py /home/alvizuri/REPOSITORIES/manuscripts/alvizuri/papers/2014fmt/data/theta_dvr_eid_utu1d
+python utu63_scatter_histo.py /home/alvizuri/REPOSITORIES/manuscripts/alvizuri/papers/2014fmt/data/theta_dvr_eid_utu1d pnp
 mv output.eps /home/alvizuri/manuscripts/2015/fmt_uturuncu/figures/scatter_histo_theta_dvr_utu1d_V10_R01_S10.eps
 
-exit
 # figure S2b 
-# NOTE adjust plot limits in the python script: Lines 52, 95
-python utu63_scatter_histo.py /home/alvizuri/REPOSITORIES/manuscripts/alvizuri/papers/2014fmt/data/theta_dvr_eid_utuhalf_utu1d_pol
+# opt = models
+python utu63_scatter_histo.py /home/alvizuri/REPOSITORIES/manuscripts/alvizuri/papers/2014fmt/data/theta_dvr_eid_utuhalf_utu1d_pol models
 mv output.eps /home/alvizuri/manuscripts/2015/fmt_uturuncu/figures/scatter_histo_theta_dvr_utuhalf_utu1d_P01_V10_R01_S10.eps
+
+exit
 
 
 #-----------------------------------------------------------
