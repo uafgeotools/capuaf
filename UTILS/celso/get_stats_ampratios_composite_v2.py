@@ -35,6 +35,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 
+# 20151208 Some journals don't like Type 3 font.
+# The following commands are required to NOT use the default Type 3 fonts
+import matplotlib as mpl
+from matplotlib import rc
+plt.rcParams['ps.useafm'] = True
+rc('font',**{'family'   : 'sans-serif',
+            'sans-serif': ['FreeSans']
+            })
+##plt.rcParams['pdf.fonttype'] = 42
+# end font update
+
+
 # check data from input
 if len(sys.argv)!=4:
     sys.exit('usage: %s data_component_V data_component_R [a2a] [v2r] \n' % sys.argv[0])
@@ -109,7 +121,7 @@ else:
     ratio_Ro_Rs = np.log(abs(Vsyn)/abs(Rsyn))
 
 # histogram parameters
-plt.rcParams.update({'font.size': 8})
+plt.rcParams.update({'font.size': 10})
 mygray    = [0.7, 0.7, 0.7]
 col_bar1  = [0.5, 0.7, 1.0]
 col_bar1  = [0.5, 1.0, 0.7]
@@ -178,7 +190,8 @@ if compare_components == "a2a":
 else:
     plt.xlabel('Observed ln(V/R)')  # V / R
 
-plt.ylabel('Count')
+ylabel ="Count (N = %d)" % (npts)
+plt.ylabel(ylabel)
 plt.ylim([0, ymax_hist])
 plt.xlim([-xmax_hist, xmax_hist])
 
@@ -206,7 +219,7 @@ ax2.xaxis.set_major_locator(MultipleLocator(5))
 
 plt.tight_layout(pad=0.4, w_pad=1.5)    # this is needed!!
 plt.subplots_adjust(top=0.89)
-plt.suptitle(main_title)
+#plt.suptitle(main_title)
 
 # NOTE ps2raster trims too much if saving in ps
 outfile="amp_ratios_plot_histogram.eps"
@@ -217,7 +230,9 @@ sys.stderr.write("outfile: %s\n" % outfile)
 # plot scatter x=syn, y=obs
 #---------------------------------------------------------- 
 fig = plt.figure(figsize=(2.3, 2.2))
-plt.subplots_adjust(wspace = 0.3, bottom = 0.2)
+#plt.subplots_adjust(left = 0.2, bottom = 0.15)
+plt.subplots_adjust(left = 0.2, bottom = 0.15)
+
 ax3 = plt.subplot(1,1,1, aspect='equal')
 plt.axvline(color=[0,0,0], linewidth=0.1)
 plt.axhline(color=[0,0,0], linewidth=0.1)
@@ -266,7 +281,8 @@ plt.text(0.80, 0.1, text_quad_rd, transform=ax3.transAxes)
 plt.text(0.10, 0.8, text_quad_lu, transform=ax3.transAxes)
 plt.text(0.10, 0.1, text_quad_ld, transform=ax3.transAxes)
 
-plt.suptitle(main_title)
+#plt.suptitle(main_title)
+plt.suptitle(ylabel)
 #debug
 #plt.show()
 

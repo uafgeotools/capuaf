@@ -22,6 +22,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 
+# 20151208 Some journals don't like Type 3 font.
+# The following commands are required to NOT use the default Type 3 fonts
+import matplotlib as mpl
+from matplotlib import rc
+#plt.rcParams['ps.useafm'] = True
+rc('font',**{'family'   : 'sans-serif',
+            'sans-serif': ['FreeSans']  # FreeSans or Helvetica
+            })
+##plt.rcParams['ps.fonttype'] = 42
+# end font update
+
 # verify that inputfile exists, then extract data from it
 if len(sys.argv)!=3:
     sys.stderr.write('usage: %s datafile1.txt datafile2.txt\n' % sys.argv[0])
@@ -134,7 +145,7 @@ ymax_logratio_V = max(histoV)
 ymax_logratio_R = max(histoR)
 
 # nticks, starting tick
-main_title = "%s npts=%02d" % (fixedname, npts)
+main_title = "%s N = %02d" % (fixedname, npts)
 #sys.stdout.write("NOTE data appended to table.amp_ratio.stations_utu60_PV.txt / table.amp_ratio.stations_utu60_PR.txt\n")
 
 # figure out ytick spacing (depends on amount of data)
@@ -160,14 +171,15 @@ else:
 # begin plotting
 #---------------------------------------------------------- 
 # set output files
-outplot="hist_log_ratios_%s.eps" % fixedname
+#outplot="hist_log_ratios_%s.pdf" % fixedname
+#outplot="hist_log_ratios_%s.eps" % fixedname
+outplot="hist_log_ratios_%s_nolegend.eps" % fixedname
 
 # begin plotting
 fig = plt.figure(figsize=(3,2))
 plt.suptitle(main_title, fontsize=12)
 
 # histogram colors
-plt.rcParams.update({'font.size': 8})
 mygray    = [0.7, 0.7, 0.7]
 col_bar_1  = [0.5, 0.7, 1.0]
 col_bar_2  = [0.5, 1.0, 0.7]
@@ -188,7 +200,8 @@ plt.ylim([0, ymax])
 plt.yticks(np.arange(y0, ymax, yticks))
 
 # annotations
-annot_logratio_V = "m=%5.3f\na=%5.3f\ns=%5.3f" % (logratio_V_med, logratio_V_mean, logratio_V_std)
+plt.rcParams.update({'font.size': 8})
+annot_logratio_V = "m=%4.2f\na=%4.2f\ns=%4.2f" % (logratio_V_med, logratio_V_mean, logratio_V_std)
 ax1.text(0.05, 0.9, annot_logratio_V, horizontalalignment='left',
         verticalalignment='top', transform = ax1.transAxes)
 
@@ -209,12 +222,14 @@ plt.ylim([0, ymax])
 plt.yticks(np.arange(y0, ymax, yticks))
 
 # annotations
-annot_logratio_R = "m=%5.3f\na=%5.3f\ns=%5.3f" % (logratio_R_med, logratio_R_mean, logratio_R_std)
+# 20151208 it will still use Type 3 font for this legend even with the font swap
+# command. The other option is to disable legends so that Type 3 does not appear in the file
+annot_logratio_R = "m=%4.2f\na=%4.2f\ns=%4.2f" % (logratio_R_med, logratio_R_mean, logratio_R_std)
 ax2.text(0.05, 0.9, annot_logratio_R, horizontalalignment='left',
         verticalalignment='top', transform = ax2.transAxes)
-
 
 sys.stderr.write("%s: done. output file: %s\n" % (sys.argv[0] , outplot))
 #plt.savefig(outplot, orientation='portrait', papertype=None, format='pdf')
 plt.savefig(outplot, orientation='portrait', format='eps')
+
 

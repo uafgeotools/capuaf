@@ -11,12 +11,25 @@ from matplotlib.ticker import NullFormatter, MultipleLocator
 import numpy as np
 import sys
 
+# 20151208 Some journals don't like Type 3 font.
+# The following commands are required to NOT use the default Type 3 fonts
+import matplotlib as mpl
+from matplotlib import rc
+#plt.rcParams['ps.useafm'] = True
+rc('font',**{'family'   : 'sans-serif',
+            'sans-serif': ['FreeSans']  # FreeSans or Helvetica
+            })
+##plt.rcParams['ps.fonttype'] = 42
+# end font update
+
 # verify and read from inputfile
-if len(sys.argv)!=2:
-    sys.stderr.write('usage: %s datafile.txt\n' % sys.argv[0])
-    sys.exit('%s: datafile = AMP summary from CAP out file' % sys.argv[0])
+if len(sys.argv)!=3:
+    sys.stderr.write('usage: %s datafile.txt option\n' % sys.argv[0])
+    sys.exit('datafile = AMP summary from CAP out file\noption = pnp or models')
 
 inputfile = str(sys.argv[1])
+comparison_type=sys.argv[2]
+
 try:
     data = np.genfromtxt(inputfile, dtype=None, names = ['theta', 'dvr', 'dummy'])
 except:
@@ -48,8 +61,10 @@ axHisty = plt.axes(rect_histy)
 
 # histograms, set bar ranges
 xlim0, xlimf, dbinx = -5, 70, 5      # all figures
-ylim0, ylimf, dbiny = -14, 1, 1     # NP vs P (0d, 1d)  # Figure 9, S2a
-#ylim0, ylimf, dbiny = -14, 13, 1    # NP vs P (0d, 1d)  # Figure S2b
+if comparison_type=="pnp":
+    ylim0, ylimf, dbiny = -14, 1, 1     # NP vs P (0d, 1d)  # Figure 9, S2a
+elif comparison_type=="models":
+    ylim0, ylimf, dbiny = -14, 13, 1    # NP vs P (0d, 1d)  # Figure S2b
 #ylim0, ylimf, dbiny = -12.5, 1, 1   # NP vs P (0d, 1d)
 #ylim0, ylimf, dbiny = -25, 25, 5    # 0d vs 1d (NP, P)
 #ylim0, ylimf, dbiny = -10.5, 2.5, 1 # 0d vs 1d (NP, P)
@@ -87,11 +102,13 @@ axScatter.set_xlabel(r'$\theta$')
 # Figure 9, S2a
 # NP vs P, utuhalf theta_dvr_eid_utuhalf
 # NP vs P. utu1D theta_dvr_eid_utu1d
-axScatter.set_ylabel(r'$VR_{\mathrm{np}}\/-\/VR_{\mathrm{p}}$')
+if comparison_type=="pnp":
+    axScatter.set_ylabel(r'$VR_{\mathrm{np}}\/-\/VR_{\mathrm{p}}$')
 
 # utuhalf vs utu1d, both with polarities, file theta_dvr_eid_utuhalf_utu1d_pol
 # Figure S2b
-#axScatter.set_ylabel(r'$VR_{\mathrm{half}}\/-\/VR_{\mathrm{1d}}$')
+if comparison_type=="models":
+    axScatter.set_ylabel(r'$VR_{\mathrm{half}}\/-\/VR_{\mathrm{1d}}$')
 
 #axScatter.axhline(y=0)
 
