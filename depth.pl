@@ -6,7 +6,7 @@
 # Usage depth.pl result_file event_dir_names ...
 #
 
-$ballsize = 4;		    # controls default beachball size (psmeca)
+$ballsize = 2.5;		    # controls default beachball size (psmeca)
 $min0 = 1.0e+19;	    # impossibly large misfit value
 $Bscale = "-Ba5f1:\"\":/a20f5:\"\":";
 $onlydc = 0; # only plots DC mechanism (Removes psmeca bugs that arises when plotting DC mechs)
@@ -168,6 +168,7 @@ while (@event)
 	$R2 = "-R$xmin/$xmax/$ymin2/$ymax2";
 	$xtick1 = 5; $xtick2 = 1;
 	$ytick1 = $ymax2/5.; $ytick2 = $ymax2/10.;
+	$ytick1 = sprintf("%.2f",$ytick1); $ytick2 = sprintf("%.2f",$ytick2); # show y-axis ticks upto 2 decimal places
 	$B2 = "-Ba${xtick1}f${xtick2}:\" \":/a${ytick1}f${ytick2}:\"ln(VR_max / VR)\":nW";
     
 	# Set the model for plotting layer interface
