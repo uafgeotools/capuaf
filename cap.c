@@ -958,6 +958,16 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   FILE *logf,*std_range;
   char logfile[16],range_file[20];
 
+  OUTPUTGD outgd;
+  OUTPUTMT outmt;
+
+  int misfit_fmp;
+
+  // count number of solutions computed
+  // (this is ongoing, this variable may be deleted)
+  // # 20151216 celso alvizuri - cralvizuri@alaska.edu
+  int count=0;
+
   /* vars to track smallest misfit at each (gamma,delta) on the lune */
   FILE *fidmol;
   LUNE_MISFIT * bestmisfit;
@@ -974,6 +984,12 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       fidfmp=fopen("out.misfit.fmp_","w");
   }
   
+    // output data for postprocessing
+  FILE *fidmt, *fidgd;
+  fidmt=fopen("capout_mt.bin","wb");
+  fidgd=fopen("capout_gd.bin","wb");
+
+
   if (debug) {
     sprintf(logfile,"%s_%03d_%03d","log",edep,loop);
     logf = fopen(logfile,"w");
@@ -1242,16 +1258,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		  tt2cmt(temp[2], temp[1], 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
 
           // compute misfit from first motion. data will be output to out.misfit.fmp_
-          if(only_first_motion)
-          {
-              misfit_first_motion(mtensor, nfm, fm, fidfmp, temp[2], temp[1], temp[0], sol.meca.stk, sol.meca.dip, sol.meca.rak);
-              continue;
-          }
+           misfit_fmp =  misfit_first_motion(mtensor, nfm, fm, fidfmp, temp[2], temp[1], temp[0], sol.meca.stk, sol.meca.dip, sol.meca.rak);
 
-		  if (check_first_motion(mtensor,fm,nfm,fm_thr)<0) {
-		    *grd_err++ = sol.err = FLT_MAX;
-		    continue;
-		  }
 		  if (bootstrap && interp==0) fprintf(stderr,"BOOTSTRAPPING %5.2f %5.2f %5.2f %5.1f %5.1f %5.1f\n", mt[0].par, mt[1].par, mt[2].par, sol.meca.stk, sol.meca.dip, sol.meca.rak);
 
 		  //--------------KEY COMMAND---call misfit function------
@@ -1290,13 +1298,34 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		    mt[2].par=temp[2];
 		  }
 	       
-		  //  Generate log files of posterior uncertainty analysis
-		  if (debug) { 
-		    logf = fopen(logfile,"a");                 // output log file
-		    fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[1][1], mtensor[2][2], mtensor[0][1], mtensor[0][2], mtensor[1][2]);
-		    //fprintf(stderr,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err,  temp[0], temp[1], temp[2]);
-		    fclose(logf);	  
-		  }
+		  //  output binary data
+          outgd.g = temp[2];
+          outgd.d = temp[1];
+          outgd.s = sol.meca.stk;
+          outgd.h = sol.meca.dip;
+          outgd.r = sol.meca.rak;
+          outgd.mag = temp[0];
+          outgd.misfit_wf  = sol.err/data2;
+          outgd.misfit_fmp = (float) misfit_fmp;
+
+          outmt.mrr = mtensor[2][2];
+          outmt.mtt = mtensor[0][0];
+          outmt.mpp = mtensor[1][1];
+          outmt.mrt = mtensor[0][2];
+          outmt.mrp = -mtensor[1][2];
+          outmt.mtp = -mtensor[0][1];
+          outmt.mag = temp[0];
+          outmt.misfit_wf = sol.err/data2;
+          outmt.misfit_fmp = (float) misfit_fmp;
+
+//          fprintf(stderr,"DEBUG. %f %f %d \n", outgd.g, outgd.d, outmt.misfit_fmp);
+          fwrite(&outmt, sizeof outmt, 1, fidmt); 
+          fwrite(&outgd, sizeof outgd, 1, fidgd);
+
+          // count number of solutions computed
+          // (this is ongoing, this variable may be deleted)
+          // # 20151216 celso alvizuri - cralvizuri@alaska.edu
+          count++;
 
 		}   /* end stk loop */
 	      } /* end dip loop */
@@ -1332,10 +1361,14 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
                     bestmisfit->mrt, bestmisfit->mrp, bestmisfit->mtp,
                     bestmisfit->mag);
         }
-
 	  } /* end clvd loop */
       } /* end iso loop */
     }   /* end mag loop */
+
+  // count number of solutions computed
+  // (this is ongoing, this variable may be deleted)
+  // # 20151216 celso alvizuri - cralvizuri@alaska.edu
+    fprintf(stderr, "\ntotal solutions processed:\n%d\n", count);
 
     if(misfit_on_lune)
     {
@@ -1350,6 +1383,9 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
         fprintf(stderr,"\nFinished writing to file out.misfit.fmp_\n");
         fprintf(stderr,"No figure should be created (no -P flag) in this mode.\n");
     }
+
+    fclose(fidmt);
+    fclose(fidgd);
  
     if (debug) fprintf(stderr, "Mw=%5.2f  iso=%5.2f clvd=%5.2f misfit = %9.3e\n", mt[0].par, mt[1].par, mt[2].par, best_sol.err);
     if (interp==0) return(best_sol);

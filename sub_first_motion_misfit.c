@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include "cap.h"
 
-void misfit_first_motion(
+int misfit_first_motion(
             float mtensor[3][3],
               int nsta,
                FM *data,
@@ -41,10 +41,22 @@ void misfit_first_motion(
     // compute first motion misfit = sum(abs(obs_i-predicted_i))
     // output grid search parameters, polarity (in debug mode), and misfit
     // data written to fid (opened in cap.c)
-    fprintf(fid,"%5.1f %5.1f %5.1f %5.1f %5.1f  ", gamma, delta, kappa, theta, sigma);
+    //fprintf(fid,"%5.1f %5.1f %5.1f %5.1f %5.1f  ", gamma, delta, kappa, theta, sigma);
 
-    if(debug_fm)
-    {
+//   if(debug_fm)
+//   {
+//       for(i=0; i<nsta; i++)
+//       {
+//           ipol_obs = (data+i)->type;
+//           pol_theory = radpmt(mtensor, (data+i)->alpha, (data+i)->az, 1);
+//           if(pol_theory>=0.0) ipol_theory = 1;
+//           else ipol_theory = -1;
+//           misfit_fm += abs(ipol_obs-ipol_theory);
+//           fprintf(fid,"(%d %d) ", ipol_obs, ipol_theory);
+//       }
+//   }
+//   else
+//   {
         for(i=0; i<nsta; i++)
         {
             ipol_obs = (data+i)->type;
@@ -52,20 +64,10 @@ void misfit_first_motion(
             if(pol_theory>=0.0) ipol_theory = 1;
             else ipol_theory = -1;
             misfit_fm += abs(ipol_obs-ipol_theory);
-            fprintf(fid,"(%d %d) ", ipol_obs, ipol_theory);
         }
-    }
-    else
-    {
-        for(i=0; i<nsta; i++)
-        {
-            ipol_obs = (data+i)->type;
-            pol_theory = radpmt(mtensor, (data+i)->alpha, (data+i)->az, 1);
-            if(pol_theory>=0.0) ipol_theory = 1;
-            else ipol_theory = -1;
-            misfit_fm += abs(ipol_obs-ipol_theory);
-        }
-    }
+ //   }
     misfit_fm = misfit_fm/2;
-    fprintf(fid,"\t%d\n",misfit_fm);
+//    fprintf(fid,"\t%d\n",misfit_fm);
+    return misfit_fm;
 }
+

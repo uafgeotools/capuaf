@@ -138,6 +138,30 @@ typedef struct {
     float mag;
 } LUNE_MISFIT;
 
+typedef struct {
+    float g;
+    float d;
+    float s;
+    float h;
+    float r;
+    float mag;
+    float misfit_wf;
+    float misfit_fmp;
+} OUTPUTGD;
+
+typedef struct {
+    float mrr;
+    float mtt;
+    float mpp;
+    float mrt;
+    float mrp;
+    float mtp;
+    float mag;
+    float misfit_wf;
+    float misfit_fmp;
+} OUTPUTMT;
+
+
 /* function declaration */
 SOLN	error(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int,int);
 void    taper(float *aa, int n);
@@ -146,7 +170,7 @@ float	*cutTrace(float *, int, int, int);
 int	discard_bad_data(int,DATA *,SOLN,float,float *);
 int	check_first_motion(float mt[3][3], FM *fm, int n, float fm_thr);
 void tt2cmt(float gamma, float delta, float m0, float kappa, float theta, float sigma, float mtensor[3][3]);
-void misfit_first_motion(float mtensor[3][3], int nsta, FM *data, FILE *fid, float gamma, float delta, float mw, float kappa, float theta, float sigma);
+int misfit_first_motion(float mtensor[3][3], int nsta, FM *data, FILE *fid, float gamma, float delta, float mw, float kappa, float theta, float sigma);
 void fmp_print_parameters(FILE *fid, FMPDATA *fmpdata);
 SOLN calerr(int,DATA *,const int *, float,int,float mtensor[3][3],float,SOLN);
 #endif
