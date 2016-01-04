@@ -1090,6 +1090,31 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	      mt[2].par=temp[2];
 	    }
 
+	    misfit_fmp =  misfit_first_motion(mtensor, nfm, fm, fidfmp, temp[2], temp[1], temp[0], sol.meca.stk, sol.meca.dip, sol.meca.rak);
+	    //  output binary data
+	    outgd.g = temp[2];
+	    outgd.d = temp[1];
+	    outgd.s = sol.meca.stk;
+	    outgd.h = sol.meca.dip;
+	    outgd.r = sol.meca.rak;
+	    outgd.mag = temp[0];
+	    outgd.misfit_wf  = sol.err/data2;
+	    outgd.misfit_fmp = (float) misfit_fmp;
+
+	    outmt.mrr = mtensor[2][2];
+	    outmt.mtt = mtensor[0][0];
+	    outmt.mpp = mtensor[1][1];
+	    outmt.mrt = mtensor[0][2];
+	    outmt.mrp = -mtensor[1][2];
+	    outmt.mtp = -mtensor[0][1];
+	    outmt.mag = temp[0];
+	    outmt.misfit_wf = sol.err/data2;
+	    outmt.misfit_fmp = (float) misfit_fmp;
+
+	    //          fprintf(stderr,"DEBUG. %f %f %d \n", outgd.g, outgd.d, outmt.misfit_fmp);
+	    fwrite(&outmt, sizeof outmt, 1, fidmt); 
+	    fwrite(&outgd, sizeof outgd, 1, fidgd);
+
 	    // in debug mode it will save all samples in a logfile
 	    if (debug) { 
 	      logf = fopen(logfile,"a");                 // output log file
