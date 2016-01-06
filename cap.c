@@ -984,11 +984,10 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
       fidfmp=fopen("out.misfit.fmp_","w");
   }
   
-    // output data for postprocessing
+  // output files for postprocessing
+  // mt = moment tensor elements
+  // gd = gamma, delta, strike, dip, rake
   FILE *fidmt, *fidgd;
-  fidmt=fopen("capout_mt.bin","wb");
-  fidgd=fopen("capout_gd.bin","wb");
-
 
   if (debug) {
     sprintf(logfile,"%s_%03d_%03d","log",edep,loop);
@@ -1005,6 +1004,10 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   // RANDOM distribution of samples in MT space 
   // Distribution is homogeneous on lune 
   if (search==2){
+
+    // output for postprocessing
+    fidmt=fopen("capout_rand_mt.bin","wb");
+    fidgd=fopen("capout_rand_gd.bin","wb");
 
     fprintf(stderr,"Mw=%f\n",mt[0].par);
     mw_ran=1.0; // Mw search range
@@ -1142,6 +1145,9 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
      fprintf(stderr, "%3.2f\t%3.2f\t%3.2f\t%2.1f\t%2.1f\t%2.2f\n",best_sol.meca.stk, best_sol.meca.dip,best_sol.meca.rak,temp[0],mt[1].par,mt[2].par);
      } // magnitude search (mt[0]) loop ends
   
+    // end writing data for postprocessing
+    fclose(fidmt);
+    fclose(fidgd);
 
     if (debug) fprintf(stderr, "Mw=%5.2f  iso=%5.2f clvd=%5.2f misfit = %9.3e\n", mt[0].par, mt[1].par, mt[2].par, best_sol.err);
     if (interp==0) return(best_sol);
@@ -1161,6 +1167,10 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   }
 
   if (search==1){
+
+    // output for postprocessing
+    fidmt=fopen("capout_grid_mt.bin","wb");
+    fidgd=fopen("capout_grid_gd.bin","wb");
 
     //--------newly added section-------------
     mw_ran = 0.5;
@@ -1409,6 +1419,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
         fprintf(stderr,"No figure should be created (no -P flag) in this mode.\n");
     }
 
+    // end writing data for postprocessing
     fclose(fidmt);
     fclose(fidgd);
  
