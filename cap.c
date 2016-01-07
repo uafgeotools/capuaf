@@ -949,6 +949,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
   int	i, j, k, l, m, k1, kc, z0, z1, z2, ii, N, iso_len;
   float mw_ran; // half-range for magnitude search (previously int)
   int	i_stk, i_dip, i_rak, i_iso;
+  int   perc, del_N, count_perc;
   float	amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3], m_par, del_dip, del_iso;
   float	*f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err, *rnd_stk, *rnd_dip, *rnd_rak, *rnd_iso, *rnd_clvd, *iso;
   float dx, mtensor[3][3], *r_iso, *z_iso;
@@ -1022,6 +1023,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     }
 
     N=100000; // Number of samples 
+    del_N=(int)N/20; // To add 'percentage completed' marker; each del_N is 5%
+    count_perc=1;  // counter to track percentage completed
     // preallocate arrays for MT paramters 
     rnd_stk = (float*)malloc(sizeof(int) * N*sizeof(float));   
     rnd_dip = (float*)malloc(sizeof(int) * N*sizeof(float));
@@ -1123,6 +1126,12 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	      logf = fopen(logfile,"a");                 // output log file
 	      fprintf(logf,"%3.1f\t%3.1f\t%3.1f\t%e\t%2.2f\t%2.2f\t%2.2f\t%e\t%f\t%f\t%f\t%f\t%f\t%f\n",sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err/data2, temp[0], temp[1], temp[2], amp*1.0e20, mtensor[0][0], mtensor[1][1], mtensor[2][2], mtensor[0][1], mtensor[0][2], mtensor[1][2] );
 	      fclose(logf);
+	    }
+	    // Block to keep track of percentage of samples checked
+	    if (ii==del_N*count_perc){
+	      perc = 5*count_perc; // percentage is in multiples of 5
+	      printf("%d%% done \n",perc);
+	      count_perc = count_perc+1;
 	    }
 	  }  // number of samples (ii < N) loop ends
 
