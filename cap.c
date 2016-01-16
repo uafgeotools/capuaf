@@ -93,7 +93,7 @@ int misfit_on_lune=0;       // waveform misfit. output misfit on the lune
 
 /* workaround for filter issues with small magnitude events (Uturuncu) */
 // this has not been tested with DIRECTIVITY option
-int FTC_data=0, FTC_green=0;// for original CAP set FTC_data=0, FTC_green=0
+int FTC_data=1, FTC_green=0;// for original CAP set FTC_data=0, FTC_green=0
 
 /* allows use of polarities even when weight=0.
  * Note CAP still needs at least 1 waveform for the inversion */
@@ -123,6 +123,24 @@ int main (int argc, char **argv) {
   DATA	*obs, *obs0;
   FM	*fm, *fm0;
   FM *fm_copy;  /*  copy of all first motions entered in weight file */
+
+  /* START block of variables for uniform MT */
+  SEARCHPAR *searchPar = calloc(1, sizeof(SEARCHPAR));
+
+    float v0, vf, w0, wf, k0, kf, h0, hf, s0, sf;
+    int nnu, nnv, nnw, nnk, nnh, nns;
+
+    float gamma0, gammaf, delta0, deltaf;
+    int ngamma, ndelta;
+
+    float dip0, dipf;
+    int ndip;
+
+    float u0, uf;   // delete afte w implemented
+    int nu; //delete after w implemented
+
+    int nsol;
+  /* END block of variables for uniform MT */
 
   // variables to verify that Mw_best is not near search limits
   float mw_center;      // input magnitude
@@ -710,8 +728,99 @@ int main (int argc, char **argv) {
   if (search==2)
      fprintf(stderr,"----------starting random-search-----------\n");
 
+  /* START prepare inversion variables */
+
+  /* full range */
+       u0 = 0.0;            uf = (3./4.) * PI;
+       w0 = -(3./8.) * PI;  wf = (3./8.) * PI;
+       v0 = -1./3.;         vf = 1./3.; 
+       k0 = 0.0;            kf = 2. * PI;
+       h0 = 0.0;            hf = 1.0;
+       s0 = -PI/2.;         sf = PI/2.;
+
+//       v0 = 0.;             vf = 0.; 
+//       u0 = (3./8.) * PI;   uf = (3./8.) * PI;
+
+    /* parameters for GRID search */
+    /*
+       NOTE full grid search produces 20,155,392 solutions. 
+       filesize (ascii) = 1.8 GB, runtime (ascii) = 1m1.432s
+       filesize (bin)   =     GB, runtime (bin)   =         
+       */
+
+       if(search==1) {
+           /* parameters for GRID search */
+           //nnv = 12; nnu = 36;   nnk = 72; nnh = 18; nns = 36;   // 12 * 36 * 72 * 18 * 36 = 20,155,392
+           nnv = 12; nnu = 36;  nnk = 36; nnh = 9;  nns = 18;     // 12 * 36 * 36 * 9  * 18 =  2,519,424
+           nnv = 6;  nnu = 9;   nnk = 72; nnh = 6;  nns = 12;     //  6 *  9 * 72 * 6  * 12 =    279,936
+           nnv = 6;  nnu = 18;  nnk = 36; nnh = 9;  nns = 18;     //  6 *  9 * 72 * 6  * 12 =    629,856
+           nnv = 12; nnu = 36;  nnk = 12; nnh = 3;  nns =  6;     // 12 *  36* 12 * 3  *  6 =     93,312
+//           nnv = 1;  nnu = 1;    nnk = 72; nnh = 6;  nns = 12;    //  1 *  1 * 72 * 6  * 12 =      5,684
+           nnw = nnu;
+           nsol = nnw * nnv * nnk * nnh * nns;
+       }
+
+    // nnv = 14; nnu = 18;   nnk = 18; nnh = 6;  nns = 12;   // 14 * 18 * 18 * 6  * 12 =    326,592
+    // nnv = 25; nnu = 75;   nnk = 6;  nnh = 6;  nns = 6;    // nice display
+    // nnv = 9;  nnu = 1024; nnk = 3;  nnh = 3;  nns = 3;    // reaches lat 80
+    // nnv = 5;  nnu = 5;    nnk = 6;  nnh = 6;  nns = 6;    // nice subset
+
+    // SUB RANGE. DEFINE RANGE AND NPTS
+    // v0 = -0.2;   vf = 0.3;   nv = 100; u0 = 1.50; uf = 1.50;    nnu = 1;      // row
+    // v0 = -0.15;  vf = -0.15; nv = 1;   u0 = 0;    uf = 2.35619; nnu = 1000;   // col
+    // v0 = 0.2;    vf = 0.3;   nv = 50;  u0 = 0.5;  uf = 0.75;    nnu = 50;     // patch
+    // v0 = 0.0;    vf = 0.0;   nv = 1;   u0 = 1.0;  uf = 1.0;     nnu = 1;      // point
+    // v0 = -0.33;  vf = 0.33;  nv = 100; u0 = 0.0;  uf = 2.35619; nnu = 100;    // dense
+    // v0 = -0.33;  vf = 0.33;  nv = 30;  u0 = 0.0;  uf = 2.35619; nnu = 30;     // thin
+
+    if(search==2) {
+        /* parameters for RAND search */
+        nsol = 3e7;  // 2m33.975s
+        nsol = 5e6;  // 0m25.111s
+        nsol = 5e6;  // 
+        nsol = 1e5;  // 
+        nnu = nnv = nnw = nnk = nnh = nns = nsol;
+    }
+
+    /* set parameters for search */
+    searchPar->u0 = u0; searchPar->uf = uf; searchPar->nu = nnu;
+    searchPar->w0 = w0; searchPar->wf = wf; searchPar->nw = nnw;
+    searchPar->v0 = v0; searchPar->vf = vf; searchPar->nv = nnv;
+    searchPar->k0 = k0; searchPar->kf = kf; searchPar->nk = nnk;
+    searchPar->h0 = h0; searchPar->hf = hf; searchPar->nh = nnh;
+    searchPar->s0 = s0; searchPar->sf = sf; searchPar->ns = nns;
+    searchPar->gamma0 = gamma0;
+    searchPar->gammaf = gammaf; 
+    searchPar->ngamma = nsol;
+
+    searchPar->delta0 = delta0;
+    searchPar->deltaf = deltaf;
+    searchPar->ndelta = nsol;
+
+    searchPar->dip0 = dip0; 
+    searchPar->dipf = dipf; 
+    searchPar->ndip = nsol;
+
+    searchPar->nsol = nsol;
+
+    fprintf(stderr,"Preparing space for moment tensors (nsol = %10d) ... ", searchPar->nsol);
+    ARRAYMT * arrayMT = calloc(searchPar->nsol, sizeof(ARRAYMT));
+
+    if (arrayMT == NULL) {
+        fprintf(stderr,"Abort. unable to allocate.\n");
+        return 0;
+    } else {
+        fprintf(stderr,"done.\n");
+    }
+
+    /* END prepare inversion variables */
  INVERSION:
-  sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search,norm);
+  /* old error function. will keep this command for reference, but may be
+   * deleted later */
+  /* sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search,norm); */
+
+  /* call initSearchMT instead of "error". This call includes two extra parameters: searchPar, arrayMT */
+  sol = initSearchMT(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search,norm, searchPar, arrayMT);
 
   /* if runnning in first-motion-polarity mode clean up and end cap
    * after grid search in error function
@@ -925,6 +1034,10 @@ for(obs=obs0,i=0;i<nda;i++,obs++){
  }
  fclose(wt);
  fclose(wt2);
+
+ fprintf(stderr,"*** CHECK VALUES. cap.c compute sol.err  = %e data2 = %e\n", sol.err, data2);
+ free(arrayMT); 
+ free(searchPar);
 
  return 0;
 }
