@@ -37,6 +37,23 @@ static char grn_com[NGR]={'8','5','b','7','4','1','a','6','3','0'};
 
 #define NFFT	2048		/* for Q operator */
 
+/***********************global vars********************************/
+
+extern int total_n,loop,start,debug, Nsta,Psamp[STN],Ssamp[STN],edep;
+extern float data2;
+
+/* flags for computing uncertainty on the lune. 1==apply */
+extern int only_first_motion;    // polarity misfit. runs ONLY polarity, no waveform misfit
+extern int misfit_on_lune;       // waveform misfit. output misfit on the lune 
+
+/* workaround for filter issues with small magnitude events (Uturuncu) */
+// this has not been tested with DIRECTIVITY option
+extern int FTC_data, FTC_green;// for original CAP set FTC_data=0, FTC_green=0
+
+/* allows use of polarities even when weight=0.
+ * Note CAP still needs at least 1 waveform for the inversion */
+extern int skip_zero_weights;    // for original CAP set skip_zero_weights=1
+
 /*********************** Data Structure***************************/
 
 /* focal mechanism (strike, dip, rake) data structure */
