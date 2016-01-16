@@ -19,6 +19,7 @@
 #include "inversion.h"
 #include "radiats.h"
 
+#include "uv2lune.h"
 
 /***********************Constants********************************/
 
@@ -37,6 +38,7 @@ static char grn_com[NGR]={'8','5','b','7','4','1','a','6','3','0'};
 
 #define NFFT	2048		/* for Q operator */
 
+#define r2d 180.0 / PI
 /***********************global vars********************************/
 
 extern int total_n,loop,start,debug, Nsta,Psamp[STN],Ssamp[STN],edep;
@@ -178,9 +180,58 @@ typedef struct {
     float misfit_fmp;
 } OUTPUTMT;
 
+typedef struct
+{
+    float u0;
+    float uf;
+    float v0;
+    float vf;
+    float w0;
+    float wf;
+    float k0;
+    float kf;
+    float h0;
+    float hf;
+    float s0;
+    float sf;
+    float gamma0;
+    float gammaf;
+    float delta0;
+    float deltaf;
+    float dip0;
+    float dipf;
+
+    float mw0;
+    float mwf;
+    float nmw;
+
+    int nu;
+    int nv;
+    int nw;
+    int nk;
+    int nh;
+    int ns;
+    int ngamma;
+    int ndelta;
+    int ndip;
+
+    int nsol;
+
+} SEARCHPAR;
+
+typedef struct
+{
+    float g;
+    float d;
+    float k;
+    float t;
+    float s;
+    float mw;
+} ARRAYMT;
 
 /* function declaration */
-SOLN	error(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int,int);
+  /* SOLN	error(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int,int); */
+SOLN initSearchMT(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int,int, SEARCHPAR *, ARRAYMT *);
 void    taper(float *aa, int n);
 float	*trap(float, float, float, int *);
 float	*cutTrace(float *, int, int, int);
@@ -190,4 +241,10 @@ void tt2cmt(float gamma, float delta, float m0, float kappa, float theta, float 
 int misfit_first_motion(float mtensor[3][3], int nsta, FM *data, FILE *fid, float gamma, float delta, float mw, float kappa, float theta, float sigma);
 void fmp_print_parameters(FILE *fid, FMPDATA *fmpdata);
 SOLN calerr(int,DATA *,const int *, float,int,float mtensor[3][3],float,SOLN);
+
+/* functions for uniformMT */
+void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT);
+void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT);
+SOLN searchMT(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int,int, SEARCHPAR *, ARRAYMT *);
+
 #endif
