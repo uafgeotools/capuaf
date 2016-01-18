@@ -235,38 +235,82 @@ int main (int argc, char **argv) {
   /** and tie of time shifts between SH and P-SV **/
 
   /** input grid-search range **/
-  scanf("%f%f%f",&(mt[0].par),&(mt[0].dd),&(mt[1].dd)); mt[0].min =  1.;  mt[0].max = 10.;
+  //--------------------------------------------------------
+  // mt[0] = Magnitude search
+  // mt[1] = Isotropic 
+  // mt[2] = CLVD
+  // grid.step[0] = step size for strike
+  // grid.step[1] = step size for dip
+  // grid.step[2] = step size for rake
+  //--------------------------------------------------------
+  // mt[0].par = Best magnitude value so far (Center of the magnitude search range (From -M flag); 
+  //             See error function:  (mw_ran = 0.5; mt[0].max = mt[0].par+mw_ran; mt[0].min = mt[0].par-mw_ran; mw_ran = 0.5;)
+  // mt[1].par = Best ISO value so far (starts from the minimum of search range mt[1].min)
+  // mt[2].par = Best CLVD value so far (starts from the minimum of search range mt[2].min)
+  // mt[0].dd  = magnitude increment (From -I flag)
+  // mt[1].dd  = ISO increment (From -I flag)
+  // mt[2].dd  = CLVD increment (From -I flag) (ALWAYS equal to ISO increment 'mt[1].dd') 
+
+  scanf("%f%f%f",&(mt[0].par),&(mt[0].dd),&(mt[1].dd));
+  // See cap.pl for : ($mg $dm $dlune)
+  mt[0].min =  1.;  mt[0].max = 10.; // Maximum and Minimum of magnitude search range
 
   // mt[0] is center magnitude. save copy for checking final result
   mw_center = mt[0].par;
   
-  if(search) {      // use ranges for lune parameters
-    scanf("%f%f",&(mt[1].min),&(mt[1].max));  // -90 to 90
-    scanf("%f%f",&(mt[2].min),&(mt[2].max));  // -30 to 30
-    if (search==1){
+  if(search != 0) {      
+    // use ranges for lune parameters if "search = 1 or 2" (grid or random search)
+    scanf("%f%f",&(mt[1].min),&(mt[1].max));  // -90 to 90 (Isotropic range)
+    scanf("%f%f",&(mt[2].min),&(mt[2].max));  // -30 to 30 (CLVD range)
+    if (search==1){ 
+      // Grid search
       if ((mt[1].min==0.) && (mt[1].max==0.) && (mt[2].min==0.) && (mt[2].max==0.) && (mt[1].dd != 0.)){
+	// If Lune increment 'mt[1].dd == 0' then only double couple (example: -I10/0.1)
+	// If Lune increment 'mt[1].dd != 0'  then FMT  (example: -I10/0.1/10)
+	// Note: specifying magnitude increment is optional; 
 	fprintf(stderr,"Warning: Range not specified (-J flag); Doing full grid search\n");
-	mt[1].min=-90.; mt[1].max=90.; mt[2].min=-30.; mt[2].max=30;}
-    if (mt[1].dd==0. && (mt[1].min != mt[1].max) && (mt[2].min != mt[2].max)){ 
-      mt[1].dd=10.; fprintf(stderr,"Warning: Increment not specified (-I flag); Setting it to 10\n");}
+	mt[1].min=-90.; mt[1].max=90.; mt[2].min=-30.; mt[2].max=30;
+      }
+      if (mt[1].dd==0. && (mt[1].min != mt[1].max) && (mt[2].min != mt[2].max)){
+	// If Lune increment is not defined set default to 10 degree 
+	// If (mt[1].min == mt[1].max) && (mt[2].min == mt[2].max) and mt[1].dd==0 then do inversion at Fixed Lune point
+	mt[1].dd=10.; fprintf(stderr,"Warning: Increment not specified (-I flag); Setting it to 10\n");}
     }
-    mt[2].dd=mt[1].dd;
-    mt[1].par=mt[1].min;
+    mt[2].dd=mt[1].dd;     // Same increment for ISO and CLVD
+    mt[1].par=mt[1].min;   
     mt[2].par=mt[2].min;
   }
-  else {
+  else { // (search == 0) 
+    // use ranges for zhu parameters if "search = 0" 
     scanf("%f%f",&(mt[1].par),&(mt[1].dd)); mt[1].min = -1.; mt[1].max = 1.;   // -1 to 1
     scanf("%f%f",&(mt[2].par),&(mt[2].dd)); mt[2].min = -0.5; mt[2].max = 0.25;  //-0.5 to 0.25
   }
+
+  //--------------------------------------------------
+  // grid.n[0] = Number of elements in strike
+  // grid.n[1] = Number of elements in dip
+  // grid.n[2] = Number of elements in rake
+  // grid.step[0] = step size for strike
+  // grid.step[1] = step size for dip
+  // grid.step[2] = step size for rake
+  //--------------------------------------------------
   for(j=0;j<3;j++) {
-    scanf("%f%f%f",&x1,&x2,&grid.step[j]);
-    grid.n[j] = rint((x2-x1)/grid.step[j]) + 1;
-    grid.x0[j] = x1;
-    if (j==1 && x1==0){
-      grid.n[j] = rint((x2-grid.step[j])/grid.step[j]) + 1;
+    // j==0 (strike); j==1 (Dip); j==2 (Rake); 
+    // Set search range  (-R flag) and increment (-I flag) for (stike, dip, rake) 
+    // See cap.pl for : search range =($str1, $str2, $dip1, $dip2, $rak1, $rak2);  increment = $deg;
+    scanf("%f%f%f",&x1,&x2,&grid.step[j]);       // x1 = starting point ($str1, $dip1, $rak1);  x2 = end point ($str2,$dip2,$rak2); grid.step[j] = increment size $deg)
+    grid.n[j] = rint((x2-x1)/grid.step[j]) + 1;  // number of search elements per parameter (for ending the loop); See error function
+    grid.x0[j] = x1;                             // Starting fot the search range per parameter; See error function
+    if (j==1 && x1==0){                          
+      // Don't ever use horizontal fault (dip=0)
+      // Change starting of dip search from 0 to the next increment 'grid.step[1]'
+      // This reduces the number of search elements in dip by 1
+      x1 = grid.step[j];
       grid.x0[j] = grid.step[j];
+      grid.n[j] = rint((x2-x1)/grid.step[j]) + 1;
     }
   }
+  // Preallocate memory for orientation (strike,dip,rake) matrix
   grid.err = (float *) malloc(grid.n[0]*grid.n[1]*grid.n[2]*sizeof(float));
   if (grid.err == NULL ) {
     fprintf(stderr,"fail to allocate memory for storing misfit errors\n");
