@@ -72,12 +72,26 @@ $type = -1.0;
 # minimization (norm)
 $norm = 2;
 
-# default grid-search ranges
+#----------------------------------------------------------- 
+# SEARCH PARAMETERS
+
+# magnitude 
 ($deg, $dm, $dlune) = (10, 0.1, 0.);
+
+# orientation
 $str1 = 0; $str2 = 360;
 $dip1 = 0; $dip2 = 90;
 $rak1 = -90; $rak2 = 90;
+
+# lune 
 $iso1 = $iso2 = $clvd1 = $clvd2 = 0.;
+
+# (v,w) 
+# v = [-1/3.] w = [-3pi/8, 3pi/8]
+$v0 = -0.333;   $vf = 0.333;
+$w0 = -1.178;   $wf = 1.178;
+
+#----------------------------------------------------------- 
 
 # number of freedom per sample for estimating uncertainty
 $nof = 0.01;
@@ -265,10 +279,28 @@ foreach (grep(/^-/,@ARGV)) {
    } elsif ($opt eq "H") {
      $dt = $value[0];
    } elsif ($opt eq "I") {
+       # Search parameter for number of solutions or gridding
+       # Two options. Number of solutions (RANDOM) or number of points per parameter (GRID)
+       # RANDOM -- specify number of solutions (single value)
+       #                eg -I3,000,000 (without comma)
+       # GRID -- specify number of points per parameter
+       #         [3] double couple only -- (strike, dip, rake)  
+       #                eg -I72/18/37
+       #         [10] full moment tensor -- (v, w) and (strike, dip, rake)
+       #                eg -I35/13/72/18/37
      $deg = $value[0];
      $dm = $value[1] if $#value > 0;
      $dlune = $value[2] if $value[2]
    } elsif ($opt eq "J") {
+       # Search parameter for lune
+       # Two options. Specify ranges (4) or fixed lambda (2)
+       # (or if not specified then default to DC)
+       # RANGE -- start and end points for (v, w)
+       #    eg -J-0.33/0.33/-1.178/1.178     # full range is v=[-1/3, +1/3] w=[-3pi/8, +3pi/8]
+       # FIXED LAMBDA -- 
+       #    eg -J0/0/0/0 (double couple)
+       #       -J-0.33/-0.33/0.39/0.39
+       #     NOTE how to handle fixed lambda
      $iso1   = $value[0] if $value[0];
      $iso2  = $value[1] if $value[1];
      $clvd1  = $value[2] if $value[2];
@@ -278,10 +310,16 @@ foreach (grep(/^-/,@ARGV)) {
      $type = $value[0];
    } elsif ($opt eq "L") {
      $dura = join('/',@value);
+   } elsif ($opt eq "m") {
+        # Search parameter for magnitude
+        # Two options. Specify range (3) or fixed value (1)
+        #   eg [3]  -m5.2/6.3/0.1
+        #   eg [1]  -m5.2
+     ($md_dep,$mg) = @value;
    } elsif ($opt eq "M") {
      ($md_dep,$mg) = @value;
    } elsif ($opt eq "N") {
-     $repeat = $value[0];
+        $repeat = $value[0];
    } elsif ($opt eq "O") {
      $cmd = "cat";
    } elsif ($opt eq "P") {
@@ -295,6 +333,10 @@ foreach (grep(/^-/,@ARGV)) {
    } elsif ($opt eq "Q") {
      $nof = $value[0];
    } elsif ($opt eq "R") {
+       # Search parameter for (strike, dip, rake)
+       # Two options. Specify ranges (6) or fixed orientation (3)
+       #   eg [6]  -R0/360/0/90/-90/90
+       #   or [3]  -R115/90/-2
      ($str1,$str2,$dip1,$dip2,$rak1,$rak2) = @value;
    } elsif ($opt eq "S") {
      ($max_shft1, $max_shft2) = @value;
@@ -400,7 +442,6 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     printf SRC "%d\n",$#wwf + 1;
     print SRC @wwf;
     close(SRC);
-    print STDERR "inversion done\n";
     
     # 20130102 calvizuri -- report period ranges for filters (get from frequencies)
     $Tf1 = 1/$f1_pnl;
@@ -408,6 +449,8 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     $Tf3 = 1/$f1_sw;
     $Tf4 = 1/$f2_sw;
     $filterBand = sprintf("Body:%.2f-%.2f. Surf:%.2f-%.2f",$Tf2,$Tf1,$Tf4,$Tf3);
+
+    print STDERR "cap.pl: plotting results ... \n";
   plot:
     if ( $plot > 0 && ($? >> 8) == 0 ) {
       chdir($eve);
@@ -422,5 +465,6 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
       chdir("../");
     }
   }
+    print STDERR "cap.pl: plotting finished.\n";
 }
 exit(0);

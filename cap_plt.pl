@@ -190,6 +190,7 @@ sub plot {
 
 #--------------------------
 # FIGURE 1: waveform fits with moment tensor
+  print STDERR "cap_plt.pl: plotting summary for this solution ... \n";
 
   # uncomment output for debugging purposes
   print "\n-------------------";
@@ -552,11 +553,13 @@ sub plot {
     printf PLT "$x $y 12 0 0 0 @ncomp[1]" ;
     close(PLT);
 
+  print STDERR "cap_plt.pl: done. \n";
   }  # while (@rslt) {
 
 #---------------------------------
 # FIGURE 2: big moment tensor with station names at lower-hemisphere piercing points
 
+  print STDERR "cap_plt.pl: plotting big beach ball ... \n";
   $pwidth_in = 8.5;  # width of paper
   $pheight_in = 11;  # height of paper
   system("gmtset BASEMAP_TYPE plain PAPER_MEDIA Custom_${pwidth_in}ix${pheight_in}i MEASURE_UNIT inch");
@@ -625,6 +628,7 @@ sub plot {
     close(XPLT);
 
   }  # while (@rslt) {
+  print STDERR "cap_plt.pl: done.\n";
 
 #---------------------------------
 
