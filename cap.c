@@ -200,7 +200,8 @@ int main (int argc, char **argv) {
   scanf("%d",&search);
   scanf("%d",&norm);
   
-  fprintf(stderr,"=========search = %d==========\n",search);
+//   fprintf(stderr,"=========search = %d==========\n",search);
+
   /*** input source functions and filters for pnl and sw ***/
   scanf("%f",&dt);
   if (dt>0.) {
@@ -234,51 +235,53 @@ int main (int argc, char **argv) {
   w_pnl[0]=w_pnl[1]=w_pnl[2]=1;
   /** and tie of time shifts between SH and P-SV **/
 
-  /** input grid-search range **/
+  /** begin -- get range of search parameters **/
   //--------------------------------------------------------
   // mt[0] = Magnitude search
   // mt[1] = Isotropic 
   // mt[2] = CLVD
+  //
   // grid.step[0] = step size for strike
   // grid.step[1] = step size for dip
   // grid.step[2] = step size for rake
   //--------------------------------------------------------
+  // See error function:  (mw_ran = 0.5; mt[0].max = mt[0].par+mw_ran; mt[0].min = mt[0].par-mw_ran; mw_ran = 0.5;)
   // mt[0].par = Best magnitude value so far (Center of the magnitude search range (From -M flag); 
-  //             See error function:  (mw_ran = 0.5; mt[0].max = mt[0].par+mw_ran; mt[0].min = mt[0].par-mw_ran; mw_ran = 0.5;)
   // mt[1].par = Best ISO value so far (starts from the minimum of search range mt[1].min)
   // mt[2].par = Best CLVD value so far (starts from the minimum of search range mt[2].min)
+  //
   // mt[0].dd  = magnitude increment (From -I flag)
   // mt[1].dd  = ISO increment (From -I flag)
   // mt[2].dd  = CLVD increment (From -I flag) (ALWAYS equal to ISO increment 'mt[1].dd') 
 
-  scanf("%f%f%f",&(mt[0].par),&(mt[0].dd),&(mt[1].dd));
+  scanf("%f%f%f", &(mt[0].par), &(mt[0].dd), &(mt[1].dd));
   // See cap.pl for : ($mg $dm $dlune)
   mt[0].min =  1.;  mt[0].max = 10.; // Maximum and Minimum of magnitude search range
 
   // mt[0] is center magnitude. save copy for checking final result
   mw_center = mt[0].par;
-  
+ 
   if(search != 0) {      
-    // use ranges for lune parameters if "search = 1 or 2" (grid or random search)
-    scanf("%f%f",&(mt[1].min),&(mt[1].max));  // -90 to 90 (Isotropic range)
-    scanf("%f%f",&(mt[2].min),&(mt[2].max));  // -30 to 30 (CLVD range)
-    if (search==1){ 
-      // Grid search
-      if ((mt[1].min==0.) && (mt[1].max==0.) && (mt[2].min==0.) && (mt[2].max==0.) && (mt[1].dd != 0.)){
-	// If Lune increment 'mt[1].dd == 0' then only double couple (example: -I10/0.1)
-	// If Lune increment 'mt[1].dd != 0'  then FMT  (example: -I10/0.1/10)
-	// Note: specifying magnitude increment is optional; 
-	fprintf(stderr,"Warning: Range not specified (-J flag); Doing full grid search\n");
-	mt[1].min=-90.; mt[1].max=90.; mt[2].min=-30.; mt[2].max=30;
+      // use ranges for lune parameters if "search = 1 or 2" (grid or random search)
+      scanf("%f%f",&(mt[1].min),&(mt[1].max));  // -90 to 90 (Isotropic range)
+      scanf("%f%f",&(mt[2].min),&(mt[2].max));  // -30 to 30 (CLVD range)
+      if (search==1){ 
+          // Grid search
+          if ((mt[1].min==0.) && (mt[1].max==0.) && (mt[2].min==0.) && (mt[2].max==0.) && (mt[1].dd != 0.)){
+              // If Lune increment 'mt[1].dd == 0' then only double couple (example: -I10/0.1)
+              // If Lune increment 'mt[1].dd != 0'  then FMT  (example: -I10/0.1/10)
+              // Note: specifying magnitude increment is optional; 
+              fprintf(stderr,"Warning: Range not specified (-J flag); Doing full grid search\n");
+              mt[1].min=-90.; mt[1].max=90.; mt[2].min=-30.; mt[2].max=30;
+          }
+          if (mt[1].dd==0. && (mt[1].min != mt[1].max) && (mt[2].min != mt[2].max)){
+              // If Lune increment is not defined set default to 10 degree 
+              // If (mt[1].min == mt[1].max) && (mt[2].min == mt[2].max) and mt[1].dd==0 then do inversion at Fixed Lune point
+              mt[1].dd=10.; fprintf(stderr,"Warning: Increment not specified (-I flag); Setting it to 10\n");}
       }
-      if (mt[1].dd==0. && (mt[1].min != mt[1].max) && (mt[2].min != mt[2].max)){
-	// If Lune increment is not defined set default to 10 degree 
-	// If (mt[1].min == mt[1].max) && (mt[2].min == mt[2].max) and mt[1].dd==0 then do inversion at Fixed Lune point
-	mt[1].dd=10.; fprintf(stderr,"Warning: Increment not specified (-I flag); Setting it to 10\n");}
-    }
-    mt[2].dd=mt[1].dd;     // Same increment for ISO and CLVD
-    mt[1].par=mt[1].min;   
-    mt[2].par=mt[2].min;
+      mt[2].dd=mt[1].dd;     // Same increment for ISO and CLVD
+      mt[1].par=mt[1].min;   
+      mt[2].par=mt[2].min;
   }
   else { // (search == 0) 
     // use ranges for zhu parameters if "search = 0" 
@@ -295,20 +298,20 @@ int main (int argc, char **argv) {
   // grid.step[2] = step size for rake
   //--------------------------------------------------
   for(j=0;j<3;j++) {
-    // j==0 (strike); j==1 (Dip); j==2 (Rake); 
-    // Set search range  (-R flag) and increment (-I flag) for (stike, dip, rake) 
-    // See cap.pl for : search range =($str1, $str2, $dip1, $dip2, $rak1, $rak2);  increment = $deg;
-    scanf("%f%f%f",&x1,&x2,&grid.step[j]);       // x1 = starting point ($str1, $dip1, $rak1);  x2 = end point ($str2,$dip2,$rak2); grid.step[j] = increment size $deg)
-    grid.n[j] = rint((x2-x1)/grid.step[j]) + 1;  // number of search elements per parameter (for ending the loop); See error function
-    grid.x0[j] = x1;                             // Starting fot the search range per parameter; See error function
-    if (j==1 && x1==0){                          
-      // Don't ever use horizontal fault (dip=0)
-      // Change starting of dip search from 0 to the next increment 'grid.step[1]'
-      // This reduces the number of search elements in dip by 1
-      x1 = grid.step[j];
-      grid.x0[j] = grid.step[j];
-      grid.n[j] = rint((x2-x1)/grid.step[j]) + 1;
-    }
+      // j==0 (strike); j==1 (Dip); j==2 (Rake); 
+      // Set search range  (-R flag) and increment (-I flag) for (stike, dip, rake) 
+      // See cap.pl for : search range =($str1, $str2, $dip1, $dip2, $rak1, $rak2);  increment = $deg;
+      scanf("%f%f%f",&x1,&x2,&grid.step[j]);       // x1 = starting point ($str1, $dip1, $rak1);  x2 = end point ($str2,$dip2,$rak2); grid.step[j] = increment size $deg)
+      grid.n[j] = rint((x2-x1)/grid.step[j]) + 1;  // number of search elements per parameter (for ending the loop); See error function
+      grid.x0[j] = x1;                             // Starting fot the search range per parameter; See error function
+      if (j==1 && x1==0){                          
+          // Don't ever use horizontal fault (dip=0)
+          // Change starting of dip search from 0 to the next increment 'grid.step[1]'
+          // This reduces the number of search elements in dip by 1
+          x1 = grid.step[j];
+          grid.x0[j] = grid.step[j];
+          grid.n[j] = rint((x2-x1)/grid.step[j]) + 1;
+      }
   }
   // Preallocate memory for orientation (strike,dip,rake) matrix
   grid.err = (float *) malloc(grid.n[0]*grid.n[1]*grid.n[2]*sizeof(float));
@@ -316,6 +319,94 @@ int main (int argc, char **argv) {
     fprintf(stderr,"fail to allocate memory for storing misfit errors\n");
     return -1;
   }
+  /* START prepare inversion variables */
+
+  /* full range */
+       u0 = 0.0;            uf = (3./4.) * PI;
+       w0 = -(3./8.) * PI;  wf = (3./8.) * PI;
+       v0 = -1./3.;         vf = 1./3.; 
+       k0 = 0.0;            kf = 2. * PI;
+       h0 = 0.0;            hf = 1.0;
+       s0 = -PI/2.;         sf = PI/2.;
+
+//       v0 = 0.;             vf = 0.; 
+//       u0 = (3./8.) * PI;   uf = (3./8.) * PI;
+
+    /* parameters for GRID search */
+    /*
+       NOTE full grid search produces 20,155,392 solutions. 
+       filesize (ascii) = 1.8 GB, runtime (ascii) = 1m1.432s
+       filesize (bin)   =     GB, runtime (bin)   =         
+       */
+
+       if(search==1) {
+           /* parameters for GRID search */
+           //nnv = 12; nnu = 36;   nnk = 72; nnh = 18; nns = 36;   // 12 * 36 * 72 * 18 * 36 = 20,155,392
+           nnv = 12; nnu = 36;  nnk = 36; nnh = 9;  nns = 18;     // 12 * 36 * 36 * 9  * 18 =  2,519,424
+           nnv = 6;  nnu = 9;   nnk = 72; nnh = 6;  nns = 12;     //  6 *  9 * 72 * 6  * 12 =    279,936
+           nnv = 6;  nnu = 18;  nnk = 36; nnh = 9;  nns = 18;     //  6 *  9 * 72 * 6  * 12 =    629,856
+           nnv = 12; nnu = 36;  nnk = 12; nnh = 3;  nns =  6;     // 12 *  36* 12 * 3  *  6 =     93,312
+//           nnv = 1;  nnu = 1;    nnk = 72; nnh = 6;  nns = 12;    //  1 *  1 * 72 * 6  * 12 =      5,684
+           nnw = nnu;
+           nsol = nnw * nnv * nnk * nnh * nns;
+       }
+
+    // nnv = 14; nnu = 18;   nnk = 18; nnh = 6;  nns = 12;   // 14 * 18 * 18 * 6  * 12 =    326,592
+    // nnv = 25; nnu = 75;   nnk = 6;  nnh = 6;  nns = 6;    // nice display
+    // nnv = 9;  nnu = 1024; nnk = 3;  nnh = 3;  nns = 3;    // reaches lat 80
+    // nnv = 5;  nnu = 5;    nnk = 6;  nnh = 6;  nns = 6;    // nice subset
+
+    // SUB RANGE. DEFINE RANGE AND NPTS
+    // v0 = -0.2;   vf = 0.3;   nv = 100; u0 = 1.50; uf = 1.50;    nnu = 1;      // row
+    // v0 = -0.15;  vf = -0.15; nv = 1;   u0 = 0;    uf = 2.35619; nnu = 1000;   // col
+    // v0 = 0.2;    vf = 0.3;   nv = 50;  u0 = 0.5;  uf = 0.75;    nnu = 50;     // patch
+    // v0 = 0.0;    vf = 0.0;   nv = 1;   u0 = 1.0;  uf = 1.0;     nnu = 1;      // point
+    // v0 = -0.33;  vf = 0.33;  nv = 100; u0 = 0.0;  uf = 2.35619; nnu = 100;    // dense
+    // v0 = -0.33;  vf = 0.33;  nv = 30;  u0 = 0.0;  uf = 2.35619; nnu = 30;     // thin
+
+    if(search==2) {
+        /* parameters for RAND search */
+        nsol = 3e7;  // 2m33.975s
+        nsol = 5e6;  // 0m25.111s
+        nsol = 5e6;  // 
+        nsol = 1e5;  // 
+        nnu = nnv = nnw = nnk = nnh = nns = nsol;
+    }
+
+    /* set parameters for search */
+    searchPar->u0 = u0; searchPar->uf = uf; searchPar->nu = nnu;
+    searchPar->w0 = w0; searchPar->wf = wf; searchPar->nw = nnw;
+    searchPar->v0 = v0; searchPar->vf = vf; searchPar->nv = nnv;
+    searchPar->k0 = k0; searchPar->kf = kf; searchPar->nk = nnk;
+    searchPar->h0 = h0; searchPar->hf = hf; searchPar->nh = nnh;
+    searchPar->s0 = s0; searchPar->sf = sf; searchPar->ns = nns;
+    searchPar->gamma0 = gamma0;
+    searchPar->gammaf = gammaf; 
+    searchPar->ngamma = nsol;
+
+    searchPar->delta0 = delta0;
+    searchPar->deltaf = deltaf;
+    searchPar->ndelta = nsol;
+
+    searchPar->dip0 = dip0; 
+    searchPar->dipf = dipf; 
+    searchPar->ndip = nsol;
+
+    searchPar->nsol = nsol;
+
+    fprintf(stderr,"Preparing space for moment tensors (nsol = %10d) ... ", searchPar->nsol);
+    ARRAYMT * arrayMT = calloc(searchPar->nsol, sizeof(ARRAYMT));
+
+    if (arrayMT == NULL) {
+        fprintf(stderr,"Abort. unable to allocate.\n");
+        return 0;
+    } else {
+        fprintf(stderr,"done.\n");
+    }
+
+    /* END prepare inversion variables */
+
+  /** end -- get range of search parameters **/
 
 #ifdef DIRECTIVITY
   faultStr = grid.x0[0]*DEG2RAD;
@@ -755,6 +846,7 @@ int main (int argc, char **argv) {
   fclose(logf);
 
   // maybe we label this section "cap messages"...
+  /*
   if (search==0){
     if (mt[1].dd>=1 || mt[2].dd>=1)
       fprintf(stderr,"Warning: Possible error = Expecting grid-search\n(set search=1) or reduce the search increment (-J flag)\n");
@@ -771,93 +863,8 @@ int main (int argc, char **argv) {
   }
   if (search==2)
      fprintf(stderr,"----------starting random-search-----------\n");
+     */
 
-  /* START prepare inversion variables */
-
-  /* full range */
-       u0 = 0.0;            uf = (3./4.) * PI;
-       w0 = -(3./8.) * PI;  wf = (3./8.) * PI;
-       v0 = -1./3.;         vf = 1./3.; 
-       k0 = 0.0;            kf = 2. * PI;
-       h0 = 0.0;            hf = 1.0;
-       s0 = -PI/2.;         sf = PI/2.;
-
-//       v0 = 0.;             vf = 0.; 
-//       u0 = (3./8.) * PI;   uf = (3./8.) * PI;
-
-    /* parameters for GRID search */
-    /*
-       NOTE full grid search produces 20,155,392 solutions. 
-       filesize (ascii) = 1.8 GB, runtime (ascii) = 1m1.432s
-       filesize (bin)   =     GB, runtime (bin)   =         
-       */
-
-       if(search==1) {
-           /* parameters for GRID search */
-           //nnv = 12; nnu = 36;   nnk = 72; nnh = 18; nns = 36;   // 12 * 36 * 72 * 18 * 36 = 20,155,392
-           nnv = 12; nnu = 36;  nnk = 36; nnh = 9;  nns = 18;     // 12 * 36 * 36 * 9  * 18 =  2,519,424
-           nnv = 6;  nnu = 9;   nnk = 72; nnh = 6;  nns = 12;     //  6 *  9 * 72 * 6  * 12 =    279,936
-           nnv = 6;  nnu = 18;  nnk = 36; nnh = 9;  nns = 18;     //  6 *  9 * 72 * 6  * 12 =    629,856
-           nnv = 12; nnu = 36;  nnk = 12; nnh = 3;  nns =  6;     // 12 *  36* 12 * 3  *  6 =     93,312
-//           nnv = 1;  nnu = 1;    nnk = 72; nnh = 6;  nns = 12;    //  1 *  1 * 72 * 6  * 12 =      5,684
-           nnw = nnu;
-           nsol = nnw * nnv * nnk * nnh * nns;
-       }
-
-    // nnv = 14; nnu = 18;   nnk = 18; nnh = 6;  nns = 12;   // 14 * 18 * 18 * 6  * 12 =    326,592
-    // nnv = 25; nnu = 75;   nnk = 6;  nnh = 6;  nns = 6;    // nice display
-    // nnv = 9;  nnu = 1024; nnk = 3;  nnh = 3;  nns = 3;    // reaches lat 80
-    // nnv = 5;  nnu = 5;    nnk = 6;  nnh = 6;  nns = 6;    // nice subset
-
-    // SUB RANGE. DEFINE RANGE AND NPTS
-    // v0 = -0.2;   vf = 0.3;   nv = 100; u0 = 1.50; uf = 1.50;    nnu = 1;      // row
-    // v0 = -0.15;  vf = -0.15; nv = 1;   u0 = 0;    uf = 2.35619; nnu = 1000;   // col
-    // v0 = 0.2;    vf = 0.3;   nv = 50;  u0 = 0.5;  uf = 0.75;    nnu = 50;     // patch
-    // v0 = 0.0;    vf = 0.0;   nv = 1;   u0 = 1.0;  uf = 1.0;     nnu = 1;      // point
-    // v0 = -0.33;  vf = 0.33;  nv = 100; u0 = 0.0;  uf = 2.35619; nnu = 100;    // dense
-    // v0 = -0.33;  vf = 0.33;  nv = 30;  u0 = 0.0;  uf = 2.35619; nnu = 30;     // thin
-
-    if(search==2) {
-        /* parameters for RAND search */
-        nsol = 3e7;  // 2m33.975s
-        nsol = 5e6;  // 0m25.111s
-        nsol = 5e6;  // 
-        nsol = 1e5;  // 
-        nnu = nnv = nnw = nnk = nnh = nns = nsol;
-    }
-
-    /* set parameters for search */
-    searchPar->u0 = u0; searchPar->uf = uf; searchPar->nu = nnu;
-    searchPar->w0 = w0; searchPar->wf = wf; searchPar->nw = nnw;
-    searchPar->v0 = v0; searchPar->vf = vf; searchPar->nv = nnv;
-    searchPar->k0 = k0; searchPar->kf = kf; searchPar->nk = nnk;
-    searchPar->h0 = h0; searchPar->hf = hf; searchPar->nh = nnh;
-    searchPar->s0 = s0; searchPar->sf = sf; searchPar->ns = nns;
-    searchPar->gamma0 = gamma0;
-    searchPar->gammaf = gammaf; 
-    searchPar->ngamma = nsol;
-
-    searchPar->delta0 = delta0;
-    searchPar->deltaf = deltaf;
-    searchPar->ndelta = nsol;
-
-    searchPar->dip0 = dip0; 
-    searchPar->dipf = dipf; 
-    searchPar->ndip = nsol;
-
-    searchPar->nsol = nsol;
-
-    fprintf(stderr,"Preparing space for moment tensors (nsol = %10d) ... ", searchPar->nsol);
-    ARRAYMT * arrayMT = calloc(searchPar->nsol, sizeof(ARRAYMT));
-
-    if (arrayMT == NULL) {
-        fprintf(stderr,"Abort. unable to allocate.\n");
-        return 0;
-    } else {
-        fprintf(stderr,"done.\n");
-    }
-
-    /* END prepare inversion variables */
  INVERSION:
   /* old error function. will keep this command for reference, but may be
    * deleted later */
@@ -1079,10 +1086,11 @@ for(obs=obs0,i=0;i<nda;i++,obs++){
  fclose(wt);
  fclose(wt2);
 
- fprintf(stderr,"*** CHECK VALUES. cap.c compute sol.err  = %e data2 = %e\n", sol.err, data2);
  free(arrayMT); 
  free(searchPar);
 
+ fprintf(stderr,"cap.c: SEARCH DONE.\n");
+ fprintf(stderr,"----------------------------------------\n\n");
  return 0;
 }
 
