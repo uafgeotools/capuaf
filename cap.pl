@@ -73,8 +73,9 @@ $type = -1.0;
 $norm = 2;
 
 #----------------------------------------------------------- 
-# SEARCH PARAMETERS
+# DEFAULT VALUES FOR SEARCH PARAMETERS
 
+# RANGE LIMITS PER PARAMETER
 # magnitude 
 ($deg, $dm, $dlune) = (10, 0.1, 0.);
 
@@ -87,9 +88,27 @@ $rak1 = -90; $rak2 = 90;
 $iso1 = $iso2 = $clvd1 = $clvd2 = 0.;
 
 # (v,w) 
-# v = [-1/3.] w = [-3pi/8, 3pi/8]
-$v0 = -0.333;   $vf = 0.333;
-$w0 = -1.178;   $wf = 1.178;
+# v = [-1/3, 1/3] w = [-3pi/8, 3pi/8]
+#$v1 = -0.3333333333333333;   
+#$w2 = 1.1780972450961724;
+$v2 = 0.3333333333333333;   $v1 = -$v2;
+$w2 = 1.1780972450961724;   $w1 = -$w2
+
+# NUMBER OF POINTS PER PARAMETER
+
+# search type = GRID -- specify number of points for each parameter
+# case 1. full moment tensor. use nv/nw/nstr/ndip/nrak
+# case 2. fixed lambda. use nstr/ndip/nrak
+# default number of points for each parameter
+$nv = 100;      # gamma
+$nw = 100;      # delta
+$nstr = 100;    # strike
+$ndip = 100;    # dip
+$nrak = 100;    # rake
+
+# search type = RAND -- specify number of solutions to generate
+$nsol_fmt    =  100000;     # full moment tensor
+$nsol_fixlam =  100000;     # fixed lambda (includes DC)
 
 #----------------------------------------------------------- 
 
@@ -279,45 +298,52 @@ foreach (grep(/^-/,@ARGV)) {
    } elsif ($opt eq "H") {
      $dt = $value[0];
    } elsif ($opt eq "I") {
-       # Search parameter for number of solutions or gridding
-       # Two options. Number of solutions (RANDOM) or number of points per parameter (GRID)
-       # RANDOM -- specify number of solutions (single value)
-       #                eg -I3,000,000 (without comma)
-       # GRID -- specify number of points per parameter
-       #         [3] double couple only -- (strike, dip, rake)  
-       #                eg -I72/18/37
-       #         [10] full moment tensor -- (v, w) and (strike, dip, rake)
-       #                eg -I35/13/72/18/37
-     $deg = $value[0];
-     $dm = $value[1] if $#value > 0;
-     $dlune = $value[2] if $value[2]
-   } elsif ($opt eq "J") {
-       # Search parameter for lune
-       # Two options. Specify ranges (4) or fixed lambda (2)
-       # (or if not specified then default to DC)
-       # RANGE -- start and end points for (v, w)
-       #    eg -J-0.33/0.33/-1.178/1.178     # full range is v=[-1/3, +1/3] w=[-3pi/8, +3pi/8]
-       # FIXED LAMBDA -- 
-       #    eg -J0/0/0/0 (double couple)
-       #       -J-0.33/-0.33/0.39/0.39
-       #     NOTE how to handle fixed lambda
-     $iso1   = $value[0] if $value[0];
-     $iso2  = $value[1] if $value[1];
-     $clvd1  = $value[2] if $value[2];
-     $clvd2 = $value[3] if $value[3];
-     $fmt_flag="true";     # used later for renaming output figures with fmt
-   } elsif ($opt eq "K") {
+       # Parameter for number of points or number of solutions
+       # Two options.
+       #    Length 1 = (RAND) number of solutions (nsol)
+       #    Length 5 = (GRID) nv/nw/nkappa/nh/nsigma. nsol = nv*nw*nkappa*nh*nsigma
+       #    
+#      $deg = $value[0];
+#      $dm = $value[1] if $#value > 0;
+#      $dlune = $value[2] if $value[2]
+       if ($#value==0) {
+           $nsol_fmt = $value[0];
+           $nI = 1;
+       } elsif ($#value==4) {
+           ($nv, $nw, $nkappa, $nh, $nsigma) = @value;
+           $nI = 5;
+       }
+   } 
+#  elsif ($opt eq "J") {
+#    $iso1   = $value[0] if $value[0];
+#    $iso2  = $value[1] if $value[1];
+#    $clvd1  = $value[2] if $value[2];
+#    $clvd2 = $value[3] if $value[3];
+#    $fmt_flag="true";     # used later for renaming output figures with fmt
+#  } 
+   elsif ($opt eq "K") {
      $type = $value[0];
    } elsif ($opt eq "L") {
      $dura = join('/',@value);
    } elsif ($opt eq "m") {
-        # Search parameter for magnitude
-        # Two options. Specify range (3) or fixed value (1)
-        #   eg [3]  -m5.2/6.3/0.1
-        #   eg [1]  -m5.2
-     ($md_dep,$mg) = @value;
+       # Search parameter for magnitude
+       # Two options.
+       # 1. Length 1 = fixed magnitude 
+       # 2. Length 3 = search over magnitude range 
+       # 
+       #($md_dep,$mg) = @value;
+       #
+       if ($#value==0) {
+           ($mg1, $mg2, $dm) = ($value[0], $value[0], 0);
+           $mg = $value[0];     # IS THIS NEEDED ANYMORE?
+           $nM = 1;
+       } elsif ($#value==2) {
+           ($mg1, $mg2, $dm) = @value;
+           $nM = 3;
+       }
    } elsif ($opt eq "M") {
-     ($md_dep,$mg) = @value;
+       # ($md_dep,$mg) = @value;
+     $md_dep = @value[0];
    } elsif ($opt eq "N") {
         $repeat = $value[0];
    } elsif ($opt eq "O") {
@@ -333,11 +359,26 @@ foreach (grep(/^-/,@ARGV)) {
    } elsif ($opt eq "Q") {
      $nof = $value[0];
    } elsif ($opt eq "R") {
-       # Search parameter for (strike, dip, rake)
-       # Two options. Specify ranges (6) or fixed orientation (3)
-       #   eg [6]  -R0/360/0/90/-90/90
-       #   or [3]  -R115/90/-2
-     ($str1,$str2,$dip1,$dip2,$rak1,$rak2) = @value;
+       # Flag to set Ranges of parameters
+       # Four options: 
+       # 1. no flag  = FMT over full range
+       # 2. Length 2 = fixed eigenvalue with grid search (v0/w0)
+       # 3. Length 5 = fixed moment tensor (v0/w0/kappa0/h0/sigma0)
+       # 4. Length 10 = subset case (v1/v2/w1/w2/kappa1/kappa2/h1/h2/sigma1/sigma2
+       if ($#value==1) {
+           ($v1, $w1) = @value;
+           ($v2, $w2) = @value;
+           $nR = 2;
+           $fmt_flag="true";     # used later for renaming output figures with fmt
+       } elsif ($#value==4) {
+           ($v1, $w1, $kappa1, $h1, $sigma1) = @value;
+           ($v2, $w2, $kappa2, $h2, $sigma2) = @value;
+           $nR = 5;
+       } elsif ($#value==9) {
+           ($v1, $v2, $w1, $w2, $kappa1, $kappa2, $h1, $h2, $sigma1, $sigma2) = @value;
+           $nR = 10;
+       }
+#     ($str1,$str2,$dip1,$dip2,$rak1,$rak2) = @value;
    } elsif ($opt eq "S") {
      ($max_shft1, $max_shft2) = @value;
      $tie = $value[2] if $#value > 1;
@@ -364,8 +405,19 @@ foreach (grep(/^-/,@ARGV)) {
      exit(0);
    }
 }
+    # begin test block  -- ok to delete
+     printf STDERR "nper param = nsol=$nsol_fmt, $nv, $nw, $nstr, $ndip, $nrak\n";
+     printf STDERR "each par = $v1, $v2, $w1, $w2, $str1, $str2, $dip1, $dip2, $rak1, $rak2\n";
+     printf STDERR "mag  = $mg, $mg1, $mg2, $dm\n";
+     exit(0);
+    # end test block 
+
 @event = grep(!/^-/,@ARGV);
 
+#-----------------------------------------------------------
+# prepare additional parameters for CAP input
+#-----------------------------------------------------------
+#
 unless ($dura) {
   $dura = int(10**(($mg-5)/2)+0.5);
   $dura = 1 if $dura < 1;
@@ -374,6 +426,7 @@ unless ($dura) {
 
 printf STDERR $search;
 
+# check parameterization type (zhu / lune) and search type (GRID/RANDOM) 
 if (($parm==0 ) && ($type==0)){
     $search=0;
 } elsif (($parm==1 ) && ($type==1)){
@@ -407,12 +460,27 @@ if ($dep_inc==0) {
   $dep_inc=1;
 }
 
+# convert filter frequencies to periods
+$Tf1 = 1/$f1_pnl;
+$Tf2 = 1/$f2_pnl;
+$Tf3 = 1/$f1_sw;
+$Tf4 = 1/$f2_sw;
+$filterBand = sprintf("Body:%.2f-%.2f. Surf:%.2f-%.2f",$Tf2,$Tf1,$Tf4,$Tf3);
+
+#----------------------------------------------------------
+# delete 
+    exit(0);
+#----------------------------------------------------------
+ 
 for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
   foreach $eve (@event) {
 
     $md_dep = $model.'_'.$dep;
     next unless -d $eve;
-    print STDERR "$eve $dep $dura\n";
+    print STDERR "-------------------------------------------------------------\n";
+    print STDERR "cap.pl: print some input parameters:\n";
+    print STDERR "EVENT ID = $eve | EVENT DEPTH = $dep |  SOURCE DURATION = $dura\n";
+    print STDERR "-------------------------------------------------------------\n\n";
 
     open(WEI, "$eve/$weight") || next;
     @wwf=<WEI>;
@@ -422,9 +490,9 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     $cmd = "cap$dirct $eve $md_dep" unless $cmd eq "cat";    
     open(SRC, "| $cmd") || die "can not run $cmd\n";
     print SRC "$pVel $sVel $riseTime $dura $rupDir\n",$riseTime if $dirct eq "_dir";
-    print SRC "$model $dep\n";  # 20120723 calvizuri
+    print SRC "$model $dep\n";          # first input in regular cap run
     print SRC "$m1 $m2 $max_shft1 $max_shft2 $repeat $bootstrap $fm_thr $tie\n";
-    print SRC "@thrshd\n" if $repeat;
+    print SRC "@thrshd\n" if $repeat;   # no value in regular cap run
     print SRC "$vp $love $rayleigh\n";
     print SRC "$power_of_body $power_of_surf $weight_of_pnl $nof\n";
     print SRC "$plot\n";
@@ -434,6 +502,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     print SRC "$norm\n";
     print SRC "$dt $dura $riseTime\n";
     print SRC "$f1_pnl $f2_pnl $f1_sw $f2_sw\n";
+    #print SRC "$mg $dm $dlune\n";
     print SRC "$mg $dm $dlune\n";
     print SRC "$iso1\n$iso2\n$clvd1\n$clvd2\n";
     print SRC "$str1 $str2 $deg\n";
@@ -442,16 +511,9 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     printf SRC "%d\n",$#wwf + 1;
     print SRC @wwf;
     close(SRC);
-    
-    # 20130102 calvizuri -- report period ranges for filters (get from frequencies)
-    $Tf1 = 1/$f1_pnl;
-    $Tf2 = 1/$f2_pnl;
-    $Tf3 = 1/$f1_sw;
-    $Tf4 = 1/$f2_sw;
-    $filterBand = sprintf("Body:%.2f-%.2f. Surf:%.2f-%.2f",$Tf2,$Tf1,$Tf4,$Tf3);
 
-    print STDERR "cap.pl: plotting results ... \n";
   plot:
+    print STDERR "cap.pl: plot results ... \n";
     if ( $plot > 0 && ($? >> 8) == 0 ) {
       chdir($eve);
       @dum = split('_', $md_dep);  # split mdl string
