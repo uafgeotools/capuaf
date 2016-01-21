@@ -116,32 +116,41 @@ void gridvec(float xmin, float xmax, int npoints, float *pArray)
 {
     int i;
     float dx, xoffset;
+    if(npoints < 0) {
+        fprintf(stderr,"STOP. npoints < 0\n");
+        exit(-1);
+    } else if (npoints == 1) {
+        fprintf(stderr, "create GRID vector. xmin= %10.5f xmax= %10.5f dx= %12.5e ... ", xmin, xmax, dx);
+        fprintf(stderr,"WARNING. this is a point solution.");
+        fprintf(stderr,"\tdone. NPTS = %d\n", npoints);
+        pArray[i] = xmin;   // or xmax. they should be identical. maybe add extra check
+    } else {
+        /* get dx based on original user input */
+        dx = (xmax - xmin) / (float) (npoints - 1); // NOTE npts-1
 
-    /* get dx based on original user input */
-    dx = (xmax - xmin) / (float) (npoints - 1); // NOTE npts-1
+        /* Offset from boundaries.
+         * Factor 2.0 looks arbitrary. it could be made smaller.
+         * Also it's not clear why dx should scale with the number of points. 
+         * ie why not just make this a tiny constant. */
+        xoffset = dx/2.0;
 
-    /* Offset from boundaries.
-     * Factor 2.0 looks arbitrary. it could be made smaller.
-     * Also it's not clear why dx should scale with the number of points. 
-     * ie why not just make this a tiny constant. */
-    xoffset = dx/2.0;
+        fprintf(stderr, "create GRID vector. xmin= %10.5f xmax= %10.5f dx= %12.5e ... (old)\n", xmin, xmax, dx);
+        /* apply offset at boundaries and recalculate dx based on new boundaries */
+        xmin = xmin + xoffset;
+        xmax = xmax - xoffset;
+        dx = (xmax - xmin) / (float) (npoints - 1);
 
-    fprintf(stderr, "create GRID vector. xmin= %10.5f xmax= %10.5f dx= %12.5e ... (old)\n", xmin, xmax, dx);
-    /* apply offset at boundaries and recalculate dx based on new boundaries */
-    xmin = xmin + xoffset;
-    xmax = xmax - xoffset;
-    dx = (xmax - xmin) / (float) (npoints - 1);
-
-    fprintf(stderr, "create GRID vector. xmin= %10.5f xmax= %10.5f dx= %12.5e ... (new)", xmin, xmax, dx);
-    for(i = 0; i < npoints; i++) {
-        pArray[i] = xmin + dx * (float) i;
-//        fprintf(stdout,"### CHECK GRIDVEC. %f \n", pArray[i] );
+        fprintf(stderr, "create GRID vector. xmin= %10.5f xmax= %10.5f dx= %12.5e ... (new)", xmin, xmax, dx);
+        for(i = 0; i < npoints; i++) {
+            pArray[i] = xmin + dx * (float) i;
+            //        fprintf(stdout,"### CHECK GRIDVEC. %f \n", pArray[i] );
+        }
+        if((pArray[npoints-1] - xmax) > TOLERANCE) {
+            fprintf(stderr,"WARNING. end point does not match expected end point!\n");
+            fprintf(stderr,"xmax(actual) = %f. xmax(expected) = %f\n", pArray[npoints-1], xmax);
+        }
+        fprintf(stderr,"\tdone. NPTS = %d\n", i);
     }
-    if((pArray[npoints-1] - xmax) > 0.001) {
-        fprintf(stderr,"WARNING. end point does not match expected end point!\n");
-        fprintf(stderr,"xmax(actual) = %f. xmax(expected) = %f\n", pArray[npoints-1], xmax);
-    }
-    fprintf(stderr,"\tdone. NPTS = %d\n", i);
 }
 
 /*
