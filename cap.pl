@@ -336,10 +336,10 @@ foreach (grep(/^-/,@ARGV)) {
        #($md_dep,$mg) = @value;
        #
        if ($#value==0) {
-           ($mg1, $mg2, $dm) = ($value[0], $value[0], 0);
+           ($mw1, $mw2, $dm) = ($value[0], $value[0], 0);
            $mg = $value[0];     # IS THIS NEEDED ANYMORE?
        } elsif ($#value==2) {
-           ($mg1, $mg2, $dm) = @value;
+           ($mw1, $mw2, $dm) = @value;
        }
    } elsif ($opt eq "M") {
        # ($md_dep,$mg) = @value;
@@ -426,6 +426,8 @@ printf STDERR $search;
 
 # CHECK THAT USER INPUT MAKE SENSE
 # ONGOING
+# I10000 (rand) goes with K2 else abort
+# I10/10/10/10/10 goes with K1 else abort
 #
 # check parameterization type (zhu / lune) and search type (GRID/RANDOM) 
 if (($parm==0 ) && ($type==0)){
@@ -509,10 +511,12 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     #print SRC "$dip1 $dip2 $deg\n";
     #print SRC "$rak1 $rak2 $deg\n";
     #--- start parameters for search
-    print SRC "$mg1 $mg2 $dm\n";
-    print SRC "$v1 $v2 $w1 $w2\n";
-    print SRC "$k1 $k2 $h1 $h2 $s1 $s2\n";
-    print SRC "$nv $nw $nk $nh $ns\n";
+    print SRC "$mw1 $mw2 $dm\n";
+    print SRC "$v1 $v2 $nv\n";
+    print SRC "$w1 $w2 $nw\n";
+    print SRC "$k1 $k2 $nk\n";
+    print SRC "$h1 $h2 $nh\n";
+    print SRC "$s1 $s2 $ns\n";
     print SRC "$nsol\n";
     #--- end parameters for search
     printf SRC "%d\n",$#wwf + 1;
