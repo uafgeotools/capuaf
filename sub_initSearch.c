@@ -106,16 +106,31 @@ void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
     float * vec_h     = calloc(searchPar->nsol, sizeof(float));
     float * vec_s     = calloc(searchPar->nsol, sizeof(float));
 
-    randvec(searchPar->u0, searchPar->uf, searchPar->nsol, vec_u);
-    randvec(searchPar->v0, searchPar->vf, searchPar->nsol, vec_v);
-    randvec(searchPar->k0, searchPar->kf, searchPar->nsol, vec_k);
-    randvec(searchPar->h0, searchPar->hf, searchPar->nsol, vec_h);
-    randvec(searchPar->s0, searchPar->sf, searchPar->nsol, vec_s);
+    // convert u to w
+    // consider making a function
+    searchPar->u0 = searchPar->w0 + (3.0 * PI / 8.0);   // 
+    searchPar->uf = searchPar->wf + (3.0 * PI / 8.0);   // 
+    if(searchPar->u0 < 0.0) {
+        // some times  u0 == -0 then set to +0
+        fprintf(stderr,"WARNING u0 = %e new value:\n");
+        searchPar->u0 = 0.0;
+        fprintf(stderr,"WARNING u0 = %e \n");
+    }
 
-    u2beta_vec(pxa, pya, na, vec_u, vec_beta, searchPar->nsol);     //NOTE needs pxa, pya, na from external file
-    beta2delta_vec(vec_beta, vec_delta, searchPar->nsol);
-    v2gamma_vec(vec_v, searchPar->nsol, vec_gamma);
-    h2dip_vec(vec_h, searchPar->nsol, vec_dip);
+    randvec(searchPar->v0, searchPar->vf, searchPar->nv, vec_v);
+    randvec(searchPar->u0, searchPar->uf, searchPar->nu, vec_u);
+    randvec(searchPar->k0, searchPar->kf, searchPar->nk, vec_k);
+    randvec(searchPar->h0, searchPar->hf, searchPar->nh, vec_h);
+    randvec(searchPar->s0, searchPar->sf, searchPar->ns, vec_s);
+
+    u2beta_vec(pxa, pya, na, vec_u, vec_beta, searchPar->nu);     //NOTE needs pxa, pya, na from external file
+    beta2delta_vec(vec_beta, vec_delta, searchPar->nu);
+    v2gamma_vec(vec_v, searchPar->nv, vec_gamma);
+    h2dip_vec(vec_h, searchPar->nh, vec_dip);
+
+    fprintf(stderr,"~~~~~~~~~~~input u0 %f \n", searchPar->u0);
+    fprintf(stderr,"~~~~~~~~~~~DEBUG u[0] %f \n", vec_u[0]);
+    fprintf(stderr,"~~~~~~~~~~~DEBUG beta[0] %f \n", vec_beta[0]);
 
     free(vec_v);
     free(vec_u);
@@ -135,8 +150,12 @@ void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
         fprintf(stdout,"index = %20d %f %f %f %f %f \n", isol, arrayMT[isol].g *r2d, arrayMT[isol].d *r2d,  arrayMT[isol].k *r2d,  arrayMT[isol].t *r2d,  arrayMT[isol].s *r2d);
     }
     fprintf(stderr,"done. nsol = %d \n", isol);
+    if (isol == 1) {
+        fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", 0, arrayMT[0].g *r2d, arrayMT[0].d *r2d,  arrayMT[0].k *r2d,  arrayMT[0].t *r2d,  arrayMT[0].s *r2d); 
+    } else if(isol > 1) {
     fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", 0, arrayMT[0].g *r2d, arrayMT[0].d *r2d,  arrayMT[0].k *r2d,  arrayMT[0].t *r2d,  arrayMT[0].s *r2d); 
     fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", isol-1, arrayMT[isol-1].g *r2d, arrayMT[isol-1].d *r2d,  arrayMT[isol-1].k *r2d,  arrayMT[isol-1].t *r2d,  arrayMT[isol-1].s *r2d); 
+    } 
 
     free(vec_gamma);
     free(vec_delta);
@@ -184,6 +203,17 @@ void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
     float * vec_dip   = calloc(searchPar->nh, sizeof(float));
     float * vec_s     = calloc(searchPar->ns, sizeof(float));       /* slip */
 
+    // convert u to w
+    // consider making a function
+    searchPar->u0 = searchPar->w0 + (3.0 * PI / 8.0);   // 
+    searchPar->uf = searchPar->wf + (3.0 * PI / 8.0);   // 
+    if(searchPar->u0 < 0.0) {
+        // some times  u0 == -0 then set to +0
+        fprintf(stderr,"WARNING u0 = %e new value:\n");
+        searchPar->u0 = 0.0;
+        fprintf(stderr,"WARNING u0 = %e \n");
+    }
+
     gridvec(searchPar->v0, searchPar->vf, searchPar->nv, vec_v);    /* gamma(v) */
     gridvec(searchPar->u0, searchPar->uf, searchPar->nu, vec_u);    /* beta(u) \\ delta = beta -90 */
     gridvec(searchPar->k0, searchPar->kf, searchPar->nk, vec_k);
@@ -198,6 +228,15 @@ void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
     /* fill the moment tensor array with moment tensors */
     fprintf(stderr,"\nFilling moment tensor table (nsol= %10d) ... ", searchPar->nsol);
     isol = 0;
+    if(searchPar->nv == 0) {
+        fprintf(stderr,"WARNING setting nv=1 to fill up arrayMT \n");
+        searchPar->nv = 1;
+    }
+    if(searchPar->nu == 0) {
+        fprintf(stderr,"WARNING setting nu=1 to fill up arrayMT \n");
+        searchPar->nu = 1;
+    }
+
     for(ig = 0; ig < searchPar->nv; ig++) {
     for(id = 0; id < searchPar->nu; id++) {
     for(ik = 0; ik < searchPar->nk; ik++) {
@@ -220,8 +259,12 @@ void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
         }
     }
     fprintf(stderr,"done. nsol = %d \n", isol);
+    if (isol == 1) {
+        fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", 0, arrayMT[0].g *r2d, arrayMT[0].d *r2d,  arrayMT[0].k *r2d,  arrayMT[0].t *r2d,  arrayMT[0].s *r2d); 
+    } else if(isol > 1) {
     fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", 0, arrayMT[0].g *r2d, arrayMT[0].d *r2d,  arrayMT[0].k *r2d,  arrayMT[0].t *r2d,  arrayMT[0].s *r2d); 
     fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", isol-1, arrayMT[isol-1].g *r2d, arrayMT[isol-1].d *r2d,  arrayMT[isol-1].k *r2d,  arrayMT[isol-1].t *r2d,  arrayMT[isol-1].s *r2d); 
+    } 
 
     free(vec_v);
     free(vec_u);
@@ -255,12 +298,15 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
         ARRAYMT * arrayMT
         )
 {
-    int isol;
     float mtensor[3][3];
     float amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3], m_par, del_dip, del_iso;
     SOLN sol, best_sol;
     float *f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err, *rnd_stk, *rnd_dip, *rnd_rak, *rnd_iso, *rnd_clvd, *iso;
     int misfit_fmp;
+
+    int isol;
+    int isol_best;
+    float VR;
 
     OUTPUTGD outgd;
     OUTPUTMT outmt;
@@ -296,9 +342,10 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     //    fprintf(stderr,"************* check values . mag = %f %f %f \n", mt[0].min, mt[0].max, mt[0].par);
 
     /* TODO these will come from user input */
-    temp[0] = 5.0; // ILLINOIS
-    temp[0] = 2.8; // UTURUNCU
     temp[0] = 4.5; // ALASKA
+    temp[0] = 2.8; // UTURUNCU
+    temp[0] = 5.2; // ILLINOIS
+    temp[0] = searchPar->mw0;
     //    searchPar->mw0 = 4.5;
     //    searchPar->mwf = 4.5;
 
@@ -328,26 +375,28 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
         tt2cmt(temp[2], temp[1], 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
 
         // compute misfit from first motion. data will be output to out.misfit.fmp_
-        //misfit_fmp = misfit_first_motion(mtensor, nfm, fm, fidfmp, temp[2], temp[1], temp[0], sol.meca.stk, sol.meca.dip, sol.meca.rak);
+        misfit_fmp = misfit_first_motion(mtensor, nfm, fm, fidfmp, temp[2], temp[1], temp[0], sol.meca.stk, sol.meca.dip, sol.meca.rak);
 
         //--------------KEY COMMAND---call misfit function------
         sol=calerr(nda,obs0,max_shft,tie,norm,mtensor,amp,sol);
 
-        //fprintf(stderr, "Nsta=%d\n",Nsta);
+        // Nsta = number of components.
         sol.err=sol.err/Nsta;
         *grd_err++ = sol.err; /*error for this solution*/
 
         //        fprintf(stdout,"index= %10d\t%11.6f %11.6f %11.6f %11.6f %11.6f\n", isol, temp[2], temp[1], sol.meca.stk, sol.meca.dip, sol.meca.rak);
         if (best_sol.err > sol.err) {
+            isol_best = isol;
             best_sol = sol; 
             mt[0].par = temp[0];
             mt[1].par = temp[1];
             mt[2].par = temp[2];
 
             /* output search status */
-            fprintf(stderr,"best sol isol=%9d (%3d%) sol.err= %13.6e mag=%5.2f %11.6f %11.6f %11.6f %11.6f %11.6f\n", 
-                    isol, 100 *  isol/searchPar->nsol,
-                    sol.err, temp[0], temp[2], temp[1], sol.meca.stk, sol.meca.dip, sol.meca.rak);
+            VR = 100.*(1.-(sol.err/data2)*(sol.err/data2));
+            fprintf(stderr,"best sol isol=%9d (%3d%) mag=%5.2f %11.6f %11.6f %11.6f %11.6f %11.6f \t VR=%6.1f%\n", 
+                    isol, 100 * isol/searchPar->nsol,
+                    temp[0], temp[2], temp[1], sol.meca.stk, sol.meca.dip, sol.meca.rak, VR);
 
             /* output variables (only use for debug) */
             /*
@@ -361,6 +410,7 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     // close output files
 
     fprintf(stderr,"\nTotal solutions processed nsol= %10d (%3d%)\n", isol, 100 *  isol/searchPar->nsol);
+    fprintf(stderr,"Best solution at index= %10d\n", isol_best);
     fprintf(stderr,"Search completed.\n\n");
 
     return(best_sol);
