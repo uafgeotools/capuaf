@@ -217,7 +217,7 @@ $usage =
     -U  directivity, specify rupture direction on the fault plane (off).
     -V	apparent velocities for Pnl, Love, and Rayleigh waves (off).
     -W  use displacement for inversion; 1=> data in velocity; 2=> data in disp ($disp).
-    -X  output other local minimums whose misfit-min<n*s ($mltp).
+    -X  output other local minimums whose misfit-min<n*sigma ($mltp).
     -Y  specify norm (1 - L1 norm; 2 - L2 norm)
     -Z  specify a different weight file name ($weight).
 
@@ -230,7 +230,7 @@ Examples:
   The inversion results are saved in cus_15.out with the first line
 Event 20080418093700 Model cus_15 FM 115 90  -2 Mw 5.19 rms 1.341e-02   110 ERR   1   3   4
   saying that the fault plane solution is strike 115, dip 90, and rake -2 degrees, with the
-  axial lengths of the 1-s error ellipsoid of 1, 3, and 4 degrees.
+  axial lengths of the 1-sigma error ellipsoid of 1, 3, and 4 degrees.
   The rest of the files shows rms, cross-correlation coef., and time shift of individual waveforms.
   The waveform fits are plotted in file cus_15.ps in the event directory.
 ------------------------------------------------------------------------------------------------------
