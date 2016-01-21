@@ -1057,6 +1057,7 @@ for(obs=obs0,i=0;i<nda;i++,obs++){
  fclose(wt);
  fclose(wt2);
 
+ free(grid.err);
  free(arrayMT); 
  free(searchPar);
 
