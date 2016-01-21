@@ -23,38 +23,18 @@ typedef struct {
 
 typedef struct
 {
-    float u0;
-    float uf;
-    float v0;
-    float vf;
-    float w0;
-    float wf;
-    float k0;
-    float kf;
-    float h0;
-    float hf;
-    float s0;
-    float sf;
-    float gamma0;
-    float gammaf;
-    float delta0;
-    float deltaf;
-    float dip0;
-    float dipf;
+    float mw1;  float mw2;  float dmw;
 
-    float mw0;
-    float mwf;
-    float nmw;
+    float u1;   float u2;   int nu;
+    float v1;   float v2;   int nv;
+    float w1;   float w2;   int nw;
+    float k1;   float k2;   int nk;
+    float h1;   float h2;   int nh;
+    float s1;   float s2;   int ns;
 
-    int nu;
-    int nv;
-    int nw;
-    int nk;
-    int nh;
-    int ns;
-    int ngamma;
-    int ndelta;
-    int ndip;
+    float gamma1;   float gamma2;   int ngamma;
+    float delta1;   float delta2;   int ndelta;
+    float dip1;     float dip2;     int ndip;
 
     int nsol;
 
