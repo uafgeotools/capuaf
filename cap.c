@@ -127,19 +127,19 @@ int main (int argc, char **argv) {
   /* START block of variables for uniform MT */
   SEARCHPAR *searchPar = calloc(1, sizeof(SEARCHPAR));
 
-    float v0, vf, w0, wf, k0, kf, h0, hf, s0, sf;
-    int nnu, nnv, nnw, nnk, nnh, nns;
+//    float v1, v2, w1, w2, k1, k2, h1, h2, s1, s2;
+//    int nnu, nnv, nnw, nnk, nnh, nns;
 
-    float gamma0, gammaf, delta0, deltaf;
-    int ngamma, ndelta;
+//    float gamma0, gammaf, delta0, deltaf;
+//    int ngamma, ndelta;
 
-    float dip0, dipf;
-    int ndip;
+//    float dip0, dipf;
+//    int ndip;
 
-    float u0, uf;   // delete afte w implemented
-    int nu; //delete after w implemented
+//    float u1, u2;   // delete afte w implemented
+//    int nu; //delete after w implemented
 
-    int nsol;
+//    int nsol;
   /* END block of variables for uniform MT */
 
   // variables to verify that Mw_best is not near search limits
@@ -264,19 +264,19 @@ int main (int argc, char **argv) {
   // scan nv, nw, nk, nh, ns
   // scan nsol
   fprintf(stderr, "\nInput parameter ranges \n");
-  scanf("%f%f%f",       &searchPar->mw0, &searchPar->mwf, &searchPar->nmw);
-  scanf("%f%f%f%f",     &searchPar->v0,  &searchPar->vf,  &searchPar->w0, &searchPar->wf);
-  scanf("%f%f%f%f%f%f", &searchPar->k0,  &searchPar->kf,  &searchPar->h0, &searchPar->hf, &searchPar->s0, &searchPar->sf);
+  scanf("%f%f%f",       &searchPar->mw1, &searchPar->mw2, &searchPar->dmw);
+  scanf("%f%f%f%f",     &searchPar->v1,  &searchPar->v2,  &searchPar->w1, &searchPar->w2);
+  scanf("%f%f%f%f%f%f", &searchPar->k1,  &searchPar->k2,  &searchPar->h1, &searchPar->h2, &searchPar->s1, &searchPar->s2);
   scanf("%d%d%d%d%d",   &searchPar->nv,  &searchPar->nu,  &searchPar->nk, &searchPar->nh, &searchPar->ns);
   scanf("%d",           &searchPar->nsol);
   searchPar->nw = searchPar->nu;
 
-  fprintf(stderr, "mag1= %6.2f mag2= %6.2f dmag = %6.2f\n", searchPar->mw0, searchPar->mwf, searchPar->nmw);
-  fprintf(stderr, "v1= %11.6f v2= %11.6f nv= %10d\n", searchPar->v0, searchPar->vf, searchPar->nv);
-  fprintf(stderr, "w1= %11.6f w2= %11.6f nw= %10d\n", searchPar->w0, searchPar->wf, searchPar->nw);
-  fprintf(stderr, "k1= %11.6f k2= %11.6f nk= %10d\n", searchPar->k0, searchPar->kf, searchPar->nk);
-  fprintf(stderr, "h1= %11.6f h2= %11.6f nh= %10d\n", searchPar->h0, searchPar->hf, searchPar->nh);
-  fprintf(stderr, "s1= %11.6f s2= %11.6f ns= %10d\n", searchPar->s0, searchPar->sf, searchPar->ns);
+  fprintf(stderr, "mw1= %6.2f mw2= %6.2f dmw = %6.2f\n", searchPar->mw1, searchPar->mw2, searchPar->dmw);
+  fprintf(stderr, "v1= %11.6f v2= %11.6f nv= %10d\n", searchPar->v1, searchPar->v2, searchPar->nv);
+  fprintf(stderr, "w1= %11.6f w2= %11.6f nw= %10d\n", searchPar->w1, searchPar->w2, searchPar->nw);
+  fprintf(stderr, "k1= %11.6f k2= %11.6f nk= %10d\n", searchPar->k1, searchPar->k2, searchPar->nk);
+  fprintf(stderr, "h1= %11.6f h2= %11.6f nh= %10d\n", searchPar->h1, searchPar->h2, searchPar->nh);
+  fprintf(stderr, "s1= %11.6f s2= %11.6f ns= %10d\n", searchPar->s1, searchPar->s2, searchPar->ns);
 
   fprintf(stderr, "\nNumber of solutions to prepare = %10d\n", searchPar->nsol);
 
