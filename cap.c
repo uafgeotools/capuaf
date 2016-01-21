@@ -84,7 +84,7 @@
 ****************************************************************/
 #include "cap.h"
 
-int total_n,loop=0,start=0,debug=0, Nsta=0,Psamp[STN],Ssamp[STN],edep=-999;
+int total_n,loop=0,start=0,debug=0, Ncomp=0,Psamp[STN],Ssamp[STN],edep=-999;
 float data2=0.0;
 
 /* flags for computing uncertainty on the lune. 1==apply */
@@ -158,6 +158,10 @@ int main (int argc, char **argv) {
   float pnl_sn[30], pnl_sd[30], sw_sn[30], sw_sd[30];
   long int order=4, nsects;
   void  principal_values(float *);
+
+  fprintf(stderr,"----------------------------------------------------------\n");
+  fprintf(stderr,"cap.c: get input parameters for inversion\n");
+
 #ifdef DIRECTIVITY
   int ns_pnl, ns_sw;
   float *src_pnl, *src_sw;
@@ -200,7 +204,7 @@ int main (int argc, char **argv) {
   scanf("%d",&search);
   scanf("%d",&norm);
   
-//   fprintf(stderr,"=========search = %d==========\n",search);
+  fprintf(stderr, "search type = %d, norm = %d\n", search, norm);
 
   /*** input source functions and filters for pnl and sw ***/
   scanf("%f",&dt);
@@ -254,12 +258,12 @@ int main (int argc, char **argv) {
   // mt[1].dd  = ISO increment (From -I flag)
   // mt[2].dd  = CLVD increment (From -I flag) (ALWAYS equal to ISO increment 'mt[1].dd') 
 
-
   // scan m1, m2, dm
   // scan v1, v2, w1, w2
   // scan k1, k2, h1, h1, s1, s2
   // scan nv, nw, nk, nh, ns
   // scan nsol
+  fprintf(stderr, "\nInput parameter ranges \n");
   scanf("%f%f%f",       &searchPar->mw0, &searchPar->mwf, &searchPar->nmw);
   scanf("%f%f%f%f",     &searchPar->v0,  &searchPar->vf,  &searchPar->w0, &searchPar->wf);
   scanf("%f%f%f%f%f%f", &searchPar->k0,  &searchPar->kf,  &searchPar->h0, &searchPar->hf, &searchPar->s0, &searchPar->sf);
@@ -267,18 +271,18 @@ int main (int argc, char **argv) {
   scanf("%d",           &searchPar->nsol);
   searchPar->nw = searchPar->nu;
 
-  fprintf(stderr, "Range of search parameters\n");
-  fprintf(stderr, "mag1= %f mag2= %f dmag = %f\n",       searchPar->mw0, searchPar->mwf, searchPar->nmw);
-  fprintf(stderr, "v1= %f v2= %f w1= %f w2= %f\n",     searchPar->v0,  searchPar->vf,  searchPar->w0, searchPar->wf);
-  fprintf(stderr, "k1= %f k2= %f h1= %f h2= %f s1= %f s2= %f\n", searchPar->k0,  searchPar->kf,  searchPar->h0, searchPar->hf, searchPar->s0, searchPar->sf);
-  fprintf(stderr, "nv= %d nu= %d nk= %d nh= %d ns= %d\n",   searchPar->nv,  searchPar->nu,  searchPar->nk, searchPar->nh, searchPar->ns);
-  fprintf(stderr, "Number of solutions to prepare = %d\n",           searchPar->nsol);
-  fprintf(stderr,"***************  DEBUG END. ************* \n");
+  fprintf(stderr, "mag1= %6.2f mag2= %6.2f dmag = %6.2f\n", searchPar->mw0, searchPar->mwf, searchPar->nmw);
+  fprintf(stderr, "v1= %11.6f v2= %11.6f nv= %10d\n", searchPar->v0, searchPar->vf, searchPar->nv);
+  fprintf(stderr, "w1= %11.6f w2= %11.6f nw= %10d\n", searchPar->w0, searchPar->wf, searchPar->nw);
+  fprintf(stderr, "k1= %11.6f k2= %11.6f nk= %10d\n", searchPar->k0, searchPar->kf, searchPar->nk);
+  fprintf(stderr, "h1= %11.6f h2= %11.6f nh= %10d\n", searchPar->h0, searchPar->hf, searchPar->nh);
+  fprintf(stderr, "s1= %11.6f s2= %11.6f ns= %10d\n", searchPar->s0, searchPar->sf, searchPar->ns);
+
+  fprintf(stderr, "\nNumber of solutions to prepare = %10d\n", searchPar->nsol);
 
 //  return(0);
 
   /*
-
   scanf("%f%f%f", &(mt[0].par), &(mt[0].dd), &(mt[1].dd));
   // See cap.pl for : ($mg $dm $dlune)
   mt[0].min =  1.;  mt[0].max = 10.; // Maximum and Minimum of magnitude search range
@@ -344,80 +348,6 @@ int main (int argc, char **argv) {
     fprintf(stderr,"fail to allocate memory for storing misfit errors\n");
     return -1;
   }
-  // START prepare inversion variables
-
-  // full range
-       u0 = 0.0;            uf = (3./4.) * PI;
-       w0 = -(3./8.) * PI;  wf = (3./8.) * PI;
-       v0 = -1./3.;         vf = 1./3.; 
-       k0 = 0.0;            kf = 2. * PI;
-       h0 = 0.0;            hf = 1.0;
-       s0 = -PI/2.;         sf = PI/2.;
-
-//       v0 = 0.;             vf = 0.; 
-//       u0 = (3./8.) * PI;   uf = (3./8.) * PI;
-
-    // parameters for GRID search
-    //
-       NOTE full grid search produces 20,155,392 solutions. 
-       filesize (ascii) = 1.8 GB, runtime (ascii) = 1m1.432s
-       filesize (bin)   =     GB, runtime (bin)   =         
-       //
-
-       if(search==1) {
-           // parameters for GRID search
-           //nnv = 12; nnu = 36;   nnk = 72; nnh = 18; nns = 36;   // 12 * 36 * 72 * 18 * 36 = 20,155,392
-           nnv = 12; nnu = 36;  nnk = 36; nnh = 9;  nns = 18;     // 12 * 36 * 36 * 9  * 18 =  2,519,424
-           nnv = 6;  nnu = 9;   nnk = 72; nnh = 6;  nns = 12;     //  6 *  9 * 72 * 6  * 12 =    279,936
-           nnv = 6;  nnu = 18;  nnk = 36; nnh = 9;  nns = 18;     //  6 *  9 * 72 * 6  * 12 =    629,856
-           nnv = 12; nnu = 36;  nnk = 12; nnh = 3;  nns =  6;     // 12 *  36* 12 * 3  *  6 =     93,312
-//           nnv = 1;  nnu = 1;    nnk = 72; nnh = 6;  nns = 12;    //  1 *  1 * 72 * 6  * 12 =      5,684
-           nnw = nnu;
-           nsol = nnw * nnv * nnk * nnh * nns;
-       }
-
-    // nnv = 14; nnu = 18;   nnk = 18; nnh = 6;  nns = 12;   // 14 * 18 * 18 * 6  * 12 =    326,592
-    // nnv = 25; nnu = 75;   nnk = 6;  nnh = 6;  nns = 6;    // nice display
-    // nnv = 9;  nnu = 1024; nnk = 3;  nnh = 3;  nns = 3;    // reaches lat 80
-    // nnv = 5;  nnu = 5;    nnk = 6;  nnh = 6;  nns = 6;    // nice subset
-
-    // SUB RANGE. DEFINE RANGE AND NPTS
-    // v0 = -0.2;   vf = 0.3;   nv = 100; u0 = 1.50; uf = 1.50;    nnu = 1;      // row
-    // v0 = -0.15;  vf = -0.15; nv = 1;   u0 = 0;    uf = 2.35619; nnu = 1000;   // col
-    // v0 = 0.2;    vf = 0.3;   nv = 50;  u0 = 0.5;  uf = 0.75;    nnu = 50;     // patch
-    // v0 = 0.0;    vf = 0.0;   nv = 1;   u0 = 1.0;  uf = 1.0;     nnu = 1;      // point
-    // v0 = -0.33;  vf = 0.33;  nv = 100; u0 = 0.0;  uf = 2.35619; nnu = 100;    // dense
-    // v0 = -0.33;  vf = 0.33;  nv = 30;  u0 = 0.0;  uf = 2.35619; nnu = 30;     // thin
-
-    if(search==2) {
-        // parameters for RAND search
-        nsol = 3e7;  // 2m33.975s
-        nsol = 5e6;  // 0m25.111s
-        nsol = 5e6;  // 
-        nsol = 1e5;  // 
-        nnu = nnv = nnw = nnk = nnh = nns = nsol;
-    }
-
-    // set parameters for search
-    searchPar->u0 = u0; searchPar->uf = uf; searchPar->nu = nnu;
-    searchPar->w0 = w0; searchPar->wf = wf; searchPar->nw = nnw;
-    searchPar->v0 = v0; searchPar->vf = vf; searchPar->nv = nnv;
-    searchPar->k0 = k0; searchPar->kf = kf; searchPar->nk = nnk;
-    searchPar->h0 = h0; searchPar->hf = hf; searchPar->nh = nnh;
-    searchPar->s0 = s0; searchPar->sf = sf; searchPar->ns = nns;
-    searchPar->gamma0 = gamma0;
-    searchPar->gammaf = gammaf; 
-    searchPar->ngamma = nsol;
-
-    searchPar->delta0 = delta0;
-    searchPar->deltaf = deltaf;
-    searchPar->ndelta = nsol;
-
-    searchPar->dip0 = dip0; 
-    searchPar->dipf = dipf; 
-    searchPar->ndip = nsol;
-
-    searchPar->nsol = nsol;
 
     */
 
@@ -436,7 +366,7 @@ int main (int argc, char **argv) {
         fprintf(stderr,"Abort. unable to allocate.\n");
         return 0;
     } else {
-        fprintf(stderr,"done.\n");
+        fprintf(stderr,"done.\n\n");
     }
 
     /* END prepare inversion variables */
@@ -448,7 +378,7 @@ int main (int argc, char **argv) {
   faultDip = grid.x0[1]*DEG2RAD;
 #endif
 
-  
+ 
   /** input number of stations **/
   scanf("%d",&nda);
   if (nda > STN) {
@@ -708,7 +638,7 @@ int main (int argc, char **argv) {
  
 	weight = pow(distance/dmin,bs[j]);  // Caution: This weight scales the amplitude of waveforms. w_pnl = 1 ALWAYS (make changes in cap.pl)
 	spt->on_off = (int)spt->on_off * w_pnl[j]; // multiply -Dflag to the weights
-	if (spt->on_off) {total_n+=npt; Nsta += spt->on_off;}  // Nsta = number of all the components
+	if (spt->on_off) {total_n+=npt; Ncomp += spt->on_off;}  // Ncomp = number of all the components
 
 	// count number of surface and body wave components
     if (j<3) {
@@ -868,9 +798,13 @@ int main (int argc, char **argv) {
 
   }	/*********end of loop over stations ********/
 
-  fprintf(stderr,"Nsta=%d\t Ncomp= %d\n",nda,Nsta);
-  fprintf(stderr,"Nbody= %d\tNsurf= %d\tNstat=%d\n",Nbody,Nsurf,Nstat);
-  data2=rec2/Nsta;
+  fprintf(stderr,"Total number of stations Nda= %d\n", nda);
+  fprintf(stderr,"Total number of components Ncomp= %d\n", Ncomp);
+  fprintf(stderr,"Total body wave components Nbody= %d\n", Nbody);
+  fprintf(stderr,"Total surf wave components Nsurf= %d\n", Nsurf);
+  fprintf(stderr,"Total Nstat= %d\n",Nstat);
+
+  data2=rec2/Ncomp;
   if (nda < 1) {
     fprintf(stderr,"No station available for inversion\n");
     return -1;
@@ -901,11 +835,12 @@ int main (int argc, char **argv) {
      */
 
  INVERSION:
-  /* old error function. will keep this command for reference, but may be
-   * deleted later */
+  fprintf(stderr,"\nBEGIN SEARCH\n\n"); 
+
+  // call to old error function for reference. can be deleted
   /* sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search,norm); */
 
-  /* call initSearchMT instead of "error". This call includes two extra parameters: searchPar, arrayMT */
+  // call initSearchMT instead of "error". This call includes extra parameters (searchPar, arrayMT)
   sol = initSearchMT(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search,norm, searchPar, arrayMT);
 
   /* if runnning in first-motion-polarity mode clean up and end cap
@@ -1080,7 +1015,7 @@ for(obs=obs0,i=0;i<nda;i++,obs++){
      //        on_off / station misfit % / kross-corr (what?) / t-shift / log(Aobs/Asyn) / Aobs / Asyn
      //               4    5    6    7     8     9     10 
      fprintf(f_out," %1d %6.2f %2d %5.2f %5.2f %8.2e %8.2e",
-	     obs->com[k].on_off, sol.error[i][k]*100/(Nsta*sol.err), kc, shft0[i][k]+dt*sol.shft[i][k], 
+	     obs->com[k].on_off, sol.error[i][k]*100/(Ncomp*sol.err), kc, shft0[i][k]+dt*sol.shft[i][k], 
 	     log(maxamp_obs[i][k]/maxamp_syn[i][k]), maxamp_obs[i][k], maxamp_syn[i][k]);
      if (k<3) lamp_thresh = 1.5;  // log(amplitude) threshold for surface waves
      else lamp_thresh = 2.5;   // log(amplitude) threshold for body waves
@@ -1124,7 +1059,7 @@ for(obs=obs0,i=0;i<nda;i++,obs++){
  free(arrayMT); 
  free(searchPar);
 
- fprintf(stderr,"cap.c: SEARCH DONE.\n");
+ fprintf(stderr,"\ncap.c: SEARCH DONE\n");
  fprintf(stderr,"----------------------------------------\n\n");
  return 0;
 }
