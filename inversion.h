@@ -21,6 +21,45 @@ typedef struct {
         float   *err;
 } GRID;
 
+typedef struct
+{
+    float u0;
+    float uf;
+    float v0;
+    float vf;
+    float w0;
+    float wf;
+    float k0;
+    float kf;
+    float h0;
+    float hf;
+    float s0;
+    float sf;
+    float gamma0;
+    float gammaf;
+    float delta0;
+    float deltaf;
+    float dip0;
+    float dipf;
+
+    float mw0;
+    float mwf;
+    float nmw;
+
+    int nu;
+    int nv;
+    int nw;
+    int nk;
+    int nh;
+    int ns;
+    int ngamma;
+    int ndelta;
+    int ndip;
+
+    int nsol;
+
+} SEARCHPAR;
+
 extern int	svdrs(float *, int, int, int, float *, int, float *);
 extern float	iter(float *, float *, float *(*f)(float *), int, int, int, int, float, int);
 float	marquardt(float *, float *, float *, float *(*)(float *), float *(*)(float *), int, int, int, float, float);

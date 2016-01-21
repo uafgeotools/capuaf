@@ -42,7 +42,7 @@ static char grn_com[NGR]={'8','5','b','7','4','1','a','6','3','0'};
 #define TOLERANCE 0.00001
 /***********************global vars********************************/
 
-extern int total_n,loop,start,debug, Nsta,Psamp[STN],Ssamp[STN],edep;
+extern int total_n,loop,start,debug, Ncomp,Psamp[STN],Ssamp[STN],edep;
 extern float data2;
 
 /* flags for computing uncertainty on the lune. 1==apply */
@@ -180,45 +180,6 @@ typedef struct {
     float misfit_wf;
     float misfit_fmp;
 } OUTPUTMT;
-
-typedef struct
-{
-    float u0;
-    float uf;
-    float v0;
-    float vf;
-    float w0;
-    float wf;
-    float k0;
-    float kf;
-    float h0;
-    float hf;
-    float s0;
-    float sf;
-    float gamma0;
-    float gammaf;
-    float delta0;
-    float deltaf;
-    float dip0;
-    float dipf;
-
-    float mw0;
-    float mwf;
-    float nmw;
-
-    int nu;
-    int nv;
-    int nw;
-    int nk;
-    int nh;
-    int ns;
-    int ngamma;
-    int ndelta;
-    int ndip;
-
-    int nsol;
-
-} SEARCHPAR;
 
 typedef struct
 {
