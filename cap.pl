@@ -74,25 +74,22 @@ $norm = 2;
 
 #----------------------------------------------------------- 
 # DEFAULT VALUES FOR SEARCH PARAMETERS
+use Math::Trig ':pi';
+$deg2rad = pi / 180.0;
 
 # RANGE LIMITS PER PARAMETER
 # magnitude 
 ($deg, $dm, $dlune) = (10, 0.1, 0.);
 
 # orientation
-$str1 = 0; $str2 = 360;
-$dip1 = 0; $dip2 = 90;
-$rak1 = -90; $rak2 = 90;
+$k1 = 0;    $k2 = 360;
+$h1 = 0;    $h2 = 1;
+$s1 = -90;  $s2 = 90;
 
-# lune 
-$iso1 = $iso2 = $clvd1 = $clvd2 = 0.;
-
-# (v,w) 
+# lune --> (v,w) 
 # v = [-1/3, 1/3] w = [-3pi/8, 3pi/8]
-#$v1 = -0.3333333333333333;   
-#$w2 = 1.1780972450961724;
-$v2 = 0.3333333333333333;   $v1 = -$v2;
-$w2 = 1.1780972450961724;   $w1 = -$w2
+$w2 = (3.0 * pi / 8.0); $w1 = -$w2;
+$v2 = (1.0 / 3.0);      $v1 = -$v2;
 
 # NUMBER OF POINTS PER PARAMETER
 
@@ -100,14 +97,14 @@ $w2 = 1.1780972450961724;   $w1 = -$w2
 # case 1. full moment tensor. use nv/nw/nstr/ndip/nrak
 # case 2. fixed lambda. use nstr/ndip/nrak
 # default number of points for each parameter
-$nv = 100;      # gamma
-$nw = 100;      # delta
-$nstr = 100;    # strike
-$ndip = 100;    # dip
-$nrak = 100;    # rake
+$nv = 10;    # gamma
+$nw = 10;    # delta
+$nk = 10;    # strike
+$nh = 10;    # dip
+$ns = 10;    # rake
 
 # search type = RAND -- specify number of solutions to generate
-$nsol_fmt    =  100000;     # full moment tensor
+$nsol    =  100000;     # full moment tensor
 $nsol_fixlam =  100000;     # fixed lambda (includes DC)
 
 #----------------------------------------------------------- 
@@ -220,7 +217,7 @@ $usage =
     -U  directivity, specify rupture direction on the fault plane (off).
     -V	apparent velocities for Pnl, Love, and Rayleigh waves (off).
     -W  use displacement for inversion; 1=> data in velocity; 2=> data in disp ($disp).
-    -X  output other local minimums whose misfit-min<n*sigma ($mltp).
+    -X  output other local minimums whose misfit-min<n*s ($mltp).
     -Y  specify norm (1 - L1 norm; 2 - L2 norm)
     -Z  specify a different weight file name ($weight).
 
@@ -233,7 +230,7 @@ Examples:
   The inversion results are saved in cus_15.out with the first line
 Event 20080418093700 Model cus_15 FM 115 90  -2 Mw 5.19 rms 1.341e-02   110 ERR   1   3   4
   saying that the fault plane solution is strike 115, dip 90, and rake -2 degrees, with the
-  axial lengths of the 1-sigma error ellipsoid of 1, 3, and 4 degrees.
+  axial lengths of the 1-s error ellipsoid of 1, 3, and 4 degrees.
   The rest of the files shows rms, cross-correlation coef., and time shift of individual waveforms.
   The waveform fits are plotted in file cus_15.ps in the event directory.
 ------------------------------------------------------------------------------------------------------
@@ -301,17 +298,22 @@ foreach (grep(/^-/,@ARGV)) {
        # Parameter for number of points or number of solutions
        # Two options.
        #    Length 1 = (RAND) number of solutions (nsol)
-       #    Length 5 = (GRID) nv/nw/nkappa/nh/nsigma. nsol = nv*nw*nkappa*nh*nsigma
+       #    Length 5 = (GRID) nv/nw/nk/nh/ns. nsol = nv*nw*nk*nh*ns
        #    
 #      $deg = $value[0];
 #      $dm = $value[1] if $#value > 0;
 #      $dlune = $value[2] if $value[2]
        if ($#value==0) {
-           $nsol_fmt = $value[0];
-           $nI = 1;
+           $nsol = $value[0];
+           $nv = $nw = $nk = $nh = $ns = $nsol;
        } elsif ($#value==4) {
-           ($nv, $nw, $nkappa, $nh, $nsigma) = @value;
-           $nI = 5;
+           ($nv, $nw, $nk, $nh, $ns) = @value;
+           if ($nv == 0 || $nw == 0) {
+               # NOTE! this only checks for (v,w) being zero
+               $nsol = $nk * $nh * $ns;
+           } else {
+               $nsol = $nv * $nw * $nk * $nh * $ns;
+           }
        }
    } 
 #  elsif ($opt eq "J") {
@@ -336,10 +338,8 @@ foreach (grep(/^-/,@ARGV)) {
        if ($#value==0) {
            ($mg1, $mg2, $dm) = ($value[0], $value[0], 0);
            $mg = $value[0];     # IS THIS NEEDED ANYMORE?
-           $nM = 1;
        } elsif ($#value==2) {
            ($mg1, $mg2, $dm) = @value;
-           $nM = 3;
        }
    } elsif ($opt eq "M") {
        # ($md_dep,$mg) = @value;
@@ -363,22 +363,21 @@ foreach (grep(/^-/,@ARGV)) {
        # Four options: 
        # 1. no flag  = FMT over full range
        # 2. Length 2 = fixed eigenvalue with grid search (v0/w0)
-       # 3. Length 5 = fixed moment tensor (v0/w0/kappa0/h0/sigma0)
-       # 4. Length 10 = subset case (v1/v2/w1/w2/kappa1/kappa2/h1/h2/sigma1/sigma2
+       # 3. Length 5 = fixed moment tensor (v0/w0/k0/h0/s0)
+       # 4. Length 10 = subset case (v1/v2/w1/w2/k1/k2/h1/h2/s1/s2)
        if ($#value==1) {
-           ($v1, $w1) = @value;
-           ($v2, $w2) = @value;
-           $nR = 2;
+           ($v1, $v2) = @value;
+           ($w1, $w2) = @value;
+           $nv = $nw = 0;
            $fmt_flag="true";     # used later for renaming output figures with fmt
        } elsif ($#value==4) {
-           ($v1, $w1, $kappa1, $h1, $sigma1) = @value;
-           ($v2, $w2, $kappa2, $h2, $sigma2) = @value;
-           $nR = 5;
+           ($v1, $w1, $k1, $h1, $s1) = @value;
+           ($v2, $w2, $k2, $h2, $s2) = @value;
+           $h1 = $h2 = cos($value[3]);  # cap expects h = cos(dip)
+           $nsol = $nv = $nw = $nk = $nh = $ns = 1;
        } elsif ($#value==9) {
-           ($v1, $v2, $w1, $w2, $kappa1, $kappa2, $h1, $h2, $sigma1, $sigma2) = @value;
-           $nR = 10;
+           ($v1, $v2, $w1, $w2, $k1, $k2, $h1, $h2, $s1, $s2) = @value;
        }
-#     ($str1,$str2,$dip1,$dip2,$rak1,$rak2) = @value;
    } elsif ($opt eq "S") {
      ($max_shft1, $max_shft2) = @value;
      $tie = $value[2] if $#value > 1;
@@ -405,19 +404,18 @@ foreach (grep(/^-/,@ARGV)) {
      exit(0);
    }
 }
-    # begin test block  -- ok to delete
-     printf STDERR "nper param = nsol=$nsol_fmt, $nv, $nw, $nstr, $ndip, $nrak\n";
-     printf STDERR "each par = $v1, $v2, $w1, $w2, $str1, $str2, $dip1, $dip2, $rak1, $rak2\n";
-     printf STDERR "mag  = $mg, $mg1, $mg2, $dm\n";
-     exit(0);
-    # end test block 
-
 @event = grep(!/^-/,@ARGV);
 
 #-----------------------------------------------------------
 # prepare additional parameters for CAP input
 #-----------------------------------------------------------
-#
+
+# convert strike/dip/rake to radians
+$k1 = $k1 * $deg2rad;
+$k2 = $k2 * $deg2rad;
+$s1 = $s1 * $deg2rad;
+$s2 = $s2 * $deg2rad;
+
 unless ($dura) {
   $dura = int(10**(($mg-5)/2)+0.5);
   $dura = 1 if $dura < 1;
@@ -426,6 +424,9 @@ unless ($dura) {
 
 printf STDERR $search;
 
+# CHECK THAT USER INPUT MAKE SENSE
+# ONGOING
+#
 # check parameterization type (zhu / lune) and search type (GRID/RANDOM) 
 if (($parm==0 ) && ($type==0)){
     $search=0;
@@ -469,7 +470,7 @@ $filterBand = sprintf("Body:%.2f-%.2f. Surf:%.2f-%.2f",$Tf2,$Tf1,$Tf4,$Tf3);
 
 #----------------------------------------------------------
 # delete 
-    exit(0);
+#    exit(0);
 #----------------------------------------------------------
  
 for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
@@ -503,17 +504,23 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     print SRC "$dt $dura $riseTime\n";
     print SRC "$f1_pnl $f2_pnl $f1_sw $f2_sw\n";
     #print SRC "$mg $dm $dlune\n";
-    print SRC "$mg $dm $dlune\n";
-    print SRC "$iso1\n$iso2\n$clvd1\n$clvd2\n";
-    print SRC "$str1 $str2 $deg\n";
-    print SRC "$dip1 $dip2 $deg\n";
-    print SRC "$rak1 $rak2 $deg\n";
+    #print SRC "$iso1\n$iso2\n$clvd1\n$clvd2\n";
+    #print SRC "$str1 $str2 $deg\n";
+    #print SRC "$dip1 $dip2 $deg\n";
+    #print SRC "$rak1 $rak2 $deg\n";
+    #--- start parameters for search
+    print SRC "$mg1 $mg2 $dm\n";
+    print SRC "$v1 $v2 $w1 $w2\n";
+    print SRC "$k1 $k2 $h1 $h2 $s1 $s2\n";
+    print SRC "$nv $nw $nk $nh $ns\n";
+    print SRC "$nsol\n";
+    #--- end parameters for search
     printf SRC "%d\n",$#wwf + 1;
     print SRC @wwf;
     close(SRC);
 
   plot:
-    print STDERR "cap.pl: plot results ... \n";
+    print STDERR "\n\ncap.pl: plot results ... \n";
     if ( $plot > 0 && ($? >> 8) == 0 ) {
       chdir($eve);
       @dum = split('_', $md_dep);  # split mdl string
