@@ -39,6 +39,7 @@ static char grn_com[NGR]={'8','5','b','7','4','1','a','6','3','0'};
 #define NFFT	2048		/* for Q operator */
 
 #define r2d 180.0 / PI
+#define TOLERANCE 0.00001
 /***********************global vars********************************/
 
 extern int total_n,loop,start,debug, Nsta,Psamp[STN],Ssamp[STN],edep;
