@@ -258,26 +258,27 @@ int main (int argc, char **argv) {
   // mt[1].dd  = ISO increment (From -I flag)
   // mt[2].dd  = CLVD increment (From -I flag) (ALWAYS equal to ISO increment 'mt[1].dd') 
 
-  // scan m1, m2, dm
-  // scan v1, v2, w1, w2
-  // scan k1, k2, h1, h1, s1, s2
-  // scan nv, nw, nk, nh, ns
-  // scan nsol
   fprintf(stderr, "\nInput parameter ranges \n");
-  scanf("%f%f%f",       &searchPar->mw1, &searchPar->mw2, &searchPar->dmw);
-  scanf("%f%f%f%f",     &searchPar->v1,  &searchPar->v2,  &searchPar->w1, &searchPar->w2);
-  scanf("%f%f%f%f%f%f", &searchPar->k1,  &searchPar->k2,  &searchPar->h1, &searchPar->h2, &searchPar->s1, &searchPar->s2);
-  scanf("%d%d%d%d%d",   &searchPar->nv,  &searchPar->nu,  &searchPar->nk, &searchPar->nh, &searchPar->ns);
-  scanf("%d",           &searchPar->nsol);
-  searchPar->nw = searchPar->nu;
+  // NOTE delta Mw (not number of points)
+  scanf("%f%f%f", &searchPar->mw1, &searchPar->mw2, &searchPar->dmw);
+  // (v, w, k, h, s) format: (start, end, number of points)
+  scanf("%f%f%d", &searchPar->v1,  &searchPar->v2,  &searchPar->nv);
+  scanf("%f%f%d", &searchPar->w1,  &searchPar->w2,  &searchPar->nw);
+  scanf("%f%f%d", &searchPar->k1,  &searchPar->k2,  &searchPar->nk);
+  scanf("%f%f%d", &searchPar->h1,  &searchPar->h2,  &searchPar->nh);
+  scanf("%f%f%d", &searchPar->s1,  &searchPar->s2,  &searchPar->ns);
+  // total number of solutions
+  scanf("%d", &searchPar->nsol);
+  // u = [0, 3pi/4], w = [-3pi/8, +3pi/8]. u, w have the same number of points.
+  searchPar->nu = searchPar->nw;
 
-  fprintf(stderr, "mw1= %6.2f mw2= %6.2f dmw = %6.2f\n", searchPar->mw1, searchPar->mw2, searchPar->dmw);
+  // output values
+  fprintf(stderr, "mw1= %5.2f mw2= %5.2f dmw= %5.2f\n", searchPar->mw1, searchPar->mw2, searchPar->dmw);
   fprintf(stderr, "v1= %11.6f v2= %11.6f nv= %10d\n", searchPar->v1, searchPar->v2, searchPar->nv);
   fprintf(stderr, "w1= %11.6f w2= %11.6f nw= %10d\n", searchPar->w1, searchPar->w2, searchPar->nw);
   fprintf(stderr, "k1= %11.6f k2= %11.6f nk= %10d\n", searchPar->k1, searchPar->k2, searchPar->nk);
   fprintf(stderr, "h1= %11.6f h2= %11.6f nh= %10d\n", searchPar->h1, searchPar->h2, searchPar->nh);
   fprintf(stderr, "s1= %11.6f s2= %11.6f ns= %10d\n", searchPar->s1, searchPar->s2, searchPar->ns);
-
   fprintf(stderr, "\nNumber of solutions to prepare = %10d\n", searchPar->nsol);
 
 //  return(0);
