@@ -254,6 +254,31 @@ int main (int argc, char **argv) {
   // mt[1].dd  = ISO increment (From -I flag)
   // mt[2].dd  = CLVD increment (From -I flag) (ALWAYS equal to ISO increment 'mt[1].dd') 
 
+
+  // scan m1, m2, dm
+  // scan v1, v2, w1, w2
+  // scan k1, k2, h1, h1, s1, s2
+  // scan nv, nw, nk, nh, ns
+  // scan nsol
+  scanf("%f%f%f",       &searchPar->mw0, &searchPar->mwf, &searchPar->nmw);
+  scanf("%f%f%f%f",     &searchPar->v0,  &searchPar->vf,  &searchPar->w0, &searchPar->wf);
+  scanf("%f%f%f%f%f%f", &searchPar->k0,  &searchPar->kf,  &searchPar->h0, &searchPar->hf, &searchPar->s0, &searchPar->sf);
+  scanf("%d%d%d%d%d",   &searchPar->nv,  &searchPar->nu,  &searchPar->nk, &searchPar->nh, &searchPar->ns);
+  scanf("%d",           &searchPar->nsol);
+  searchPar->nw = searchPar->nu;
+
+  fprintf(stderr, "Range of search parameters\n");
+  fprintf(stderr, "mag1= %f mag2= %f dmag = %f\n",       searchPar->mw0, searchPar->mwf, searchPar->nmw);
+  fprintf(stderr, "v1= %f v2= %f w1= %f w2= %f\n",     searchPar->v0,  searchPar->vf,  searchPar->w0, searchPar->wf);
+  fprintf(stderr, "k1= %f k2= %f h1= %f h2= %f s1= %f s2= %f\n", searchPar->k0,  searchPar->kf,  searchPar->h0, searchPar->hf, searchPar->s0, searchPar->sf);
+  fprintf(stderr, "nv= %d nu= %d nk= %d nh= %d ns= %d\n",   searchPar->nv,  searchPar->nu,  searchPar->nk, searchPar->nh, searchPar->ns);
+  fprintf(stderr, "Number of solutions to prepare = %d\n",           searchPar->nsol);
+  fprintf(stderr,"***************  DEBUG END. ************* \n");
+
+//  return(0);
+
+  /*
+
   scanf("%f%f%f", &(mt[0].par), &(mt[0].dd), &(mt[1].dd));
   // See cap.pl for : ($mg $dm $dlune)
   mt[0].min =  1.;  mt[0].max = 10.; // Maximum and Minimum of magnitude search range
@@ -261,10 +286,10 @@ int main (int argc, char **argv) {
   // mt[0] is center magnitude. save copy for checking final result
   mw_center = mt[0].par;
  
-  if(search != 0) {      
+  if(search != 0) {
       // use ranges for lune parameters if "search = 1 or 2" (grid or random search)
-      scanf("%f%f",&(mt[1].min),&(mt[1].max));  // -90 to 90 (Isotropic range)
-      scanf("%f%f",&(mt[2].min),&(mt[2].max));  // -30 to 30 (CLVD range)
+      scanf("%f%f", &(mt[1].min), &(mt[1].max));  // -90 to 90 (Isotropic range)
+      scanf("%f%f", &(mt[2].min), &(mt[2].max));  // -30 to 30 (CLVD range)
       if (search==1){ 
           // Grid search
           if ((mt[1].min==0.) && (mt[1].max==0.) && (mt[2].min==0.) && (mt[2].max==0.) && (mt[1].dd != 0.)){
@@ -285,8 +310,8 @@ int main (int argc, char **argv) {
   }
   else { // (search == 0) 
     // use ranges for zhu parameters if "search = 0" 
-    scanf("%f%f",&(mt[1].par),&(mt[1].dd)); mt[1].min = -1.; mt[1].max = 1.;   // -1 to 1
-    scanf("%f%f",&(mt[2].par),&(mt[2].dd)); mt[2].min = -0.5; mt[2].max = 0.25;  //-0.5 to 0.25
+    scanf("%f%f", &(mt[1].par), &(mt[1].dd)); mt[1].min = -1.; mt[1].max = 1.;   // -1 to 1
+    scanf("%f%f", &(mt[2].par), &(mt[2].dd)); mt[2].min = -0.5; mt[2].max = 0.25;  //-0.5 to 0.25
   }
 
   //--------------------------------------------------
@@ -319,9 +344,9 @@ int main (int argc, char **argv) {
     fprintf(stderr,"fail to allocate memory for storing misfit errors\n");
     return -1;
   }
-  /* START prepare inversion variables */
+  // START prepare inversion variables
 
-  /* full range */
+  // full range
        u0 = 0.0;            uf = (3./4.) * PI;
        w0 = -(3./8.) * PI;  wf = (3./8.) * PI;
        v0 = -1./3.;         vf = 1./3.; 
@@ -332,15 +357,15 @@ int main (int argc, char **argv) {
 //       v0 = 0.;             vf = 0.; 
 //       u0 = (3./8.) * PI;   uf = (3./8.) * PI;
 
-    /* parameters for GRID search */
-    /*
+    // parameters for GRID search
+    //
        NOTE full grid search produces 20,155,392 solutions. 
        filesize (ascii) = 1.8 GB, runtime (ascii) = 1m1.432s
        filesize (bin)   =     GB, runtime (bin)   =         
-       */
+       //
 
        if(search==1) {
-           /* parameters for GRID search */
+           // parameters for GRID search
            //nnv = 12; nnu = 36;   nnk = 72; nnh = 18; nns = 36;   // 12 * 36 * 72 * 18 * 36 = 20,155,392
            nnv = 12; nnu = 36;  nnk = 36; nnh = 9;  nns = 18;     // 12 * 36 * 36 * 9  * 18 =  2,519,424
            nnv = 6;  nnu = 9;   nnk = 72; nnh = 6;  nns = 12;     //  6 *  9 * 72 * 6  * 12 =    279,936
@@ -365,7 +390,7 @@ int main (int argc, char **argv) {
     // v0 = -0.33;  vf = 0.33;  nv = 30;  u0 = 0.0;  uf = 2.35619; nnu = 30;     // thin
 
     if(search==2) {
-        /* parameters for RAND search */
+        // parameters for RAND search
         nsol = 3e7;  // 2m33.975s
         nsol = 5e6;  // 0m25.111s
         nsol = 5e6;  // 
@@ -373,7 +398,7 @@ int main (int argc, char **argv) {
         nnu = nnv = nnw = nnk = nnh = nns = nsol;
     }
 
-    /* set parameters for search */
+    // set parameters for search
     searchPar->u0 = u0; searchPar->uf = uf; searchPar->nu = nnu;
     searchPar->w0 = w0; searchPar->wf = wf; searchPar->nw = nnw;
     searchPar->v0 = v0; searchPar->vf = vf; searchPar->nv = nnv;
@@ -393,6 +418,16 @@ int main (int argc, char **argv) {
     searchPar->ndip = nsol;
 
     searchPar->nsol = nsol;
+
+    */
+
+  // allocate memory for (strike, dip, rake)
+  // grid.err = (float *) malloc(grid.n[0]*grid.n[1]*grid.n[2]*sizeof(float));
+  grid.err = (float *) calloc(searchPar->nsol, sizeof(float));
+  if (grid.err == NULL ) {
+    fprintf(stderr,"fail to allocate memory for storing misfit errors\n");
+    return -1;
+  }
 
     fprintf(stderr,"Preparing space for moment tensors (nsol = %10d) ... ", searchPar->nsol);
     ARRAYMT * arrayMT = calloc(searchPar->nsol, sizeof(ARRAYMT));
