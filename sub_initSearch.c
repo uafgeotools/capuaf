@@ -108,27 +108,27 @@ void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
 
     // convert u to w
     // consider making a function
-    searchPar->u0 = searchPar->w0 + (3.0 * PI / 8.0);   // 
-    searchPar->uf = searchPar->wf + (3.0 * PI / 8.0);   // 
-    if(searchPar->u0 < 0.0) {
-        // some times  u0 == -0 then set to +0
-        fprintf(stderr,"WARNING u0 = %e new value:\n");
-        searchPar->u0 = 0.0;
-        fprintf(stderr,"WARNING u0 = %e \n");
+    searchPar->u1 = searchPar->w1 + (3.0 * PI / 8.0);   // 
+    searchPar->u2 = searchPar->w2 + (3.0 * PI / 8.0);   // 
+    if(searchPar->u1 < 0.0) {
+        // some times  u1 == -0 then set to +0
+        fprintf(stderr,"WARNING u1 = %e new value:\n");
+        searchPar->u1 = 0.0;
+        fprintf(stderr,"WARNING u1 = %e \n");
     }
 
-    randvec(searchPar->v0, searchPar->vf, searchPar->nv, vec_v);
-    randvec(searchPar->u0, searchPar->uf, searchPar->nu, vec_u);
-    randvec(searchPar->k0, searchPar->kf, searchPar->nk, vec_k);
-    randvec(searchPar->h0, searchPar->hf, searchPar->nh, vec_h);
-    randvec(searchPar->s0, searchPar->sf, searchPar->ns, vec_s);
+    randvec(searchPar->v1, searchPar->v2, searchPar->nv, vec_v);
+    randvec(searchPar->u1, searchPar->u2, searchPar->nu, vec_u);
+    randvec(searchPar->k1, searchPar->k2, searchPar->nk, vec_k);
+    randvec(searchPar->h1, searchPar->h2, searchPar->nh, vec_h);
+    randvec(searchPar->s1, searchPar->s2, searchPar->ns, vec_s);
 
     u2beta_vec(pxa, pya, na, vec_u, vec_beta, searchPar->nu);     //NOTE needs pxa, pya, na from external file
     beta2delta_vec(vec_beta, vec_delta, searchPar->nu);
     v2gamma_vec(vec_v, searchPar->nv, vec_gamma);
     h2dip_vec(vec_h, searchPar->nh, vec_dip);
 
-    fprintf(stderr,"~~~~~~~~~~~input u0 %f \n", searchPar->u0);
+    fprintf(stderr,"~~~~~~~~~~~input u1 %f \n", searchPar->u1);
     fprintf(stderr,"~~~~~~~~~~~DEBUG u[0] %f \n", vec_u[0]);
     fprintf(stderr,"~~~~~~~~~~~DEBUG beta[0] %f \n", vec_beta[0]);
 
@@ -147,7 +147,7 @@ void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
         arrayMT[isol].k =     vec_k[isol];
         arrayMT[isol].t =   vec_dip[isol];
         arrayMT[isol].s =     vec_s[isol];
-        fprintf(stdout,"index = %20d %f %f %f %f %f \n", isol, arrayMT[isol].g *r2d, arrayMT[isol].d *r2d,  arrayMT[isol].k *r2d,  arrayMT[isol].t *r2d,  arrayMT[isol].s *r2d);
+//        fprintf(stdout,"index = %20d %f %f %f %f %f \n", isol, arrayMT[isol].g *r2d, arrayMT[isol].d *r2d,  arrayMT[isol].k *r2d,  arrayMT[isol].t *r2d,  arrayMT[isol].s *r2d);
     }
     fprintf(stderr,"done. nsol = %d \n", isol);
     if (isol == 1) {
@@ -205,20 +205,20 @@ void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
 
     // convert u to w
     // consider making a function
-    searchPar->u0 = searchPar->w0 + (3.0 * PI / 8.0);   // 
-    searchPar->uf = searchPar->wf + (3.0 * PI / 8.0);   // 
-    if(searchPar->u0 < 0.0) {
-        // some times  u0 == -0 then set to +0
-        fprintf(stderr,"WARNING u0 = %e new value:\n");
-        searchPar->u0 = 0.0;
-        fprintf(stderr,"WARNING u0 = %e \n");
+    searchPar->u1 = searchPar->w1 + (3.0 * PI / 8.0);   // 
+    searchPar->u2 = searchPar->w2 + (3.0 * PI / 8.0);   // 
+    if(searchPar->u1 < 0.0) {
+        // some times  u1 == -0 then set to +0
+        fprintf(stderr,"WARNING u1 = %e new value:\n");
+        searchPar->u1 = 0.0;
+        fprintf(stderr,"WARNING u1 = %e \n");
     }
 
-    gridvec(searchPar->v0, searchPar->vf, searchPar->nv, vec_v);    /* gamma(v) */
-    gridvec(searchPar->u0, searchPar->uf, searchPar->nu, vec_u);    /* beta(u) \\ delta = beta -90 */
-    gridvec(searchPar->k0, searchPar->kf, searchPar->nk, vec_k);
-    gridvec(searchPar->h0, searchPar->hf, searchPar->nh, vec_h);    /* dip(h) */
-    gridvec(searchPar->s0, searchPar->sf, searchPar->ns, vec_s);
+    gridvec(searchPar->v1, searchPar->v2, searchPar->nv, vec_v);    /* gamma(v) */
+    gridvec(searchPar->u1, searchPar->u2, searchPar->nu, vec_u);    /* beta(u) \\ delta = beta -90 */
+    gridvec(searchPar->k1, searchPar->k2, searchPar->nk, vec_k);
+    gridvec(searchPar->h1, searchPar->h2, searchPar->nh, vec_h);    /* dip(h) */
+    gridvec(searchPar->s1, searchPar->s2, searchPar->ns, vec_s);
 
     u2beta_vec(pxa, pya, na, vec_u, vec_beta, searchPar->nu);     /* gets (pxa, pya, na) from external file */
     beta2delta_vec(vec_beta, vec_delta, searchPar->nu);                /* beta(u) --> delta, npts = nu */
@@ -345,9 +345,9 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     temp[0] = 4.5; // ALASKA
     temp[0] = 2.8; // UTURUNCU
     temp[0] = 5.2; // ILLINOIS
-    temp[0] = searchPar->mw0;
-    //    searchPar->mw0 = 4.5;
-    //    searchPar->mwf = 4.5;
+    // temp[0] is set to starting magnitude (when no magnitude search).
+    // another option is define point mag mw0 if point mag search
+    temp[0] = searchPar->mw1;
 
     amp = pow(10.,1.5*temp[0]+16.1-20);
     grd_err = grid.err;
