@@ -380,8 +380,8 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
         //--------------KEY COMMAND---call misfit function------
         sol=calerr(nda,obs0,max_shft,tie,norm,mtensor,amp,sol);
 
-        // Nsta = number of components.
-        sol.err=sol.err/Nsta;
+        // Ncomp = number of components.
+        sol.err=sol.err/Ncomp;
         *grd_err++ = sol.err; /*error for this solution*/
 
         //        fprintf(stdout,"index= %10d\t%11.6f %11.6f %11.6f %11.6f %11.6f\n", isol, temp[2], temp[1], sol.meca.stk, sol.meca.dip, sol.meca.rak);

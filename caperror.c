@@ -155,7 +155,7 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	    //--------------KEY COMMAND---call misfit function------
 	    sol=calerr(nda,obs0,max_shft,tie,norm,mtensor,amp,sol);
 
-	    sol.err=sol.err/Nsta;               // normalize error by number of station
+	    sol.err=sol.err/Ncomp;               // normalize error by number of station
 	    *grd_err++ = sol.err;		// error for this solution
 	    
 	    // save the sample if it has the misfit lower than previous
@@ -379,8 +379,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 		  //--------------KEY COMMAND---call misfit function------
 		  sol=calerr(nda,obs0,max_shft,tie,norm,mtensor,amp,sol);
 
-		  //fprintf(stderr, "Nsta=%d\n",Nsta);
-		  sol.err=sol.err/Nsta;
+		  //fprintf(stderr, "Ncomp=%d\n",Ncomp);
+		  sol.err=sol.err/Ncomp;
 		  *grd_err++ = sol.err;		/*error for this solution*/
 
           /* track smallest misfit at each point on the lune */
@@ -570,8 +570,8 @@ SOLN	error(	int		npar,	// 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 	    //--------------KEY COMMAND---call misfit function------
 	    sol=calerr(nda,obs0,max_shft,tie,norm,mtensor,amp,sol);
 
-	    //fprintf(stderr, "Nsta=%d\n",Nsta);
-	    sol.err=sol.err/Nsta;
+	    //fprintf(stderr, "Ncomp=%d\n",Ncomp);
+	    sol.err=sol.err/Ncomp;
 	    *grd_err++ = sol.err;		/*error for this solution*/
 
 	    if (best_sol.err>sol.err)
