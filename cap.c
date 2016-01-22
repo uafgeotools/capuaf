@@ -100,7 +100,7 @@ int FTC_data=1, FTC_green=0;// for original CAP set FTC_data=0, FTC_green=0
 int skip_zero_weights=1;    // for original CAP set skip_zero_weights=1
 
 int main (int argc, char **argv) {
-  int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search,norm;
+  int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search_type,norm;
   int	n1,n2,ns, mltp, nup, up[3], n_shft, nqP, nqS,isurf=0,ibody=0,istat=0,Nsurf=0,Nbody=0,Nstat=0;
   int	mm[2],n[NCP],max_shft[NCP],npts[NRC];
   int	repeat, bootstrap;
@@ -201,10 +201,10 @@ int main (int argc, char **argv) {
   scanf("%d",&plot);
   scanf("%d%d",&useDisp,&mltp);
   scanf("%s",glib);
-  scanf("%d",&search);
+  scanf("%d",&search_type);
   scanf("%d",&norm);
   
-  fprintf(stderr, "search type = %d, norm = %d\n", search, norm);
+  fprintf(stderr, "search type = %d, norm = %d\n", search_type, norm);
 
   /*** input source functions and filters for pnl and sw ***/
   scanf("%f",&dt);
@@ -839,10 +839,10 @@ int main (int argc, char **argv) {
   fprintf(stderr,"\nBEGIN SEARCH\n\n"); 
 
   // call to old error function for reference. can be deleted
-  /* sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search,norm); */
+  /* sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search_type,norm); */
 
   // call initSearchMT instead of "error". This call includes extra parameters (searchPar, arrayMT)
-  sol = initSearchMT(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search,norm, searchPar, arrayMT);
+  sol = initSearchMT(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search_type,norm, searchPar, arrayMT);
 
   /* if runnning in first-motion-polarity mode clean up and end cap
    * after grid search in error function
@@ -885,7 +885,7 @@ int main (int argc, char **argv) {
     fprintf(stderr,"Warning: dip corrected by %f\n",sol.meca.dip-90);
     sol.meca.dip = 90.;
   }
-  if (search) {
+  if (search_type) {
     rad[0]=0.0;
     rad[1]=0.0;
     rad[2]=0.0;
@@ -924,7 +924,7 @@ int main (int argc, char **argv) {
   // this is very close to Kanamori1977 (16.1 vs 16.1010)
   amp=pow(10.,1.5*mt[0].par+16.1-20);
 
-  if(search) {
+  if(search_type) {
     tt2cmt(mt[2].par, mt[1].par, 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
   }
   else {
