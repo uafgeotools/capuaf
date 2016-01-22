@@ -812,8 +812,8 @@ int main (int argc, char **argv) {
   }
 
   /************grid-search for full moment tensor***********/
-  logf = fopen("log_diff","w");
-  fclose(logf);
+//  logf = fopen("log_diff","w");
+//  fclose(logf);
 
   // maybe we label this section "cap messages"...
   /*
