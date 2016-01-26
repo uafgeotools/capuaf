@@ -24,7 +24,7 @@ float beta2delta(float beta)
 {
     float delta;
     delta = beta - (PI / 2.0);     //delta = beta - 90.0;
-//    fprintf(stdout,"### CHECK DELTA. %f \n", delta * r2d);
+//    fprintf(stdout,"CHECK DELTA. %f \n", delta * r2d);
     return delta;
 }
 
@@ -48,11 +48,11 @@ float v2gamma(float v)
 
     // sanity check range for v
     if((v < -k3) || (v > k3)) {
-        fprintf(stderr,"WARNING. v= %5.2e is outside range\n");
+        fprintf(stderr,"WARNING. v= %5.2e is outside range +-1/3\n");
         return -1;
     }
     gamma = k3 * asinf(3. * v);
-//    fprintf(stdout,"### CHECK GAMMA. %f \n", gamma * r2d);
+    // fprintf(stdout,"CHECK GAMMA %f \n", gamma * r2d);
     return gamma;
 }
 
@@ -87,22 +87,27 @@ void h2dip_vec(float *pArray_h, int nsol, float *pArray_dip)
 
 /* 
     Create vector of random points in a range.
+    NOTE
     There may be more robust implementations.
-    Consider using other than drand48. 
-        it needs to be converted to float
-        it may not be available in other systems like Windows (may not matter...)
-        rand or random may be more actively developed.
+    This function uses function RAND(). 
+    Previous random implementations use DRAND48().
+    The linux man pages say DRAND48(3) is obsolete and to use RAND() instead.
  */
 void randvec(float xmin, float xmax, int nsol, float *pArray)
 {
     int i;
     float width;
-    /* srand(12345); */     /* use with random */ 
-
+    float randval;
     width = (xmax - xmin);
     fprintf(stderr,"create RAND vector. xmin= %10.5f xmax= %10.5f NPTS = %d ... ", xmin, xmax, nsol);
+
     for(i = 0; i < nsol; i++) {
-        pArray[i] = ((float)drand48() * width) + xmin;
+        randval = ((float) rand()) / RAND_MAX;
+        randval = ((randval * width) + xmin);
+        pArray[i] = randval;
+
+        //check random values (for debugging)
+        // fprintf(stdout,"CHECK RAND %10.6f %10.6f %22.18f \n", xmin, xmax, randval); 
     }
     fprintf(stderr,"\tdone. NSOL = %d\n", i);
 }
@@ -143,7 +148,7 @@ void gridvec(float xmin, float xmax, int npoints, float *pArray)
         fprintf(stderr, "create GRID vector. xmin= %10.5f xmax= %10.5f dx= %12.5e ... (new)", xmin, xmax, dx);
         for(i = 0; i < npoints; i++) {
             pArray[i] = xmin + dx * (float) i;
-            //        fprintf(stdout,"### CHECK GRIDVEC. %f \n", pArray[i] );
+            //        fprintf(stdout,"CHECK GRIDVEC. %f \n", pArray[i] );
         }
         if((pArray[npoints-1] - xmax) > TOLERANCE) {
             fprintf(stderr,"WARNING. end point does not match expected end point!\n");
@@ -213,7 +218,7 @@ void interp_lin(float *x,     // x array  (input)
         // compute all interpolations yy for xx
         if (index_nearest != -1) {
             yy[i] = slope[index_nearest] * xx[i] + intercept[index_nearest];
-//            fprintf(stderr,"### CHECK. inearest= %d xi= %f yi= %f \n", index_nearest, x[i], y[i]); 
+//            fprintf(stderr,"CHECK beta(u). inearest= %d xi= %f yi= %f \n", index_nearest, x[i], y[i]); 
         }
         else
             yy[i] = DBL_MAX;
