@@ -20,6 +20,7 @@
 #include "radiats.h"
 
 #include "uv2lune.h"
+// #include <time.h>   // when using OPTION 2 in the random seed generator
 
 /***********************Constants********************************/
 
@@ -40,6 +41,7 @@ static char grn_com[NGR]={'8','5','b','7','4','1','a','6','3','0'};
 
 #define r2d 180.0 / PI
 #define TOLERANCE 0.00001
+#define RANDSEED 12345
 /***********************global vars********************************/
 
 extern int total_n,loop,start,debug, Ncomp,Psamp[STN],Ssamp[STN],edep;

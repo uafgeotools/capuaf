@@ -124,6 +124,15 @@ int main (int argc, char **argv) {
   FM	*fm, *fm0;
   FM *fm_copy;  /*  copy of all first motions entered in weight file */
 
+  fprintf(stderr,"\n----------------------------------------------------------\n");
+
+  // start random number generator (randvec function). See also cap.h
+  fprintf(stderr,"NOTE random seed = %d (randvec function)\n", RANDSEED);
+  // option 1 seed is user defined
+  srand(RANDSEED);
+  // option 2 seed using current time
+  //srand(time(NULL));
+
   /* START block of variables for uniform MT */
   SEARCHPAR *searchPar = calloc(1, sizeof(SEARCHPAR));
 
@@ -159,8 +168,7 @@ int main (int argc, char **argv) {
   long int order=4, nsects;
   void  principal_values(float *);
 
-  fprintf(stderr,"----------------------------------------------------------\n");
-  fprintf(stderr,"cap.c: get input parameters for inversion\n");
+  fprintf(stderr,"\ncap.c: get input parameters for inversion\n");
 
 #ifdef DIRECTIVITY
   int ns_pnl, ns_sw;
