@@ -267,8 +267,8 @@ int main (int argc, char **argv) {
   // mt[2].dd  = CLVD increment (From -I flag) (ALWAYS equal to ISO increment 'mt[1].dd') 
 
   fprintf(stderr, "\nInput parameter ranges \n");
-  // NOTE delta Mw (not number of points)
-  scanf("%f%f%f", &searchPar->mw1, &searchPar->mw2, &searchPar->dmw);
+  // NOTE magnitude parameters include dMw and number of points
+  scanf("%f%f%f%d", &searchPar->mw1, &searchPar->mw2, &searchPar->dmw, &searchPar->nmw);
   // (v, w, k, h, s) format: (start, end, number of points)
   scanf("%f%f%d", &searchPar->v1,  &searchPar->v2,  &searchPar->nv);
   scanf("%f%f%d", &searchPar->w1,  &searchPar->w2,  &searchPar->nw);
@@ -281,7 +281,7 @@ int main (int argc, char **argv) {
   searchPar->nu = searchPar->nw;
 
   // output values
-  fprintf(stderr, "mw1= %5.2f mw2= %5.2f dmw= %5.2f\n", searchPar->mw1, searchPar->mw2, searchPar->dmw);
+  fprintf(stderr, "mw1= %6.3f mw2= %6.3f dmw= %6.3f nmw= %d\n", searchPar->mw1, searchPar->mw2, searchPar->dmw, searchPar->nmw);
   fprintf(stderr, "v1= %11.6f v2= %11.6f nv= %10d\n", searchPar->v1, searchPar->v2, searchPar->nv);
   fprintf(stderr, "w1= %11.6f w2= %11.6f nw= %10d\n", searchPar->w1, searchPar->w2, searchPar->nw);
   fprintf(stderr, "k1= %11.6f k2= %11.6f nk= %10d\n", searchPar->k1, searchPar->k2, searchPar->nk);
