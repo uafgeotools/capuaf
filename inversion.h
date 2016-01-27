@@ -23,7 +23,7 @@ typedef struct {
 
 typedef struct
 {
-    float mw1;  float mw2;  float dmw;
+    float mw1;  float mw2;  float dmw; int nmw;
 
     float u1;   float u2;   int nu;
     float v1;   float v2;   int nv;
