@@ -158,6 +158,7 @@ void gridvec(float xmin, float xmax, int npoints, float *pArray)
     }
 }
 
+// create array of magnitudes. this option includes endpoints.
 void magvec(float xmin, float xmax, float dx, float *pArray)
 {
     int i;
