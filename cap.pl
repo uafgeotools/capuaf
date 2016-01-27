@@ -80,6 +80,7 @@ $deg2rad = pi / 180.0;
 # RANGE LIMITS PER PARAMETER
 # magnitude 
 ($deg, $dm, $dlune) = (10, 0.1, 0.);
+$nmw = 1;
 
 # orientation
 $k1 = 0;    $k2 = 360;
@@ -340,6 +341,10 @@ foreach (grep(/^-/,@ARGV)) {
            $mg = $value[0];     # IS THIS NEEDED ANYMORE?
        } elsif ($#value==2) {
            ($mw1, $mw2, $dm) = @value;
+           # nmw = number of magnitude points when running magnitude search.
+           # note this allows to run at grid points dmw finer than 
+           # 0.1 (eg 0.01, 0.001...), so run with care
+           $nmw = sprintf("%.0f", ($mw2 - $mw1) / $dm +1 );
        }
    } elsif ($opt eq "M") {
        # ($md_dep,$mg) = @value;
@@ -422,7 +427,7 @@ unless ($dura) {
   $dura = 9 if $dura > 9;
 }
 
-printf STDERR $search;
+# printf STDERR $search;    ## delete
 
 # CHECK THAT USER INPUT MAKE SENSE
 # ONGOING
@@ -511,7 +516,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     #print SRC "$dip1 $dip2 $deg\n";
     #print SRC "$rak1 $rak2 $deg\n";
     #--- start parameters for search
-    print SRC "$mw1 $mw2 $dm\n";
+    print SRC "$mw1 $mw2 $dm $nmw\n";
     print SRC "$v1 $v2 $nv\n";
     print SRC "$w1 $w2 $nw\n";
     print SRC "$k1 $k2 $nk\n";
