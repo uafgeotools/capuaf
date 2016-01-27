@@ -158,6 +158,28 @@ void gridvec(float xmin, float xmax, int npoints, float *pArray)
     }
 }
 
+void magvec(float xmin, float xmax, float dx, float *pArray)
+{
+    int i;
+    int npoints = 0;
+    float dmw;
+    int count=0;
+
+    if(dx < TOLERANCE) {
+        npoints = 1;
+    } else {
+        // endpoints inclusive for magnitude vector
+        npoints = (int) roundf(((xmax - xmin) / dx) + 1);
+    }
+    fprintf(stderr, "\ncreate Mw vector. xmin= %10.5f xmax= %10.5f dx= %10.5e npts = %d... ", xmin, xmax, dx, npoints);
+
+    for(i = 0; i < npoints; i++) {
+        pArray[i] = xmin + (dx * (float) i);
+        count++;
+    }
+    fprintf(stderr,"\tdone. NPTS = %d\n", count);
+}
+
 /*
     This is brute force and slow. The gnu method is faster
     [timings]

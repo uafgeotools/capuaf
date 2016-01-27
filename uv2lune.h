@@ -14,5 +14,6 @@ float h2dip(float h);
 void h2dip_vec(float *pArray_h, int nsol, float *pArray_dip);
 void randvec(float xmin, float xmax, int nsol, float *pArray);
 void gridvec(float xmin, float xmax, int npoints, float *pArray);
+void magvec(float xmin, float xmax, float dx, float *pArray);
 int find_nearest_index(float value, float * pData, int len);
 void interp_lin(float *x, float *y, int x_size, float *xx, float *yy, int xx_size);
