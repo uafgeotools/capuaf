@@ -915,6 +915,7 @@ int main (int argc, char **argv) {
 
   fclose(fid_warn);
 
+  fprintf(stderr,"Preparing out file ...\n");
   //grid.n[0]=grid.n[1]=grid.n[2]=1;
   //grid.x0[0]=sol.meca.stk; grid.x0[1]=sol.meca.dip; grid.x0[2]=sol.meca.rak;
   //sol = error(nda,obs0,nfm,fm0,max_shft,m0,grid,fm_thr,tie);
@@ -960,6 +961,8 @@ for(obs=obs0,i=0;i<nda;i++,obs++) {
       sol.shft[i][k]=sol.shft[i][k] - max_shft[k]/2;
     }
  }
+
+fprintf(stderr,"Saving seismograms ... \n");
 // generate synthetic and data waveforms for each 5 component (filtered and cut) 
 // these are deleted at the later stage (see cap.pl)
 for(obs=obs0,i=0;i<nda;i++,obs++){
@@ -1069,7 +1072,7 @@ for(obs=obs0,i=0;i<nda;i++,obs++){
  free(arrayMT); 
  free(searchPar);
 
- fprintf(stderr,"\ncap.c: SEARCH DONE\n");
+ fprintf(stderr,"\ncap.c: DONE\n");
  fprintf(stderr,"----------------------------------------\n\n");
  return 0;
 }
