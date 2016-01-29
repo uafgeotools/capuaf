@@ -152,9 +152,6 @@ int main (int argc, char **argv) {
   /* END block of variables for uniform MT */
 
   // variables to verify that Mw_best is not near search limits
-  float mw_center;      // input magnitude
-  float mw_limit_low;   // +- 0.5 for search=1
-  float mw_limit_high;  // 
   FILE * fid_warn;        // output file for warnings
   fid_warn = fopen("capout_error.txt","w");
 
@@ -900,8 +897,6 @@ int main (int argc, char **argv) {
     sol.ms = 1;}
 
   // output warning if best magnitude = magnitude limit in magnitude search.
-  mw_limit_high = mw_center + 0.4;  // +- 0.5 as used in search=1
-  mw_limit_low  = mw_center - 0.4;
   if ( (mt[0].par <= searchPar->mw1 && searchPar->dmw != 0) || (mt[0].par >= searchPar->mw2 && searchPar->dmw != 0) ) {
       fprintf(stderr, "\n***********************************************************************\n");
       fprintf(stderr, "\tINVERSION STOPPED. See file capout_error.txt\n");
