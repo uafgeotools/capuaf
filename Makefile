@@ -5,6 +5,10 @@ FC = gfortran
 NRLIB = $(NRHOME_C)
 CFLAGS = ${FFLAGS} -I$(NRLIB)/includes
 
+ifeq (${d}, WB)
+	CFLAGS += -D${d}
+endif
+
 CAP  = cap cap_dir
 
 #SUBS = fft.o Complex.o radiats.o grid3d.o futterman.o sacio.o trap.o sub_tt2cmt.o sub_first_motion_misfit.o sub_fmp_print_params.o calerr.o caperror.o sub_initSearch.o uv2lune.o
@@ -12,18 +16,10 @@ SUBS = fft.o Complex.o radiats.o grid3d.o futterman.o sacio.o trap.o sub_tt2cmt.
 
 all: $(CAP)
 
-# Write binary output. Uncomment and then compile with the usual commands.
-# There is a better way to do this... (ongoing)
-#cap cap_dir: %:%.o $(SUBS) cap_sub.o
-#	$(LINK.f) -o $@ $^ -L$(SACHOME)/lib -lsac -lsacio -L$(NRLIB) -lcrecipes -DWRITECAPBIN
-
-# (Default cap) do not write binary output
+# to compile cap with the option of Writing Binary file, run
+# 	make cap d=WB
 cap cap_dir: %:%.o $(SUBS) cap_sub.o
-	$(LINK.f) -o $@ $^ -L$(SACHOME)/lib -lsac -lsacio -L$(NRLIB) -lcrecipes
-
-
-#cap cap_dir: %:%.o $(SUBS) cap_sub.o
-#	$(LINK.f) -o $@ $^ -L$(SACHOME)/lib -lsac -lsacio -L$(NRLIB) -lnr
+	$(LINK.f) -o $@ $^ -L$(SACHOME)/lib -lsac -lsacio -L$(NRLIB) -lcrecipes 
 
 cap_dir.o: cap.c
 	$(COMPILE.c) -DDIRECTIVITY -o $@ $<
