@@ -406,6 +406,13 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
             //tt2cmt(temp[2], temp[1], 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
             tt2cmt(arrayMT[isol].g * r2d, arrayMT[isol].d * r2d, 1.0, arrayMT[isol].k * r2d, arrayMT[isol].t * r2d, arrayMT[isol].s * r2d, mtensor);
 
+            // KEY COMMAND. reject this solution if first motion polarities do not match.
+            // NOTE the weight file needs to have polarity picks, otherwise this
+            // command will not reject any solution.
+            if (check_first_motion(mtensor,fm,nfm,fm_thr)<0) {
+                continue;
+            }
+
             // compute misfit from first motion. data will be output to out.misfit.fmp_
             // misfit_fmp = misfit_first_motion(mtensor, nfm, fm, fidfmp, temp[2], temp[1], temp[0], sol.meca.stk, sol.meca.dip, sol.meca.rak);
             misfit_fmp = misfit_first_motion(mtensor, nfm, fm, fidfmp, arrayMT[isol].g * r2d, arrayMT[isol].d * r2d, vec_mag[imag], sol.meca.stk, sol.meca.dip, sol.meca.rak);
