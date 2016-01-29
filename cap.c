@@ -156,7 +156,7 @@ int main (int argc, char **argv) {
   float mw_limit_low;   // +- 0.5 for search=1
   float mw_limit_high;  // 
   FILE * fid_warn;        // output file for warnings
-  fid_warn = fopen("capout_warnings.txt","w");
+  fid_warn = fopen("capout_error.txt","w");
 
   SOLN	sol;
   SACHEAD hd[NRC];
@@ -902,15 +902,16 @@ int main (int argc, char **argv) {
   // output warning if best magnitude = magnitude limit in magnitude search.
   mw_limit_high = mw_center + 0.4;  // +- 0.5 as used in search=1
   mw_limit_low  = mw_center - 0.4;
-  if ( (mt[0].par <= mw_limit_low) || (mt[0].par >= mw_limit_high) )
-  {
-      fprintf(stderr,"\nWARNINGS generated. See file capout_warnings.txt\n\n");
+  if ( (mt[0].par <= searchPar->mw1 && searchPar->dmw != 0) || (mt[0].par >= searchPar->mw2 && searchPar->dmw != 0) ) {
+      fprintf(stderr, "\n***********************************************************************\n");
+      fprintf(stderr, "\tINVERSION STOPPED. See file capout_error.txt\n");
+      fprintf(stderr, "***********************************************************************\n");
       fprintf(fid_warn, "***********************************************************************\n");
-      fprintf(fid_warn, "Warning: Best magnitude is at a boundary.\n");
-      fprintf(fid_warn, "Consider increasing or decreasing center magnitude\n");
-      fprintf(fid_warn, "\nCenter mag= %4.1f / Best mag= %4.1f / Search limits= %4.1f/%4.1f\n\n",
-              mw_center, mt[0].par, mw_limit_low, mw_limit_high);
+      fprintf(fid_warn, "INVERSION STOPPED. Best magnitude Mw = %4.1f is at a boundary.\n", mt[0].par);
+      fprintf(fid_warn, "Boundaries [Mw1, Mw2] = [%4.1f, %4.1f]\n", searchPar->mw1, searchPar->mw2);
+      fprintf(fid_warn, "Consider expanding the magnitude boundary.\n");
       fprintf(fid_warn, "***********************************************************************\n");
+      return(-1);
   }
 
   fclose(fid_warn);
