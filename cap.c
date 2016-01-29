@@ -904,9 +904,9 @@ int main (int argc, char **argv) {
   mw_limit_low  = mw_center - 0.4;
   if ( (mt[0].par <= mw_limit_low) || (mt[0].par >= mw_limit_high) )
   {
-      fprintf(stderr,"WARNINGS generated. See file capout_warnings.txt\n");
+      fprintf(stderr,"\nWARNINGS generated. See file capout_warnings.txt\n\n");
       fprintf(fid_warn, "***********************************************************************\n");
-      fprintf(fid_warn, "Warning: best magnitude near search limits.\n");
+      fprintf(fid_warn, "Warning: Best magnitude is at a boundary.\n");
       fprintf(fid_warn, "Consider increasing or decreasing center magnitude\n");
       fprintf(fid_warn, "\nCenter mag= %4.1f / Best mag= %4.1f / Search limits= %4.1f/%4.1f\n\n",
               mw_center, mt[0].par, mw_limit_low, mw_limit_high);
