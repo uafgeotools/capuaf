@@ -309,7 +309,7 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     int imag, nmag;
     float VR;
 
-#ifdef WRITECAPBIN
+#ifdef WB
     // output files for postprocessing
     // mt = moment tensor elements
     // gd = gamma, delta, strike, dip, rake
@@ -321,8 +321,8 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     OUTPUTMT outmt;
 
     if(search_type == 1) {
-        sprintf(outFileGD, "capout_grid_mt.bin");
-        sprintf(outFileMT, "capout_grid_gd.bin");
+        sprintf(outFileMT, "capout_grid_mt.bin");
+        sprintf(outFileGD, "capout_grid_gd.bin");
     } else if (search_type == 2) {
         sprintf(outFileMT, "capout_rand_mt.bin");
         sprintf(outFileGD, "capout_rand_gd.bin");
@@ -370,7 +370,7 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     magvec(searchPar->mw1, searchPar->mw2, searchPar->dmw, vec_mag);
 
     //amp = pow(10.,1.5 * +16.1-20);
-    amp = pow(10.,1.5*temp[0]+16.1-20);
+    //amp = pow(10.,1.5*temp[0]+16.1-20);
 
     grd_err = grid.err;
     best_sol.err = FLT_MAX;
@@ -380,8 +380,8 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     nmag = searchPar->nmw; 
     for(imag = 0; imag < nmag; imag++) {
         fprintf(stderr,"Loop Mw[%d/%d] = %6.3f\n", imag+1, nmag, vec_mag[imag]);
-        temp[0] = vec_mag[imag];
-        amp = pow(10.,1.5*temp[0]+16.1-20);
+        //        temp[0] = vec_mag[imag];
+        amp = pow(10., 1.5 * vec_mag[imag] + 16.1 - 20);
 
         // loop through all solutions
         for(isol = 0; isol < searchPar->nsol; isol++) {
@@ -397,16 +397,18 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
                mtensor);
                */
 
-            temp[2] = arrayMT[isol].g * r2d;
-            temp[1] = arrayMT[isol].d * r2d;
-            sol.meca.stk = arrayMT[isol].k * r2d;
-            sol.meca.dip = arrayMT[isol].t * r2d;
-            sol.meca.rak = arrayMT[isol].s * r2d;
+            //           temp[2] = arrayMT[isol].g * r2d;
+            //           temp[1] = arrayMT[isol].d * r2d;
+            //           sol.meca.stk = arrayMT[isol].k * r2d;
+            //           sol.meca.dip = arrayMT[isol].t * r2d;
+            //           sol.meca.rak = arrayMT[isol].s * r2d;
 
-            tt2cmt(temp[2], temp[1], 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
+            //tt2cmt(temp[2], temp[1], 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
+            tt2cmt(arrayMT[isol].g * r2d, arrayMT[isol].d * r2d, 1.0, arrayMT[isol].k * r2d, arrayMT[isol].t * r2d, arrayMT[isol].s * r2d, mtensor);
 
             // compute misfit from first motion. data will be output to out.misfit.fmp_
-            misfit_fmp = misfit_first_motion(mtensor, nfm, fm, fidfmp, temp[2], temp[1], temp[0], sol.meca.stk, sol.meca.dip, sol.meca.rak);
+            // misfit_fmp = misfit_first_motion(mtensor, nfm, fm, fidfmp, temp[2], temp[1], temp[0], sol.meca.stk, sol.meca.dip, sol.meca.rak);
+            misfit_fmp = misfit_first_motion(mtensor, nfm, fm, fidfmp, arrayMT[isol].g * r2d, arrayMT[isol].d * r2d, vec_mag[imag], sol.meca.stk, sol.meca.dip, sol.meca.rak);
 
             //--------------KEY COMMAND---call misfit function------
             sol=calerr(nda,obs0,max_shft,tie,norm,mtensor,amp,sol);
@@ -414,20 +416,30 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
             // Ncomp = number of components.
             sol.err=sol.err/Ncomp;
             //*grd_err++ = sol.err; /*error for this solution*/
+            //
 
             //        fprintf(stdout,"index= %10d\t%11.6f %11.6f %11.6f %11.6f %11.6f\n", isol, temp[2], temp[1], sol.meca.stk, sol.meca.dip, sol.meca.rak);
             if (best_sol.err > sol.err) {
                 isol_best = isol;
                 best_sol = sol; 
-                mt[0].par = temp[0];
-                mt[1].par = temp[1];
-                mt[2].par = temp[2];
+                //    mt[0].par = temp[0];
+                //     mt[1].par = temp[1];
+                //      mt[2].par = temp[2];
+                mt[0].par = vec_mag[imag];
+                mt[1].par = arrayMT[isol].d * r2d;
+                mt[2].par = arrayMT[isol].g * r2d;
+                sol.meca.stk = arrayMT[isol].k * r2d;
+                sol.meca.dip = arrayMT[isol].t * r2d;
+                sol.meca.rak = arrayMT[isol].s * r2d;
 
                 /* output search status */
                 VR = 100.*(1.-(sol.err/data2)*(sol.err/data2));
                 fprintf(stderr,"best sol isol=%9d (%3d%) mag=%5.2f %11.6f %11.6f %11.6f %11.6f %11.6f \t VR=%6.1f%\n", 
                         isol, 100 * isol/searchPar->nsol,
-                        temp[0], temp[2], temp[1], sol.meca.stk, sol.meca.dip, sol.meca.rak, VR);
+                        vec_mag[imag], arrayMT[isol].g * r2d, arrayMT[isol].d * r2d,
+                        arrayMT[isol].k * r2d, arrayMT[isol].t * r2d, arrayMT[isol].s * r2d,
+                        VR);
+                //                        temp[0], temp[2], temp[1], sol.meca.stk, sol.meca.dip, sol.meca.rak, VR);
 
                 /* output variables (only use for debug) */
                 /*
@@ -438,13 +450,13 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
             }
 
             //  output binary data
-#ifdef WRITECAPBIN
-            outgd.g = temp[2];
-            outgd.d = temp[1];
-            outgd.s = sol.meca.stk;
-            outgd.h = sol.meca.dip;
-            outgd.r = sol.meca.rak;
-            outgd.mag = temp[0];
+#ifdef WB
+            outgd.g = arrayMT[isol].g * r2d;
+            outgd.d = arrayMT[isol].d * r2d;
+            outgd.s = arrayMT[isol].k * r2d;
+            outgd.h = arrayMT[isol].t * r2d;
+            outgd.r = arrayMT[isol].s * r2d;
+            outgd.mag = vec_mag[imag];
             outgd.misfit_wf  = sol.err/data2;
             outgd.misfit_fmp = (float) misfit_fmp;
 
@@ -454,7 +466,7 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
             outmt.mrt = mtensor[0][2];
             outmt.mrp = -mtensor[1][2];
             outmt.mtp = -mtensor[0][1];
-            outmt.mag = temp[0];
+            outmt.mag = vec_mag[imag];
             outmt.misfit_wf = sol.err/data2;
             outmt.misfit_fmp = (float) misfit_fmp;
 
@@ -465,17 +477,21 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
         } /* end loop over solutions */
     } // end loop over magnitudes
 
-    fprintf(stderr,"\nTotal solutions processed nsol= %10d (%3d%)\n", isol, 100 *  isol/searchPar->nsol);
-    fprintf(stderr,"Best solution at index= %10d\n", isol_best);
-    fprintf(stderr,"Search completed.\n\n");
+    fprintf(stderr,"\nSearch completed.\n\n");
 
-    // close output files
-#ifdef WRITECAPBIN
+#ifdef WB
+    // close binary output files
     fclose(fidmt);
     fclose(fidgd);
+    fprintf(stderr,"binary data saved to file: %s \n", outFileMT);
+    fprintf(stderr,"binary data saved to file: %s \n", outFileGD);
 #endif
 
     free(vec_mag);
+
+    fprintf(stderr,"\nTotal solutions processed nsol= %10d (%3d%)\n", isol, 100 *  isol/searchPar->nsol);
+    fprintf(stderr,"Best solution at index= %10d\n", isol_best);
+
     return(best_sol);
 }
 
