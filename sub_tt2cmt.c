@@ -22,8 +22,7 @@
  */
 
 
-#include<stdio.h>
-#include<math.h>
+#include "sub_tt2cmt.h"
 
 void tt2cmt(float gamma,    // clvd. [-30,30] degrees
             float delta,    // isotropic. [0,180] degrees (note alternative delta [-90,90])
@@ -34,26 +33,13 @@ void tt2cmt(float gamma,    // clvd. [-30,30] degrees
             float mtensor[3][3])    // output
 {
     // define constants and common operations
-    float k8R6, kR3, k2R6, k2R3,k4R6;          // constants(==k), R=square root. k8r6 = 8*sqrt(6);
     float Cb, Cg, Cs, Ct, Ck, C2k, C2s, C2t;   // definitions for trig operations
     float Sb, Sg, Ss, St, Sk, S2k, S2s, S2t;
     float beta;
 
-    beta = 90-delta;
-
-    float m0scale = 1.0;
-
-    float pi  = 3.1415926535897932385;
-    float deg2rad = pi/180.0;
+    beta = 90.0 - delta;
 
 //    fprintf(stderr, "debug. received values: %lf %f %f %f %f %f\n", gamma, beta, m0, kappa, theta, sigma);
-
-    // define constants
-    kR3  = sqrt(3);
-    k2R6 = 2.0*sqrt(6);
-    k2R3 = 2.0*sqrt(3);
-    k4R6 = 4.0*sqrt(6);
-    k8R6 = 8.0*sqrt(6);
 
     // define common trig operations
     Cb  = cos(beta*deg2rad);
