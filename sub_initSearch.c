@@ -304,7 +304,7 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     float *f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err, *rnd_stk, *rnd_dip, *rnd_rak, *rnd_iso, *rnd_clvd, *iso;
     int misfit_fmp;
 
-    int isol;
+    int isol, nreject;
     int isol_best;
     int imag, nmag;
     float VR;
@@ -410,6 +410,7 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
             // NOTE the weight file needs to have polarity picks, otherwise this
             // command will not reject any solution.
             if (check_first_motion(mtensor,fm,nfm,fm_thr)<0) {
+                nreject++;
                 continue;
             }
 
@@ -496,8 +497,19 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
     free(vec_mag);
 
-    fprintf(stderr,"\nTotal solutions processed nsol= %10d (%3d%)\n", isol, 100 *  isol/searchPar->nsol);
-    fprintf(stderr,"Best solution at index= %10d\n", isol_best);
+    if(nreject == searchPar->nsol) {
+        fprintf(stderr,"----------------------------------------\n");
+        fprintf(stderr,"Total solutions rejected nsol=  %10d (%6.2f%)\n", nreject, 100 * (float) nreject / searchPar->nsol);
+        fprintf(stderr,"No solutions found. increase number of solutions or check first motion polarities.\n");
+        fprintf(stderr,"----------------------------------------\n");
+        exit(-1);
+    } else {
+        fprintf(stderr,"----------------------------------------\n");
+        fprintf(stderr,"Best solution at index= %10d\n", isol_best);
+        fprintf(stderr,"Total solutions processed nsol= %10d (%3d%)\n", isol, 100 *  isol/searchPar->nsol);
+        fprintf(stderr,"Total solutions rejected nsol=  %10d (%6.2f%)\n", nreject, 100 * (float) nreject / searchPar->nsol);
+        fprintf(stderr,"----------------------------------------\n\n");
+    }
 
     return(best_sol);
 }
