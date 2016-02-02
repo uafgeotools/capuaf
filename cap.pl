@@ -98,11 +98,16 @@ $v2 = (1.0 / 3.0);      $v1 = -$v2;
 # case 1. full moment tensor. use nv/nw/nstr/ndip/nrak
 # case 2. fixed lambda. use nstr/ndip/nrak
 # default number of points for each parameter
-$nv = 10;    # gamma
-$nw = 10;    # delta
-$nk = 10;    # strike
-$nh = 10;    # dip
-$ns = 10;    # rake
+
+$nv = $dv = 10;    # gamma
+$nw = $dw = 10;    # delta
+$nk = $dk = 10;    # strike
+$nh = $dh = 10;    # dip
+$ns = $ds = 10;    # rake
+
+# magnitude default is to run a single point
+$nmw = 1;   
+$dmw = 0;
 
 # search type = RAND -- specify number of solutions to generate
 $nsol    =  100000;     # full moment tensor
@@ -315,8 +320,9 @@ foreach (grep(/^-/,@ARGV)) {
            } else {
                $nsol = $nv * $nw * $nk * $nh * $ns;
            }
+
        }
-   } 
+   }
 #  elsif ($opt eq "J") {
 #    $iso1   = $value[0] if $value[0];
 #    $iso2  = $value[1] if $value[1];
@@ -427,7 +433,47 @@ unless ($dura) {
   $dura = 9 if $dura > 9;
 }
 
-# printf STDERR $search;    ## delete
+# Additional settings for parameters when doing running regular grid.
+# (dv, dw, dk, dh, ds) are grid SPACINGS for (gamma, delta, strike, dip, rake)
+if( $type == 3 ) {
+    use POSIX "fmod";   # may not be available outside unix/linux
+    # full range for each parameter
+    ($v1, $v2) = (-30, 30);
+    ($w1, $w2) = (-90, 90);
+    ($k1, $k2) = (  0, 360);
+    ($h1, $h2) = (  0, 90);
+    ($s1, $s2) = (-90, 90);
+
+    # get total number of solutions
+    # NOTE values nX are grid spacings, NOT number of points
+    # NOTE values dX should be integers (CAP expects integers)
+    ($dv, $dw, $dk, $dh, $ds) = ($nv, $nw, $nk, $nh, $ns);
+
+    # get number of points per parameter
+    if ($nv == 0 && $nw == 0) {
+        print STDERR "double couple\n"; 
+        $nv = 0;  # gamma
+        $nw = 0;  # delta
+    } else {
+    # CHECK VERSION IN CAP AND +1, -1 VALUES
+        $nv = (($v2 - $v1) / $dv) + 1;  # gamma -- include 0 point
+        $nw = (($w2 - $w1) / $dw) + 1;  # delta -- include 0 point
+    }
+    # CHECK VERSION IN CAP AND +1, -1 VALUES
+    $nk = (($k2 - $k1) / $dk) - 0;  # strike -- do not include 360
+    $nh = (($h2 - $h1) / $dh);      # dip -- include 0 at start (though it will be offset later)
+    $ns = (($s2 - $s1) / $ds) + 1;  # rake  -- include 0 point
+
+    # check that spacings work
+#   if (fmod($nv,2) || fmod($nw,2) || fmod($nk,2) || fmod($nh,2) || fmod($ns,2)) {
+#       print STDERR "STOP. number of points not integer with current spacings and limits.\n";
+#       print STDERR "$nv, $nw, $nk, $nh, $ns\n";
+#       exit(0);
+#   }
+    $nsol = $nv * $nw * $nk * $nh * $ns;
+}
+
+$search = $type;
 
 # CHECK THAT USER INPUT MAKE SENSE
 # ONGOING
@@ -435,19 +481,21 @@ unless ($dura) {
 # I10/10/10/10/10 goes with K1 else abort
 #
 # check parameterization type (zhu / lune) and search type (GRID/RANDOM) 
-if (($parm==0 ) && ($type==0)){
-    $search=0;
-} elsif (($parm==1 ) && ($type==1)){
-    $search=1;
-} elsif (($parm==1 ) && ($type==2)){
-    $search=2;
-} else {
-    printf STDERR "=====================================================
-This feature is not yet enabled. Try different combination of parameterization (-E) and search type (-K).
-=====================================================\n";
-    printf STDERR $usage;
-    exit(0);
-}
+# NOTE parm is disabled so E is free
+# if (($parm==0 ) && ($type==0)){
+#     $search=0;
+# } elsif (($parm==1 ) && ($type==1)){
+#     $search=1;
+# } elsif (($parm==1 ) && ($type==2)){
+#     $search=2;
+# } else {
+#     printf STDERR "=====================================================
+# This feature is not yet enabled. Try different combination of parameterization (-E) and search type (-K).
+# =====================================================\n";
+#     printf STDERR $usage;
+#     exit(0);
+# }
+
 
 if ( -r $dura ) {	# use a sac file for source time function   
   $dt = 0;
@@ -488,6 +536,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     print STDERR "-------------------------------------------------------------\n";
     print STDERR "cap.pl: print some input parameters:\n";
     print STDERR "EVENT ID = $eve | EVENT DEPTH = $dep |  SOURCE DURATION = $dura\n";
+    print STDERR "SEARCH TYPE  = $type | NSOL = $nsol\n";
     print STDERR "-------------------------------------------------------------\n\n";
 
     open(WEI, "$eve/$weight") || next;
@@ -516,12 +565,12 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     #print SRC "$dip1 $dip2 $deg\n";
     #print SRC "$rak1 $rak2 $deg\n";
     #--- start parameters for search
-    print SRC "$mw1 $mw2 $dm $nmw\n";
-    print SRC "$v1 $v2 $nv\n";
-    print SRC "$w1 $w2 $nw\n";
-    print SRC "$k1 $k2 $nk\n";
-    print SRC "$h1 $h2 $nh\n";
-    print SRC "$s1 $s2 $ns\n";
+    print SRC "$mw1 $mw2 $nmw $dm\n";
+    print SRC "$v1 $v2 $nv $dv\n";
+    print SRC "$w1 $w2 $nw $dw\n";
+    print SRC "$k1 $k2 $nk $dk\n";
+    print SRC "$h1 $h2 $nh $dh\n";
+    print SRC "$s1 $s2 $ns $ds\n";
     print SRC "$nsol\n";
     #--- end parameters for search
     printf SRC "%d\n",$#wwf + 1;
