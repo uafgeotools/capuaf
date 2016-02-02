@@ -40,8 +40,10 @@ static char grn_com[NGR]={'8','5','b','7','4','1','a','6','3','0'};
 #define NFFT	2048		/* for Q operator */
 
 #define r2d 180.0 / PI
-#define TOLERANCE 0.00001
+#define d2r PI / 180.0
 #define RANDSEED 12345
+#define TOLERANCE 0.00001
+#define TOLDIP 0.00001
 /***********************global vars********************************/
 
 extern int total_n,loop,start,debug, Ncomp,Psamp[STN],Ssamp[STN],edep;
@@ -209,6 +211,7 @@ SOLN calerr(int,DATA *,const int *, float,int,float mtensor[3][3],float,SOLN);
 /* functions for uniformMT */
 void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT);
 void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT);
+void getGridMT_nonUniform(SEARCHPAR * searchPar, ARRAYMT * arrayMT);
 SOLN searchMT(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int,int, SEARCHPAR *, ARRAYMT *);
 
 #endif
