@@ -265,25 +265,25 @@ int main (int argc, char **argv) {
 
   fprintf(stderr, "\nInput parameter ranges \n");
   // NOTE magnitude parameters include dMw and number of points
-  scanf("%f%f%f%d", &searchPar->mw1, &searchPar->mw2, &searchPar->dmw, &searchPar->nmw);
-  // (v, w, k, h, s) format: (start, end, number of points)
-  scanf("%f%f%d", &searchPar->v1,  &searchPar->v2,  &searchPar->nv);
-  scanf("%f%f%d", &searchPar->w1,  &searchPar->w2,  &searchPar->nw);
-  scanf("%f%f%d", &searchPar->k1,  &searchPar->k2,  &searchPar->nk);
-  scanf("%f%f%d", &searchPar->h1,  &searchPar->h2,  &searchPar->nh);
-  scanf("%f%f%d", &searchPar->s1,  &searchPar->s2,  &searchPar->ns);
+  scanf("%f%f%d%f", &searchPar->mw1, &searchPar->mw2, &searchPar->nmw, &searchPar->dmw);
+  // (v, w, k, h, s) format: (start, end, number of points and grid spacings (for regular grid))
+  scanf("%f%f%d%d", &searchPar->v1, &searchPar->v2, &searchPar->nv, &searchPar->dv);
+  scanf("%f%f%d%d", &searchPar->w1, &searchPar->w2, &searchPar->nw, &searchPar->dw);
+  scanf("%f%f%d%d", &searchPar->k1, &searchPar->k2, &searchPar->nk, &searchPar->dk);
+  scanf("%f%f%d%d", &searchPar->h1, &searchPar->h2, &searchPar->nh, &searchPar->dh);
+  scanf("%f%f%d%d", &searchPar->s1, &searchPar->s2, &searchPar->ns, &searchPar->ds);
   // total number of solutions
   scanf("%d", &searchPar->nsol);
   // u = [0, 3pi/4], w = [-3pi/8, +3pi/8]. u, w have the same number of points.
   searchPar->nu = searchPar->nw;
 
   // output values
-  fprintf(stderr, "mw1= %6.3f mw2= %6.3f dmw= %6.3f nmw= %d\n", searchPar->mw1, searchPar->mw2, searchPar->dmw, searchPar->nmw);
-  fprintf(stderr, "v1= %11.6f v2= %11.6f nv= %10d\n", searchPar->v1, searchPar->v2, searchPar->nv);
-  fprintf(stderr, "w1= %11.6f w2= %11.6f nw= %10d\n", searchPar->w1, searchPar->w2, searchPar->nw);
-  fprintf(stderr, "k1= %11.6f k2= %11.6f nk= %10d\n", searchPar->k1, searchPar->k2, searchPar->nk);
-  fprintf(stderr, "h1= %11.6f h2= %11.6f nh= %10d\n", searchPar->h1, searchPar->h2, searchPar->nh);
-  fprintf(stderr, "s1= %11.6f s2= %11.6f ns= %10d\n", searchPar->s1, searchPar->s2, searchPar->ns);
+  fprintf(stderr, "mw1= %6.3f mw2= %6.3f nmw= %d dmw= %6.3f\n", searchPar->mw1, searchPar->mw2, searchPar->nmw, searchPar->dmw);
+  fprintf(stderr, "v1= %11.6f v2= %11.6f nv= %10d dv= %10d\n", searchPar->v1, searchPar->v2, searchPar->nv, searchPar->dv);
+  fprintf(stderr, "w1= %11.6f w2= %11.6f nw= %10d dw= %10d\n", searchPar->w1, searchPar->w2, searchPar->nw, searchPar->dw);
+  fprintf(stderr, "k1= %11.6f k2= %11.6f nk= %10d dk= %10d\n", searchPar->k1, searchPar->k2, searchPar->nk, searchPar->dk);
+  fprintf(stderr, "h1= %11.6f h2= %11.6f nh= %10d dh= %10d\n", searchPar->h1, searchPar->h2, searchPar->nh, searchPar->dh);
+  fprintf(stderr, "s1= %11.6f s2= %11.6f ns= %10d ds= %10d\n", searchPar->s1, searchPar->s2, searchPar->ns, searchPar->ds);
   fprintf(stderr, "\nNumber of solutions to prepare = %10d\n", searchPar->nsol);
 
 //  return(0);
