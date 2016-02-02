@@ -158,7 +158,120 @@ void gridvec(float xmin, float xmax, int npoints, float *pArray)
     }
 }
 
+// function to create grid vectors to recreate results in Uturuncu FMT paper
+// parameters: gamma, strike, slip
+int regularGridvec(float xmin, float xmax, int idx, float *pArray)
+{
+    int i, npoints;
+    float dx = (float) idx;
+    fprintf(stderr, "create regular GRID vector. xmin= %10.5f xmax= %10.5f dx= %12.5e ... ", xmin, xmax, dx);
+    npoints = (int) ((xmax - xmin) / dx);
+
+    // Check that loop does not reach 360 for strike.
+    // This part was made similar to previous CAP setup.
+    // A better way is to get exact count of points so that loop ends without
+    // reaching 360.
+    // CHECK VERSION IN CAP
+    if((fabs(xmin) <= TOLERANCE) && (fabs(xmax - 360.0) <= TOLERANCE)) {
+        xmax = xmax - dx;
+        npoints = npoints - 1;
+    }
+
+    // NOTE loop is (NPTS + 1)
+    for(i = 0; i <= npoints; i++) {
+        pArray[i] = xmin + dx * (float) i;
+
+        // TODO output grid values to file
+        //fprintf(stdout,"CHECK regularGridvec. %f \n", pArray[i] );
+    }
+    if((pArray[npoints-1] - xmax) > TOLERANCE) {
+        fprintf(stderr,"WARNING. end point does not match expected end point!\n");
+        fprintf(stderr,"xmax(actual) = %f. xmax(expected) = %f\n", pArray[npoints-1], xmax);
+    }
+    fprintf(stderr,"\tdone. NPTS = %d\n", i);
+    return i;
+}
+
+// function to create grid vectors to recreate results in Uturuncu FMT paper
+// parameter: ISOtropic
+int regularGridvecISO(float xmin, float xmax, int idx, float *pArray)
+{
+    int i, npoints;
+    float dx = (float) idx;
+    float diso, isoi;
+    float isomin, isomax;
+
+    // CHECK VERSION IN CAP
+    npoints = (int) fabs((xmax - xmin) / dx) + 1;
+
+    fprintf(stderr, "create regular GRID vector ISO. xmin= %10.5f xmax= %10.5f dx= %12.5e ... (old)\n", xmin, xmax, dx);
+    xmin = xmin + dx;
+    xmax = xmax - dx;
+    isomin = sin(xmin * d2r);
+    isomax = sin(xmax * d2r);
+    diso = (isomax - isomin) / (float) npoints;
+
+    fprintf(stderr, "create regular GRID vector ISO. xmin= %10.5f xmax= %10.5f dx= %12.5e ... (new)", isomin, isomax, diso);
+
+    // NOTE loop should be (NPTS)
+    for(i = 0; i < npoints; i++) {
+        isoi = asin(isomin + (diso * (float) i)) * r2d;
+        pArray[i] = isoi;
+
+        // TODO output grid values to file
+        //fprintf(stdout,"CHECK regularGridvec ISO. %f \n", pArray[i]);
+    }
+    if((pArray[npoints-1] - xmax) > TOLERANCE) {
+        fprintf(stderr,"WARNING. end point does not match expected end point!\n");
+        fprintf(stderr,"xmax(actual) = %f. xmax(expected) = %f\n", pArray[npoints-1], xmax);
+    }
+    fprintf(stderr,"\tdone. NPTS = %d\n", i);
+    if(i == npoints) {
+        return i;
+    } else {
+        fprintf(stderr,"WARNING npts = %d does not match expected. \n");
+        return -1;
+    }
+}
+
+// function to create grid vectors to recreate results in Uturuncu FMT paper
+// parameter: DIP
+int regularGridvecDIP(float xmin, float xmax, int idx, float *pArray)
+{
+    int i, npoints;
+    float dx = (float) idx;
+    float h, h1, h2, dh;   // h = cos(DIP)
+
+    fprintf(stderr, "create regular GRID vector DIP. xmin= %10.5f xmax= %10.5f dx= %12.5e ... (old)\n", xmin, xmax, dx);
+    npoints = (int) roundf(((xmax - xmin) / dx)) - 1;   // get npoints from grid spacing
+
+    // if horizontal fault then dip1 = deltaDIP
+    if(xmin <= TOLDIP) {
+        fprintf(stderr, "WARNING. HORIZONTAL FAULT. Changing dip= %4.1f to ", xmin);
+        xmin = dx;
+        fprintf(stderr, "dip= %4.1f.\n", xmin);
+    }
+
+    h2 = cos(xmin * d2r);   // h2 = cos(DIPmin) = cos(0) = 1  <-- h max
+    h1 = cos(xmax * d2r);   // h1 = cos(DIPmax) = cos(90) = 0 <-- h min
+    dh = (h2 - h1) / (float) npoints;
+//    fprintf(stderr, "DEBUG. dx = %f dh = %f NPOINTS %d \n", dx, dh, npoints);
+    fprintf(stderr, "create regular GRID vector DIP. xmin= %10.5f xmax= %10.5f dx= %12.5e ... (new)", acos(h2) * r2d, acos(h1) * r2d, acos(dh) * r2d);
+
+    // NOTE loop should only (NPTS)
+    // CHECK VERSION IN CAP
+    for(i = 0; i <= npoints; i++) {
+        h = h1 + (dh * (float) i);
+        pArray[i] = acos(h) * r2d;
+        // TODO output grid values to file
+        //fprintf(stdout, "CHECK regularGridvec dip %f \n", pArray[i]);
+    }
+    fprintf(stderr, "\tdone. NPTS = %d\n", i);
+    return i;
+}
+
 // create array of magnitudes. this option includes endpoints.
+// NOTE dx here is decimal because changes in magnitude are usually <1
 void magvec(float xmin, float xmax, float dx, float *pArray)
 {
     int i;
