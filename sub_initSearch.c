@@ -75,30 +75,7 @@ SOLN initSearchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 /* fill array with RANDOM moment tensors */
 void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
 {
-    FILE * fid;
     int isol;
-
-    //TODO move this into LUT
-    char interpfile[256] = "../values_u2beta_1e3.txt";
-    int ninterp = 1e3;
-    int na;
-
-    /* prepare arrays to calculate beta(u) */
-    fid = fopen(interpfile, "r");
-    if(fid == NULL) {
-        fprintf(stderr,"abort. unable to open datafile beta(u): %s\n", interpfile);
-        exit(-1);
-    }
-
-    float * pxa = calloc(ninterp, sizeof(float));
-    float * pya = calloc(ninterp, sizeof(float));
-
-    na = 0;
-    while(fscanf(fid, "%f %f", &pxa[na], &pya[na]) != EOF)
-    {
-        na++;
-    }
-    fclose(fid);
 
     /* temporary vectors for filling the moment tensor array */
     float * vec_beta  = calloc(searchPar->nsol, sizeof(float));
@@ -128,7 +105,7 @@ void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
     randvec(searchPar->h1, searchPar->h2, searchPar->nh, vec_h);
     randvec(searchPar->s1, searchPar->s2, searchPar->ns, vec_s);
 
-    u2beta_vec(pxa, pya, na, vec_u, vec_beta, searchPar->nu);     //NOTE needs pxa, pya, na from external file
+    u2beta_vec(vec_u, vec_beta, searchPar->nu); 
     beta2delta_vec(vec_beta, vec_delta, searchPar->nu);
     v2gamma_vec(vec_v, searchPar->nv, vec_gamma);
     h2dip_vec(vec_h, searchPar->nh, vec_dip);
@@ -141,8 +118,6 @@ void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
     free(vec_u);
     free(vec_beta);
     free(vec_h);
-    free(pxa);
-    free(pya);
 
     /* fill the moment tensor array with moment tensors */
     fprintf(stderr,"\nFilling moment tensor table (nsol= %10d) ... ", searchPar->nsol);
@@ -237,28 +212,6 @@ void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
     int na, isol;
     int ig, id, ik, ih, is;
 
-    FILE * fid;
-    char interpfile[256] = "../values_u2beta_1e3.txt";
-    int ninterp = 1e3;
-
-    /* prepare arrays to calculate beta(u) */
-    fid = fopen(interpfile, "r");
-    if(fid == NULL)
-    {
-        fprintf(stderr,"abort. unable to open datafile beta(u): %s\n", interpfile);
-        exit(-1);
-    }
-
-    float * pxa = calloc(ninterp, sizeof(float));
-    float * pya = calloc(ninterp, sizeof(float));
-
-    na = 0;
-    while(fscanf(fid, "%f %f", &pxa[na], &pya[na]) != EOF)
-    {
-        na++;
-    }
-    fclose(fid);
-
     /* temporary vectors for filling the moment tensor array */
     float * vec_u     = calloc(searchPar->nu, sizeof(float));
     float * vec_beta  = calloc(searchPar->nu, sizeof(float));
@@ -287,7 +240,7 @@ void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
     gridvec(searchPar->h1, searchPar->h2, searchPar->nh, vec_h);    /* dip(h) */
     gridvec(searchPar->s1, searchPar->s2, searchPar->ns, vec_s);
 
-    u2beta_vec(pxa, pya, na, vec_u, vec_beta, searchPar->nu);     /* gets (pxa, pya, na) from external file */
+    u2beta_vec(vec_u, vec_beta, searchPar->nu); 
     beta2delta_vec(vec_beta, vec_delta, searchPar->nu);                /* beta(u) --> delta, npts = nu */
     v2gamma_vec(vec_v, searchPar->nv, vec_gamma);                      /* gamma(v), npts = nv */
     h2dip_vec(vec_h, searchPar->nh, vec_dip);                          /* dip(h), npts = nh */
@@ -337,8 +290,6 @@ void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
     free(vec_u);
     free(vec_beta);
     free(vec_h);
-    free(pxa);
-    free(pya);
 
     free(vec_gamma);
     free(vec_delta);
@@ -498,7 +449,6 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
             //        fprintf(stdout,"index= %10d\t%11.6f %11.6f %11.6f %11.6f %11.6f\n", isol, temp[2], temp[1], sol.meca.stk, sol.meca.dip, sol.meca.rak);
             if (best_sol.err > sol.err) {
                 isol_best = isol;
-                best_sol = sol; 
                 //    mt[0].par = temp[0];
                 //     mt[1].par = temp[1];
                 //      mt[2].par = temp[2];
@@ -508,6 +458,8 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
                 sol.meca.stk = arrayMT[isol].k * r2d;
                 sol.meca.dip = arrayMT[isol].t * r2d;
                 sol.meca.rak = arrayMT[isol].s * r2d;
+
+                best_sol = sol; 
 
                 /* output search status */
                 VR = 100.*(1.-(sol.err/data2)*(sol.err/data2));
