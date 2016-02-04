@@ -471,12 +471,10 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
                 /* output search status */
                 VR = 100.*(1.-(sol.err/data2)*(sol.err/data2));
-                fprintf(stderr,"best sol isol=%9d (%3d%) mag=%5.2f %11.6f %11.6f %11.6f %11.6f %11.6f \t VR=%6.1f%\n", 
+                fprintf(stderr,"(tid= %d) best sol isol=%9d (%3d%) mag=%5.2f %11.6f %11.6f %11.6f %11.6f %11.6f \t err=%13.6e VR=%6.1f%\n", 
+                        tid,
                         isol, 100 * isol/searchPar->nsol,
-                        vec_mag[imag], arrayMT[isol].g * r2d, arrayMT[isol].d * r2d,
-                        arrayMT[isol].k * r2d, arrayMT[isol].t * r2d, arrayMT[isol].s * r2d,
-                        VR);
-                //                        temp[0], temp[2], temp[1], sol.meca.stk, sol.meca.dip, sol.meca.rak, VR);
+                        temp[0], arrayMT[isol].g * r2d, arrayMT[isol].d * r2d, sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err, VR);
 
                 /* output variables (only use for debug) */
                 /*
