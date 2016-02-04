@@ -326,6 +326,7 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     int isol_best;
     int imag, nmag;
     float VR;
+    int tid;
 
 #ifdef WB
     // output files for postprocessing
@@ -404,6 +405,10 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
         // LOOP THROUGH ALL SOLUTIONS
         // MAIN LOOP 
+        nreject = 0;
+#ifdef OMP
+#pragma omp parallel for private(sol, mtensor)
+#endif
         for(isol = 0; isol < searchPar->nsol; isol++) {
             /*
                TODO output coords (u,v) <--> (v,w)
@@ -449,6 +454,9 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
             //        fprintf(stdout,"index= %10d\t%11.6f %11.6f %11.6f %11.6f %11.6f\n", isol, temp[2], temp[1], sol.meca.stk, sol.meca.dip, sol.meca.rak);
             if (best_sol.err > sol.err) {
                 isol_best = isol;
+#ifdef OMP
+                tid = omp_get_thread_num();
+#endif
                 //    mt[0].par = temp[0];
                 //     mt[1].par = temp[1];
                 //      mt[2].par = temp[2];

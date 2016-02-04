@@ -22,6 +22,8 @@
 #include "uv2lune.h"
 // #include <time.h>   // when using OPTION 2 in the random seed generator
 
+#include <omp.h>
+
 /***********************Constants********************************/
 
 #define STN	200		/* up to STN stations */
