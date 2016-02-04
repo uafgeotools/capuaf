@@ -500,24 +500,6 @@ if (($type < 1) || ($type > 3)) {
     exit(0);
 }
 
-#
-# check parameterization type (zhu / lune) and search type (GRID/RANDOM) 
-# NOTE parm is disabled so E is free
-# if (($parm==0 ) && ($type==0)){
-#     $search=0;
-# } elsif (($parm==1 ) && ($type==1)){
-#     $search=1;
-# } elsif (($parm==1 ) && ($type==2)){
-#     $search=2;
-# } else {
-#     printf STDERR "=====================================================
-# This feature is not yet enabled. Try different combination of parameterization (-E) and search type (-K).
-# =====================================================\n";
-#     printf STDERR $usage;
-#     exit(0);
-# }
-
-
 if ( -r $dura ) {	# use a sac file for source time function   
   $dt = 0;
   $riseTime = 1;
@@ -544,11 +526,10 @@ $Tf3 = 1/$f1_sw;
 $Tf4 = 1/$f2_sw;
 $filterBand = sprintf("Body:%.2f-%.2f. Surf:%.2f-%.2f",$Tf2,$Tf1,$Tf4,$Tf3);
 
-#----------------------------------------------------------
-# delete 
-#    exit(0);
-#----------------------------------------------------------
- 
+#-----------------------------------------------------------
+# END prepare additional parameters for CAP input
+#-----------------------------------------------------------
+
 for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
   foreach $eve (@event) {
 
@@ -580,12 +561,6 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     print SRC "$norm\n";
     print SRC "$dt $dura $riseTime\n";
     print SRC "$f1_pnl $f2_pnl $f1_sw $f2_sw\n";
-    #print SRC "$mg $dm $dlune\n";
-    #print SRC "$iso1\n$iso2\n$clvd1\n$clvd2\n";
-    #print SRC "$str1 $str2 $deg\n";
-    #print SRC "$dip1 $dip2 $deg\n";
-    #print SRC "$rak1 $rak2 $deg\n";
-    #--- start parameters for search
     print SRC "$mw1 $mw2 $nmw $dm\n";
     print SRC "$v1 $v2 $nv $dv\n";
     print SRC "$w1 $w2 $nw $dw\n";
@@ -593,7 +568,6 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     print SRC "$h1 $h2 $nh $dh\n";
     print SRC "$s1 $s2 $ns $ds\n";
     print SRC "$nsol\n";
-    #--- end parameters for search
     printf SRC "%d\n",$#wwf + 1;
     print SRC @wwf;
     close(SRC);
@@ -607,8 +581,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
       open(my $out,'>>',$outfile);
       say $out "INPUT_PAR $md_dep P_win $m1 S_win $m2 P $amplify p $ampfact NCOM $ncom spiB $spib spiS $spis $filterBand FMT $fmt_flag";
 
-      #     &plot($md_dep, $m1, $m2, $amplify, $ncom, $sec_per_inch); # 20130102 calvizuri - original
-      &plot($md_dep, $m1, $m2, $amplify, $ampfact, $ncom, $spib, $spis, $filterBand, $fmt_flag); # 20130102 calvizuri - added filter freq bands
+      &plot($md_dep, $m1, $m2, $amplify, $ampfact, $ncom, $spib, $spis, $filterBand, $fmt_flag);
       unlink(<${md_dep}_*.?>) unless $keep;
       chdir("../");
     }
