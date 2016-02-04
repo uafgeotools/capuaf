@@ -11,13 +11,25 @@
 
 #include "uv2lune.h"
 
+#include "generated_u2beta.c"   // data for interpolation of beta = beta(u)
+                                // data generated using matlab script gen_u2beta.m
+
 /* compute beta(u) in vector form */
-void u2beta_vec(float *pxa, float *pya, int na, float *pArray_u, float *pArray_beta, int nsol)
+void u2beta_vec(float *pArray_u, float *pArray_beta, int nsol)
 {
-    //interp1(xa, npts, ya, xi, nu2beta_out, yi);             // previous
+    int i;
+    float * pxa = calloc(NBETA, sizeof(float));
+    float * pya = calloc(NBETA, sizeof(float));
+    for(i = 0; i < NBETA; i++) {
+        pxa[i] = generated_u2beta[i].u;
+        pya[i] = generated_u2beta[i].beta;
+    }
+
     fprintf(stderr,"create vector u2beta...");
-    interp_lin(pxa, pya, na, pArray_u, pArray_beta, nsol);   // best
-    //    fprintf(stderr,"done\n");
+    interp_lin(pxa, pya, NBETA, pArray_u, pArray_beta, nsol);
+
+    free(pxa);
+    free(pya);
 }
 
 float beta2delta(float beta)

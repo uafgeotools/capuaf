@@ -2,10 +2,9 @@
 #include<stdio.h>
 #include<stdlib.h>  // drand48
 #include<float.h> 
-
 #include "cap.h"
 
-void u2beta_vec(float *pxa, float *pya, int na, float *pArray_u, float *pArray_beta, int nsol);
+void u2beta_vec(float *pArray_u, float *pArray_beta, int nsol);
 float beta2delta(float beta);
 void beta2delta_vec(float *pArray_beta, float *pArray_delta, int nsol);
 float v2gamma(float v);
