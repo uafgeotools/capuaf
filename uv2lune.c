@@ -208,20 +208,20 @@ int regularGridvec(float xmin, float xmax, int idx, float *pArray)
 // parameter: ISOtropic
 int regularGridvecISO(float xmin, float xmax, int idx, float *pArray)
 {
-    int i, npoints;
+  int i, npoints, nsamp = 0;
     float dx = (float) idx;
     float diso, isoi;
     float isomin, isomax;
 
     // CHECK VERSION IN CAP
-    npoints = (int) fabs((xmax - xmin) / dx);
+    npoints = (int) fabs((xmax - xmin) / dx) + 1; // 37 
 
     fprintf(stderr, "create regular GRID vector ISO. xmin= %10.5f xmax= %10.5f dx= %12.5e ... (old)\n", xmin, xmax, dx);
     xmin = xmin;
     xmax = xmax;
     isomin = sin(xmin * d2r);
     isomax = sin(xmax * d2r);
-    diso = (isomax - isomin) / (float) (npoints); 
+    diso = (isomax - isomin) / (float) (npoints - 1); // 36
 
     fprintf(stderr, "create regular GRID vector ISO. xmin= %10.5f xmax= %10.5f dx= %12.5e ... (new)", isomin, isomax, diso);
     
@@ -231,20 +231,22 @@ int regularGridvecISO(float xmin, float xmax, int idx, float *pArray)
     // There might be issue if you are searching in a subset of ISO space.
     // In earlier version of CAP there was a continue statement to take care of this.
     // NOTE loop should be (NPTS)
-    for(i = 1; i < (npoints); i++) {
-        isoi = asin(isomin + (diso * (float) i)) * r2d;
-        pArray[i-1] = isoi;
-
-        // TODO output grid values to file
-        fprintf(stdout,"CHECK regularGridvec ISO. %f \n", pArray[i-1]);
+    for(i = 1; i < (npoints-1); i++) {
+      nsamp++; // i-1
+      isoi = asin(isomin + (diso * (float) i)) * r2d;
+      pArray[i-1] = isoi;
+      
+      // TODO output grid values to file
+      fprintf(stdout,"CHECK regularGridvec ISO. %f \n", pArray[i-1]);
     }
+    
     if((pArray[npoints-1] - xmax) > TOLERANCE) {
         fprintf(stderr,"WARNING. end point does not match expected end point!\n");
         fprintf(stderr,"xmax(actual) = %f. xmax(expected) = %f\n", pArray[npoints-1], xmax);
     }
-    fprintf(stderr,"\tdone. NPTS = %d\n", i);
-    if(i == npoints) {
-        return i;
+    fprintf(stderr,"\tdone. NPTS = %d\n", nsamp);
+    if(nsamp == (npoints-2)) {
+        return nsamp;
     } else {
         fprintf(stderr,"WARNING npts = %d does not match expected. \n");
         return -1;

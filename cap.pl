@@ -457,8 +457,12 @@ if( $type == 3 ) {
     } else {
     # CHECK VERSION IN CAP AND +1, -1 VALUES
         $nv = (($v2 - $v1) / $dv) + 1;  # gamma -- include 0 point
-        $nw = (($w2 - $w1) / $dw) + 1;  # delta -- include 0 point
+        $nw = (($w2 - $w1) / $dw) - 1;  # delta -- include 0 point 
+	# For ISO npoints is -2 because we don't want -90 and 90 points. This only work for full ISO searches. May not work for subset of ISO
+	# This attempts to recreate earlier version of cap.c (line 1164):  if (temp[1]==-90. || temp[1]==90. || temp[1] != temp[1]), then, continue;
     }
+    print STDERR "===================$nw============================";
+    #exit(0);
     # CHECK VERSION IN CAP AND +1, -1 VALUES
     $nk = (($k2 - $k1) / $dk) - 0;  # strike -- do not include 360
     $nh = (($h2 - $h1) / $dh);      # dip -- include 0 at start (though it will be offset later)
