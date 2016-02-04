@@ -153,7 +153,6 @@ int main (int argc, char **argv) {
 
   // variables to verify that Mw_best is not near search limits
   FILE * fid_warn;        // output file for warnings
-  fid_warn = fopen("capout_error.txt","w");
 
   SOLN	sol;
   SACHEAD hd[NRC];
@@ -898,6 +897,7 @@ int main (int argc, char **argv) {
 
   // output warning if best magnitude = magnitude limit in magnitude search.
   if ( (mt[0].par <= searchPar->mw1 && searchPar->dmw != 0) || (mt[0].par >= searchPar->mw2 && searchPar->dmw != 0) ) {
+      fid_warn = fopen("capout_error.txt","w");
       fprintf(stderr, "\n***********************************************************************\n");
       fprintf(stderr, "\tINVERSION STOPPED. See file capout_error.txt\n");
       fprintf(stderr, "***********************************************************************\n");
@@ -906,10 +906,9 @@ int main (int argc, char **argv) {
       fprintf(fid_warn, "Boundaries [Mw1, Mw2] = [%4.1f, %4.1f]\n", searchPar->mw1, searchPar->mw2);
       fprintf(fid_warn, "Consider expanding the magnitude boundary.\n");
       fprintf(fid_warn, "***********************************************************************\n");
+      fclose(fid_warn);
       return(-1);
   }
-
-  fclose(fid_warn);
 
   fprintf(stderr,"Preparing out file ...\n");
   //grid.n[0]=grid.n[1]=grid.n[2]=1;
