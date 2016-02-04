@@ -44,6 +44,8 @@ static char grn_com[NGR]={'8','5','b','7','4','1','a','6','3','0'};
 #define RANDSEED 12345
 #define TOLERANCE 0.00001
 #define TOLDIP 0.00001
+#define NBETA 1000  /*  number of points used for interpolation of u=u(beta)  */
+
 /***********************global vars********************************/
 
 extern int total_n,loop,start,debug, Ncomp,Psamp[STN],Ssamp[STN],edep;
@@ -194,6 +196,13 @@ typedef struct
     float s;
     float mw;
 } ARRAYMT;
+
+// for interpolation within u=u(beta)
+typedef struct
+{
+    float u;
+    float beta;
+} GENU2BETA; 
 
 /* function declaration */
   /* SOLN	error(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int,int); */
