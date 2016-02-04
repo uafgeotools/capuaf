@@ -935,18 +935,21 @@ int main (int argc, char **argv) {
   // mtensor saved in output file shoudl be in M00, M11, M22, M01, M02, M12 order. FIX HERE and then perhaps also in the cap_plt! (FUTURE WORK)
   fprintf(f_out,"# tensor = %8.3e %7.4f %7.4f %7.4f %7.4f %7.4f %7.4f\n",amp*1.0e20,mtensor[0][0],mtensor[0][1],mtensor[0][2],mtensor[1][1],mtensor[1][2],mtensor[2][2]);
   fprintf(f_out,"# norm L%d    # Pwin %g Swin %g    # N %d Np %d Ns %d\n",norm,mm[0]*dt,mm[1]*dt,y1,Nstat,Nbody,Nsurf);
+
+  // START DELETE SECTION -- DOES NOT EXECUTE
   for(i=1;i<sol.ms;i++) {
     j = sol.others[i];
     if (grid.err[j]-grid.err[sol.others[0]]<mltp*x2) {
       k = j/(grid.n[0]*grid.n[1]);
       k1 = (j-k*grid.n[0]*grid.n[1])/grid.n[0];
-      fprintf(f_out,"# %3d %2d %3d %4.2f %9.3e %3.1f\n",
+      fprintf(f_out,"# DELETE %3d %2d %3d %4.2f %9.3e %3.1f\n",
 	      (int) rint(grid.x0[0]+(j-k1*grid.n[0]-k*grid.n[0]*grid.n[1])*grid.step[0]),
 	      (int) rint(grid.x0[1]+k1*grid.step[1]),
 	      (int) rint(grid.x0[2]+k*grid.step[2]),
 	      mt[0].par,grid.err[j],(grid.err[j]-grid.err[sol.others[0]])/x2);
     }
   } 
+  // END DELETE SECTION -- DOES NOT EXECUTE
 
 for(obs=obs0,i=0;i<nda;i++,obs++) {
     for(j=0;j<NCP;j++) {
