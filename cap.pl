@@ -173,36 +173,40 @@ $usage =
 
 =====================================================================================================
   Usage: cap.pl -Mmodel_depth/mag [-A<dep_min/dep_max/dep_inc>] [-B] [-C<f1_pnl/f2_pnl/f1_sw/f2_sw>]
-                  [-D<w1/p1/p2>] [-E<search>] [-F<thr>] [-Ggreen] [-Hdt] [-Idd[/dm]]
-                  [-J[iso[/diso[/clvd[/dclvd]]]]] [-K<search_type>] [-L<tau>] [-M$model_$dep/$mw][-N<n>]
+                  [-D<w1/p1/p2>] [-E<search>] [-F<thr>] [-Ggreen] [-Hdt] 
+                  [-I<nsol> OR -I<Nv/Nw/Nstrike/Ndip/Nrake>]
+                  [-K<search_type>] [-L<tau>] 
+                  [-M$model_$dep] [-m$mw OR -m<mw1>/<mw2>/<dmw> ] [-N<n>]
                   [-O] [-P[<Yscale[/Xscale_b[/Xscale_s[/k]]]]>] [-Qnof]
-                  [-R<strike1/strike2/dip1/dip2/rake1/rake2>] [-S<s1/s2[/tie]>] [-T<m1/m2>]
+                  [-R<v0/w0/strike0/dip0/rake0> OR -R<v1/v2/w1/w1/strike1/strike2/dip1/dip2/rake1/rake2>] 
+                  [-S<s1/s2[/tie]>] [-T<m1/m2>]
                   [-Udirct] [-V<vp/vl/vr>] [-Wi] [-Xn] [-Y<norm>] [-Zstring] event_dirs
 
     -A  run cap for different depths. (dep_min/dep_max/dep_inc).
     -B  output misfit errors of all solutions for bootstrapping late ($bootrap).
     -C  filters for Pnl and surface waves, specified by the corner
-	frequencies of the band-pass filter. ($f1_pnl/$f2_pnl/$f1_sw/$f2_sw).
+        frequencies of the band-pass filter. ($f1_pnl/$f2_pnl/$f1_sw/$f2_sw).
     -D	weight for Pnl (w1) and distance scaling powers for Pnl (p1) and surface
-   	waves (p2). If p1 or p2 is negative, all traces will be normalized. ($weight_of_pnl/$power_of_body/$power_of_surf).
-    -E  Specify what kind of parameterization (0=Zhu; 1=Lune)
+        waves (p2). If p1 or p2 is negative, all traces will be normalized. ($weight_of_pnl/$power_of_body/$power_of_surf).
+    -E  FLAG NOT IN USE.
     -F	include first-motion data in the search. thr is the threshold ($fm_thr).
     	The first motion data are specified in $weight. The polarities
-	can be specified using +-1 for P, +-2 for SV, and +-3 for SH after
-	the station name, e.g. LHSA/+1/-3 means that P is up and SH is CCW.
-	The Green functions need to have take-off angles stored in the SAC
-	header.
+        can be specified using +-1 for P, +-2 for SV, and +-3 for SH after
+        the station name, e.g. LHSA/+1/-3 means that P is up and SH is CCW.
+        The Green functions need to have take-off angles stored in the SAC
+        header.
         threshold should be NEGATIVE if polarities are allowed to conflict expected polarity (as mentioned in weight file).
     -G  Green's function library location ($green).
     -H  dt ($dt).
-    -I  search interval in orientation (strike/dip/rake) and mag(dm)and non-DC(dlune) ($dorient/$dm/$dlune).
-        If dm<0, the gain of each station will be determined by inversion. $dlune is ommited in case of search=0.
-    -J  (if search=0)include isotropic and CLVD search using steps diso and dclvd (0/0/0/0).
-        (if search=1,2) iso and clvd search range (lune parameterization)
-        example -J10/10/5/5 will perform a direct search; and -J-10/10/-5/5 will perform a grid search (or the random search) wihtin the subset
-    -K  Kind of search (0=line search; 1=Grid search; 2=random search)
+    -I  specify number of solutions (random mode) OR number of points per parameter.
+        RAND: -I<nsol>  e.g. -I10000  --- will generate 10,000 random solutions. This option works with K=2
+        GRID: -I<Nv>/<Nw>/<Nstrike>/<Ndip>/<Nrake>   e.g. -I10/20/10/10/10 --- will generate Nx number of points for each parameter x.
+    -J  FLAG NOT IN USE.
+    -K  specify type of search.
+        K1 = GRID search, K2 = RANDOM search, K3 = regular GRID search (non uniform).
     -L  source duration (estimate from mw, can put a sac file name here).
-    -M	specify the model, source depth and initial magnitude.
+    -M	specify the model and source depth.
+    -m	specify point magnitude: -m<mw0> OR magnitude range: -n<mw1>/<mw2>/<dmw>
     -N  repeat the inversion n times and discard bad traces ($repeat).
     -O  output CAP input (off).
     -P	generate waveform-fit plot with plotting scale. ([-P<Yscale>/<XscaleBody>/<XscaleSurf>](/k))
@@ -210,20 +214,21 @@ $usage =
         # scale down: -P1e-5, -P1e-6,... seismograms scaled by this amplitude (smaller the number larger the waveform)
         # scale up:   -P1, -P2,...       seismograms also scaled by amplitude but then enlarged by factor 1, 2, (anything greater than 1)... (larger the number larger the waveform)
         # scale each window:  -P0.5e+0.5 seismograms will be scaled for each component window (all same size) - Normalized scaling
-	Xscale: seconds per inch. (body: $spib, surface:$spis).
-	append k if one wants to keep those waveforms.
-    -p  (small p) For amplitude scaling of surface waves; example: If set to 2 surface waves amplitude will be multipled by twice 
+        Xscale: seconds per inch. (body: $spib, surface:$spis).
+        append k if one wants to keep those waveforms.
+        -p  (small p) For amplitude scaling of surface waves; example: If set to 2 surface waves amplitude will be multipled by twice 
     -Q  number of freedom per sample ($nof)
-    -R	grid-search range for strike/dip/rake (0/360/0/90/-90/90).
+    -R	search range for v/w/strike/dip/rake 
+        ([$v1, $v2]/[$w1, $w2]/[$k1, $k2]/[0, 90], [$s1, $s2]).
     -S	max. time shifts in sec for Pnl and surface waves ($max_shft1/$max_shift2) and
-	tie between SH shift and SV shift:
-	 tie=0 		shift SV and SH independently,
-	 tie=0.5 	force the same shift for SH and SV ($tie).
+        tie between SH shift and SV shift:
+        tie=0 		shift SV and SH independently,
+        tie=0.5 	force the same shift for SH and SV ($tie).
     -T	max. time window lengths for Pnl and surface waves ($m1/$m2).
     -U  directivity, specify rupture direction on the fault plane (off).
     -V	apparent velocities for Pnl, Love, and Rayleigh waves (off).
     -W  use displacement for inversion; 1=> data in velocity; 2=> data in disp ($disp).
-    -X  output other local minimums whose misfit-min<n*sigma ($mltp).
+    -X  FLAG NOT IN USE.
     -Y  specify norm (1 - L1 norm; 2 - L2 norm)
     -Z  specify a different weight file name ($weight).
 
@@ -356,7 +361,7 @@ foreach (grep(/^-/,@ARGV)) {
        }
    } elsif ($opt eq "M") {
        # ($md_dep,$mg) = @value;
-     $md_dep = @value[0];
+       $md_dep = @value[0];
    } elsif ($opt eq "N") {
         $repeat = $value[0];
    } elsif ($opt eq "O") {
