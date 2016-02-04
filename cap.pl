@@ -310,9 +310,11 @@ foreach (grep(/^-/,@ARGV)) {
 #      $dm = $value[1] if $#value > 0;
 #      $dlune = $value[2] if $value[2]
        if ($#value==0) {
+           $nI = 1;
            $nsol = $value[0];
            $nv = $nw = $nk = $nh = $ns = $nsol;
        } elsif ($#value==4) {
+           $nI = 5;
            ($nv, $nw, $nk, $nh, $ns) = @value;
            if ($nv == 0 || $nw == 0) {
                # NOTE! this only checks for (v,w) being zero
@@ -377,16 +379,19 @@ foreach (grep(/^-/,@ARGV)) {
        # 3. Length 5 = fixed moment tensor (v0/w0/k0/h0/s0)
        # 4. Length 10 = subset case (v1/v2/w1/w2/k1/k2/h1/h2/s1/s2)
        if ($#value==1) {
+           $nR = 2;
            ($v1, $v2) = @value;
            ($w1, $w2) = @value;
            $nv = $nw = 0;
            $fmt_flag="true";     # used later for renaming output figures with fmt
        } elsif ($#value==4) {
+           $nR = 5;
            ($v1, $w1, $k1, $h1, $s1) = @value;
            ($v2, $w2, $k2, $h2, $s2) = @value;
            $h1 = $h2 = cos($value[3]);  # cap expects h = cos(dip)
            $nsol = $nv = $nw = $nk = $nh = $ns = 1;
        } elsif ($#value==9) {
+           $nR = 10;
            ($v1, $v2, $w1, $w2, $k1, $k2, $h1, $h2, $s1, $s2) = @value;
        }
    } elsif ($opt eq "S") {
@@ -461,8 +466,6 @@ if( $type == 3 ) {
 	# For ISO npoints is -2 because we don't want -90 and 90 points. This only work for full ISO searches. May not work for subset of ISO
 	# This attempts to recreate earlier version of cap.c (line 1164):  if (temp[1]==-90. || temp[1]==90. || temp[1] != temp[1]), then, continue;
     }
-    print STDERR "===================$nw============================";
-    #exit(0);
     # CHECK VERSION IN CAP AND +1, -1 VALUES
     $nk = (($k2 - $k1) / $dk) - 0;  # strike -- do not include 360
     $nh = (($h2 - $h1) / $dh);      # dip -- include 0 at start (though it will be offset later)
@@ -480,9 +483,23 @@ if( $type == 3 ) {
 $search = $type;
 
 # CHECK THAT USER INPUT MAKE SENSE
-# ONGOING
+
+# Flag I: check number of entries
 # I10000 (rand) goes with K2 else abort
 # I10/10/10/10/10 goes with K1 else abort
+if ((( $nI == 1 ) && ($type != 2)) || (( $nI == 5 ) && ($type == 2))) {
+    print STDERR "STOP. Random mode only works with I<nsol> and K2\n";
+#    printf STDERR $usage;   # alternative output
+    exit(0);
+}
+
+# Flag K: check type of grid (uniRand, uniGrid, regularGrid)
+if (($type < 1) || ($type > 3)) {
+    print STDERR "STOP. Check search type\n";
+#    printf STDERR $usage;   # alternative output
+    exit(0);
+}
+
 #
 # check parameterization type (zhu / lune) and search type (GRID/RANDOM) 
 # NOTE parm is disabled so E is free
