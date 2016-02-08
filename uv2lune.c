@@ -205,55 +205,6 @@ int regularGridvec(float xmin, float xmax, int idx, float *pArray)
 }
 
 // function to create grid vectors to recreate results in Uturuncu FMT paper
-// parameter: ISOtropic
-int regularGridvecISO(float xmin, float xmax, int idx, float *pArray)
-{
-  int i, npoints, nsamp = 0;
-    float dx = (float) idx;
-    float diso, isoi;
-    float isomin, isomax;
-
-    // CHECK VERSION IN CAP
-    npoints = (int) fabs((xmax - xmin) / dx) + 1; // 37 
-
-    fprintf(stderr, "create regular GRID vector ISO. xmin= %10.5f xmax= %10.5f dx= %12.5e ... (old)\n", xmin, xmax, dx);
-    xmin = xmin;
-    xmax = xmax;
-    isomin = sin(xmin * d2r);
-    isomax = sin(xmax * d2r);
-    diso = (isomax - isomin) / (float) (npoints - 1); // 36
-
-    fprintf(stderr, "create regular GRID vector ISO. xmin= %10.5f xmax= %10.5f dx= %12.5e ... (new)", isomin, isomax, diso);
-    
-    // Example for deltaISO = 5
-    // In this case we still discretize between -90 and 90 (not from -85 to 85). And then in second step make equal increment between sin(-90) and sin(90) = 37 elements. Finally we take sininverse of all points except the first and the last element (reject -90 and 90) = we are left with 35 elements
-    // Loop below starts from 1 to avoid hitting -90; and never reaches npoint element to avoid 90. 
-    // There might be issue if you are searching in a subset of ISO space.
-    // In earlier version of CAP there was a continue statement to take care of this.
-    // NOTE loop should be (NPTS)
-    for(i = 1; i < (npoints-1); i++) {
-      nsamp++; // i-1
-      isoi = asin(isomin + (diso * (float) i)) * r2d;
-      pArray[i-1] = isoi;
-      
-      // TODO output grid values to file
-      fprintf(stdout,"CHECK regularGridvec ISO. %f \n", pArray[i-1]);
-    }
-    
-    if((pArray[npoints-1] - xmax) > TOLERANCE) {
-        fprintf(stderr,"WARNING. end point does not match expected end point!\n");
-        fprintf(stderr,"xmax(actual) = %f. xmax(expected) = %f\n", pArray[npoints-1], xmax);
-    }
-    fprintf(stderr,"\tdone. NPTS = %d\n", nsamp);
-    if(nsamp == (npoints-2)) {
-        return nsamp;
-    } else {
-        fprintf(stderr,"WARNING npts = %d does not match expected. \n");
-        return -1;
-    }
-}
-
-// function to create grid vectors to recreate results in Uturuncu FMT paper
 // parameter: DIP
 int regularGridvecDIP(float xmin, float xmax, int idx, float *pArray)
 {
