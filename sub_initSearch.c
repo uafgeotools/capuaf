@@ -55,11 +55,6 @@ SOLN initSearchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
             fprintf(stderr,"Solutions to prepare: %10d\n\n", searchPar->nsol);
             getRandMT(searchPar, arrayMT);
             break;
-        case 3: 
-            fprintf(stderr,"Preparing array of moment tensors using option %d: REGULAR GRID (NON UNIFORM)\n", search_type);
-            fprintf(stderr,"Solutions to prepare: %10d\n\n", searchPar->nsol);
-            getGridMT_nonUniform(searchPar, arrayMT);
-            break;
         default:
             fprintf(stderr,"\nStop. Search type \"%d\" not available.\n", search_type);
             exit(-1);
@@ -143,68 +138,6 @@ void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
     free(vec_dip);
     free(vec_s);
 }   /* end function getRandMT */
-
-// fill array with regular (non uniform) grid.
-void getGridMT_nonUniform(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
-{
-    int na, isol;
-    int ig, id, ik, ih, is;
-    int ng, nd, nk, nh, ns;
-
-    float * vec_gamma = calloc(searchPar->nv, sizeof(float));
-    float * vec_delta = calloc(searchPar->nw, sizeof(float));
-    float * vec_k     = calloc(searchPar->nk, sizeof(float));       /* strike. NOTE nk here is spacing between grid points */
-    float * vec_dip   = calloc(searchPar->nh, sizeof(float));
-    float * vec_s     = calloc(searchPar->ns, sizeof(float));       /* slip. NOTE ns here is spacing between grid points */
-
-    // NOTE regularGridvec expects SPACING between grid points, not number of grid points
-    ng =    regularGridvec(searchPar->v1, searchPar->v2, searchPar->dv, vec_gamma);
-    nd = regularGridvecISO(searchPar->w1, searchPar->w2, searchPar->dw, vec_delta); 
-    nk =    regularGridvec(searchPar->k1, searchPar->k2, searchPar->dk, vec_k);
-    nh = regularGridvecDIP(searchPar->h1, searchPar->h2, searchPar->dh, vec_dip);
-    ns =    regularGridvec(searchPar->s1, searchPar->s2, searchPar->ds, vec_s);
-    fprintf(stderr,"******************DEBUG. %f %f %d \n", searchPar->s1, searchPar->s2, searchPar->ds);
-
-    fprintf(stderr,"\nFilling moment tensor table (nsol= %10d) ... ", searchPar->nsol);
-    isol = 0;
-    for(ig = 0; ig < ng; ig++) {
-    for(id = 0; id < nd; id++) {
-    for(ik = 0; ik < nk; ik++) {
-    for(ih = 0; ih < nh; ih++) {
-    for(is = 0; is < ns; is++) {
-                      arrayMT[isol].g = vec_gamma[ig] * d2r;
-                      arrayMT[isol].d = vec_delta[id] * d2r;
-                      arrayMT[isol].k =     vec_k[ik] * d2r;
-                      arrayMT[isol].t =   vec_dip[ih] * d2r;
-                      arrayMT[isol].s =     vec_s[is] * d2r;
-
-//                        fprintf(stdout,"index= %20d %11.6f %11.6f %11.6f %11.6f %11.6f\n",
-//                                isol, arrayMT[isol].g*r2d, arrayMT[isol].d*r2d, arrayMT[isol].k*r2d, arrayMT[isol].t*r2d, arrayMT[isol].s*r2d);
-                        //fprintf(stdout,"index= %20d %6d %6d %6d %6d %6d\n", isol, ig, id, ik, ih, is);
-//                       fprintf(stdout,"index= %20d %11.6f %11.6f %11.6f %11.6f %11.6f\n",
-//                               isol, vec_gamma[ig]*r2d, vec_delta[id]*r2d, vec_k[ik]*r2d, vec_dip[ih]*r2d, vec_s[is]*r2d);
-                        isol++;
-                    }
-                }
-            }
-        }
-    }
-    fprintf(stderr,"done. nsol = %d \n", isol);
-    if (isol == 1) {
-        fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", 0, arrayMT[0].g *r2d, arrayMT[0].d *r2d,  arrayMT[0].k *r2d,  arrayMT[0].t *r2d,  arrayMT[0].s *r2d); 
-    } else if(isol > 1) {
-        fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", 0, arrayMT[0].g *r2d, arrayMT[0].d *r2d,  arrayMT[0].k *r2d,  arrayMT[0].t *r2d,  arrayMT[0].s *r2d); 
-        fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", isol-1, arrayMT[isol-1].g *r2d, arrayMT[isol-1].d *r2d,  arrayMT[isol-1].k *r2d,  arrayMT[isol-1].t *r2d,  arrayMT[isol-1].s *r2d); 
-    } 
-
-    free(vec_gamma);
-    free(vec_delta);
-    free(vec_k);
-    free(vec_dip);
-    free(vec_s);
-
-}   /* end function getGridMT */
-
 
 /* fill array with a grid uniform moment tensors */
 void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
