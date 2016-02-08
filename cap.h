@@ -222,7 +222,6 @@ SOLN calerr(int,DATA *,const int *, float,int,float mtensor[3][3],float,SOLN);
 /* functions for uniformMT */
 void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT);
 void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT);
-void getGridMT_nonUniform(SEARCHPAR * searchPar, ARRAYMT * arrayMT);
 SOLN searchMT(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int,int, SEARCHPAR *, ARRAYMT *);
 
 #endif
