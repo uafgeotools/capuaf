@@ -204,42 +204,6 @@ int regularGridvec(float xmin, float xmax, int idx, float *pArray)
     return i;
 }
 
-// function to create grid vectors to recreate results in Uturuncu FMT paper
-// parameter: DIP
-int regularGridvecDIP(float xmin, float xmax, int idx, float *pArray)
-{
-    int i, npoints;
-    float dx = (float) idx;
-    float h, h1, h2, dh;   // h = cos(DIP)
-
-    fprintf(stderr, "create regular GRID vector DIP. xmin= %10.5f xmax= %10.5f dx= %12.5e ... (old)\n", xmin, xmax, dx);
-    npoints = (int) roundf(((xmax - xmin) / dx));   // get npoints from grid spacing
-
-    // if horizontal fault then dip1 = deltaDIP
-    if(xmin <= TOLDIP) {
-        fprintf(stderr, "WARNING. HORIZONTAL FAULT. Changing dip= %4.1f to ", xmin);
-        xmin = dx;
-        fprintf(stderr, "dip= %4.1f.\n", xmin);
-    }
-
-    h2 = cos(xmin * d2r);   // h2 = cos(DIPmin) = cos(0) = 1  <-- h max
-    h1 = cos(xmax * d2r);   // h1 = cos(DIPmax) = cos(90) = 0 <-- h min
-    dh = (h2 - h1) / (float) (npoints - 1);
-    fprintf(stderr, "DEBUG. h1 = %f, h2 = %f, dx = %f, dh = %f, NPOINTS %d \n", h1, h2, dx, dh, npoints);
-    fprintf(stderr, "create regular GRID vector DIP. xmin= %10.5f xmax= %10.5f dx= %12.5e ... (new)", acos(h2) * r2d, acos(h1) * r2d, acos(dh) * r2d);
-
-    // NOTE loop should only (NPTS)
-    // CHECK VERSION IN CAP
-    for(i = 0; i < npoints; i++) {
-        h = h1 + (dh * (float) i);
-        pArray[i] = acos(h) * r2d;
-        // TODO output grid values to file
-        fprintf(stdout, "CHECK regularGridvec dip %f \n", pArray[i]);
-    }
-    fprintf(stderr, "\tdone. NPTS = %d\n", i);
-    return i;
-}
-
 // create array of magnitudes. this option includes endpoints.
 // NOTE dx here is decimal because changes in magnitude are usually <1
 void magvec(float xmin, float xmax, float dx, float *pArray)
