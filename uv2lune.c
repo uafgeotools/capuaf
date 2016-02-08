@@ -170,40 +170,6 @@ void gridvec(float xmin, float xmax, int npoints, float *pArray)
     }
 }
 
-// function to create grid vectors to recreate results in Uturuncu FMT paper
-// parameters: gamma, strike, slip
-int regularGridvec(float xmin, float xmax, int idx, float *pArray)
-{
-    int i, npoints;
-    float dx = (float) idx;
-    fprintf(stderr, "create regular GRID vector. xmin= %10.5f xmax= %10.5f dx= %12.5e ... ", xmin, xmax, dx);
-    npoints = (int) ((xmax - xmin) / dx);
-
-    // Check that loop does not reach 360 for strike.
-    // This part was made similar to previous CAP setup.
-    // A better way is to get exact count of points so that loop ends without
-    // reaching 360.
-    // CHECK VERSION IN CAP
-    if((fabs(xmin) <= TOLERANCE) && (fabs(xmax - 360.0) <= TOLERANCE)) {
-        xmax = xmax - dx;
-        npoints = npoints - 1;
-    }
-
-    // NOTE loop is (NPTS + 1)
-    for(i = 0; i <= npoints; i++) {
-        pArray[i] = xmin + dx * (float) i;
-
-        // TODO output grid values to file
-        //fprintf(stdout,"CHECK regularGridvec. %f \n", pArray[i] );
-    }
-    if((pArray[npoints-1] - xmax) > TOLERANCE) {
-        fprintf(stderr,"WARNING. end point does not match expected end point!\n");
-        fprintf(stderr,"xmax(actual) = %f. xmax(expected) = %f\n", pArray[npoints-1], xmax);
-    }
-    fprintf(stderr,"\tdone. NPTS = %d\n", i);
-    return i;
-}
-
 // create array of magnitudes. this option includes endpoints.
 // NOTE dx here is decimal because changes in magnitude are usually <1
 void magvec(float xmin, float xmax, float dx, float *pArray)
