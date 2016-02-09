@@ -104,7 +104,7 @@ int skip_zero_weights=1;    // for original CAP set skip_zero_weights=1
 // Function gridvec does not implement the discretization of the previous version of 
 // cap.c which uses rules to account for special grid points.
 // Function gridvec also avoids endpoints in all parameters.
-int LUNE_GRID_INSTEAD_OF_UV = 1;    // default = 0 (ie option not in use)
+int LUNE_GRID_INSTEAD_OF_UV = 0;    // default = 0 (ie do not run old grid mode)
 
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search_type,norm;
