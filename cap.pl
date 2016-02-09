@@ -99,11 +99,12 @@ $v2 = (1.0 / 3.0);      $v1 = -$v2;
 # case 2. fixed lambda. use nstr/ndip/nrak
 # default number of points for each parameter
 
-$nv = $dv = 10;    # gamma
-$nw = $dw = 10;    # delta
-$nk = $dk = 10;    # strike
-$nh = $dh = 10;    # dip
-$ns = $ds = 10;    # rake
+# for nX, X>1 (at least one parameter value has to exist!)
+$nv = 1; $dv = 10;    # gamma
+$nw = 1; $dw = 10;    # delta
+$nk = 1; $dk = 10;    # strike
+$nh = 1; $dh = 10;    # dip
+$ns = 1; $ds = 10;    # rake
 
 # magnitude default is to run a single point
 $nmw = 1;   
@@ -112,6 +113,9 @@ $dmw = 0;
 # search type = RAND -- specify number of solutions to generate
 $nsol    =  100000;     # full moment tensor
 $nsol_fixlam =  100000;     # fixed lambda (includes DC)
+
+# number of entries for flag R
+$nR = 0;    # if not specified then it's the full range
 
 #----------------------------------------------------------- 
 
@@ -202,8 +206,7 @@ $usage =
         RAND: -I<nsol>  e.g. -I10000  --- will generate 10,000 random solutions. This option works with K=2
         GRID: -I<Nv>/<Nw>/<Nstrike>/<Ndip>/<Nrake>   e.g. -I10/20/10/10/10 --- will generate Nx number of points for each parameter x.
     -J  FLAG NOT IN USE.
-    -K  specify type of search.
-        K1 = GRID search, K2 = RANDOM search, K3 = regular GRID search (non uniform).
+    -K  specify type of search. K1 = GRID search, K2 = RANDOM search.
     -L  source duration (estimate from mw, can put a sac file name here).
     -M	specify the model and source depth.
     -m	specify point magnitude: -m<mw0> OR magnitude range: -n<mw1>/<mw2>/<dmw>
@@ -321,13 +324,11 @@ foreach (grep(/^-/,@ARGV)) {
        } elsif ($#value==4) {
            $nI = 5;
            ($nv, $nw, $nk, $nh, $ns) = @value;
-           if ($nv == 0 || $nw == 0) {
-               # NOTE! this only checks for (v,w) being zero
-               $nsol = $nk * $nh * $ns;
-           } else {
-               $nsol = $nv * $nw * $nk * $nh * $ns;
+           $nsol = $nv * $nw * $nk * $nh * $ns;
+           if ($nsol <= 0) {
+               print STDERR "ERROR. Number of points per paramete should be >0.\n";
+               exit(0);
            }
-
        }
    }
 #  elsif ($opt eq "J") {
@@ -387,8 +388,8 @@ foreach (grep(/^-/,@ARGV)) {
            $nR = 2;
            ($v1, $v2) = @value;
            ($w1, $w2) = @value;
-           $nv = $nw = 0;
-           $fmt_flag="true";     # used later for renaming output figures with fmt
+           $nv = $nw = 1;       # at least one lune point needs to exist
+           $fmt_flag="true";    # used later for renaming output figures with fmt
        } elsif ($#value==4) {
            $nR = 5;
            ($v1, $w1, $k1, $h1, $s1) = @value;
@@ -443,45 +444,44 @@ unless ($dura) {
   $dura = 9 if $dura > 9;
 }
 
-# Additional settings for parameters when doing running regular grid.
-# (dv, dw, dk, dh, ds) are grid SPACINGS for (gamma, delta, strike, dip, rake)
+# Flag to create regular grid as in Alvizuri & Tape (2016) and Silwal & Tape (2016).
+# NOTE reproducibility may not be exact since grid spacing uses function gridvec (in the c code).
+# Function gridvec does not implement the discretization of the previous version of 
+# cap.c which uses rules to account for special grid points.
+# Function gridvec also avoids endpoints in all parameters.
 if( $type == 3 ) {
-    use POSIX "fmod";   # may not be available outside unix/linux
-    # full range for each parameter
-    ($v1, $v2) = (-30, 30);
-    ($w1, $w2) = (-90, 90);
-    ($k1, $k2) = (  0, 360);
-    ($h1, $h2) = (  0, 90);
-    ($s1, $s2) = (-90, 90);
 
-    # get total number of solutions
+    # check that K flag works with flag R
+    if (($nv == 1) && ($nw == 1) && ($nR == 0)) {
+        # default is double couple if Range not specified and it's a single lune point
+        ($dv, $dw) = (0, 0);
+        ($v1, $v2) = (0, 0);
+        ($w1, $w2) = (0, 0);
+        ($k1, $k2) = (  0, 360);
+        ($h1, $h2) = (  0, 90);
+        ($s1, $s2) = (-90, 90);
+    } elsif (($nv == 1) && ($nw == 1) && ($nR > 0)) {
+        # if Range is set then its a subset
+        # lune points come from user input
+        ($dv, $dw) = (0, 0);
+        ($k1, $k2) = (  0, 360);
+        ($h1, $h2) = (  0, 90);
+        ($s1, $s2) = (-90, 90);
+    } else {
+        # set the full range
+        ($v1, $v2) = (-30, 30);
+        ($w1, $w2) = (-90, 90);
+        ($k1, $k2) = (  0, 360);
+        ($h1, $h2) = (  0, 90);
+        ($s1, $s2) = (-90, 90);
+    }
     # NOTE values nX are grid spacings, NOT number of points
     # NOTE values dX should be integers (CAP expects integers)
-    ($dv, $dw, $dk, $dh, $ds) = ($nv, $nw, $nk, $nh, $ns);
+    $dk = sprintf("%.0f", (($k2 - $k1) / $nk));  # strike -- do not include 360
+    $dh = sprintf("%.0f", (($h2 - $h1) / $nh));  # dip    -- include 0 at start (though it will be offset later)
+    $ds = sprintf("%.0f", (($s2 - $s1) / $ns));  # rake   -- include 0 point
 
-    # get number of points per parameter
-    if ($nv == 0 && $nw == 0) {
-        print STDERR "double couple\n"; 
-        $nv = 0;  # gamma
-        $nw = 0;  # delta
-    } else {
-    # CHECK VERSION IN CAP AND +1, -1 VALUES
-        $nv = (($v2 - $v1) / $dv) + 1;  # gamma -- include 0 point
-        $nw = (($w2 - $w1) / $dw) - 1;  # delta -- include 0 point 
-	# For ISO npoints is -2 because we don't want -90 and 90 points. This only work for full ISO searches. May not work for subset of ISO
-	# This attempts to recreate earlier version of cap.c (line 1164):  if (temp[1]==-90. || temp[1]==90. || temp[1] != temp[1]), then, continue;
-    }
-    # CHECK VERSION IN CAP AND +1, -1 VALUES
-    $nk = (($k2 - $k1) / $dk) - 0;  # strike -- do not include 360
-    $nh = (($h2 - $h1) / $dh);      # dip -- include 0 at start (though it will be offset later)
-    $ns = (($s2 - $s1) / $ds) + 1;  # rake  -- include 0 point
-
-    # check that spacings work
-#   if (fmod($nv,2) || fmod($nw,2) || fmod($nk,2) || fmod($nh,2) || fmod($ns,2)) {
-#       print STDERR "STOP. number of points not integer with current spacings and limits.\n";
-#       print STDERR "$nv, $nw, $nk, $nh, $ns\n";
-#       exit(0);
-#   }
+    print STDERR "$dv $dw $dk $dh $ds\n"; 
     $nsol = $nv * $nw * $nk * $nh * $ns;
 }
 
@@ -498,10 +498,10 @@ if ((( $nI == 1 ) && ($type != 2)) || (( $nI == 5 ) && ($type == 2))) {
     exit(0);
 }
 
-# Flag K: check type of grid (uniRand, uniGrid, regularGrid)
+# Flag K: check type of grid to build (uniRand, uniGrid). 
+# If using flag K3 then also need to set LUNE_GRID_INSTEAD_OF_UV=1 in cap.c
 if (($type < 1) || ($type > 3)) {
     print STDERR "STOP. Check search type\n";
-#    printf STDERR $usage;   # alternative output
     exit(0);
 }
 
