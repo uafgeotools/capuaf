@@ -454,8 +454,8 @@ unless ($dura) {
 # Function gridvec does not implement the discretization of the previous version of 
 # cap.c which uses rules to account for special grid points.
 # Function gridvec also avoids endpoints in all parameters.
-if( $oldgrid == 1 ) {
-
+if( ($oldgrid == 1) && ($nI == 5)) {
+    # Old grid
     print STDERR "Warning. Using the old grid setup.\n";
     print STDERR "cap.c should be compiled with flag LUNE_GRID_INSTEAD_OF_UV = 1\n";
     # check that K flag works with flag R
@@ -490,7 +490,37 @@ if( $oldgrid == 1 ) {
 
     print STDERR "$dv $dw $dk $dh $ds\n"; 
     $nsol = $nv * $nw * $nk * $nh * $ns;
-} 
+} elsif( ($oldgrid == 1) && ($nI == 1)) {
+    # random mode
+    print STDERR "Warning. Using the old random setup.\n";
+    print STDERR "cap.c should be compiled with flag LUNE_GRID_INSTEAD_OF_UV = 1\n";
+    if (($nv == 1) && ($nw == 1) && ($nR == 0)) {
+        # default is double couple if Range not specified and it's a single lune point
+        ($dv, $dw) = (0, 0);
+        ($v1, $v2) = (0, 0);
+        ($w1, $w2) = (0, 0);
+        ($k1, $k2) = (  0, 360);
+        ($h1, $h2) = (  0, 90);
+        ($s1, $s2) = (-90, 90);
+        $nk = $nh = $ns = $nsol;
+    } elsif (($nv == 1) && ($nw == 1) && ($nR > 0)) {
+        # if Range is set then its a subset
+        # lune points come from user input
+        ($dv, $dw) = (0, 0);
+        ($k1, $k2) = (  0, 360);
+        ($h1, $h2) = (  0, 90);
+        ($s1, $s2) = (-90, 90);
+        $nk = $nh = $ns = $nsol;
+    } else {
+        # set the full range
+        ($v1, $v2) = (-30, 30);
+        ($w1, $w2) = (-90, 90);
+        ($k1, $k2) = (  0, 360);
+        ($h1, $h2) = (  0, 90);
+        ($s1, $s2) = (-90, 90);
+        $nv = $nw = $nk = $nh = $ns = $nsol;
+    }
+}
 
 $search = $type;
 
