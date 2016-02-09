@@ -117,6 +117,9 @@ $nsol_fixlam =  100000;     # fixed lambda (includes DC)
 # number of entries for flag R
 $nR = 0;    # if not specified then it's the full range
 
+# flag for old grid
+$oldgrid = 0;   # default is oldgrid=0 (ie do not use old grid)
+
 #----------------------------------------------------------- 
 
 # number of freedom per sample for estimating uncertainty
@@ -179,7 +182,7 @@ $usage =
   Usage: cap.pl -Mmodel_depth/mag [-A<dep_min/dep_max/dep_inc>] [-B] [-C<f1_pnl/f2_pnl/f1_sw/f2_sw>]
                   [-D<w1/p1/p2>] [-E<search>] [-F<thr>] [-Ggreen] [-Hdt] 
                   [-I<nsol> OR -I<Nv/Nw/Nstrike/Ndip/Nrake>]
-                  [-K<search_type>] [-L<tau>] 
+                  [-K<search_type>] [-k1 (old grid setup)] [-L<tau>] 
                   [-M$model_$dep] [-m$mw OR -m<mw1>/<mw2>/<dmw> ] [-N<n>]
                   [-O] [-P[<Yscale[/Xscale_b[/Xscale_s[/k]]]]>] [-Qnof]
                   [-R<v0/w0/strike0/dip0/rake0> OR -R<v1/v2/w1/w1/strike1/strike2/dip1/dip2/rake1/rake2>] 
@@ -207,6 +210,7 @@ $usage =
         GRID: -I<Nv>/<Nw>/<Nstrike>/<Ndip>/<Nrake>   e.g. -I10/20/10/10/10 --- will generate Nx number of points for each parameter x.
     -J  FLAG NOT IN USE.
     -K  specify type of search. K1 = GRID search, K2 = RANDOM search.
+    -k  specify that grid is built using the old format (not uniform)
     -L  source duration (estimate from mw, can put a sac file name here).
     -M	specify the model and source depth.
     -m	specify point magnitude: -m<mw0> OR magnitude range: -n<mw1>/<mw2>/<dmw>
@@ -330,7 +334,6 @@ foreach (grep(/^-/,@ARGV)) {
                exit(0);
            }
        }
-   }
 #  elsif ($opt eq "J") {
 #    $iso1   = $value[0] if $value[0];
 #    $iso2  = $value[1] if $value[1];
@@ -338,8 +341,10 @@ foreach (grep(/^-/,@ARGV)) {
 #    $clvd2 = $value[3] if $value[3];
 #    $fmt_flag="true";     # used later for renaming output figures with fmt
 #  } 
-   elsif ($opt eq "K") {
+   } elsif ($opt eq "K") {
      $type = $value[0];
+   } elsif ($opt eq "k") {
+     $oldgrid = $value[0];
    } elsif ($opt eq "L") {
      $dura = join('/',@value);
    } elsif ($opt eq "m") {
@@ -449,8 +454,10 @@ unless ($dura) {
 # Function gridvec does not implement the discretization of the previous version of 
 # cap.c which uses rules to account for special grid points.
 # Function gridvec also avoids endpoints in all parameters.
-if( $type == 3 ) {
+if( $oldgrid == 1 ) {
 
+    print STDERR "Warning. Using the old grid setup.\n";
+    print STDERR "cap.c should be compiled with flag LUNE_GRID_INSTEAD_OF_UV = 1\n";
     # check that K flag works with flag R
     if (($nv == 1) && ($nw == 1) && ($nR == 0)) {
         # default is double couple if Range not specified and it's a single lune point
@@ -483,7 +490,7 @@ if( $type == 3 ) {
 
     print STDERR "$dv $dw $dk $dh $ds\n"; 
     $nsol = $nv * $nw * $nk * $nh * $ns;
-}
+} 
 
 $search = $type;
 
@@ -499,8 +506,8 @@ if ((( $nI == 1 ) && ($type != 2)) || (( $nI == 5 ) && ($type == 2))) {
 }
 
 # Flag K: check type of grid to build (uniRand, uniGrid). 
-# If using flag K3 then also need to set LUNE_GRID_INSTEAD_OF_UV=1 in cap.c
-if (($type < 1) || ($type > 3)) {
+# If using flag k3 then also need to set LUNE_GRID_INSTEAD_OF_UV=1 in cap.c
+if (($type < 1) || ($type > 2)) {
     print STDERR "STOP. Check search type\n";
     exit(0);
 }
