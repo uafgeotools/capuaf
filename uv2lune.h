@@ -11,6 +11,8 @@ float v2gamma(float v);
 void v2gamma_vec(float *pArray_v, int nsol, float *pArray_gamma);
 float h2dip(float h);
 void h2dip_vec(float *pArray_h, int nsol, float *pArray_dip);
+float siso2delta(float siso);
+void siso2delta_vec(float *pArray_s, int nsol, float *pArray_dip);
 void randvec(float xmin, float xmax, int nsol, float *pArray);
 void gridvec(float xmin, float xmax, int npoints, float *pArray);
 void magvec(float xmin, float xmax, float dx, float *pArray);

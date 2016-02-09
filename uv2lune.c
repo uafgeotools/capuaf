@@ -80,6 +80,26 @@ void v2gamma_vec(float *pArray_v, int nsol, float *pArray_gamma)
     //fprintf(stderr,"routine: %s line %d \n", __FILE__, __LINE__);
 }
 
+// convert sin(iso) to delta
+float siso2delta(float siso)
+{
+    float delta;
+    delta = asinf(siso);
+    // fprintf(stdout,"CHECK GAMMA %f \n", gamma * r2d);
+    return delta;
+}
+
+// get vector of delta values
+void siso2delta_vec(float *pArray_s, int nsol, float *pArray_dip)
+{
+    int i;
+    fprintf(stderr,"create vector siso2delta... ");
+    for(i=0; i<nsol; i++) {
+        pArray_dip[i] = siso2delta(pArray_s[i]);
+    }
+    fprintf(stderr,"done.\tNPTS = %d\n", i);
+}
+
 /* convert h to dip */
 float h2dip(float h)
 {
@@ -128,6 +148,12 @@ void randvec(float xmin, float xmax, int nsol, float *pArray)
 /* 
     NOTE uniformMT.m applies offset to full range AND subrange
          shouldn't it apply only to full range?
+
+    NOTE this function currently will skip the endpoints even when 
+    searching a subset of the full parameter space. This is the same
+    as in uniformMT.m
+    It may make more sense to add special checks for each parameter
+    so that subsets include endpoints.
 */
 void gridvec(float xmin, float xmax, int npoints, float *pArray)
 {
@@ -163,7 +189,7 @@ void gridvec(float xmin, float xmax, int npoints, float *pArray)
             //        fprintf(stdout,"CHECK GRIDVEC. %f \n", pArray[i] );
         }
         if((pArray[npoints-1] - xmax) > TOLERANCE) {
-            fprintf(stderr,"WARNING. end point does not match expected end point!\n");
+            fprintf(stderr,"\nWARNING. end point does not match expected end point!\n");
             fprintf(stderr,"xmax(actual) = %f. xmax(expected) = %f\n", pArray[npoints-1], xmax);
         }
         fprintf(stderr,"\tdone. NPTS = %d\n", i);
