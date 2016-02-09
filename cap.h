@@ -65,6 +65,13 @@ extern int FTC_data, FTC_green;// for original CAP set FTC_data=0, FTC_green=0
  * Note CAP still needs at least 1 waveform for the inversion */
 extern int skip_zero_weights;    // for original CAP set skip_zero_weights=1
 
+// Flag to create regular grid as in Alvizuri & Tape (2016) and Silwal & Tape (2016).
+// NOTE reproducibility may not be exact since grid spacing uses function gridvec.
+// Function gridvec does not implement the discretization of the previous version of 
+// cap.c which uses rules to account for special grid points.
+// Function gridvec also avoids endpoints in all parameters.
+extern int LUNE_GRID_INSTEAD_OF_UV;
+
 /*********************** Data Structure***************************/
 
 /* focal mechanism (strike, dip, rake) data structure */
