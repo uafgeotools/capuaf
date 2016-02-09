@@ -145,6 +145,9 @@ void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
     int na, isol;
     int ig, id, ik, ih, is;
 
+    float siso1, siso2;
+    float h1, h2;
+
     /* temporary vectors for filling the moment tensor array */
     float * vec_u     = calloc(searchPar->nu, sizeof(float));
     float * vec_beta  = calloc(searchPar->nu, sizeof(float));
@@ -167,16 +170,48 @@ void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
         fprintf(stderr,"WARNING u1 = %e \n");
     }
 
-    gridvec(searchPar->v1, searchPar->v2, searchPar->nv, vec_v);    /* gamma(v) */
-    gridvec(searchPar->u1, searchPar->u2, searchPar->nu, vec_u);    /* beta(u) \\ delta = beta -90 */
-    gridvec(searchPar->k1, searchPar->k2, searchPar->nk, vec_k);
-    gridvec(searchPar->h1, searchPar->h2, searchPar->nh, vec_h);    /* dip(h) */
-    gridvec(searchPar->s1, searchPar->s2, searchPar->ns, vec_s);
+    if(LUNE_GRID_INSTEAD_OF_UV == 1) {
+        // This section runs only when compiling with flag LUNE_GRID_INSTEAD_OF_UV=1. As requested.
+        // This aproach is to not have lune grid readily available. As requested.
+        // The original version used flag -K3 from cap.pl. This option was deleted, as requested.
 
-    u2beta_vec(vec_u, vec_beta, searchPar->nu); 
-    beta2delta_vec(vec_beta, vec_delta, searchPar->nu);                /* beta(u) --> delta, npts = nu */
-    v2gamma_vec(vec_v, searchPar->nv, vec_gamma);                      /* gamma(v), npts = nv */
-    h2dip_vec(vec_h, searchPar->nh, vec_dip);                          /* dip(h), npts = nh */
+        fprintf(stderr,"\nWARNING. using lune grid.\n");
+        fprintf(stderr,"gamma [ %10.5f, %10.5f]\n", searchPar->v1, searchPar->v2);
+        fprintf(stderr,"delta [ %10.5f, %10.5f]\n", searchPar->w1, searchPar->w2);
+
+        // gamma
+        gridvec(searchPar->v1 * d2r, searchPar->v2 * d2r, searchPar->nv, vec_gamma);
+
+        // delta. siso = sin(iso)
+        siso1 = sin(searchPar->w1 * d2r); siso2 = sin(searchPar->w2 * d2r);
+        gridvec(siso1, siso2, searchPar->nu, vec_beta);     // nu is calculated in cap.pl
+                                                            // vec_beta is a dummy. no relation to beta here.
+        siso2delta_vec(vec_beta, searchPar->nu, vec_delta);
+
+        // strike
+        gridvec(searchPar->k1 * d2r, searchPar->k2 * d2r, searchPar->nk, vec_k);
+
+        // dip
+        h1 = cos(searchPar->h1 * d2r); h2 = cos(searchPar->h2 * d2r);
+        gridvec(h1, h2, searchPar->nh, vec_h);    // nh is calculated in cap.pl
+        h2dip_vec(vec_h, searchPar->nh, vec_dip); 
+
+        // rake
+        gridvec(searchPar->s1 * d2r, searchPar->s2 * d2r, searchPar->ns, vec_s);
+    }
+    else {
+        // uniform grid. (default case)
+        gridvec(searchPar->v1, searchPar->v2, searchPar->nv, vec_v);    // gamma(v)
+        gridvec(searchPar->u1, searchPar->u2, searchPar->nu, vec_u);    // beta(u)
+        gridvec(searchPar->k1, searchPar->k2, searchPar->nk, vec_k);
+        gridvec(searchPar->h1, searchPar->h2, searchPar->nh, vec_h);    // dip(h)
+        gridvec(searchPar->s1, searchPar->s2, searchPar->ns, vec_s);
+ 
+        u2beta_vec(vec_u, vec_beta, searchPar->nu);
+        beta2delta_vec(vec_beta, vec_delta, searchPar->nu);
+        v2gamma_vec(vec_v, searchPar->nv, vec_gamma);      
+        h2dip_vec(vec_h, searchPar->nh, vec_dip);          
+    }
 
     /* fill the moment tensor array with moment tensors */
     fprintf(stderr,"\nFilling moment tensor table (nsol= %10d) ... ", searchPar->nsol);
