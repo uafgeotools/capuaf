@@ -1074,6 +1074,9 @@ for(obs=obs0,i=0;i<nda;i++,obs++){
  free(grid.err);
  free(arrayMT); 
  free(searchPar);
+ free(obs0);
+ free(fm0);
+ free(fm_copy);
 
  fprintf(stderr,"\ncap.c: DONE\n");
  fprintf(stderr,"----------------------------------------\n\n");
