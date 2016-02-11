@@ -67,7 +67,7 @@ $power_of_surf=0.5;
 
 # search types
 $parm = -1.0;
-$type = -1.0;
+$grid_type = -1.0;
 
 # minimization (norm)
 $norm = 2;
@@ -182,7 +182,7 @@ $usage =
   Usage: cap.pl -Mmodel_depth/mag [-A<dep_min/dep_max/dep_inc>] [-B] [-C<f1_pnl/f2_pnl/f1_sw/f2_sw>]
                   [-D<w1/p1/p2>] [-E<search>] [-F<thr>] [-Ggreen] [-Hdt] 
                   [-I<nsol> OR -I<Nv/Nw/Nstrike/Ndip/Nrake>]
-                  [-K<search_type>] [-k1 (old grid setup)] [-L<tau>] 
+                  [-k1 (old grid setup)] [-L<tau>]
                   [-M$model_$dep] [-m$mw OR -m<mw1>/<mw2>/<dmw> ] [-N<n>]
                   [-O] [-P[<Yscale[/Xscale_b[/Xscale_s[/k]]]]>] [-Qnof]
                   [-R<v0/w0/strike0/dip0/rake0> OR -R<v1/v2/w1/w1/strike1/strike2/dip1/dip2/rake1/rake2>] 
@@ -209,8 +209,8 @@ $usage =
         RAND: -I<nsol>  e.g. -I10000  --- will generate 10,000 random solutions. This option works with K=2
         GRID: -I<Nv>/<Nw>/<Nstrike>/<Ndip>/<Nrake>   e.g. -I10/20/10/10/10 --- will generate Nx number of points for each parameter x.
     -J  FLAG NOT IN USE.
-    -K  specify type of search. K1 = GRID search, K2 = RANDOM search.
-    -k  specify that grid is built using the old format (not uniform)
+    -K  FLAG NOT IN USE.
+    -k  specify k1 to build a grid using the old format (not uniform).
     -L  source duration (estimate from mw, can put a sac file name here).
     -M	specify the model and source depth.
     -m	specify point magnitude: -m<mw0> OR magnitude range: -n<mw1>/<mw2>/<dmw>
@@ -341,8 +341,8 @@ foreach (grep(/^-/,@ARGV)) {
 #    $clvd2 = $value[3] if $value[3];
 #    $fmt_flag="true";     # used later for renaming output figures with fmt
 #  } 
-   } elsif ($opt eq "K") {
-     $type = $value[0];
+#   } elsif ($opt eq "K") {
+#     $type = $value[0];
    } elsif ($opt eq "k") {
      $oldgrid = $value[0];
    } elsif ($opt eq "L") {
@@ -522,24 +522,26 @@ if( ($oldgrid == 1) && ($nI == 5)) {
     }
 }
 
-$search = $type;
-
 # CHECK THAT USER INPUT MAKE SENSE
 
-# Flag I: check number of entries
-# I10000 (rand) goes with K2 else abort
-# I10/10/10/10/10 goes with K1 else abort
-if ((( $nI == 1 ) && ($type != 2)) || (( $nI == 5 ) && ($type == 2))) {
-    print STDERR "STOP. Random mode only works with I<nsol> and K2\n";
-#    printf STDERR $usage;   # alternative output
+# Set grid type to build (uniform rand, uniform grid) depending on entries in I (previously flag K).
+# If using flag k3 then also need to set LUNE_GRID_INSTEAD_OF_UV=1 in cap.c
+if ($nI == 1) {
+    $grid_type = 2; # RAND
+} elsif ($nI == 5) {
+    $grid_type = 1; # GRID
+} else{
+    print STDERR "STOP. Unable to set search type, check entries in flag R or I\n";
     exit(0);
 }
 
-# Flag K: check type of grid to build (uniRand, uniGrid). 
-# If using flag k3 then also need to set LUNE_GRID_INSTEAD_OF_UV=1 in cap.c
-if (($type < 1) || ($type > 2)) {
-    print STDERR "STOP. Check search type\n";
-    exit(0);
+#$grid_type = $type;
+
+# Flag I: set defaults
+if (($nI == 5) && ($nv == 1) && ($nw == 1)) {
+    # default to the double couple
+    ($v1, $v2) = (0, 0);
+    ($w1, $w2) = (0, 0);
 }
 
 if ( -r $dura ) {	# use a sac file for source time function   
@@ -580,7 +582,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     print STDERR "-------------------------------------------------------------\n";
     print STDERR "cap.pl: print some input parameters:\n";
     print STDERR "EVENT ID = $eve | EVENT DEPTH = $dep |  SOURCE DURATION = $dura\n";
-    print STDERR "SEARCH TYPE  = $type | NSOL = $nsol\n";
+    print STDERR "GRID TYPE  = $grid_type | NSOL = $nsol\n";
     print STDERR "-------------------------------------------------------------\n\n";
 
     open(WEI, "$eve/$weight") || next;
@@ -599,7 +601,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     print SRC "$plot\n";
     print SRC "$disp $mltp\n";
     print SRC "$green/$model/\n";
-    print SRC "$search\n";
+    print SRC "$grid_type\n";
     print SRC "$norm\n";
     print SRC "$dt $dura $riseTime\n";
     print SRC "$f1_pnl $f2_pnl $f1_sw $f2_sw\n";
