@@ -32,10 +32,6 @@ typedef struct
     float h1;   float h2;   int nh; int dh;
     float s1;   float s2;   int ns; int ds;
 
-    float gamma1;   float gamma2;   int dgamma;
-    float delta1;   float delta2;   int ddelta;
-    float dip1;     float dip2;     int ddip;
-
     int nsol;
 
 } SEARCHPAR;
