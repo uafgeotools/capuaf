@@ -74,11 +74,15 @@ extern int LUNE_GRID_INSTEAD_OF_UV;
 
 /*********************** Data Structure***************************/
 
-/* focal mechanism (strike, dip, rake) data structure */
+// focal mechanism updated to include the full moment tensor.
+// (gamma, delta, strike, dip, rake, magnitude)
 typedef struct {
-	float	stk;	/* strkie */
+	float	gamma;	/* CLVD */
+	float	delta;	/* ISO */
+	float	stk;	/* strike */
 	float	dip;	/* dip */
 	float	rak;	/* rake */
+	float	mag;	/* Mw */
 } MECA;
 
 /* a portion of observed waveform and corresponding 3 components
