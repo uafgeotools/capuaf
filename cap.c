@@ -120,7 +120,8 @@ int main (int argc, char **argv) {
   float	bs_body,bs_surf,bs[NCP],weight,nof_per_samp;
   float	w_pnl[NCP];
   float	distance,dmin=100.,vp,vs1,vs2,depSqr=25;
-  float	*syn,*f_pt,*f_pt0,*f_pt1;
+  float	*f_pt,*f_pt0,*f_pt1;
+  float	*data_obs, *data_syn;   // save seismograms for plotting
   float *f_pt2;
   float *g_pt;  // for FTC_green
   int npt_data, s_len, offset_h=0;
@@ -883,12 +884,16 @@ int main (int argc, char **argv) {
 
 /***** output waveforms for both data and synthetics ****/
   i = mm[1]; if(mm[0]>i) i=mm[0];
-  syn = (float *) malloc(i*sizeof(float));
-  if (syn == NULL) {
-    fprintf(stderr,"fail to allocate memory for output\n");
+  data_obs = (float *) malloc(i*sizeof(float));
+  data_syn = (float *) malloc(i*sizeof(float));
+
+  if ((data_obs == NULL) || (data_syn == NULL)) {
+    fprintf(stderr,"Failed to allocate memory for seismogram output.\n");
     return -1;
   }
+
   /**************output the results***********************/
+  // START DELETE SECTION -- NOT APPLICABLE ANYMORE
   if (sol.flag) fprintf(stderr,"\nWarning: flag=%d => the minimum %5.1f/%4.1f/%5.1f is at boundary\n",sol.flag,sol.meca.stk,sol.meca.dip,sol.meca.rak);
   else principal_values(&(sol.dev[0]));
   for(i=0; i<3; i++) rad[i] = sqrt(2*x2/sol.dev[i]);
@@ -901,6 +906,7 @@ int main (int argc, char **argv) {
     rad[1]=0.0;
     rad[2]=0.0;
     sol.ms = 1;}
+  // END DELETE SECTION -- NOT APPLICABLE ANYMORE
 
   // output warning if best magnitude = magnitude limit in magnitude search.
   if ( (mt[0].par <= searchPar->mw1 && searchPar->dmw != 0) || (mt[0].par >= searchPar->mw2 && searchPar->dmw != 0) ) {
@@ -965,10 +971,11 @@ for(obs=obs0,i=0;i<nda;i++,obs++) {
     }
  }
 
-fprintf(stderr,"Saving seismograms ... \n");
+fprintf(stderr,"Saving seismograms for stations ... \n");
 // generate synthetic and data waveforms for each 5 component (filtered and cut) 
 // these are deleted at the later stage (see cap.pl)
-for(obs=obs0,i=0;i<nda;i++,obs++){
+for(obs=obs0,i=0;i<nda;i++,obs++) {
+    fprintf(stderr,"%d ", i);
     mt_radiat(obs->az, mtensor, arad);
     rad[0]=arad[3][0];
     for(k=1;k<4;k++) rad[k]=arad[3-k][0];
@@ -976,42 +983,43 @@ for(obs=obs0,i=0;i<nda;i++,obs++){
     strcat(strcat(strcat(strcat(strcat(strcpy(tmp,eve),"/"),dep), "_"),obs->stn),".0");
     c_pt = strrchr(tmp,(int) '0');
     for(kc=2,f_pt=rad+NRF,spt=obs->com,j=0;j<NCP;j++,spt++,kc=NRF,f_pt=rad) {
-      npt=spt->npt;
-      hd[0] = sachdr(dt, npt, spt->b);
-      hd->dist = obs->dist; hd->az = obs->az; hd->user1 = obs->alpha;
-      hd->a = hd->b;
+        npt=spt->npt;
+        hd[0] = sachdr(dt, npt, spt->b);
+        hd->dist = obs->dist; hd->az = obs->az; hd->user1 = obs->alpha;
+        hd->a = hd->b;
 
-      // find the max amplitude from all stations [i], from all components [j]
-      // OBSERVED
-      maxamp_obs[i][j]=0.;
-      for(l=0;l<npt;l++){
-          syn[l] = spt->rec[l]; // amp is the scaled down M0
-          if (fabs(syn[l]) > maxamp_obs[i][j]){
-              maxamp_obs[i][j] = fabs(syn[l]); // OBSERVED maximum amplitude
-          }
-      }
-      write_sac(tmp,hd[0],syn);   // write observed to file (even though it says 'syn' it's observed)
-      (*c_pt)++;
+        // find the max amplitude from all stations [i], from all components [j]
+        // OBSERVED
+        maxamp_obs[i][j]=0.;
+        for(l=0;l<npt;l++) {
+            data_obs[l] = spt->rec[l]; // amp is the scaled down M0
+            if (fabs(data_obs[l]) > maxamp_obs[i][j]) {
+                maxamp_obs[i][j] = fabs(data_obs[l]); // OBSERVED maximum amplitude
+            }
+        }
+        write_sac(tmp,hd[0],data_obs);   // write observed to file
+        (*c_pt)++;
 
-      // SYNTHETIC
-      maxamp_syn[i][j]=0.;
-      for(l=0;l<npt;l++) {
-	for(x2=0.,k=0;k<kc;k++){
-	  x2 += f_pt[k] * spt->syn[k][l];
-	}
-	syn[l] = sol.scl[i][j] * x2 *amp;    // x2 is the green's funciton norm
-	if (fabs(syn[l]) > maxamp_syn[i][j]) {
-	  maxamp_syn[i][j] = fabs(syn[l]);  // SYNTHETIC maximum amplitude
-	}
-      }
-      //kcc = log(maxamp_obs[i][j]/maxamp_syn[i][j]);
-      //fprintf(stderr,"%.3f\t",kcc);
-      hd->b -= (shft0[i][j]+con_shft[i]);
-      hd->a = hd->b-sol.shft[i][j]*dt;
-      write_sac(tmp,hd[0],syn);   // write synthetics to file
-      (*c_pt)++;
+        // SYNTHETIC
+        maxamp_syn[i][j]=0.;
+        for(l=0;l<npt;l++) {
+            for(x2=0.,k=0;k<kc;k++) {
+                x2 += f_pt[k] * spt->syn[k][l];
+            }
+            data_syn[l] = sol.scl[i][j] * x2 *amp;    // x2 is the green's funciton norm
+            if (fabs(data_syn[l]) > maxamp_syn[i][j]) {
+                maxamp_syn[i][j] = fabs(data_syn[l]);  // SYNTHETIC maximum amplitude
+            }
+        }
+        //kcc = log(maxamp_obs[i][j]/maxamp_syn[i][j]);
+        //fprintf(stderr,"%.3f\t",kcc);
+        hd->b -= (shft0[i][j]+con_shft[i]);
+        hd->a = hd->b-sol.shft[i][j]*dt;
+        write_sac(tmp,hd[0],data_syn);   // write synthetics to file
+        (*c_pt)++;
     }
- }
+}
+fprintf(stderr,"\tdone.\n");
 
 // set fm_copy to start at beginning of array
  if (skip_zero_weights==0){
@@ -1077,10 +1085,11 @@ for(obs=obs0,i=0;i<nda;i++,obs++){
  free(obs0);
  free(fm0);
  free(fm_copy);
+ free(data_syn);
+ free(data_obs);
 
  fprintf(stderr,"\ncap.c: DONE\n");
  fprintf(stderr,"----------------------------------------\n\n");
  return 0;
 }
-
 
