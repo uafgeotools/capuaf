@@ -472,10 +472,16 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
             //  output binary data
 #ifdef WB
-//            outbb.g = arrayMT[isol].gamma * r2d;
-//            outbb.d = arrayMT[isol].delta * r2d;
-            outbb.v = gamma2v(arrayMT[isol].gamma);
-            outbb.w = delta2w(arrayMT[isol].delta);
+            // NOTE flag LUNE_GRID_INSTEAD_OF_UV. 
+            // This is more efficient than adding checks for flag LUNE_GRID_INSTEAD_OF_UV inside this loop.
+            // Another option is to add more ifdef statements but debugging starts to get complicated.
+            // LUNE_GRID_INSTEAD_OF_UV=0 -- output (v,w)
+            // LUNE_GRID_INSTEAD_OF_UV=1 -- output (gamma, delta)
+            //outbb.v = arrayMT[isol].gamma * r2d;  // UNcomment this line only if LUNE_GRID_INSTEAD_OF_UV=1 
+            //outbb.w = arrayMT[isol].delta * r2d;  // UNcomment this line only if LUNE_GRID_INSTEAD_OF_UV=1
+            outbb.v = gamma2v(arrayMT[isol].gamma); // comment this line only if LUNE_GRID_INSTEAD_OF_UV=1
+            outbb.w = delta2w(arrayMT[isol].delta); // comment this line only if LUNE_GRID_INSTEAD_OF_UV=1
+
             outbb.kappa = arrayMT[isol].kappa * r2d; // output in degrees
             outbb.theta = arrayMT[isol].theta * r2d; // output in degrees
             outbb.sigma = arrayMT[isol].sigma * r2d; // output in degrees
