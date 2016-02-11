@@ -53,6 +53,38 @@ float delta2beta(float delta)
     return beta;
 }
 
+// compute u(w)
+float w2u(float w)
+{
+    float u;
+    u = w + (3.0 * PI / 8.0);
+
+    // if u=-0 set to u=+0
+    // this is a numerical issue that can cause NANs when using var u
+    if(u < 0.0) {
+        fprintf(stderr,"WARNING u = %e new value:\n");
+        u = 0.0;
+        fprintf(stderr,"WARNING u = %e \n");
+    }
+    return u;
+}
+
+// compute w(u)
+float u2w(float u)
+{
+    float w;
+
+    // if u=-0 set to u=+0
+    // this is a numerical issue that can cause NANs when using var u
+    if(u < 0.0) {
+        fprintf(stderr,"WARNING u = %e new value:\n");
+        u = 0.0;
+        fprintf(stderr,"WARNING u = %e \n");
+    }
+
+    w = u - (3.0 * PI / 8.0);
+    return w;
+}
 /* compute delta=delta(beta) */
 void beta2delta_vec(float *pArray_beta, float *pArray_delta, int nsol)
 {
