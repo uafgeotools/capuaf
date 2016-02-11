@@ -124,7 +124,7 @@ float v2gamma(float v)
     // sanity check range for v
     if((v < -k3) || (v > k3)) {
         fprintf(stderr,"WARNING. v= %5.2e is outside range +-1/3\n");
-        return -1;
+        exit(-1);
     }
     gamma = k3 * asinf(3. * v);
     // fprintf(stdout,"CHECK GAMMA %f \n", gamma * r2d);
@@ -166,7 +166,14 @@ void siso2delta_vec(float *pArray_s, int nsol, float *pArray_dip)
 /* convert h to dip */
 float h2dip(float h)
 {
-    return acosf(h);
+    float dip;
+    if((h < 0.0) || (h > 1.0)) {
+        fprintf(stderr,"STOP. h= %f is out of bounds [0,1]\n", h);
+        exit(-1);
+    } else {
+        dip = acosf(h);
+    }
+    return dip;
 }
 
 /* get vector of dip values */
