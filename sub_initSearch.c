@@ -75,26 +75,19 @@ void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
     float h1, h2;
 
     /* temporary vectors for filling the moment tensor array */
+    float * vec_v     = calloc(searchPar->nsol, sizeof(float));
+    float * vec_gamma = calloc(searchPar->nsol, sizeof(float));
+    float * vec_u     = calloc(searchPar->nsol, sizeof(float));
     float * vec_beta  = calloc(searchPar->nsol, sizeof(float));
     float * vec_delta = calloc(searchPar->nsol, sizeof(float));
-    float * vec_gamma = calloc(searchPar->nsol, sizeof(float));
-    float * vec_dip   = calloc(searchPar->nsol, sizeof(float));
-    float * vec_u     = calloc(searchPar->nsol, sizeof(float));
-    float * vec_v     = calloc(searchPar->nsol, sizeof(float));
-    float * vec_k     = calloc(searchPar->nsol, sizeof(float));
+    float * vec_kappa = calloc(searchPar->nsol, sizeof(float));
+    float * vec_theta = calloc(searchPar->nsol, sizeof(float));
     float * vec_h     = calloc(searchPar->nsol, sizeof(float));
-    float * vec_s     = calloc(searchPar->nsol, sizeof(float));
+    float * vec_sigma = calloc(searchPar->nsol, sizeof(float));
 
-    // convert u to w
-    // consider making a function
-    searchPar->u1 = searchPar->w1 + (3.0 * PI / 8.0);   // 
-    searchPar->u2 = searchPar->w2 + (3.0 * PI / 8.0);   // 
-    if(searchPar->u1 < 0.0) {
-        // some times  u1 == -0 then set to +0
-        fprintf(stderr,"WARNING u1 = %e new value:\n");
-        searchPar->u1 = 0.0;
-        fprintf(stderr,"WARNING u1 = %e \n");
-    }
+    // convert w to u
+    searchPar->u1 = w2u(searchPar->w1);
+    searchPar->u2 = w2u(searchPar->w2);
 
     if(LUNE_GRID_INSTEAD_OF_UV == 1) {
         // This section runs only when compiling with flag LUNE_GRID_INSTEAD_OF_UV=1. As requested.
@@ -115,28 +108,28 @@ void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
         siso2delta_vec(vec_beta, searchPar->nu, vec_delta);
 
         // strike
-        randvec(searchPar->k1 * d2r, searchPar->k2 * d2r, searchPar->nk, vec_k);
+        randvec(searchPar->k1 * d2r, searchPar->k2 * d2r, searchPar->nk, vec_kappa);
 
         // dip
         h1 = cos(searchPar->h1 * d2r); h2 = cos(searchPar->h2 * d2r);
         randvec(h1, h2, searchPar->nh, vec_h);    // nh is calculated in cap.pl
-        h2dip_vec(vec_h, searchPar->nh, vec_dip); 
+        h2dip_vec(vec_h, searchPar->nh, vec_theta); 
 
         // rake
-        randvec(searchPar->s1 * d2r, searchPar->s2 * d2r, searchPar->ns, vec_s);
+        randvec(searchPar->s1 * d2r, searchPar->s2 * d2r, searchPar->ns, vec_sigma);
     }
     else {
         // uniform grid. (default case)
         randvec(searchPar->v1, searchPar->v2, searchPar->nv, vec_v);    // gamma(v)
         randvec(searchPar->u1, searchPar->u2, searchPar->nu, vec_u);    // beta(u)
-        randvec(searchPar->k1, searchPar->k2, searchPar->nk, vec_k);
+        randvec(searchPar->k1, searchPar->k2, searchPar->nk, vec_kappa);
         randvec(searchPar->h1, searchPar->h2, searchPar->nh, vec_h);    // dip(h)
-        randvec(searchPar->s1, searchPar->s2, searchPar->ns, vec_s);
+        randvec(searchPar->s1, searchPar->s2, searchPar->ns, vec_sigma);
  
         u2beta_vec(vec_u, vec_beta, searchPar->nu);
         beta2delta_vec(vec_beta, vec_delta, searchPar->nu);
         v2gamma_vec(vec_v, searchPar->nv, vec_gamma);      
-        h2dip_vec(vec_h, searchPar->nh, vec_dip);          
+        h2dip_vec(vec_h, searchPar->nh, vec_theta);          
     }
 
     fprintf(stderr,"~~~~~~~~~~~input u1 %f \n", searchPar->u1);
@@ -151,26 +144,29 @@ void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
     /* fill the moment tensor array with moment tensors */
     fprintf(stderr,"\nFilling moment tensor table (nsol= %10d) ... ", searchPar->nsol);
     for(isol = 0; isol < searchPar->nsol; isol++) {
-        arrayMT[isol].g = vec_gamma[isol];
-        arrayMT[isol].d = vec_delta[isol];
-        arrayMT[isol].k =     vec_k[isol];
-        arrayMT[isol].t =   vec_dip[isol];
-        arrayMT[isol].s =     vec_s[isol];
-//        fprintf(stdout,"index = %20d %f %f %f %f %f \n", isol, arrayMT[isol].g *r2d, arrayMT[isol].d *r2d,  arrayMT[isol].k *r2d,  arrayMT[isol].t *r2d,  arrayMT[isol].s *r2d);
+        arrayMT[isol].gamma = vec_gamma[isol];
+        arrayMT[isol].delta = vec_delta[isol];
+        arrayMT[isol].kappa = vec_kappa[isol];
+        arrayMT[isol].theta = vec_theta[isol];
+        arrayMT[isol].sigma = vec_sigma[isol];
+//        fprintf(stdout,"index = %20d %f %f %f %f %f \n", isol, arrayMT[isol].gamma *r2d, arrayMT[isol].delta *r2d,  arrayMT[isol].kappa *r2d,  arrayMT[isol].theta *r2d,  arrayMT[isol].sigma *r2d);
     }
     fprintf(stderr,"done. nsol = %d \n", isol);
     if (isol == 1) {
-        fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", 0, arrayMT[0].g *r2d, arrayMT[0].d *r2d,  arrayMT[0].k *r2d,  arrayMT[0].t *r2d,  arrayMT[0].s *r2d); 
+        fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", 
+                0, arrayMT[0].gamma *r2d, arrayMT[0].delta *r2d,  arrayMT[0].kappa *r2d,  arrayMT[0].theta *r2d,  arrayMT[0].sigma *r2d); 
     } else if(isol > 1) {
-    fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", 0, arrayMT[0].g *r2d, arrayMT[0].d *r2d,  arrayMT[0].k *r2d,  arrayMT[0].t *r2d,  arrayMT[0].s *r2d); 
-    fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", isol-1, arrayMT[isol-1].g *r2d, arrayMT[isol-1].d *r2d,  arrayMT[isol-1].k *r2d,  arrayMT[isol-1].t *r2d,  arrayMT[isol-1].s *r2d); 
+        fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", 
+                0, arrayMT[0].gamma *r2d, arrayMT[0].delta *r2d,  arrayMT[0].kappa *r2d,  arrayMT[0].theta *r2d,  arrayMT[0].sigma *r2d); 
+        fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n",
+                isol-1, arrayMT[isol-1].gamma *r2d, arrayMT[isol-1].delta *r2d,  arrayMT[isol-1].kappa *r2d,  arrayMT[isol-1].theta *r2d,  arrayMT[isol-1].sigma *r2d);
     } 
 
     free(vec_gamma);
     free(vec_delta);
-    free(vec_k);
-    free(vec_dip);
-    free(vec_s);
+    free(vec_kappa);
+    free(vec_theta);
+    free(vec_sigma);
 }   /* end function getRandMT */
 
 /* fill array with a grid uniform moment tensors */
@@ -183,26 +179,19 @@ void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
     float h1, h2;
 
     /* temporary vectors for filling the moment tensor array */
+    float * vec_v     = calloc(searchPar->nv, sizeof(float));
+    float * vec_gamma = calloc(searchPar->nv, sizeof(float));
     float * vec_u     = calloc(searchPar->nu, sizeof(float));
     float * vec_beta  = calloc(searchPar->nu, sizeof(float));
     float * vec_delta = calloc(searchPar->nu, sizeof(float));
-    float * vec_v     = calloc(searchPar->nv, sizeof(float));
-    float * vec_gamma = calloc(searchPar->nv, sizeof(float));
-    float * vec_k     = calloc(searchPar->nk, sizeof(float));       /* strike */
+    float * vec_kappa = calloc(searchPar->nk, sizeof(float));       /* strike */
+    float * vec_theta = calloc(searchPar->nh, sizeof(float));
     float * vec_h     = calloc(searchPar->nh, sizeof(float));
-    float * vec_dip   = calloc(searchPar->nh, sizeof(float));
-    float * vec_s     = calloc(searchPar->ns, sizeof(float));       /* slip */
+    float * vec_sigma = calloc(searchPar->ns, sizeof(float));       /* slip */
 
-    // convert u to w
-    // consider making a function
-    searchPar->u1 = searchPar->w1 + (3.0 * PI / 8.0);   // 
-    searchPar->u2 = searchPar->w2 + (3.0 * PI / 8.0);   // 
-    if(searchPar->u1 < 0.0) {
-        // some times  u1 == -0 then set to +0
-        fprintf(stderr,"WARNING u1 = %e new value:\n");
-        searchPar->u1 = 0.0;
-        fprintf(stderr,"WARNING u1 = %e \n");
-    }
+    // convert w to u
+    searchPar->u1 = w2u(searchPar->w1);
+    searchPar->u2 = w2u(searchPar->w2);
 
     if(LUNE_GRID_INSTEAD_OF_UV == 1) {
         // This section runs only when compiling with flag LUNE_GRID_INSTEAD_OF_UV=1. As requested.
@@ -223,28 +212,28 @@ void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
         siso2delta_vec(vec_beta, searchPar->nu, vec_delta);
 
         // strike
-        gridvec(searchPar->k1 * d2r, searchPar->k2 * d2r, searchPar->nk, vec_k);
+        gridvec(searchPar->k1 * d2r, searchPar->k2 * d2r, searchPar->nk, vec_kappa);
 
         // dip
         h1 = cos(searchPar->h1 * d2r); h2 = cos(searchPar->h2 * d2r);
         gridvec(h1, h2, searchPar->nh, vec_h);    // nh is calculated in cap.pl
-        h2dip_vec(vec_h, searchPar->nh, vec_dip); 
+        h2dip_vec(vec_h, searchPar->nh, vec_theta); 
 
         // rake
-        gridvec(searchPar->s1 * d2r, searchPar->s2 * d2r, searchPar->ns, vec_s);
+        gridvec(searchPar->s1 * d2r, searchPar->s2 * d2r, searchPar->ns, vec_sigma);
     }
     else {
         // uniform grid. (default case)
         gridvec(searchPar->v1, searchPar->v2, searchPar->nv, vec_v);    // gamma(v)
         gridvec(searchPar->u1, searchPar->u2, searchPar->nu, vec_u);    // beta(u)
-        gridvec(searchPar->k1, searchPar->k2, searchPar->nk, vec_k);
+        gridvec(searchPar->k1, searchPar->k2, searchPar->nk, vec_kappa);
         gridvec(searchPar->h1, searchPar->h2, searchPar->nh, vec_h);    // dip(h)
-        gridvec(searchPar->s1, searchPar->s2, searchPar->ns, vec_s);
+        gridvec(searchPar->s1, searchPar->s2, searchPar->ns, vec_sigma);
  
         u2beta_vec(vec_u, vec_beta, searchPar->nu);
         beta2delta_vec(vec_beta, vec_delta, searchPar->nu);
         v2gamma_vec(vec_v, searchPar->nv, vec_gamma);      
-        h2dip_vec(vec_h, searchPar->nh, vec_dip);          
+        h2dip_vec(vec_h, searchPar->nh, vec_theta);          
     }
 
     /* fill the moment tensor array with moment tensors */
@@ -264,16 +253,16 @@ void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
     for(ik = 0; ik < searchPar->nk; ik++) {
     for(ih = 0; ih < searchPar->nh; ih++) {
     for(is = 0; is < searchPar->ns; is++) {
-                        arrayMT[isol].g = vec_gamma[ig];
-                        arrayMT[isol].d = vec_delta[id];
-                        arrayMT[isol].k =     vec_k[ik];
-                        arrayMT[isol].t =   vec_dip[ih];
-                        arrayMT[isol].s =     vec_s[is];
+                        arrayMT[isol].gamma = vec_gamma[ig];
+                        arrayMT[isol].delta = vec_delta[id];
+                        arrayMT[isol].kappa = vec_kappa[ik];
+                        arrayMT[isol].theta = vec_theta[ih];
+                        arrayMT[isol].sigma = vec_sigma[is];
 //                        fprintf(stdout,"index= %20d %11.6f %11.6f %11.6f %11.6f %11.6f\n",
-//                                isol, arrayMT[isol].g*r2d, arrayMT[isol].d*r2d, arrayMT[isol].k*r2d, arrayMT[isol].t*r2d, arrayMT[isol].s*r2d);
+//                                isol, arrayMT[isol].gamma*r2d, arrayMT[isol].delta*r2d, arrayMT[isol].kappa*r2d, arrayMT[isol].theta*r2d, arrayMT[isol].sigma*r2d);
                         //fprintf(stdout,"index= %20d %6d %6d %6d %6d %6d\n", isol, ig, id, ik, ih, is);
                         //fprintf(stdout,"index= %20d %11.6f %11.6f %11.6f %11.6f %11.6f\n",
-                        //        isol, vec_gamma[ig]*r2d, vec_delta[id]*r2d, vec_k[ik]*r2d, vec_dip[ih]*r2d, vec_s[is]*r2d);
+                        //        isol, vec_gamma[ig]*r2d, vec_delta[id]*r2d, vec_kappa[ik]*r2d, vec_theta[ih]*r2d, vec_sigma[is]*r2d);
                         isol++;
                     }
                 }
@@ -282,10 +271,13 @@ void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
     }
     fprintf(stderr,"done. nsol = %d \n", isol);
     if (isol == 1) {
-        fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", 0, arrayMT[0].g *r2d, arrayMT[0].d *r2d,  arrayMT[0].k *r2d,  arrayMT[0].t *r2d,  arrayMT[0].s *r2d); 
+        fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", 
+                0, arrayMT[0].gamma *r2d, arrayMT[0].delta *r2d,  arrayMT[0].kappa *r2d,  arrayMT[0].theta *r2d,  arrayMT[0].sigma *r2d); 
     } else if(isol > 1) {
-    fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", 0, arrayMT[0].g *r2d, arrayMT[0].d *r2d,  arrayMT[0].k *r2d,  arrayMT[0].t *r2d,  arrayMT[0].s *r2d); 
-    fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", isol-1, arrayMT[isol-1].g *r2d, arrayMT[isol-1].d *r2d,  arrayMT[isol-1].k *r2d,  arrayMT[isol-1].t *r2d,  arrayMT[isol-1].s *r2d); 
+        fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", 
+                0, arrayMT[0].gamma *r2d, arrayMT[0].delta *r2d,  arrayMT[0].kappa *r2d,  arrayMT[0].theta *r2d,  arrayMT[0].sigma *r2d); 
+        fprintf(stderr,"mt[%10d] = %11.6f %11.6f %11.6f %11.6f %11.6f \n", 
+                isol-1, arrayMT[isol-1].gamma *r2d, arrayMT[isol-1].delta *r2d,  arrayMT[isol-1].kappa *r2d,  arrayMT[isol-1].theta *r2d,  arrayMT[isol-1].sigma *r2d); 
     } 
 
     free(vec_v);
@@ -295,9 +287,9 @@ void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
 
     free(vec_gamma);
     free(vec_delta);
-    free(vec_k);
-    free(vec_dip);
-    free(vec_s);
+    free(vec_kappa);
+    free(vec_theta);
+    free(vec_sigma);
 }   /* end function getGridMT */
 
 SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
@@ -333,27 +325,27 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 #ifdef WB
     // output files for postprocessing
     // mt = moment tensor elements
-    // gd = gamma, delta, strike, dip, rake
+    // bb = gamma, delta, strike, dip, rake
 
     char outFileMT[255];
-    char outFileGD[255];
-    FILE *fidmt, *fidgd;
-    OUTPUTGD outgd;
+    char outFileBB[255];
+    FILE *fidmt, *fidbb;
+    OUTPUTBB outbb;
     OUTPUTMT outmt;
 
-    if(search_type == 1 || search_type == 3) {
+    if(search_type == 1) {
         sprintf(outFileMT, "capout_grid_mt.bin");
-        sprintf(outFileGD, "capout_grid_gd.bin");
+        sprintf(outFileBB, "capout_grid_bb.bin");
     } else if (search_type == 2) {
         sprintf(outFileMT, "capout_rand_mt.bin");
-        sprintf(outFileGD, "capout_rand_gd.bin");
+        sprintf(outFileBB, "capout_rand_bb.bin");
     } else {
         fprintf(stderr,"Abort. wrong search type.\n");
         exit(-1);
     }
 
     fidmt=fopen(outFileMT,"wb");
-    fidgd=fopen(outFileGD,"wb");
+    fidbb=fopen(outFileBB,"wb");
 #endif
 
     // count number of solutions computed
@@ -418,20 +410,14 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
                w = 3pi/8 - u
                */
 
-            /* output variables (only use for debug) */
-            /* tt2cmt(arrayMT[isol].g * r2d, arrayMT[isol].d * r2d, 1.0, 
-               arrayMT[isol].k * r2d, arrayMT[isol].t * r2d, arrayMT[isol].s * r2d, 
-               mtensor);
-               */
-
-            //           temp[2] = arrayMT[isol].g * r2d;
-            //           temp[1] = arrayMT[isol].d * r2d;
-            //           sol.meca.stk = arrayMT[isol].k * r2d;
-            //           sol.meca.dip = arrayMT[isol].t * r2d;
-            //           sol.meca.rak = arrayMT[isol].s * r2d;
+            //           temp[2] = arrayMT[isol].gamma * r2d;
+            //           temp[1] = arrayMT[isol].delta * r2d;
+            //           sol.meca.stk = arrayMT[isol].kappa * r2d;
+            //           sol.meca.dip = arrayMT[isol].theta * r2d;
+            //           sol.meca.rak = arrayMT[isol].sigma * r2d;
 
             //tt2cmt(temp[2], temp[1], 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
-            tt2cmt(arrayMT[isol].g * r2d, arrayMT[isol].d * r2d, 1.0, arrayMT[isol].k * r2d, arrayMT[isol].t * r2d, arrayMT[isol].s * r2d, mtensor);
+            tt2cmt(arrayMT[isol].gamma * r2d, arrayMT[isol].delta * r2d, 1.0, arrayMT[isol].kappa * r2d, arrayMT[isol].theta * r2d, arrayMT[isol].sigma * r2d, mtensor);
 
             // KEY COMMAND. reject this solution if first motion polarities do not match.
             // NOTE the weight file needs to have polarity picks, otherwise this
@@ -443,7 +429,7 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 
             // compute misfit from first motion. data will be output to out.misfit.fmp_
             // misfit_fmp = misfit_first_motion(mtensor, nfm, fm, fidfmp, temp[2], temp[1], temp[0], sol.meca.stk, sol.meca.dip, sol.meca.rak);
-            misfit_fmp = misfit_first_motion(mtensor, nfm, fm, fidfmp, arrayMT[isol].g * r2d, arrayMT[isol].d * r2d, vec_mag[imag], sol.meca.stk, sol.meca.dip, sol.meca.rak);
+            misfit_fmp = misfit_first_motion(mtensor, nfm, fm, fidfmp, arrayMT[isol].gamma * r2d, arrayMT[isol].delta * r2d, vec_mag[imag], sol.meca.stk, sol.meca.dip, sol.meca.rak);
 
             //--------------KEY COMMAND---call misfit function------
             sol=calerr(nda,obs0,max_shft,tie,norm,mtensor,amp,sol);
@@ -463,11 +449,11 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
                 //     mt[1].par = temp[1];
                 //      mt[2].par = temp[2];
                 mt[0].par = vec_mag[imag];
-                mt[1].par = arrayMT[isol].d * r2d;
-                mt[2].par = arrayMT[isol].g * r2d;
-                sol.meca.stk = arrayMT[isol].k * r2d;
-                sol.meca.dip = arrayMT[isol].t * r2d;
-                sol.meca.rak = arrayMT[isol].s * r2d;
+                mt[2].par = arrayMT[isol].gamma * r2d;
+                mt[1].par = arrayMT[isol].delta * r2d;
+                sol.meca.stk = arrayMT[isol].kappa * r2d;
+                sol.meca.dip = arrayMT[isol].theta * r2d;
+                sol.meca.rak = arrayMT[isol].sigma * r2d;
 
                 best_sol = sol; 
 
@@ -476,26 +462,29 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
                 fprintf(stderr,"(tid= %d) best sol isol=%9d (%3d%) mag=%5.2f %11.6f %11.6f %11.6f %11.6f %11.6f \t err=%13.6e VR=%6.1f%\n", 
                         tid,
                         isol, 100 * isol/searchPar->nsol,
-                        temp[0], arrayMT[isol].g * r2d, arrayMT[isol].d * r2d, sol.meca.stk, sol.meca.dip, sol.meca.rak, sol.err, VR);
+                        temp[0], arrayMT[isol].gamma * r2d, arrayMT[isol].delta * r2d, sol.meca.stk, sol.meca.dip, sol.meca.rak,
+                        sol.err, VR);
 
                 /* output variables (only use for debug) */
                 /*
                    fprintf(stderr,"best sol isol=%9d (%3d%) sol.err= %13.6e mag=%5.2f %11.6f %11.6f %11.6f %11.6f %11.6f\n", 
-                   arrayMT[isol].g * r2d, arrayMT[isol].d * r2d, 
-                   arrayMT[isol].k * r2d, arrayMT[isol].t * r2d, arrayMT[isol].s * r2d);
+                   arrayMT[isol].gamma * r2d, arrayMT[isol].delta * r2d, 
+                   arrayMT[isol].kappa * r2d, arrayMT[isol].theta * r2d, arrayMT[isol].sigma * r2d);
                    */
             }
 
             //  output binary data
 #ifdef WB
-            outgd.g = arrayMT[isol].g * r2d;
-            outgd.d = arrayMT[isol].d * r2d;
-            outgd.s = arrayMT[isol].k * r2d;
-            outgd.h = arrayMT[isol].t * r2d;
-            outgd.r = arrayMT[isol].s * r2d;
-            outgd.mag = vec_mag[imag];
-            outgd.misfit_wf  = sol.err/data2;
-            outgd.misfit_fmp = (float) misfit_fmp;
+//            outbb.g = arrayMT[isol].gamma * r2d;
+//            outbb.d = arrayMT[isol].delta * r2d;
+            outbb.v = gamma2v(arrayMT[isol].gamma);
+            outbb.w = delta2w(arrayMT[isol].delta);
+            outbb.kappa = arrayMT[isol].kappa * r2d; // output in degrees
+            outbb.theta = arrayMT[isol].theta * r2d; // output in degrees
+            outbb.sigma = arrayMT[isol].sigma * r2d; // output in degrees
+            outbb.mag = vec_mag[imag];
+            outbb.misfit_wf  = sol.err/data2;
+            outbb.misfit_fmp = (float) misfit_fmp;
 
             outmt.mrr = mtensor[2][2];
             outmt.mtt = mtensor[0][0];
@@ -508,7 +497,7 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
             outmt.misfit_fmp = (float) misfit_fmp;
 
             fwrite(&outmt, sizeof outmt, 1, fidmt); 
-            fwrite(&outgd, sizeof outgd, 1, fidgd);
+            fwrite(&outbb, sizeof outbb, 1, fidbb);
 #endif
 
         } /* end loop over solutions */
@@ -519,9 +508,9 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 #ifdef WB
     // close binary output files
     fclose(fidmt);
-    fclose(fidgd);
+    fclose(fidbb);
     fprintf(stderr,"binary data saved to file: %s \n", outFileMT);
-    fprintf(stderr,"binary data saved to file: %s \n", outFileGD);
+    fprintf(stderr,"binary data saved to file: %s \n", outFileBB);
 #endif
 
     free(vec_mag);

@@ -174,15 +174,15 @@ typedef struct {
 } LUNE_MISFIT;
 
 typedef struct {
-    float g;
-    float d;
-    float s;
-    float h;
-    float r;
+    float v;
+    float w;
+    float kappa;    // degrees
+    float theta;    // degrees
+    float sigma;    // degrees
     float mag;
     float misfit_wf;
     float misfit_fmp;
-} OUTPUTGD;
+} OUTPUTBB;
 
 typedef struct {
     float mrr;
@@ -198,11 +198,11 @@ typedef struct {
 
 typedef struct
 {
-    float g;
-    float d;
-    float k;
-    float t;
-    float s;
+    float gamma;    // radians
+    float delta;    // radians
+    float kappa;    // radians
+    float theta;    // radians
+    float sigma;    // radians
     float mw;
 } ARRAYMT;
 
