@@ -40,6 +40,19 @@ float beta2delta(float beta)
     return delta;
 }
 
+// compute beta(delta)
+float delta2beta(float delta)
+{
+    float beta;
+    beta = delta + (PI / 2.0);     //beta = delta + 90;
+    if((beta < 0) || (beta > PI)) {
+        fprintf(stderr,"WARNING. beta is out of bounds [0, PI]. check input values.\n");
+        fprintf(stderr,"beta = %f\n", beta);
+    }
+//    fprintf(stdout,"CHECK BETA. %f \n", delta * r2d);
+    return beta;
+}
+
 /* compute delta=delta(beta) */
 void beta2delta_vec(float *pArray_beta, float *pArray_delta, int nsol)
 {
