@@ -126,7 +126,7 @@ int main (int argc, char **argv) {
   float *g_pt;  // for FTC_green
   int npt_data, s_len, offset_h=0;
   GRID	grid;
-  MTPAR mt[3];
+  MTPAR mt[3];  // DELETE
   COMP	*spt;
   DATA	*obs, *obs0;
   FM	*fm, *fm0;
@@ -911,13 +911,13 @@ int main (int argc, char **argv) {
   // END DELETE SECTION -- NOT APPLICABLE ANYMORE
 
   // output warning if best magnitude = magnitude limit in magnitude search.
-  if ( (mt[0].par <= searchPar->mw1 && searchPar->dmw != 0) || (mt[0].par >= searchPar->mw2 && searchPar->dmw != 0) ) {
+  if ( (sol.meca.mag <= searchPar->mw1 && searchPar->dmw != 0) || (sol.meca.mag >= searchPar->mw2 && searchPar->dmw != 0) ) {
       fid_warn = fopen("capout_error.txt","w");
       fprintf(stderr, "\n***********************************************************************\n");
       fprintf(stderr, "\tINVERSION STOPPED. See file capout_error.txt\n");
       fprintf(stderr, "***********************************************************************\n");
       fprintf(fid_warn, "***********************************************************************\n");
-      fprintf(fid_warn, "INVERSION STOPPED. Best magnitude Mw = %4.1f is at a boundary.\n", mt[0].par);
+      fprintf(fid_warn, "INVERSION STOPPED. Best magnitude Mw = %4.1f is at a boundary.\n", sol.meca.mag);
       fprintf(fid_warn, "Boundaries [Mw1, Mw2] = [%4.1f, %4.1f]\n", searchPar->mw1, searchPar->mw2);
       fprintf(fid_warn, "Consider expanding the magnitude boundary.\n");
       fprintf(fid_warn, "***********************************************************************\n");
@@ -935,17 +935,19 @@ int main (int argc, char **argv) {
   f_out=fopen(tmp,"w");
   fprintf(f_out,"Event %s Model %s FM %4d %9.6f %4d Mw %4.2f rms %9.3e %5d ERR %3d %3d %3d ISO %10.6f %3.2f CLVD %3.2f %3.2f VR %3.1f data2 %9.3e\n",eve,mod_dep,
 	  (int) rint(sol.meca.stk), sol.meca.dip, (int) rint(sol.meca.rak),
-	  mt[0].par, sol.err, dof,
+	  sol.meca.mag, sol.err, dof,
 	  (int) rint(rad[0]), (int) rint(rad[1]), (int) rint(rad[2]),
-	  mt[1].par, sqrt(mt[1].sigma*x2),mt[2].par, sqrt(mt[2].sigma*x2),VR,data2);
+	  sol.meca.delta, sqrt(sol.meca.delta * x2), 
+      sol.meca.gamma, sqrt(sol.meca.gamma * x2), VR , data2);
   fprintf(f_out,"# Hypocenter_sac_header elat %e elon %e edep %e\n",evla,evlo,evdp);
+
   // convert Mw to M0 using GCMT convention (also in Aki and Richards, 2002)
   // this is very close to Kanamori1977 (16.1 vs 16.1010)
-  amp=pow(10.,1.5*mt[0].par+16.1-20);
+  amp=pow(10., 1.5 * sol.meca.mag + 16.1 - 20);
 
   // compute moment tensor values again for best solution. this is used to
   // output the values to the cap out file.
-    tt2cmt(mt[2].par, mt[1].par, 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
+  tt2cmt(sol.meca.gamma, sol.meca.delta, 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
 
   // mtensor saved in output file shoudl be in M00, M11, M22, M01, M02, M12 order. FIX HERE and then perhaps also in the cap_plt! (FUTURE WORK)
   fprintf(f_out,"# tensor = %8.3e %7.4f %7.4f %7.4f %7.4f %7.4f %7.4f\n",amp*1.0e20,mtensor[0][0],mtensor[0][1],mtensor[0][2],mtensor[1][1],mtensor[1][2],mtensor[2][2]);
@@ -961,7 +963,7 @@ int main (int argc, char **argv) {
 	      (int) rint(grid.x0[0]+(j-k1*grid.n[0]-k*grid.n[0]*grid.n[1])*grid.step[0]),
 	      (int) rint(grid.x0[1]+k1*grid.step[1]),
 	      (int) rint(grid.x0[2]+k*grid.step[2]),
-	      mt[0].par,grid.err[j],(grid.err[j]-grid.err[sol.others[0]])/x2);
+	      sol.meca.mag,grid.err[j],(grid.err[j]-grid.err[sol.others[0]])/x2);
     }
   } 
   // END DELETE SECTION -- DOES NOT EXECUTE
