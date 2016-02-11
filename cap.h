@@ -70,6 +70,7 @@ extern int skip_zero_weights;    // for original CAP set skip_zero_weights=1
 // Function gridvec does not implement the discretization of the previous version of 
 // cap.c which uses rules to account for special grid points.
 // Function gridvec also avoids endpoints in all parameters.
+// See NOTE flag LUNE_GRID_INSTEAD_OF_UV in function sub_initSearch.c
 extern int LUNE_GRID_INSTEAD_OF_UV;
 
 /*********************** Data Structure***************************/
