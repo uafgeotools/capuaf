@@ -370,12 +370,12 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     }
 
     /* TODO these will come from user input */
-    temp[0] = 4.5; // ALASKA
-    temp[0] = 2.8; // UTURUNCU
-    temp[0] = 5.2; // ILLINOIS
+    //temp[0] = 4.5; // ALASKA
+    //temp[0] = 2.8; // UTURUNCU
+    //temp[0] = 5.2; // ILLINOIS
     // temp[0] is set to starting magnitude (when no magnitude search).
     // another option is define point mag mw0 if point mag search
-    temp[0] = searchPar->mw1;
+    //temp[0] = searchPar->mw1;
 
     // prepare magnitude array
     // NOTE magnitude points include boundaries (unlike gridvec)
@@ -445,15 +445,12 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
 #ifdef OMP
                 tid = omp_get_thread_num();
 #endif
-                //    mt[0].par = temp[0];
-                //     mt[1].par = temp[1];
-                //      mt[2].par = temp[2];
-                mt[0].par = vec_mag[imag];
-                mt[2].par = arrayMT[isol].gamma * r2d;
-                mt[1].par = arrayMT[isol].delta * r2d;
-                sol.meca.stk = arrayMT[isol].kappa * r2d;
-                sol.meca.dip = arrayMT[isol].theta * r2d;
-                sol.meca.rak = arrayMT[isol].sigma * r2d;
+                sol.meca.gamma = arrayMT[isol].gamma * r2d;
+                sol.meca.delta = arrayMT[isol].delta * r2d;
+                sol.meca.stk   = arrayMT[isol].kappa * r2d;
+                sol.meca.dip   = arrayMT[isol].theta * r2d;
+                sol.meca.rak   = arrayMT[isol].sigma * r2d;
+                sol.meca.mag   = vec_mag[imag];
 
                 best_sol = sol; 
 
@@ -462,7 +459,7 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
                 fprintf(stderr,"(tid= %d) best sol isol=%9d (%3d%) mag=%5.2f %11.6f %11.6f %11.6f %11.6f %11.6f \t err=%13.6e VR=%6.1f%\n", 
                         tid,
                         isol, 100 * isol/searchPar->nsol,
-                        temp[0], arrayMT[isol].gamma * r2d, arrayMT[isol].delta * r2d, sol.meca.stk, sol.meca.dip, sol.meca.rak,
+                        sol.meca.mag, sol.meca.gamma, sol.meca.delta, sol.meca.stk, sol.meca.dip, sol.meca.rak,
                         sol.err, VR);
 
                 /* output variables (only use for debug) */
