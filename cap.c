@@ -279,6 +279,8 @@ int main (int argc, char **argv) {
   scanf("%f%f%d%d", &searchPar->k1, &searchPar->k2, &searchPar->nk, &searchPar->dk);
   scanf("%f%f%d%d", &searchPar->h1, &searchPar->h2, &searchPar->nh, &searchPar->dh);
   scanf("%f%f%d%d", &searchPar->s1, &searchPar->s2, &searchPar->ns, &searchPar->ds);
+  // initialize u. It's used internally so is not passed from cap.pl
+  searchPar->u1 = 0; searchPar->u2 = 0; searchPar->nu = 0; searchPar->du = 0;
   // total number of solutions
   scanf("%d", &searchPar->nsol);
   // u = [0, 3pi/4], w = [-3pi/8, +3pi/8]. u, w have the same number of points.
