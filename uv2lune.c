@@ -85,6 +85,17 @@ float u2w(float u)
     w = u - (3.0 * PI / 8.0);
     return w;
 }
+
+// compute w(delta)
+float delta2w(float delta)
+{
+    float u, w, beta;
+    beta = delta2beta(delta);
+    u = (3./4.) * beta - (1./2.) * sin(2.0 * beta) + (1./16.) * sin(4.0 * beta);
+    w = u2w(u);
+    return w;
+}
+
 /* compute delta=delta(beta) */
 void beta2delta_vec(float *pArray_beta, float *pArray_delta, int nsol)
 {

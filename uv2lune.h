@@ -20,5 +20,6 @@ void magvec(float xmin, float xmax, float dx, float *pArray);
 float delta2beta(float delta);
 float w2u(float w);
 float u2w(float u);
+float delta2w(float delta);
 int find_nearest_index(float value, float * pData, int len);
 void interp_lin(float *x, float *y, int x_size, float *xx, float *yy, int xx_size);
