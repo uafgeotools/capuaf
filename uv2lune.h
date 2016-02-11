@@ -7,6 +7,7 @@
 void u2beta_vec(float *pArray_u, float *pArray_beta, int nsol);
 float beta2delta(float beta);
 void beta2delta_vec(float *pArray_beta, float *pArray_delta, int nsol);
+float gamma2v(float gamma);
 float v2gamma(float v);
 void v2gamma_vec(float *pArray_v, int nsol, float *pArray_gamma);
 float h2dip(float h);

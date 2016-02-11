@@ -65,6 +65,13 @@ void beta2delta_vec(float *pArray_beta, float *pArray_delta, int nsol)
     fprintf(stderr,"done. NPTS = %d\n", i);
 }
 
+// compute v(gamma)
+float gamma2v(float gamma)
+{
+    float v;
+    v = (1./3.) * sinf(3.0 * gamma);
+    return v;
+}
 /* compute gamma(v) */
 float v2gamma(float v)
 {
