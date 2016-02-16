@@ -1,9 +1,11 @@
 /* 
-   Functions to compute (gamma, delta) from (u,v)
-   These are called from function initSearchMT
+   This file contains functions used by routines initSearchMT, getRandMT, getGridMT,
+   and searchMT in file sub_inversion.c
 
-   For (u,v) parameterization see 
-   "A uniform parameterization of moment tensors" (Tape & Tape, 2015)
+   Main references
+   Tape, W., and C. Tape (2015), A uniform parametrization of moment tensors,
+   Geophys. J. Int., 202, 2074-2081.
+   Matlab routine uniformMT.m
 
    20160108 celso alvizuri - cralvizuri@alaska.edu 
 
@@ -14,7 +16,7 @@
 #include "generated_u2beta.c"   // data for interpolation of beta = beta(u)
                                 // data generated using matlab script gen_u2beta.m
 
-/* compute beta(u) in vector form */
+// compute beta(u) in vector form
 void u2beta_vec(float *pArray_u, float *pArray_beta, int nsol)
 {
     int i;
@@ -32,6 +34,7 @@ void u2beta_vec(float *pArray_u, float *pArray_beta, int nsol)
     free(pya);
 }
 
+// compute delta(beta)
 float beta2delta(float beta)
 {
     float delta;
@@ -96,7 +99,7 @@ float delta2w(float delta)
     return w;
 }
 
-/* compute delta=delta(beta) */
+// compute delta(beta)
 void beta2delta_vec(float *pArray_beta, float *pArray_delta, int nsol)
 {
     int i;
@@ -115,7 +118,8 @@ float gamma2v(float gamma)
     v = (1./3.) * sinf(3.0 * gamma);
     return v;
 }
-/* compute gamma(v) */
+
+// compute gamma(v)
 float v2gamma(float v)
 {
     float gamma;
@@ -131,7 +135,7 @@ float v2gamma(float v)
     return gamma;
 }
 
-/* compute vector of gamma values */
+// compute gamma(v) in vector form
 void v2gamma_vec(float *pArray_v, int nsol, float *pArray_gamma)
 {
     int i;
@@ -143,7 +147,7 @@ void v2gamma_vec(float *pArray_v, int nsol, float *pArray_gamma)
     //fprintf(stderr,"routine: %s line %d \n", __FILE__, __LINE__);
 }
 
-// convert sin(iso) to delta
+// compute delta(sin(iso))
 float siso2delta(float siso)
 {
     float delta;
@@ -152,7 +156,7 @@ float siso2delta(float siso)
     return delta;
 }
 
-// get vector of delta values
+// compute delta(sin(iso)) in vector form
 void siso2delta_vec(float *pArray_s, int nsol, float *pArray_dip)
 {
     int i;
@@ -163,7 +167,7 @@ void siso2delta_vec(float *pArray_s, int nsol, float *pArray_dip)
     fprintf(stderr,"done.\tNPTS = %d\n", i);
 }
 
-/* convert h to dip */
+// compute dip(h)
 float h2dip(float h)
 {
     float dip;
@@ -176,7 +180,7 @@ float h2dip(float h)
     return dip;
 }
 
-/* get vector of dip values */
+// compute dip(h) in vector form
 void h2dip_vec(float *pArray_h, int nsol, float *pArray_dip)
 {
     int i;
