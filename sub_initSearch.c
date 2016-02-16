@@ -5,8 +5,11 @@
     The moment tensors are uniformly distributed when specifying the full range
     for (gamma, delta, strike, dip, rake).
     File sub_inversion.c is composed of functions initSearchMT, getRandMT, 
-    getGridMT, searchMT described below. sub_inversion.c replaces the old 
-    "error" function in cap.
+    getGridMT, searchMT described below. These functions use additional functions 
+    in file uvlune.c
+    File sub_inversion.c replaces the old "error" function in cap.
+    Optionally these functions can generate a non-uniform grid (cap "error" function)
+    when compiling with flag LUNE_GRID_INSTEAD_OF_UV=1.
 
     initSearchMT -- Select inversion type
     getRandMT    -- Create a set of moment tensors randomly
