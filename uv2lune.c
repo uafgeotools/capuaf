@@ -65,9 +65,9 @@ float w2u(float w)
     // if u=-0 set to u=+0
     // this is a numerical issue that can cause NANs when using var u
     if(u < 0.0) {
-        fprintf(stderr,"WARNING u = %e new value:\n");
+        fprintf(stderr,"WARNING u = %e new value:\n", u);
         u = 0.0;
-        fprintf(stderr,"WARNING u = %e \n");
+        fprintf(stderr,"WARNING u = %e \n", u);
     }
     return u;
 }
@@ -80,9 +80,9 @@ float u2w(float u)
     // if u=-0 set to u=+0
     // this is a numerical issue that can cause NANs when using var u
     if(u < 0.0) {
-        fprintf(stderr,"WARNING u = %e new value:\n");
+        fprintf(stderr,"WARNING u = %e new value:\n", u);
         u = 0.0;
-        fprintf(stderr,"WARNING u = %e \n");
+        fprintf(stderr,"WARNING u = %e \n", u);
     }
 
     w = u - (3.0 * PI / 8.0);
@@ -127,7 +127,7 @@ float v2gamma(float v)
 
     // sanity check range for v
     if((v < -k3) || (v > k3)) {
-        fprintf(stderr,"WARNING. v= %5.2e is outside range +-1/3\n");
+        fprintf(stderr,"WARNING. v= %5.2e is outside range +-1/3\n", v);
         exit(-1);
     }
     gamma = k3 * asinf(3. * v);
@@ -276,7 +276,6 @@ void magvec(float xmin, float xmax, float dx, float *pArray)
 {
     int i;
     int npoints = 0;
-    float dmw;
     int count=0;
 
     if(dx < TOLERANCE) {
