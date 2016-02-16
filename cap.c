@@ -822,12 +822,12 @@ int main (int argc, char **argv) {
   sprintf(mod_dep,"%s_%03d",model,depth);                       // rename .out file
   strcat(strcat(strcat(strcpy(tmp,eve),"/"),mod_dep),".out");   
   f_out=fopen(tmp,"w");
-  fprintf(f_out,"Event %s Model %s FM %4d %9.6f %4d Mw %4.2f rms %9.3e %5d ERR %3d %3d %3d ISO %10.6f %3.2f CLVD %3.2f %3.2f VR %3.1f data2 %9.3e\n",eve,mod_dep,
+  fprintf(f_out,"Event %s Model %s FM %4d %9.6f %4d Mw %4.2f rms %9.3e %5d ERR %3d %3d %3d CLVD %3.2f %3.2f ISO %10.6f %3.2f VR %3.1f data2 %9.3e\n",eve,mod_dep,
 	  (int) rint(sol.meca.stk), sol.meca.dip, (int) rint(sol.meca.rak),
 	  sol.meca.mag, sol.err, dof,
 	  (int) rint(rad[0]), (int) rint(rad[1]), (int) rint(rad[2]),
-	  sol.meca.delta, sqrt(sol.meca.delta * x2), 
-      sol.meca.gamma, sqrt(sol.meca.gamma * x2), VR , data2);
+      sol.meca.gamma, sqrt(sol.meca.gamma * x2),
+	  sol.meca.delta, sqrt(sol.meca.delta * x2), VR , data2);
   fprintf(f_out,"# Hypocenter_sac_header elat %e elon %e edep %e\n",evla,evlo,evdp);
 
   // convert Mw to M0 using GCMT convention (also in Aki and Richards, 2002)
