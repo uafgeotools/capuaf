@@ -1,14 +1,15 @@
 #include "cap.h"
 
-SOLN  calerr(int   	nda,    // number of stations
-             DATA       *obs0,  // pointer to data
-	     const int	*max_shft,
-	     float      tie,
-	     int        norm,// type of norm
-	     float      mtensor[3][3],
-	     float      amp,
-	     SOLN       sol
-	     ) {
+SOLN get_tshift_corr_misfit(
+        int   	nda,    // number of stations
+        DATA       *obs0,  // pointer to data
+        const int	*max_shft,
+        float      tie,
+        int        norm,// type of norm
+        float      mtensor[3][3],
+        float      amp,
+        SOLN       sol
+        ) {
   int i,j,k,l,m,k1,kc,z0,z1,z2;
   float x, x1, x2, y, y1, y2,cfg[NCP];
   DATA	*obs;

@@ -227,7 +227,7 @@ int	check_first_motion(float mt[3][3], FM *fm, int n, float fm_thr);
 void tt2cmt(float gamma, float delta, float m0, float kappa, float theta, float sigma, float mtensor[3][3]);
 int misfit_first_motion(float mtensor[3][3], int nsta, FM *data, FILE *fid, float gamma, float delta, float mw, float kappa, float theta, float sigma);
 void fmp_print_parameters(FILE *fid, FMPDATA *fmpdata);
-SOLN calerr(int,DATA *,const int *, float,int,float mtensor[3][3],float,SOLN);
+SOLN get_tshift_corr_misfit(int,DATA *,const int *, float,int,float mtensor[3][3],float,SOLN);
 
 /* functions for uniformMT */
 void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT);

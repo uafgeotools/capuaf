@@ -419,7 +419,7 @@ SOLN searchMT(
             misfit_fmp = misfit_first_motion(mtensor, nfm, fm, fidfmp, arrayMT[isol].gamma * r2d, arrayMT[isol].delta * r2d, vec_mag[imag], sol.meca.stk, sol.meca.dip, sol.meca.rak);
 
             // KEY COMMAND. compute waveform misfit
-            sol=calerr(nda,obs0,max_shft,tie,norm,mtensor,amp,sol);
+            sol = get_tshift_corr_misfit(nda,obs0,max_shft,tie,norm,mtensor,amp,sol);
 
             // The misfit for this solution
             // Ncomp = number of components.
