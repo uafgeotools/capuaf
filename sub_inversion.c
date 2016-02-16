@@ -41,7 +41,6 @@ SOLN initSearchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
         MTPAR *mt,
         GRID grid,
         int interp,
-        int bootstrap,
         int search_type,
         int norm,
         SEARCHPAR * searchPar,
@@ -68,7 +67,7 @@ SOLN initSearchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     }
 
     // run FMT search
-    best_sol = searchMT(npar, nda, obs0, nfm, fm, fm_thr, max_shft, tie, mt, grid, interp, bootstrap, search_type, norm, searchPar, arrayMT);
+    best_sol = searchMT(npar, nda, obs0, nfm, fm, fm_thr, max_shft, tie, mt, grid, interp, search_type, norm, searchPar, arrayMT);
     return(best_sol);
 
 } /* end function initSearchMT */
@@ -314,7 +313,6 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
         MTPAR *mt,
         GRID grid,
         int interp,
-        int bootstrap,
         int search_type,
         int norm,
         SEARCHPAR * searchPar,

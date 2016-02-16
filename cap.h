@@ -218,7 +218,7 @@ typedef struct
 
 /* function declaration */
   /* SOLN	error(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int,int); */
-SOLN initSearchMT(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int,int, SEARCHPAR *, ARRAYMT *);
+SOLN initSearchMT(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int, SEARCHPAR *, ARRAYMT *);
 void    taper(float *aa, int n);
 float	*trap(float, float, float, int *);
 float	*cutTrace(float *, int, int, int);
@@ -232,6 +232,6 @@ SOLN calerr(int,DATA *,const int *, float,int,float mtensor[3][3],float,SOLN);
 /* functions for uniformMT */
 void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT);
 void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT);
-SOLN searchMT(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int,int, SEARCHPAR *, ARRAYMT *);
+SOLN searchMT(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int, SEARCHPAR *, ARRAYMT *);
 
 #endif

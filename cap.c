@@ -111,7 +111,7 @@ int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search_type,norm;
   int	n1,n2,ns, mltp, nup, up[3], n_shft, nqP, nqS,isurf=0,ibody=0,istat=0,Nsurf=0,Nbody=0,Nstat=0;
   int	mm[2],n[NCP],max_shft[NCP],npts[NRC];
-  int	repeat, bootstrap;
+  int	repeat;
   char	tmp[128],glib[128],dep[32],dst[16],eve[32],*c_pt;
   float	x,x1,x2,y,y1,amp,dt,rad[6],arad[4][3],fm_thr,tie,mtensor[3][3],rec2=0.,VR,evla,evlo,evdp;
   float	rms_cut[NCP], t0[NCP], tb[NRC], t1, t2, t3, t4, srcDelay;
@@ -196,7 +196,7 @@ int main (int argc, char **argv) {
   }
   // END DELETE SECTION
   
-  scanf("%f%f%f%f%d%d%f%f",&x1,&y1,&x,&y,&repeat,&bootstrap,&fm_thr,&tie);
+  scanf("%f%f%f%f%d%f%f",&x1,&y1,&x,&y,&repeat,&fm_thr,&tie);
   if (repeat) for(j=0;j<NCP;j++) scanf("%f",rms_cut+4-j);
   scanf("%f%f%f",&vp,&vs1,&vs2);
   scanf("%f%f%f%f",&bs_body,&bs_surf,&x2,&nof_per_samp);
@@ -744,7 +744,7 @@ int main (int argc, char **argv) {
   /* sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search_type,norm); */
 
   // call initSearchMT instead of "error". This call includes extra parameters (searchPar, arrayMT)
-  sol = initSearchMT(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search_type,norm, searchPar, arrayMT);
+  sol = initSearchMT(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,search_type,norm, searchPar, arrayMT);
 
   // START DELETE SECTION
   // KEEP?
