@@ -177,15 +177,15 @@ $usage =
     (see the -T options below).
 
 =====================================================================================================
-  Usage: cap.pl -Mmodel_depth/mag [-A<dep_min/dep_max/dep_inc>] [-B] [-C<f1_pnl/f2_pnl/f1_sw/f2_sw>]
-                  [-D<w1/p1/p2>] [-E<search>] [-F<thr>] [-Ggreen] [-Hdt] 
+  Usage: cap.pl -Mmodel_depth/mag [-A<dep_min/dep_max/dep_inc>] [-C<f1_pnl/f2_pnl/f1_sw/f2_sw>]
+                  [-D<w1/p1/p2>] [-F<thr>] [-Ggreen] [-Hdt] 
                   [-I<nsol> OR -I<Nv/Nw/Nstrike/Ndip/Nrake>]
                   [-k1 (old grid setup)] [-L<tau>]
                   [-M$model_$dep] [-m$mw OR -m<mw1>/<mw2>/<dmw> ] [-N<n>]
                   [-O] [-P[<Yscale[/Xscale_b[/Xscale_s[/k]]]]>] [-Qnof]
                   [-R<v0/w0/strike0/dip0/rake0> OR -R<v1/v2/w1/w1/strike1/strike2/dip1/dip2/rake1/rake2>] 
                   [-S<s1/s2[/tie]>] [-T<m1/m2>]
-                  [-Udirct] [-V<vp/vl/vr>] [-Wi] [-Xn] [-Y<norm>] [-Zstring] event_dirs
+                  [-Udirct] [-V<vp/vl/vr>] [-Wi] [-Y<norm>] [-Zstring] event_dirs
 
     -A  run cap for different depths. (dep_min/dep_max/dep_inc).
     -B  FLAG NOT IN USE.
