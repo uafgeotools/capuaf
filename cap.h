@@ -14,8 +14,6 @@
 #include "sac.h"
 #include "Complex.h"
 #define NRANSI
-#include "nr.h"
-#include "nrutil.h"
 #include "inversion.h"
 #include "radiats.h"
 

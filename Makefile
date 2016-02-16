@@ -1,9 +1,6 @@
 FFLAGS = -O
 FC = gfortran
-#CFLAGS = ${FFLAGS} -I$(NR)/NRC_includes
-#NRLIB = $(MY_BIN)
-NRLIB = $(NRHOME_C)
-CFLAGS = ${FFLAGS} -I$(NRLIB)/includes
+CFLAGS = ${FFLAGS}
 
 ifeq (${d}, WB)
 	CFLAGS += -D${d}
@@ -24,7 +21,7 @@ all: $(CAP)
 # to compile cap with the option of Writing Binary file, run
 # 	make cap d=WB
 cap cap_dir: %:%.o $(SUBS) cap_sub.o
-	$(LINK.f) -o $@ $^ -L$(SACHOME)/lib -lsac -lsacio -L$(NRLIB) -lcrecipes 
+	$(LINK.f) -o $@ $^ -L$(SACHOME)/lib -lsac -lsacio
 
 cap_dir.o: cap.c
 	$(COMPILE.c) -DDIRECTIVITY -o $@ $<

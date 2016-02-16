@@ -31,19 +31,19 @@ int discard_bad_data(int nda, DATA *obs, SOLN sol, float sig, float rms_cut[]) {
 }
 
 
-void principal_values(float a[]) {
-   int i;
-   float **b, **v;
-   b = matrix(1,3,1,3);
-   v = matrix(1,3,1,3);
-   for(i=0;i<3;i++) b[i+1][i+1]=a[i];
-   b[1][2]=b[2][1]=a[3];b[1][3]=b[3][1]=a[4];b[2][3]=b[3][2]=a[5];
-   jacobi(b,3,a,v,&i);
-   eigsrt(a,v,3);
-   for(i=0;i<3;i++) {a[i] = a[i+1]; if (a[i]<0.0001*a[1]) a[i]=0.0001*a[1];}
-   free_convert_matrix(b,1,3,1,3);
-   free_matrix(v,1,3,1,3);
-}
+//void principal_values(float a[]) {
+//   int i;
+//   float **b, **v;
+//   b = matrix(1,3,1,3);
+//   v = matrix(1,3,1,3);
+//   for(i=0;i<3;i++) b[i+1][i+1]=a[i];
+//   b[1][2]=b[2][1]=a[3];b[1][3]=b[3][1]=a[4];b[2][3]=b[3][2]=a[5];
+//   jacobi(b,3,a,v,&i);
+//   eigsrt(a,v,3);
+//   for(i=0;i<3;i++) {a[i] = a[i+1]; if (a[i]<0.0001*a[1]) a[i]=0.0001*a[1];}
+//   free_convert_matrix(b,1,3,1,3);
+//   free_matrix(v,1,3,1,3);
+//}
 
 
 float *cutTrace(float *trace, int npts, int offset, int n) {
