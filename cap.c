@@ -125,7 +125,7 @@ int main (int argc, char **argv) {
   float	*data_obs, *data_syn;   // save seismograms for plotting
   float *f_pt2;
   float *g_pt;  // for FTC_green
-  int npt_data, s_len, offset_h=0;
+  int npt_data, offset_h=0;
   GRID	grid;
   MTPAR mt[3];  // DELETE
   COMP	*spt;
@@ -150,7 +150,7 @@ int main (int argc, char **argv) {
 
   SOLN	sol;
   SACHEAD hd[NRC];
-  FILE 	*f_out, *logf, *wt, *wt2, *wt3 ;
+  FILE 	*f_out, *wt, *wt2, *wt3 ;
   float tau0, riseTime, *src;
   char type[2] = {'B','P'}, proto[2] = {'B','U'};
   double f1_pnl, f2_pnl, f1_sw, f2_sw;
