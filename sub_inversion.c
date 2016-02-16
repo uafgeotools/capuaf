@@ -30,7 +30,7 @@
 
 #include "cap.h"
 
-SOLN initSearchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
+SOLN initSearchMT( 
         int nda,
         DATA *obs0,
         int nfm,
@@ -67,7 +67,7 @@ SOLN initSearchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
     }
 
     // run FMT search
-    best_sol = searchMT(npar, nda, obs0, nfm, fm, fm_thr, max_shft, tie, mt, grid, interp, search_type, norm, searchPar, arrayMT);
+    best_sol = searchMT(nda, obs0, nfm, fm, fm_thr, max_shft, tie, mt, grid, interp, search_type, norm, searchPar, arrayMT);
     return(best_sol);
 
 } /* end function initSearchMT */
@@ -302,7 +302,7 @@ void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
     free(vec_sigma);
 }   /* end function getGridMT */
 
-SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
+SOLN searchMT(
         int nda,
         DATA *obs0,
         int nfm,

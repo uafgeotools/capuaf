@@ -744,7 +744,7 @@ int main (int argc, char **argv) {
   /* sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search_type,norm); */
 
   // call initSearchMT instead of "error". This call includes extra parameters (searchPar, arrayMT)
-  sol = initSearchMT(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,search_type,norm, searchPar, arrayMT);
+  sol = initSearchMT(nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,search_type,norm, searchPar, arrayMT);
 
   // START DELETE SECTION
   // KEEP?
