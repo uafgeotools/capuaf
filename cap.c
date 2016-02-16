@@ -789,18 +789,18 @@ int main (int argc, char **argv) {
 
   /**************output the results***********************/
   // START DELETE SECTION -- NOT APPLICABLE ANYMORE
-  if (sol.flag) fprintf(stderr,"\nWarning: flag=%d => the minimum %5.1f/%4.1f/%5.1f is at boundary\n",sol.flag,sol.meca.stk,sol.meca.dip,sol.meca.rak);
-  else principal_values(&(sol.dev[0]));
-  for(i=0; i<3; i++) rad[i] = sqrt(2*x2/sol.dev[i]);
-  if (sol.meca.dip>90.) {
-    fprintf(stderr,"Warning: dip corrected by %f\n",sol.meca.dip-90);
-    sol.meca.dip = 90.;
-  }
-  if (search_type) {
-    rad[0]=0.0;
-    rad[1]=0.0;
-    rad[2]=0.0;
-    sol.ms = 1;}
+// if (sol.flag) fprintf(stderr,"\nWarning: flag=%d => the minimum %5.1f/%4.1f/%5.1f is at boundary\n",sol.flag,sol.meca.stk,sol.meca.dip,sol.meca.rak);
+// else principal_values(&(sol.dev[0]));
+// for(i=0; i<3; i++) rad[i] = sqrt(2*x2/sol.dev[i]);
+// if (sol.meca.dip>90.) {
+//   fprintf(stderr,"Warning: dip corrected by %f\n",sol.meca.dip-90);
+//   sol.meca.dip = 90.;
+// }
+// if (search_type) {
+//   rad[0]=0.0;
+//   rad[1]=0.0;
+//   rad[2]=0.0;
+//   sol.ms = 1;}
   // END DELETE SECTION -- NOT APPLICABLE ANYMORE
 
   // output warning if best magnitude = magnitude limit in magnitude search.
@@ -843,19 +843,19 @@ int main (int argc, char **argv) {
   fprintf(f_out,"# norm L%d    # Pwin %g Swin %g    # N %d Np %d Ns %d\n",norm,mm[0]*dt,mm[1]*dt,y1,Nstat,Nbody,Nsurf);
 
   // START DELETE SECTION -- DOES NOT EXECUTE
-  for(i=1;i<sol.ms;i++) {
-    j = sol.others[i];
-    if (grid.err[j]-grid.err[sol.others[0]]<mltp*x2) {
-      k = j/(grid.n[0]*grid.n[1]);
-      k1 = (j-k*grid.n[0]*grid.n[1])/grid.n[0];
-      fprintf(f_out,"# DELETE %3d %2d %3d %4.2f %9.3e %3.1f\n",
-	      (int) rint(grid.x0[0]+(j-k1*grid.n[0]-k*grid.n[0]*grid.n[1])*grid.step[0]),
-	      (int) rint(grid.x0[1]+k1*grid.step[1]),
-	      (int) rint(grid.x0[2]+k*grid.step[2]),
-	      sol.meca.mag,grid.err[j],(grid.err[j]-grid.err[sol.others[0]])/x2);
-    }
-  } 
-  // END DELETE SECTION -- DOES NOT EXECUTE
+// for(i=1;i<sol.ms;i++) {
+//   j = sol.others[i];
+//   if (grid.err[j]-grid.err[sol.others[0]]<mltp*x2) {
+//     k = j/(grid.n[0]*grid.n[1]);
+//     k1 = (j-k*grid.n[0]*grid.n[1])/grid.n[0];
+//     fprintf(f_out,"# DELETE %3d %2d %3d %4.2f %9.3e %3.1f\n",
+//         (int) rint(grid.x0[0]+(j-k1*grid.n[0]-k*grid.n[0]*grid.n[1])*grid.step[0]),
+//         (int) rint(grid.x0[1]+k1*grid.step[1]),
+//         (int) rint(grid.x0[2]+k*grid.step[2]),
+//         sol.meca.mag,grid.err[j],(grid.err[j]-grid.err[sol.others[0]])/x2);
+//   }
+// } 
+// // END DELETE SECTION -- DOES NOT EXECUTE
 
 for(obs=obs0,i=0;i<nda;i++,obs++) {
     for(j=0;j<NCP;j++) {
