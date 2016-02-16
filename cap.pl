@@ -399,7 +399,8 @@ foreach (grep(/^-/,@ARGV)) {
            $nR = 5;
            ($v1, $w1, $k1, $h1, $s1) = @value;
            ($v2, $w2, $k2, $h2, $s2) = @value;
-           $h1 = $h2 = cos($value[3]);  # cap expects h = cos(dip)
+           # $h1 = $h2 = cos($value[3]);  # cap expects h = cos(dip)
+           $h1 = $h2 = $value[3];         # cap expects dip
            $nsol = $nv = $nw = $nk = $nh = $ns = 1;
        } elsif ($#value==9) {
            $nR = 10;
