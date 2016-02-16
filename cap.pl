@@ -65,7 +65,6 @@ $power_of_surf=0.5;
 ($vp, $love, $rayleigh) = (-1, -1, -1);
 
 # search types
-$parm = -1.0;
 $grid_type = -1.0;
 
 # minimization (norm)
@@ -301,8 +300,6 @@ foreach (grep(/^-/,@ARGV)) {
      ($f1_pnl, $f2_pnl, $f1_sw, $f2_sw) = @value;
    } elsif ($opt eq "D") {
      ($weight_of_pnl,$power_of_body,$power_of_surf)=@value;
-   } elsif ($opt eq "E") {
-     $parm = $value[0];
    } elsif ($opt eq "F") {
      $fm_thr = $value[0] if $#value >= 0;
    } elsif ($opt eq "G") {
