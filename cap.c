@@ -145,20 +145,6 @@ int main (int argc, char **argv) {
   // variables for uniform MT
   SEARCHPAR *searchPar = calloc(1, sizeof(SEARCHPAR));
 
-//    float v1, v2, w1, w2, k1, k2, h1, h2, s1, s2;
-//    int nnu, nnv, nnw, nnk, nnh, nns;
-
-//    float gamma0, gammaf, delta0, deltaf;
-//    int ngamma, ndelta;
-
-//    float dip0, dipf;
-//    int ndip;
-
-//    float u1, u2;   // delete afte w implemented
-//    int nu; //delete after w implemented
-
-//    int nsol;
-  /* END block of variables for uniform MT */
   // variables to verify that Mw_best is not near search limits
   FILE * fid_warn;        // output file for warnings
 
@@ -198,6 +184,9 @@ int main (int argc, char **argv) {
   scanf("%s %d",model, &depth); 
   edep=depth;
   
+  // START DELETE SECTION
+  // KEEP?
+  // Used in previous cap to generate misfit on the lune (Uturuncu FMT paper)
   if(only_first_motion)
   {
       strcpy(fmpdata->evid, eve);
@@ -205,6 +194,7 @@ int main (int argc, char **argv) {
       fmpdata->idep = depth;
       fidfmp = fopen("out.fmp_stndata_","w");
   }
+  // END DELETE SECTION
   
   scanf("%f%f%f%f%d%d%f%f",&x1,&y1,&x,&y,&repeat,&bootstrap,&fm_thr,&tie);
   if (repeat) for(j=0;j<NCP;j++) scanf("%f",rms_cut+4-j);
@@ -416,6 +406,9 @@ int main (int argc, char **argv) {
 //    fprintf(stderr, "NOTE: convolving greens function with src time function (trapezoid) tau0=dura=%f riseTime=%f \n",
 //            tau0, riseTime);
 
+  // START DELETE SECTION
+  // KEEP?
+  // Used in previous cap to generate misfit on the lune (Uturuncu FMT paper)
     if(only_first_motion)
     {
         fmpdata->azim = hd->az;
@@ -424,6 +417,7 @@ int main (int argc, char **argv) {
         fmpdata->stla = hd->stla;
         fmpdata->dist = hd->dist;
     }
+  // END DELETE SECTION
 
     for(j=0;j<NGR;j++) {
       *c_pt = grn_com[j];
@@ -463,6 +457,9 @@ int main (int argc, char **argv) {
         fm_copy++;
     }
 
+  // START DELETE SECTION
+  // KEEP?
+  // Used in previous cap to generate misfit on the lune (Uturuncu FMT paper)
     /* get data for first motion polarity */
     if(only_first_motion)
     {
@@ -471,6 +468,7 @@ int main (int argc, char **argv) {
         fmpdata->tp = hd[2].t1;
         fmpdata->ts = hd[2].t2;
     }
+  // END DELETE SECTION
 
     /*** calculate time shift needed to align data and syn approximately ****/
     /* positive shift means synthetic is earlier */
@@ -715,10 +713,15 @@ int main (int argc, char **argv) {
     for(j=0;j<NRC;j++) free(data[j]);
     for(j=0;j<NGR;j++) free(green[j]);
 
+  // START DELETE SECTION
+  // KEEP?
+  // Used in previous cap to generate misfit on the lune (Uturuncu FMT paper)
+    /* get data for first motion polarity */
     if(only_first_motion)
     {
         fmp_print_parameters(fidfmp, fmpdata);
     }
+  // END DELETE SECTION
 
   }	/*********end of loop over stations ********/
 
@@ -743,6 +746,10 @@ int main (int argc, char **argv) {
   // call initSearchMT instead of "error". This call includes extra parameters (searchPar, arrayMT)
   sol = initSearchMT(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search_type,norm, searchPar, arrayMT);
 
+  // START DELETE SECTION
+  // KEEP?
+  // Used in previous cap to generate misfit on the lune (Uturuncu FMT paper)
+    /* get data for first motion polarity */
   /* if runnning in first-motion-polarity mode clean up and end cap
    * after grid search in error function
    */
@@ -753,6 +760,7 @@ int main (int argc, char **argv) {
       fprintf(stderr,"NOTE: Computing only first motion. results output to out.misfit.fmp_\n");
       return 0;
   }
+  // END DELETE SECTION
 
   dof = nof_per_samp*total_n;
   x2 = sol.err/dof;		/* data variance */
