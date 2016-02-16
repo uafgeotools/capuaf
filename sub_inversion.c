@@ -47,16 +47,7 @@ SOLN initSearchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
         SEARCHPAR * searchPar,
         ARRAYMT * arrayMT)
 {
-    int i, j, k, l, m, k1, kc, z0, z1, z2, ii, N, iso_len;
-    float mw_ran; // half-range for magnitude search (previously int)
-    int i_stk, i_dip, i_rak, i_iso;
-    int perc, del_N, count_perc;
-    float amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3], m_par, del_dip, del_iso;
-    float *f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err, *rnd_stk, *rnd_dip, *rnd_rak, *rnd_iso, *rnd_clvd, *iso;
-    float dx, mtensor[3][3], *r_iso, *z_iso;
-    DATA *obs;
-    COMP *spt;
-    SOLN sol, best_sol;
+    SOLN best_sol;
 
     switch(search_type)
     {
@@ -189,7 +180,7 @@ void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
 /* fill array with a grid uniform moment tensors */
 void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
 {
-    int na, isol;
+    int isol;
     int ig, id, ik, ih, is;
 
     float siso1, siso2;
@@ -331,9 +322,9 @@ SOLN searchMT( int npar, // 3=mw; 2=iso; 1=clvd; 0=strike/dip/rake
         )
 {
     float mtensor[3][3];
-    float amp, rad[6], arad[4][3], x, x1, x2, y, y1, y2, cfg[NCP], s3d[9], temp[3], m_par, del_dip, del_iso;
+    float amp;
     SOLN sol, best_sol;
-    float *f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *z_pt, *z_pt0, *z_pt1, *grd_err, *rnd_stk, *rnd_dip, *rnd_rak, *rnd_iso, *rnd_clvd, *iso;
+    float *grd_err;
     int misfit_fmp;
 
     int isol, nreject;
