@@ -388,7 +388,7 @@ foreach (grep(/^-/,@ARGV)) {
            ($v1, $v2) = @value;
            ($w1, $w2) = @value;
            $nv = $nw = 1;       # at least one lune point needs to exist
-           $fmt_flag="true";    # used later for renaming output figures with fmt
+# used later for renaming output figures with fmt
        } elsif ($#value==4) {
            $nR = 5;
            ($v1, $w1, $k1, $h1, $s1) = @value;
@@ -517,7 +517,16 @@ if( ($oldgrid == 1) && ($nI == 5)) {
     }
 }
 
+# plots for the DC don't have "fmt" in their filenames
+if (($v1 == $v2) && ($v2 == 0)) {
+    $fmt_flag="false";   # double couple
+} else {
+    $fmt_flag="true";
+}
+
+#-----------------------------------------------------------
 # CHECK THAT USER INPUT MAKE SENSE
+#-----------------------------------------------------------
 
 # Set grid type to build (uniform rand, uniform grid) depending on entries in I (previously flag K).
 # If using flag k3 then also need to set LUNE_GRID_INSTEAD_OF_UV=1 in cap.c
