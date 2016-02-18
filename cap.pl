@@ -612,8 +612,8 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     close(SRC);
 
   plot:
-    print STDERR "\n\ncap.pl: plot results ... \n";
     if ( $plot > 0 && ($? >> 8) == 0 ) {
+      print STDERR "\n\ncap.pl: plot results ... \n";
       chdir($eve);
       @dum = split('_', $md_dep);  # split mdl string
       $outfile = sprintf("%s_%03d.out",@dum[0],int(@dum[1]));
@@ -623,8 +623,10 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
       &plot($md_dep, $m1, $m2, $amplify, $ampfact, $ncom, $spib, $spis, $filterBand, $fmt_flag);
       unlink(<${md_dep}_*.?>) unless $keep;
       chdir("../");
+      print STDERR "cap.pl: plotting finished.\n";
+    } else {
+      print STDERR "cap.pl: no plots generated.\n";
     }
   }
-    print STDERR "cap.pl: plotting finished.\n";
 }
 exit(0);
