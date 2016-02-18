@@ -864,55 +864,59 @@ for(obs=obs0,i=0;i<nda;i++,obs++) {
     }
  }
 
-fprintf(stderr,"Saving seismograms for stations ... \n");
-// generate synthetic and data waveforms for each 5 component (filtered and cut) 
-// these are deleted at the later stage (see cap.pl)
-for(obs=obs0,i=0;i<nda;i++,obs++) {
-    fprintf(stderr,"%d ", i);
-    mt_radiat(obs->az, mtensor, arad);
-    rad[0]=arad[3][0];
-    for(k=1;k<4;k++) rad[k]=arad[3-k][0];
-    for(k=4;k<6;k++) rad[k]=arad[6-k][2];
-    strcat(strcat(strcat(strcat(strcat(strcpy(tmp,eve),"/"),dep), "_"),obs->stn),".0");
-    c_pt = strrchr(tmp,(int) '0');
-    for(kc=2,f_pt=rad+NRF,spt=obs->com,j=0;j<NCP;j++,spt++,kc=NRF,f_pt=rad) {
-        npt=spt->npt;
-        hd[0] = sachdr(dt, npt, spt->b);
-        hd->dist = obs->dist; hd->az = obs->az; hd->user1 = obs->alpha;
-        hd->a = hd->b;
+if (plot==1) {
+    fprintf(stderr,"Saving seismograms for stations ... \n");
+    // generate synthetic and data waveforms for each 5 component (filtered and cut) 
+    // these are deleted at the later stage (see cap.pl)
+    for(obs=obs0,i=0;i<nda;i++,obs++) {
+        fprintf(stderr,"%d ", i);
+        mt_radiat(obs->az, mtensor, arad);
+        rad[0]=arad[3][0];
+        for(k=1;k<4;k++) rad[k]=arad[3-k][0];
+        for(k=4;k<6;k++) rad[k]=arad[6-k][2];
+        strcat(strcat(strcat(strcat(strcat(strcpy(tmp,eve),"/"),dep), "_"),obs->stn),".0");
+        c_pt = strrchr(tmp,(int) '0');
+        for(kc=2,f_pt=rad+NRF,spt=obs->com,j=0;j<NCP;j++,spt++,kc=NRF,f_pt=rad) {
+            npt=spt->npt;
+            hd[0] = sachdr(dt, npt, spt->b);
+            hd->dist = obs->dist; hd->az = obs->az; hd->user1 = obs->alpha;
+            hd->a = hd->b;
 
-        // find the max amplitude from all stations [i], from all components [j]
-        // OBSERVED
-        maxamp_obs[i][j]=0.;
-        for(l=0;l<npt;l++) {
-            data_obs[l] = spt->rec[l]; // amp is the scaled down M0
-            if (fabs(data_obs[l]) > maxamp_obs[i][j]) {
-                maxamp_obs[i][j] = fabs(data_obs[l]); // OBSERVED maximum amplitude
+            // find the max amplitude from all stations [i], from all components [j]
+            // OBSERVED
+            maxamp_obs[i][j]=0.;
+            for(l=0;l<npt;l++) {
+                data_obs[l] = spt->rec[l]; // amp is the scaled down M0
+                if (fabs(data_obs[l]) > maxamp_obs[i][j]) {
+                    maxamp_obs[i][j] = fabs(data_obs[l]); // OBSERVED maximum amplitude
+                }
             }
-        }
-        write_sac(tmp,hd[0],data_obs);   // write observed to file
-        (*c_pt)++;
+            write_sac(tmp,hd[0],data_obs);   // write observed to file
+            (*c_pt)++;
 
-        // SYNTHETIC
-        maxamp_syn[i][j]=0.;
-        for(l=0;l<npt;l++) {
-            for(x2=0.,k=0;k<kc;k++) {
-                x2 += f_pt[k] * spt->syn[k][l];
+            // SYNTHETIC
+            maxamp_syn[i][j]=0.;
+            for(l=0;l<npt;l++) {
+                for(x2=0.,k=0;k<kc;k++) {
+                    x2 += f_pt[k] * spt->syn[k][l];
+                }
+                data_syn[l] = sol.scl[i][j] * x2 *amp;    // x2 is the green's funciton norm
+                if (fabs(data_syn[l]) > maxamp_syn[i][j]) {
+                    maxamp_syn[i][j] = fabs(data_syn[l]);  // SYNTHETIC maximum amplitude
+                }
             }
-            data_syn[l] = sol.scl[i][j] * x2 *amp;    // x2 is the green's funciton norm
-            if (fabs(data_syn[l]) > maxamp_syn[i][j]) {
-                maxamp_syn[i][j] = fabs(data_syn[l]);  // SYNTHETIC maximum amplitude
-            }
+            //kcc = log(maxamp_obs[i][j]/maxamp_syn[i][j]);
+            //fprintf(stderr,"%.3f\t",kcc);
+            hd->b -= (shft0[i][j]+con_shft[i]);
+            hd->a = hd->b-sol.shft[i][j]*dt;
+            write_sac(tmp,hd[0],data_syn);   // write synthetics to file
+            (*c_pt)++;
         }
-        //kcc = log(maxamp_obs[i][j]/maxamp_syn[i][j]);
-        //fprintf(stderr,"%.3f\t",kcc);
-        hd->b -= (shft0[i][j]+con_shft[i]);
-        hd->a = hd->b-sol.shft[i][j]*dt;
-        write_sac(tmp,hd[0],data_syn);   // write synthetics to file
-        (*c_pt)++;
     }
+    fprintf(stderr,"\tdone.\n");
+} else {
+    fprintf(stderr,"Option plot=%d. No plots created for this inversion.\n", plot);
 }
-fprintf(stderr,"\tdone.\n");
 
 // set fm_copy to start at beginning of array
  if (skip_zero_weights==0){
@@ -960,7 +964,6 @@ fprintf(stderr,"\tdone.\n");
  }
  fclose(f_out);
  fclose(wt3);
- //if ( ! plot ) return 0;
 
  /**********ouput weight file **********/
  wt = fopen(strcat(strcat(strcpy(tmp,eve),"/"),"weight_capout.dat"),"w");
