@@ -239,36 +239,43 @@ $usage =
 
 =====================================================================================================
 Examples:
-> cap.pl -H0.2 -P0.3 -S2/5/0 -T35/70 -F -D2/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15/5.0 20080418093700
-  which finds the best focal mechanism and moment magnitude of tbe 2008/4/18 Southern Illinois earthquake
-  20080418093700 using the central US crustal velocity model cus with the earthquake at a depth of 15 km.
-  Here we assume that the Greens functions have already been computed and saved in $green/cus/cus_15/.
-  The inversion results are saved in cus_15.out with the first line
-Event 20080418093700 Model cus_15 FM 115 90  -2 Mw 5.19 rms 1.341e-02   110 ERR   1   3   4
-  saying that the fault plane solution is strike 115, dip 90, and rake -2 degrees, with the
-  axial lengths of the 1-sigma error ellipsoid of 1, 3, and 4 degrees.
+RANDOM SEARCH
+Double Couple:
+> cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15 -m4.5/5.5/0.1 -R0/0 -Y1 -I100000 20080418093700
+FMT search:
+> cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15 -m4.5/5.5/0.1 -R0/0 -Y1 -I100000 20080418093700
+
+GRID SEARCH
+Double Couple:
+> cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15 -m4.5/5.5/0.1 -R0/0 -Y1 -I1/1/37/10/19 20080418093700
+FMT search:
+> cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15 -m4.5/5.5/0.1 -Y1 -I10/10/37/10/19 20080418093700
+
+which finds the best focal mechanism and moment magnitude of the 2008/4/18 Southern Illinois earthquake
+20080418093700 using the central US crustal velocity model cus with the earthquake at a depth of 15 km.
+Here we assume that the Greens functions have already been computed and saved in $green/cus/cus_15/.
+-------------------------------------------------------------------------------------
+[Header Info] 
+The inversion results are saved in cus_15.out
+Event 20080418093700 Model cus_015 FM  297 86.815262    0 Mw 5.20 rms 4.547e-05   112 ERR   0   0   0 CLVD -1.89 -nan ISO  10.212961 0.00 VR 80.3 data2 1.026e-04
+# Hypocenter_sac_header elat 3.845000e+01 elon -8.789000e+01 edep 1.160000e+01
+# tensor = 7.943e+23  0.9511 -0.5865 -0.0273 -0.6243  0.0474  0.1075
+# norm L1    # Pwin 35 Swin 70    # N 8 Np 16 Ns 24
+
+saying that the fault plane solution is strike 297, dip 87, rake 0, gamma (CLVD) -2, and delta (ISO) 10 degrees.
+Also provided are misfit (rms), data norm (Data2) and Variance reduction (VR), and hypocenter location
+tensor in Mxx Mxy Mxz Myy Myz Mzz (where x=North, y=East, z=Down).
+norm info (L1 or L2); Duration of P (Pwin) and S windows; Number of stations (N); Number of P components (Np) and Number of S components (Ns)
   The rest of the files shows rms, cross-correlation coef., and time shift of individual waveforms.
   The waveform fits are plotted in file cus_15.ps in the event directory.
 ------------------------------------------------------------------------------------------------------
-  To find the best focal depth, repeat the inversion for different focal depths:
+[Depth search]
+  To find the best focal depth, repeat the inversion for different focal depths (by -A flag)
 > for h in 5 10 15 20 25 30; do cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_$h/5.0 -E0 -K0 -Y2 20080418093700; done
-  and store all the results in a temporary file:
-------------------------------------------------------------------------------------------------------
-> grep -h Event 20080418093700/cus_*.out > junk1.out
-> grep -h tensor 20080418093700/cus_*.out > junk2.out
-  and then run
-> ./depth.pl junk1.out junk2.out 20080418093700 > junk.ps
-------------------------------------------------------------------------------------------------------
-Instead of this you can run
+> cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15 -m4.5/5.5/0.1 -R0/0 -Y1 -I1/1/37/10/19 20080418093700 -A5/30/5
 > depth_test 20080418093700 cus
+> gv dep_20080418093700.ps
 ------------------------------------------------------------------------------------------------------
-  The output from the above command
-Event 20080418093700 Model cus_15 FM 115 90  -2 Mw 5.19 rms 1.341e-02   110 ERR   1   3   4 H  14.8 0.6
-  shows that the best focal depth is 14.8 +/- 0.6 km.
-
-  To include isotropic and CLVD in the inversion, use the -J option to specify the starting iso0, clvd0, and search steps. It requires
-  that the Green's function library includes the explosion source components (.a, .b, .c).
-
 
 ";
 
