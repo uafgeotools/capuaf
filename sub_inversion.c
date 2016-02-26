@@ -343,11 +343,11 @@ SOLN searchMT(
     OUTPUTMT outmt;
 
     if(search_type == 1) {
-        sprintf(outFileMT, "capout_grid_mt.bin");
-        sprintf(outFileBB, "capout_grid_bb.bin");
+        sprintf(outFileMT, "capout_grid_mt_%09d.bin", searchPar->nsol);
+        sprintf(outFileBB, "capout_grid_bb_%09d.bin", searchPar->nsol);
     } else if (search_type == 2) {
-        sprintf(outFileMT, "capout_rand_mt.bin");
-        sprintf(outFileBB, "capout_rand_bb.bin");
+        sprintf(outFileMT, "capout_rand_mt_%09d.bin", searchPar->nsol);
+        sprintf(outFileBB, "capout_rand_bb_%09d.bin", searchPar->nsol);
     } else {
         fprintf(stderr,"Abort. wrong search type.\n");
         exit(-1);
@@ -512,6 +512,7 @@ SOLN searchMT(
         fprintf(stderr,"Best solution at index= %10d\n", isol_best);
         fprintf(stderr,"Total solutions processed nsol= %10d (%6.2f%)\n", isol, 100 *  (float) isol/searchPar->nsol);
         fprintf(stderr,"Total solutions rejected nsol=  %10d (%6.2f%)\n", nreject, 100 * (float) nreject / searchPar->nsol);
+        fprintf(stderr,"Total solutions used=           %10d (%6.2f%)\n", isol - nreject, 100 * (float) (isol - nreject) / searchPar->nsol);
         fprintf(stderr,"----------------------------------------\n\n");
     }
 
