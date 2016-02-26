@@ -388,7 +388,6 @@ foreach (grep(/^-/,@ARGV)) {
            ($v1, $v2) = @value;
            ($w1, $w2) = @value;
            $nv = $nw = 1;       # at least one lune point needs to exist
-# used later for renaming output figures with fmt
        } elsif ($#value==4) {
            $nR = 5;
            ($v1, $w1, $k1, $h1, $s1) = @value;
