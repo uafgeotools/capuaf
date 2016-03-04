@@ -120,7 +120,7 @@ diff $ExampleDir/20090407201255351_L1_M111.out $CAPHOME/EXAMPLES/200904072012553
 
 # 8. Plot waveforms sorted by azimuth
 # Azimuthal soritng example
-cap.pl -H0.02 -P1/20/60 -p1 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41 -m$mwa -I1/1/36/10/19 -R0/0 -Zaz_sort_weight111.dat -Y1 $eid
+cap.pl -H0.02 -P1/20/60 -p1 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41 -m4.5 -I1/1/36/10/19 -R0/0 -Zaz_sort_weight111.dat -Y1 $eid
 cp "$eid"/scak_041.ps $ExampleDir/20090407201255351_L1_M111_az.ps 
 cp "$eid"/scak_041.out $ExampleDir/20090407201255351_L1_M111_az.out
 #-------- To check the result make sure both files are same (if running from the terminal, you will have to replace $ExampleDir with the path above (search $ExampleDir)-----------
@@ -128,6 +128,15 @@ cp "$eid"/scak_041.out $ExampleDir/20090407201255351_L1_M111_az.out
 echo "diff $ExampleDir/20090407201255351_L1_M111_az.out $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M111_az.out"
 diff $ExampleDir/20090407201255351_L1_M111_az.out $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M111_az.out
 #====================================================================================
+
+# 9. Random search
+cap.pl -H0.02 -P1/20/60 -p1 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41 -m4.5 -I100000 -R0/0 -Zweight111.dat -Y1 $eid
+cp "$eid"/scak_041.ps $ExampleDir/20090407201255351_L1_M111_rand.ps 
+cp "$eid"/scak_041.out $ExampleDir/20090407201255351_L1_M111_rand.out
+#-------- To check the result make sure both files are same (if running from the terminal, you will have to replace $ExampleDir with the path above (search $ExampleDir)-----------
+# gv $ExampleDir/20090407201255351_L1_M111_rand.ps $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M111_rand.ps
+echo "diff $ExampleDir/20090407201255351_L1_M111_rand.out $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M111_rand.out"
+diff $ExampleDir/20090407201255351_L1_M111_rand.out $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M111_rand.out
 
 # EXAMPLE 2: Running Nenana triggering example (20120411092157444)
 # This was used in Tape2013 (Nenana eq triggering paper) and Tape2015 (MFSZ paper)
