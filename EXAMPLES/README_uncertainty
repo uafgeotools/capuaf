@@ -9,19 +9,34 @@ Run CAP and generate the binary output files
 > cd $CAPRUN/inv/scak
 
 Run grid search at ~5 degree increment and move the files in the output directory
-> cd $CAPRUN/inv/scak
 > cap.pl -H0.02 -P1/20/60 -p1 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41 -m4.5 -I1/1/72/20/38 -R0/0 -Zweight111.dat -Y1 20090407201255351/
 > mv capout_grid_* 20090407201255351_output_dir
+> cp 20090407201255351/scak_41.out 20090407201255351_output_dir/
+> cp 20090407201255351/20090407201255351_event.dat 20090407201255351_output_dir/
+> cp 20090407201255351/20090407201255351_station.dat 20090407201255351_output_dir/
 
 Run random search and move the files in the output directory
 > cap.pl -H0.02 -P1/20/60 -p1 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41 -m4.5 -I100000 -R0/0 -Zweight111.dat -Y1 20090407201255351/
 > mv capout_rand_* 20090407201255351_output_dir
-
 %-----------------------------------------------------------------
-Uncertainty analysis and writing out the input files for GMT plotting script
+
+Uncertainty analysis and writing out the input files for GMT plotting script. This is done in MATLAB.
 
 > matlab &
-In command prompt
-> eid = '20090407201255351';
-> ddir = '~/CAP/inv/scak/20090407201255351_output_dir/'
-> CAP_unc_binary(eid,ddir);
+Run following commands in MATLAB command prompt
+>> eid = '20090407201255351';
+>> ddir = '~/CAP/inv/scak/20090407201255351_output_dir/';
+>> gmtdir = '~/CAP/inv/scak/20090407201255351_gmt_data/';
+
+Compute uncertainty using random samples (For this you only need files generated through random search i.e. capout_rand_*)
+>> CAP_unc_binary(eid,ddir,gmtdir);
+
+Analyze strike-dip-rake cross-sections at minimum misfit solution
+>> MTbrick_Csection_binary(eid,ddir,gmtdir);
+%-----------------------------------------------------------------
+
+Final GMT plots
+(Back to the terminal)
+
+> CAP_summary_plot.pl 20090407201255351 /home/vipul/CAP/inv/scak/20090407201255351_gmt_data
+> gv 20090407201255351_L1_M111.ps
