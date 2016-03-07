@@ -40,3 +40,6 @@ Final GMT plots
 
 > CAP_summary_plot.pl 20090407201255351 /home/vipul/CAP/inv/scak/20090407201255351_gmt_data
 > gv 20090407201255351_L1_M111.ps
+
+Check wthe result by comparing with the example figure. The posterior samples and the 20 example beachballs will not match since they are sampeled during every run. 
+> gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M111_unc.ps
