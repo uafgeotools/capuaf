@@ -915,7 +915,7 @@ if (plot==1) {
     }
     fprintf(stderr,"\tdone.\n");
 } else {
-    fprintf(stderr,"Option plot=%d. No plots created for this inversion.\n", plot);
+    fprintf(stderr,"Option plot=%d. No plots to create for this inversion.\n", plot);
 }
 
 // set fm_copy to start at beginning of array
