@@ -42,8 +42,12 @@ static char grn_com[NGR]={'8','5','b','7','4','1','a','6','3','0'};
 #define r2d 180.0 / PI
 #define d2r PI / 180.0
 #define RANDSEED 12345
-#define TOLERANCE 0.00001
-#define TOLDIP 0.00001
+
+#define TOLNMAG 1e-6    // check for point magnitudes
+#define TOLGRID 1e-6    // check for grid endpoints
+#define TOLBETA 1e-6    // check if close to the DC
+#define TOLDELTA 1e-6   // check precision near 0
+
 #define NBETA 1000  /*  number of points used for interpolation of u=u(beta)  */
 
 /***********************global vars********************************/
