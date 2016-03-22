@@ -30,6 +30,16 @@ void u2beta_vec(float *pArray_u, float *pArray_beta, int nsol)
     fprintf(stderr,"create vector u2beta...");
     interp_lin(pxa, pya, NBETA, pArray_u, pArray_beta, nsol);
 
+    // assume beta = pi/2 if it's within distance TOLBETA
+    for (i = 0; i < nsol; i++) {
+        //
+        if(fabs(pArray_beta[i] - (PI / 2.0)) <= TOLBETA) {
+        fprintf(stderr,"WARNING. beta = %f. New beta = ", pArray_beta[i] ); 
+            pArray_beta[i] = (PI / 2.0);
+            fprintf(stderr,"%f\n", pArray_beta[i]); 
+        }
+    }
+
     free(pxa);
     free(pya);
 }
@@ -39,7 +49,13 @@ float beta2delta(float beta)
 {
     float delta;
     delta = beta - (PI / 2.0);     //delta = beta - 90.0;
-//    fprintf(stdout,"CHECK DELTA. %f \n", delta * r2d);
+
+    // check numerical precision. if value =-0 set value=+0.
+    if (fabs(delta) < TOLDELTA) {
+        fprintf(stdout, "WARNING delta = %f. New delta = ", delta);
+        delta = 0.0;
+        fprintf(stdout, "%f\n", delta);
+    }
     return delta;
 }
 
@@ -262,7 +278,7 @@ void gridvec(float xmin, float xmax, int npoints, float *pArray)
             pArray[i] = xmin + dx * (float) i;
             //        fprintf(stdout,"CHECK GRIDVEC. %f \n", pArray[i] );
         }
-        if((pArray[npoints-1] - xmax) > TOLERANCE) {
+        if(fabs(pArray[npoints-1] - xmax) > TOLGRID) {
             fprintf(stderr,"\nWARNING. end point does not match expected end point!\n");
             fprintf(stderr,"xmax(actual) = %f. xmax(expected) = %f\n", pArray[npoints-1], xmax);
         }
@@ -277,8 +293,8 @@ void magvec(float xmin, float xmax, float dx, float *pArray)
     int i;
     int npoints = 0;
     int count=0;
-
-    if(dx < TOLERANCE) {
+    // if deltaMag < TOLNMAG assume this is a single magnitude point
+    if(dx < TOLNMAG) {
         npoints = 1;
     } else {
         // endpoints inclusive for magnitude vector
