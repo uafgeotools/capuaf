@@ -408,6 +408,8 @@ SOLN searchMT(
 #endif
         for(isol = 0; isol < searchPar->nsol; isol++) {
 
+            sol_count++;
+
             //tt2cmt(temp[2], temp[1], 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
             tt2cmt(arrayMT[isol].gamma * r2d, arrayMT[isol].delta * r2d, 1.0, arrayMT[isol].kappa * r2d, arrayMT[isol].theta * r2d, arrayMT[isol].sigma * r2d, mtensor);
 
@@ -548,20 +550,17 @@ SOLN searchMT(
 
     free(vec_mag);
 
-//    if(nreject == searchPar->nsol) {
-        fprintf(stderr,"----------------------------------------\n");
+        fprintf(stderr,"\n----------------------------------------\n");
+        fprintf(stderr,"Total solutions processed nsol= %10d (%6.2f%)\n", sol_count, 100 *  (float) sol_count/searchPar->nsol);
         fprintf(stderr,"Total solutions rejected nsol=  %10d (%6.2f%)\n", nreject, 100 * (float) nreject / searchPar->nsol);
-        fprintf(stderr,"No solutions found. increase number of solutions or check first motion polarities.\n");
-        fprintf(stderr,"----------------------------------------\n");
-//        exit(-1);
-//    } else {
-        fprintf(stderr,"----------------------------------------\n");
-        fprintf(stderr,"Best solution at index= %10d\n", isol_best);
-        fprintf(stderr,"Total solutions processed nsol= %10d (%6.2f%)\n", isol, 100 *  (float) isol/searchPar->nsol);
-        fprintf(stderr,"Total solutions rejected nsol=  %10d (%6.2f%)\n", nreject, 100 * (float) nreject / searchPar->nsol);
-        fprintf(stderr,"Total solutions used=           %10d (%6.2f%)\n", isol - nreject, 100 * (float) (isol - nreject) / searchPar->nsol);
+        fprintf(stderr,"Best solution at index=         %10d\n", isol_best);
+    if(nreject == searchPar->nsol) {
+        fprintf(stderr,"\n\t\t*** WARNING ***\n");
+        fprintf(stderr,"There are no solutions that match all polarities.\n");
+        fprintf(stderr,"Increase number of solutions or check first motion polarities.\n");
+        fprintf(stderr,"Showing the best waveform fit solution instead.\n");
+    } 
         fprintf(stderr,"----------------------------------------\n\n");
-//    }
 
     return(best_sol);
 }
