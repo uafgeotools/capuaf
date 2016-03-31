@@ -90,6 +90,7 @@ float data2=0.0;
 /* flags for computing uncertainty on the lune. 1==apply */
 int only_first_motion=0;    // polarity misfit. runs ONLY polarity, no waveform misfit
 int misfit_on_lune=0;       // waveform misfit. output misfit on the lune 
+char filename_prefix[255];    // used for all output files
 
 /* workaround for filter issues with small magnitude events (Uturuncu) */
 // this has not been tested with DIRECTIVITY option
@@ -184,18 +185,19 @@ int main (int argc, char **argv) {
   scanf("%s %d",model, &depth); 
   edep=depth;
   
-  // START DELETE SECTION
-  // KEEP?
-  // Used in previous cap to generate misfit on the lune (Uturuncu FMT paper)
-  if(only_first_motion)
-  {
-      strcpy(fmpdata->evid, eve);
-      strcpy(fmpdata->vmod, model);
-      fmpdata->idep = depth;
-      fidfmp = fopen("out.fmp_stndata_","w");
-  }
-  // END DELETE SECTION
-  
+  // WRITE POLARITY AND STATION DATA
+  // This section was used in previous CAP with flag only_first_motion=1
+  // for generating  polarity misfit on the lune (Uturuncu FMT paper).
+  // Now it's set to run for all inversions
+  char filename_fmpdata[255];
+  strcpy(fmpdata->evid, eve);
+  strcpy(fmpdata->vmod, model);
+  fmpdata->idep = depth;
+  sprintf(filename_prefix, "%s/%s_%s_%03d", eve, fmpdata->evid, fmpdata->vmod, fmpdata->idep);
+  sprintf(filename_fmpdata, "%s_fmpdata.txt", filename_prefix);
+  fidfmp = fopen(filename_fmpdata, "w");
+  // end
+
   scanf("%f%f%f%f%d%f%f",&x1,&y1,&x,&y,&repeat,&fm_thr,&tie);
   if (repeat) for(j=0;j<NCP;j++) scanf("%f",rms_cut+4-j);
   scanf("%f%f%f",&vp,&vs1,&vs2);
@@ -406,18 +408,16 @@ int main (int argc, char **argv) {
 //    fprintf(stderr, "NOTE: convolving greens function with src time function (trapezoid) tau0=dura=%f riseTime=%f \n",
 //            tau0, riseTime);
 
-  // START DELETE SECTION
-  // KEEP?
-  // Used in previous cap to generate misfit on the lune (Uturuncu FMT paper)
-    if(only_first_motion)
-    {
-        fmpdata->azim = hd->az;
-        strcpy(fmpdata->stname, obs->stn);
-        fmpdata->stlo = hd->stlo;
-        fmpdata->stla = hd->stla;
-        fmpdata->dist = hd->dist;
-    }
-  // END DELETE SECTION
+    // WRITE POLARITY AND STATION DATA
+    // This section was used in previous CAP with flag only_first_motion=1
+    // for generating  polarity misfit on the lune (Uturuncu FMT paper).
+    // Now it's set to run for all inversions
+    fmpdata->azim = hd->az;
+    strcpy(fmpdata->stname, obs->stn);
+    fmpdata->stlo = hd->stlo;
+    fmpdata->stla = hd->stla;
+    fmpdata->dist = hd->dist;
+    // end
 
     for(j=0;j<NGR;j++) {
       *c_pt = grn_com[j];
@@ -457,18 +457,15 @@ int main (int argc, char **argv) {
         fm_copy++;
     }
 
-  // START DELETE SECTION
-  // KEEP?
-  // Used in previous cap to generate misfit on the lune (Uturuncu FMT paper)
-    /* get data for first motion polarity */
-    if(only_first_motion)
-    {
-        fmpdata->pol = up[0];
-        fmpdata->toa = hd[2].user1;
-        fmpdata->tp = hd[2].t1;
-        fmpdata->ts = hd[2].t2;
-    }
-  // END DELETE SECTION
+    // WRITE POLARITY AND STATION DATA
+    // This section was used in previous CAP with flag only_first_motion=1
+    // for generating  polarity misfit on the lune (Uturuncu FMT paper).
+    // Now it's set to run for all inversions
+    fmpdata->pol = up[0];
+    fmpdata->toa = hd[2].user1;
+    fmpdata->tp = hd[2].t1;
+    fmpdata->ts = hd[2].t2;
+    // end
 
     /*** calculate time shift needed to align data and syn approximately ****/
     /* positive shift means synthetic is earlier */
@@ -713,17 +710,22 @@ int main (int argc, char **argv) {
     for(j=0;j<NRC;j++) free(data[j]);
     for(j=0;j<NGR;j++) free(green[j]);
 
-  // START DELETE SECTION
-  // KEEP?
-  // Used in previous cap to generate misfit on the lune (Uturuncu FMT paper)
-    /* get data for first motion polarity */
-    if(only_first_motion)
-    {
-        fmp_print_parameters(fidfmp, fmpdata);
-    }
-  // END DELETE SECTION
+    // WRITE POLARITY AND STATION DATA
+    // This section was used in previous CAP with flag only_first_motion=1
+    // for generating  polarity misfit on the lune (Uturuncu FMT paper).
+    // Now it's set to run for all inversions
+    fmp_print_parameters(fidfmp, fmpdata);
 
   }	/*********end of loop over stations ********/
+
+  // WRITE POLARITY AND STATION DATA
+  // This section was used in previous CAP with flag only_first_motion=1
+  // for generating  polarity misfit on the lune (Uturuncu FMT paper).
+  // Now it's set to run for all inversions
+  //fmp_print_parameters(fidfmp, fmpdata);
+  fclose(fidfmp);
+  free(fmpdata);
+  // end
 
   fprintf(stderr,"Total number of stations Nda= %d\n", nda);
   fprintf(stderr,"Total number of components Ncomp= %d\n", Ncomp);
@@ -745,22 +747,6 @@ int main (int argc, char **argv) {
 
   // call initSearchMT instead of "error". This call includes extra parameters (searchPar, arrayMT)
   sol = initSearchMT(nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,search_type,norm, searchPar, arrayMT);
-
-  // START DELETE SECTION
-  // KEEP?
-  // Used in previous cap to generate misfit on the lune (Uturuncu FMT paper)
-    /* get data for first motion polarity */
-  /* if runnning in first-motion-polarity mode clean up and end cap
-   * after grid search in error function
-   */
-  if(only_first_motion)
-  {
-      fclose(fidfmp);
-      free(fmpdata);
-      fprintf(stderr,"NOTE: Computing only first motion. results output to out.misfit.fmp_\n");
-      return 0;
-  }
-  // END DELETE SECTION
 
   dof = nof_per_samp*total_n;
   x2 = sol.err/dof;		/* data variance */
