@@ -58,6 +58,7 @@ extern float data2;
 /* flags for computing uncertainty on the lune. 1==apply */
 extern int only_first_motion;    // polarity misfit. runs ONLY polarity, no waveform misfit
 extern int misfit_on_lune;       // waveform misfit. output misfit on the lune 
+extern char filename_prefix[255];    // used for all output files
 
 /* workaround for filter issues with small magnitude events (Uturuncu) */
 // this has not been tested with DIRECTIVITY option
