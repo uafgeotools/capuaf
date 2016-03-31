@@ -199,7 +199,7 @@ typedef struct {
     float mrt;
     float mrp;
     float mtp;
-    float mag;
+    float mw;
     float misfit_wf;
     float misfit_fmp;
 } OUTPUTMT;
@@ -211,8 +211,13 @@ typedef struct
     float kappa;    // radians
     float theta;    // radians
     float sigma;    // radians
-    float mw;
-} ARRAYMT;
+    float mw; 
+    float misfit_fmp;
+    float misfit_wf;
+    float VR;
+    float v;    // radians
+    float w;    // radians
+} ARRAYMT; 
 
 // for interpolation within u=u(beta)
 typedef struct
