@@ -325,8 +325,8 @@ SOLN searchMT(
     float *grd_err;
     int misfit_fmp;
 
-    int isol, nreject;
-    int isol_best;
+    int sol_count, nreject;
+    int isol, isol_best;
     int imag, nmag;
     float VR;
     int tid;
@@ -400,7 +400,10 @@ SOLN searchMT(
 
         nreject = 0;
 #ifdef OMP
-#pragma omp parallel for private(sol, mtensor)
+#pragma omp parallel for \
+        private(sol, mtensor, misfit_fmp, isol, VR) \
+        firstprivate(arrayMT, fm, nfm, fm_thr, imag, searchPar, nda,obs0,max_shft,tie,norm,amp, Ncomp, data2, vec_mag) \
+        reduction(+:sol_count, nreject)
 #endif
         for(isol = 0; isol < searchPar->nsol; isol++) {
 
@@ -430,11 +433,11 @@ SOLN searchMT(
 #ifdef OMP
                 tid = omp_get_thread_num();
 #endif
-                sol.meca.gamma = arrayMT[isol].gamma * r2d;
-                sol.meca.delta = arrayMT[isol].delta * r2d;
-                sol.meca.stk   = arrayMT[isol].kappa * r2d;
-                sol.meca.dip   = arrayMT[isol].theta * r2d;
-                sol.meca.rak   = arrayMT[isol].sigma * r2d;
+                sol.meca.gamma = arrayMT[isol_best].gamma * r2d;
+                sol.meca.delta = arrayMT[isol_best].delta * r2d;
+                sol.meca.stk   = arrayMT[isol_best].kappa * r2d;
+                sol.meca.dip   = arrayMT[isol_best].theta * r2d;
+                sol.meca.rak   = arrayMT[isol_best].sigma * r2d;
                 sol.meca.mag   = vec_mag[imag];
 
                 best_sol = sol; 
@@ -443,7 +446,7 @@ SOLN searchMT(
                 VR = 100.*(1.-(sol.err/data2)*(sol.err/data2));
                 fprintf(stderr,"(tid= %d) best sol isol=%9d (%3d%) mag=%5.2f %11.6f %11.6f %11.6f %11.6f %11.6f \t err=%13.6e VR=%6.1f%\n", 
                         tid,
-                        isol, 100 * isol/searchPar->nsol,
+                        isol_best, 100 * isol_best/searchPar->nsol,
                         sol.meca.mag, sol.meca.gamma, sol.meca.delta, sol.meca.stk, sol.meca.dip, sol.meca.rak,
                         sol.err, VR);
 
@@ -478,7 +481,7 @@ SOLN searchMT(
             outmt.mrt = mtensor[0][2];
             outmt.mrp = -mtensor[1][2];
             outmt.mtp = -mtensor[0][1];
-            outmt.mag = vec_mag[imag];
+            outmt.mw  = vec_mag[imag];
             outmt.misfit_wf = sol.err/data2;
             outmt.misfit_fmp = (float) misfit_fmp;
 
