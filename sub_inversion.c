@@ -343,11 +343,11 @@ SOLN searchMT(
     OUTPUTMT outmt;
 
     if(search_type == 1) {
-        sprintf(outFileMT, "capout_grid_mt_%09d.bin", searchPar->nsol);
-        sprintf(outFileBB, "capout_grid_bb_%09d.bin", searchPar->nsol);
+        sprintf(outFileMT, "%s_grid_mt_%09d.bin", filename_prefix, searchPar->nsol);
+        sprintf(outFileBB, "%s_grid_bb_%09d.bin", filename_prefix, searchPar->nsol);
     } else if (search_type == 2) {
-        sprintf(outFileMT, "capout_rand_mt_%09d.bin", searchPar->nsol);
-        sprintf(outFileBB, "capout_rand_bb_%09d.bin", searchPar->nsol);
+        sprintf(outFileMT, "%s_rand_mt_%09d.bin", filename_prefix, searchPar->nsol);
+        sprintf(outFileBB, "%s_rand_bb_%09d.bin", filename_prefix, searchPar->nsol);
     } else {
         fprintf(stderr,"Abort. wrong search type.\n");
         exit(-1);
