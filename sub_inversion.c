@@ -355,6 +355,16 @@ SOLN searchMT(
 
     fidmt=fopen(outFileMT,"wb");
     fidbb=fopen(outFileBB,"wb");
+
+    fprintf(stderr,"\nPreparing space for moment tensor elements (nsol = %10d) ... ", searchPar->nsol);
+    OUTPUTMT * arrayMij = calloc(searchPar->nsol, sizeof(OUTPUTMT));
+    if (arrayMT == NULL) {
+        fprintf(stderr,"Abort. unable to allocate.\n");
+        exit(-1);
+    } else {
+        fprintf(stderr,"done.\n");
+    }
+
 #endif
 
     // START DELETE SECTION
@@ -400,6 +410,7 @@ SOLN searchMT(
 
         npol_sol = 0;
         nreject = 0;
+        sol_count = 0;
 #ifdef OMP
 #pragma omp parallel for \
         private(sol, mtensor, misfit_fmp, isol, VR) \
@@ -415,10 +426,10 @@ SOLN searchMT(
 
             // reject solution if polarities don't match
             // NOTE this section is now disabled but I leave it for reference
-//            if (check_first_motion(mtensor,fm,nfm,fm_thr)<0) {
-//                nreject++;
-//                continue;     
-//            }
+            //if (check_first_motion(mtensor,fm,nfm,fm_thr)<0) {
+            //    nreject++;
+            //    continue;     
+            //}
 
             // polarity misfit
             misfit_fmp = misfit_first_motion(mtensor, nfm, fm, fidfmp, arrayMT[isol].gamma * r2d, arrayMT[isol].delta * r2d, vec_mag[imag], sol.meca.stk, sol.meca.dip, sol.meca.rak);
@@ -432,50 +443,75 @@ SOLN searchMT(
 
             VR = 100.*(1.-(sol.err/data2)*(sol.err/data2));
 
+            // fill additional parameters
+            arrayMT[isol].mw           = vec_mag[imag];
+            arrayMT[isol].misfit_fmp   = (float) misfit_fmp;
+            arrayMT[isol].misfit_wf    = sol.err/data2;
+            arrayMT[isol].VR           = VR;
+            arrayMT[isol].v            = gamma2v(arrayMT[isol].gamma);
+            arrayMT[isol].w            = delta2w(arrayMT[isol].delta);
+
+#ifdef WB
+            // This array of moment tensor elements will be saved to file.
+            // NOTE it's only generated when compiling with option 'WB'
+            // TT2CMT.m is slow for large N.
+            // TT2CMT.m timings on eagle: 8 million solutions/hour (!)
+
+            arrayMij[isol].mrr = mtensor[2][2];
+            arrayMij[isol].mtt = mtensor[0][0];
+            arrayMij[isol].mpp = mtensor[1][1];
+            arrayMij[isol].mrt = mtensor[0][2];
+            arrayMij[isol].mrp = -mtensor[1][2];
+            arrayMij[isol].mtp = -mtensor[0][1];
+            arrayMij[isol].mw           = vec_mag[imag];
+            arrayMij[isol].misfit_wf    = sol.err/data2;
+            arrayMij[isol].misfit_fmp   = (float) misfit_fmp;
+#endif
+
 #ifdef OMP
 #pragma critical
-{
+            {
 #endif
-    // The next 2 sections guarantee that CAP outputs a best solution even when there
-    // are no solutions allowed from first motion polarities.
-    if (check_first_motion(mtensor, fm, nfm, fm_thr) >=  0) {
-        // From all solutions that satisfy polarities find the one with best waveform fit.
-        // If there are no solutions that satisfy polarities then npol_sol = 0 and
-        // the next section executes.
- 
-        npol_sol++;
+   // The next 2 sections guarantee that CAP outputs a best solution even when there
+   // are no solutions allowed from first motion polarities.
+   if (check_first_motion(mtensor, fm, nfm, fm_thr) >=  0) {
+       // From all solutions that satisfy polarities find the one with best waveform fit.
+       // If there are no solutions that satisfy polarities then npol_sol = 0 and
+       // the next section executes.
 
-        if (best_sol.err > sol.err) {
-            isol_best = isol;
-            best_sol.err = sol.err;
+       npol_sol++;
+
+       if (best_sol.err > sol.err) {
+           isol_best = isol;
+           best_sol.err = sol.err;
 #ifdef OMP
-            tid = omp_get_thread_num();
+                        tid = omp_get_thread_num();
 #endif
-            sol.meca.gamma = arrayMT[isol].gamma * r2d;
-            sol.meca.delta = arrayMT[isol].delta * r2d;
-            sol.meca.stk   = arrayMT[isol].kappa * r2d;
-            sol.meca.dip   = arrayMT[isol].theta * r2d;
-            sol.meca.rak   = arrayMT[isol].sigma * r2d;
-            sol.meca.mag   = vec_mag[imag];
+           sol.meca.gamma = arrayMT[isol].gamma * r2d;
+           sol.meca.delta = arrayMT[isol].delta * r2d;
+           sol.meca.stk   = arrayMT[isol].kappa * r2d;
+           sol.meca.dip   = arrayMT[isol].theta * r2d;
+           sol.meca.rak   = arrayMT[isol].sigma * r2d;
+           sol.meca.mag   = vec_mag[imag];
 
-            best_sol = sol; 
+           best_sol = sol; 
 
-            // output search status
-            fprintf(stderr,"(tid= %2d) best sol isol=%10d (%3d%) mag=%5.2f %11.6f %11.6f %11.6f %11.6f %11.6f err %12.6e VR %5.1f%\n",
-                    tid,
-                    isol_best, 100 * isol_best/searchPar->nsol,
-                    vec_mag[imag],
-                    arrayMT[isol_best].gamma * r2d, arrayMT[isol_best].delta * r2d,
-                    arrayMT[isol_best].kappa * r2d, arrayMT[isol_best].theta * r2d, arrayMT[isol_best].sigma * r2d,
-                    best_sol.err, VR);
-        }
-    } else if (npol_sol == 0) {
-        // This section does not run if there is at least one solution allowed by first motion polarities
-        if (best_sol.err > sol.err) {
-            isol_best = isol;
-            best_sol.err = sol.err;
+           // output search status
+           fprintf(stderr,"(tid= %2d) best sol isol=%10d (%3d%) mag=%5.2f %11.6f %11.6f %11.6f %11.6f %11.6f err %12.6e VR %5.1f%\n",
+                   tid,
+                   isol_best, 100 * isol_best/searchPar->nsol,
+                   vec_mag[imag],
+                   arrayMT[isol_best].gamma * r2d, arrayMT[isol_best].delta * r2d,
+                   arrayMT[isol_best].kappa * r2d, arrayMT[isol_best].theta * r2d, arrayMT[isol_best].sigma * r2d,
+                   best_sol.err, VR);
+       }
+   } else if (npol_sol == 0) {
+       // This section does not run if there is at least one solution allowed by first motion polarities
+       if (best_sol.err > sol.err) {
+           isol_best = isol;
+           best_sol.err = sol.err;
 #ifdef OMP
-            tid = omp_get_thread_num();
+                        tid = omp_get_thread_num();
 #endif
             sol.meca.gamma = arrayMT[isol].gamma * r2d;
             sol.meca.delta = arrayMT[isol].delta * r2d;
@@ -496,14 +532,14 @@ SOLN searchMT(
                     best_sol.err, VR);
         }
     }
-            
+
 #ifdef OMP
-// end critical section
+                // end critical section
 }
 #endif
 
             //  output binary data
-#ifdef WB
+//#ifdef WB
             // NOTE flag LUNE_GRID_INSTEAD_OF_UV. 
             // This is more efficient than adding checks for flag LUNE_GRID_INSTEAD_OF_UV inside this loop.
             // Another option is to add more ifdef statements but debugging starts to get complicated.
@@ -511,56 +547,64 @@ SOLN searchMT(
             // LUNE_GRID_INSTEAD_OF_UV=1 -- output (gamma, delta)
             //outbb.v = arrayMT[isol].gamma * r2d;  // UNcomment this line only if LUNE_GRID_INSTEAD_OF_UV=1 
             //outbb.w = arrayMT[isol].delta * r2d;  // UNcomment this line only if LUNE_GRID_INSTEAD_OF_UV=1
-            outbb.v = gamma2v(arrayMT[isol].gamma); // comment this line only if LUNE_GRID_INSTEAD_OF_UV=1
-            outbb.w = delta2w(arrayMT[isol].delta); // comment this line only if LUNE_GRID_INSTEAD_OF_UV=1
-
-            outbb.kappa = arrayMT[isol].kappa * r2d; // output in degrees
-            outbb.theta = arrayMT[isol].theta * r2d; // output in degrees
-            outbb.sigma = arrayMT[isol].sigma * r2d; // output in degrees
-            outbb.mag = vec_mag[imag];
-            outbb.misfit_wf  = sol.err/data2;
-            outbb.misfit_fmp = (float) misfit_fmp;
-
-            outmt.mrr = mtensor[2][2];
-            outmt.mtt = mtensor[0][0];
-            outmt.mpp = mtensor[1][1];
-            outmt.mrt = mtensor[0][2];
-            outmt.mrp = -mtensor[1][2];
-            outmt.mtp = -mtensor[0][1];
-            outmt.mw  = vec_mag[imag];
-            outmt.misfit_wf = sol.err/data2;
-            outmt.misfit_fmp = (float) misfit_fmp;
-
-            fwrite(&outmt, sizeof outmt, 1, fidmt); 
-            fwrite(&outbb, sizeof outbb, 1, fidbb);
-#endif
+//           outbb.v = gamma2v(arrayMT[isol].gamma); // comment this line only if LUNE_GRID_INSTEAD_OF_UV=1
+//           outbb.w = delta2w(arrayMT[isol].delta); // comment this line only if LUNE_GRID_INSTEAD_OF_UV=1
+//
+//           outbb.kappa = arrayMT[isol].kappa * r2d; // output in degrees
+//           outbb.theta = arrayMT[isol].theta * r2d; // output in degrees
+//           outbb.sigma = arrayMT[isol].sigma * r2d; // output in degrees
+//           outbb.mag = vec_mag[imag];
+//           outbb.misfit_wf  = sol.err/data2;
+//           outbb.misfit_fmp = (float) misfit_fmp;
+//
+//           outmt.mrr = mtensor[2][2];
+//           outmt.mtt = mtensor[0][0];
+//           outmt.mpp = mtensor[1][1];
+//           outmt.mrt = mtensor[0][2];
+//           outmt.mrp = -mtensor[1][2];
+//           outmt.mtp = -mtensor[0][1];
+//           outmt.mw  = vec_mag[imag];
+//           outmt.misfit_wf = sol.err/data2;
+//           outmt.misfit_fmp = (float) misfit_fmp;
+//
+//           fwrite(&outmt, sizeof outmt, 1, fidmt); 
+//           fwrite(&outbb, sizeof outbb, 1, fidbb);
+//#endif
 
         } /* end loop over solutions */
     } // end loop over magnitudes
 
-    fprintf(stderr,"\nSearch completed.\n\n");
-
-#ifdef WB
-    // close binary output files
-    fclose(fidmt);
-    fclose(fidbb);
-    fprintf(stderr,"binary data saved to file: %s \n", outFileMT);
-    fprintf(stderr,"binary data saved to file: %s \n", outFileBB);
-#endif
+    fprintf(stderr,"\nSearch completed.\n");
 
     free(vec_mag);
 
-        fprintf(stderr,"\n----------------------------------------\n");
-        fprintf(stderr,"Total solutions processed nsol= %10d (%6.2f%)\n", sol_count, 100 *  (float) sol_count/searchPar->nsol);
-        fprintf(stderr,"Total solutions rejected nsol=  %10d (%6.2f%)\n", nreject, 100 * (float) nreject / searchPar->nsol);
-        fprintf(stderr,"Best solution at index=         %10d\n", isol_best);
+    fprintf(stderr,"\n----------------------------------------\n");
+    fprintf(stderr,"Total solutions processed nsol= %10d (%6.2f%)\n", sol_count, 100 *  (float) sol_count/searchPar->nsol);
+    fprintf(stderr,"Total solutions rejected nsol=  %10d (%6.2f%)\n", nreject, 100 * (float) nreject / searchPar->nsol);
+    fprintf(stderr,"Best solution at index=         %10d\n", isol_best);
     if(nreject == searchPar->nsol) {
         fprintf(stderr,"\n\t\t*** WARNING ***\n");
         fprintf(stderr,"There are no solutions that match all polarities.\n");
         fprintf(stderr,"Increase number of solutions or check first motion polarities.\n");
         fprintf(stderr,"Showing the best waveform fit solution instead.\n");
     } 
-        fprintf(stderr,"----------------------------------------\n\n");
+    fprintf(stderr,"----------------------------------------\n\n");
+
+#ifdef WB
+    // write binary data
+    fprintf(stderr,"writing data to file: %s \n", outFileMT);
+    fidmt=fopen(outFileMT,"wb");
+    fwrite(arrayMij, sizeof(OUTPUTMT), sol_count, fidmt);
+    fclose(fidmt);
+
+    fprintf(stderr,"writing data to file: %s \n", outFileBB);
+    fidbb=fopen(outFileBB,"wb");
+    fwrite(arrayMT, sizeof(ARRAYMT), sol_count, fidbb);
+    fclose(fidbb);
+
+    free(arrayMij);
+    fprintf(stderr,"writing done.\n\n");
+#endif
 
     return(best_sol);
 }
