@@ -1,0 +1,22 @@
+# Commands to generate misfit figures for the utu1D paper
+#
+# NOTES 
+# These commands require data generated during CAP inversion and post processed
+# in matlab with capout_subset_fmp.m
+#
+# At the moment fmt_misfit_mlab.gmt is in ~/cap/UTILS/celso/
+#
+#
+# 20160412 celso alvizuri - cralvizuri@alaska.edu
+
+### generate misfit figures
+
+# evid 20100516063454464
+sh fmt_misfit_mlab.gmt 20100516063454464 utuhalf 4
+sh fmt_misfit_mlab.gmt 20100516063454464 utu1D 4
+
+# evid 20100516085611725
+sh fmt_misfit_mlab.gmt 20100516085611725 utuhalf 10
+sh fmt_misfit_mlab.gmt 20100516085611725 utu1D 10
+
+
