@@ -805,7 +805,7 @@ int main (int argc, char **argv) {
   }
 
   fprintf(stderr,"Preparing out file ...\n");
-  sprintf(mod_dep,"%s_%03d",model,depth);                       // rename .out file
+  sprintf(mod_dep,"%s_%s_%03d", eve, model, depth);                       // rename .out file
   strcat(strcat(strcat(strcpy(tmp,eve),"/"),mod_dep),".out");   
   f_out=fopen(tmp,"w");
   fprintf(f_out,"Event %s Model %s FM %4d %9.6f %4d Mw %4.2f rms %9.3e %5d ERR %3d %3d %3d CLVD %3.2f %3.2f ISO %10.6f %3.2f VR %3.1f data2 %9.3e\n",eve,mod_dep,
