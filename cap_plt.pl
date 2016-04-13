@@ -4,7 +4,7 @@ use List::Util qw[min max];
 sub plot {
 
 #  local($mdl, $t1, $t2, $am, $num_com, $spis) = @_; # original
-  local($mdl, $t1, $t2, $am, $ampfact, $num_com, $spib, $spis, $filterBand, $fmt_flag) = @_;
+  local($mdl, $t1, $t2, $am, $ampfact, $num_com, $spib, $spis, $filterBand, $fmt_flag, $evid, $model, $depth) = @_;
   local($nn,$tt,$plt1,$plt2,$plt3,$plt4,$i,$nam,$com1,$com2,$j,$x,$y,@aa,$rslt,@name,@aztk);
 
 # set this =1 if you want to plot time windows that have been excluded
@@ -22,7 +22,7 @@ sub plot {
   # for all options (such as PAPER_MEDIA): http://gmt.soest.hawaii.edu/gmt/html/man/gmtdefaults.html
   # to check defaults, e.g.: gmtdefaults -L | grep MEASURE_UNIT
   @dum = split('_', $mdl);  # split mdl string
-  $outfile = sprintf("%s_%03d.out",@dum[0],int(@dum[1]));
+  $outfile = sprintf("%s_%s_%03d.out", $evid, $model, int($depth));
 
   # read in the output file results
 #  open(FFF,"$mdl.out"); # original
@@ -111,8 +111,8 @@ sub plot {
   print "\namplitude scaling am = $am";
   print "\npssac2 amplitude scaling stam = $stam\n";
 #  $outps = "$mdl.ps";   # original
-  $outps = sprintf("%s_%03d.ps",@dum[0],int(@dum[1])); # reformatted filename
-  $outps = sprintf("%s_%03d_fmt.ps",@dum[0],int(@dum[1])) if $fmt_flag eq "true";
+  $outps = sprintf("%s_%s_%03d.ps", $evid, $model, int($depth)); # reformatted filename
+  $outps = sprintf("%s_%s_%03d_fmt.ps", $evid, $model, ,int($depth)) if $fmt_flag eq "true";
 
   # (1) plot cut seismograms with scaled amplitudes (first command: no -O appears)
   $tscale_x = 0.55;
@@ -156,8 +156,8 @@ sub plot {
 #--------------------------
 
 #  $outps2 = "${mdl}_beach.ps"; # original
-  $outps2 = sprintf("%s_%03d_beach.ps",@dum[0],int(@dum[1]));   # 20130102 calvizuri - revised filename
-  $outps2 = sprintf("%s_%03d_beach_fmt.ps",@dum[0],int(@dum[1])) if $fmt_flag eq "true";
+  $outps2 = sprintf("%s_%s_%03d_beach.ps", $evid, $model, int(depth));   # 20130102 calvizuri - revised filename
+  $outps2 = sprintf("%s_%s_%03d_beach_fmt.ps", $evid, $model, int($depth)) if $fmt_flag eq "true";
 
   $fac = 6.5;
   $fac2 = 8.2*$fac;   # original: 5*$fac
@@ -551,7 +551,7 @@ sub plot {
     # Event 20080418093700 Model cus_015 FM 304 81.122581 9 Mw 5.20 rms 5.119e-05 112 ERR 0 0 0 ISO 17.749453 0.00 CLVD -9.86 0.00 VR 70.6 data2 9.443e-05
     #   0         1          2       3    4  5   6        7  8   9   10      11    12 13 14 1516 17   18       19   20    21    22 23  24    25     26
     open(PLT, $plt4_5);
-    printf PLT "$x $y 12 0 0 0 @meca[0,1,2] and Depth $meca[3]\n"; $y-=$tgap;
+    printf PLT "$x $y 12 0 0 0 Event $evid Model $model Depth $depth\n"; $y-=$tgap;
 #   printf PLT "$x $y 12 0 0 0 @meca[4] %d %d %d @meca[8,9, 17] %3.0f @meca[20] %3.0f @meca[10,11] VR %3.1f\n",@meca[5], @meca[6], @meca[7], @meca[18],@meca[21],@meca[24];$y-=$tgap;
     printf PLT "$x $y 12 0 0 0 @meca[4] %d %d %d @meca[8,9] @~g@~ %3.0f @~d@~ %3.0f @meca[10,11] VR %3.1f\n",@meca[5], @meca[6], @meca[7], @meca[18],@meca[21],@meca[24];$y-=$tgap;
     printf PLT "$x $y 12 0 0 0 $filterBand\n" ; $y-=$tgap;  # 20120719 - filter bands

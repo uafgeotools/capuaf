@@ -631,11 +631,11 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
       print STDERR "\n\ncap.pl: plot results ... \n";
       chdir($eve);
       @dum = split('_', $md_dep);  # split mdl string
-      $outfile = sprintf("%s_%03d.out",@dum[0],int(@dum[1]));
+      $outfile = sprintf("%s_%s_%03d.out", @event, $model, int($depth));
       open(my $out,'>>',$outfile);
       say $out "INPUT_PAR $md_dep P_win $m1 S_win $m2 P $amplify p $ampfact NCOM $ncom spiB $spib spiS $spis $filterBand FMT $fmt_flag";
 
-      &plot($md_dep, $m1, $m2, $amplify, $ampfact, $ncom, $spib, $spis, $filterBand, $fmt_flag);
+      &plot($md_dep, $m1, $m2, $amplify, $ampfact, $ncom, $spib, $spis, $filterBand, $fmt_flag, @event, $model, $depth);
       unlink(<${md_dep}_*.?>) unless $keep;
       chdir("../");
       print STDERR "cap.pl: plotting finished.\n";
