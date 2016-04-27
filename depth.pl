@@ -21,7 +21,16 @@ $imodel = 0; # to draws bars at layer interfaces
 
 #($rsl,@event) = @ARGV;      # original
 ($rsl,$rsl2,@event) = @ARGV; # input Event and Tensor lines from files cus_NNN.out, and event id
+#(@event,$smod)=@ARGV;
 
+# name of junk files for storing header info while plotting
+#$rsl = "OUTPUT_DIR/junk1.out";
+#$rsl2 = "OUTPUT_DIR/junk2.out";
+
+# system("grep -h Event OUTPUT_DIR/*$smod*.out > $rsl");
+#system("grep -h tensor OUTPUT_DIR/*$smod*.out > $rsl2");
+
+#------------
 open(RSL,"$rsl") or die "couldn't open inputfile1 $rsl\n";
 @aaa=<RSL>;
 close(RSL);
@@ -68,6 +77,8 @@ close(FH);
 while (@event)
 {
     @aa = splice(@event,0,10); # 0=offset, 10=N elements (each element space separated)
+    #$odir = "$aa[0]";  # If all the output files (*.out) are in the $eve directory
+    $odir = "OUTPUT_DIR";  # If all the output files (*.out) are in the OUTPUT_DIR directory
     #print STDERR "debug. aa=@aa event=@event\n";
     $i=0;
     #$xx = "-K -Ba50f5/a20f5WSne";   # original <-- not enough ticks+labeling
@@ -86,7 +97,7 @@ while (@event)
 	    # Event 20080418093700 Model cus_001 FM 291 51 -13 Mw 5.10 rms 3.748e-02   110 ERR   2   5   8 ISO 0.16 0.11 CLVD 0.14 0.08
 	    $line[$ii]=$_;
 	    @bb=split;
-	    ($smodel,$dep[$ii])=split('_',$bb[3]); # split cus_001 to get depth (= 001km) -- $dep is used for y-axis range
+	    ($ename,$smodel,$dep[$ii])=split('_',$bb[3]); # split cus_001 to get depth (= 001km) -- $dep is used for y-axis range
 	    $strike[$ii]=$bb[5];		   # not needed
 	    $dip[$ii]=$bb[6];			   # not needed
 	    $rake[$ii]=$bb[7];			   # not needed
@@ -101,7 +112,7 @@ while (@event)
 	    }
 	    $ii++;
 	}
-	open(OUT,"./$aa[0]/${smodel}_$dep[${best}].out");
+	open(OUT,"./${odir}/${smodel}_$dep[${best}].out");
 	@outfile=<OUT>;
        (undef,undef,undef,$elat,undef,$elon,undef,$edep)  =split(" ",$outfile[1]);
 	printf STDERR "$edep";
