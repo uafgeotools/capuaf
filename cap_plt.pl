@@ -22,7 +22,8 @@ sub plot {
   # for all options (such as PAPER_MEDIA): http://gmt.soest.hawaii.edu/gmt/html/man/gmtdefaults.html
   # to check defaults, e.g.: gmtdefaults -L | grep MEASURE_UNIT
   @dum = split('_', $mdl);  # split mdl string
-  $outfile = sprintf("%s_%s_%03d.out", $evid, $model, int($depth));
+  $ftag=sprintf("%s_%s_%03d", $evid, $model, int($depth));
+  $outfile = sprintf("%s.out", $ftag);
 
   # read in the output file results
 #  open(FFF,"$mdl.out"); # original
@@ -111,8 +112,10 @@ sub plot {
   print "\namplitude scaling am = $am";
   print "\npssac2 amplitude scaling stam = $stam\n";
 #  $outps = "$mdl.ps";   # original
-  $outps = sprintf("%s_%s_%03d.ps", $evid, $model, int($depth)); # reformatted filename
-  $outps = sprintf("%s_%s_%03d_fmt.ps", $evid, $model, ,int($depth)) if $fmt_flag eq "true";
+  #$outps = sprintf("%s_%s_%03d.ps", $evid, $model, int($depth)); # reformatted filename
+  #$outps = sprintf("%s_%s_%03d_fmt.ps", $evid, $model, ,int($depth)) if $fmt_flag eq "true";
+  $outps = sprintf("${ftag}.ps");
+  $outps = sprintf("${ftag}_fmt.ps") if $fmt_flag eq "true";
 
   # (1) plot cut seismograms with scaled amplitudes (first command: no -O appears)
   $tscale_x = 0.55;
@@ -156,8 +159,10 @@ sub plot {
 #--------------------------
 
 #  $outps2 = "${mdl}_beach.ps"; # original
-  $outps2 = sprintf("%s_%s_%03d_beach.ps", $evid, $model, int(depth));   # 20130102 calvizuri - revised filename
-  $outps2 = sprintf("%s_%s_%03d_beach_fmt.ps", $evid, $model, int($depth)) if $fmt_flag eq "true";
+  #$outps2 = sprintf("%s_%s_%03d_beach.ps", $evid, $model, int(depth));   # 20130102 calvizuri - revised filename
+  #$outps2 = sprintf("%s_%s_%03d_beach_fmt.ps", $evid, $model, int($depth)) if $fmt_flag eq "true";
+  $outps2 = sprintf("${ftag}_beach.ps");
+  $outps2 = sprintf("${ftag}_beach_fmt.ps") if $fmt_flag eq "true";
 
   $fac = 6.5;
   $fac2 = 8.2*$fac;   # original: 5*$fac

@@ -68,7 +68,7 @@ $power_of_surf=0.5;
 $grid_type = -1.0;
 
 # minimization (norm)
-$norm = 2;
+$norm = 1;
 
 #----------------------------------------------------------- 
 # DEFAULT VALUES FOR SEARCH PARAMETERS
@@ -629,13 +629,14 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
   plot:
     if ( $plot > 0 && ($? >> 8) == 0 ) {
       print STDERR "\n\ncap.pl: plot results ... \n";
-      chdir($eve);
+      $odir = "./OUTPUT_DIR";
+      chdir($odir);
       @dum = split('_', $md_dep);  # split mdl string
-      $outfile = sprintf("%s_%s_%03d.out", @event, $model, int($depth));
+      $outfile = sprintf("%s_%s_%03d.out", @event, $model, int($dep));
       open(my $out,'>>',$outfile);
       say $out "INPUT_PAR $md_dep P_win $m1 S_win $m2 P $amplify p $ampfact NCOM $ncom spiB $spib spiS $spis $filterBand FMT $fmt_flag";
 
-      &plot($md_dep, $m1, $m2, $amplify, $ampfact, $ncom, $spib, $spis, $filterBand, $fmt_flag, @event, $model, $depth);
+      &plot($md_dep, $m1, $m2, $amplify, $ampfact, $ncom, $spib, $spis, $filterBand, $fmt_flag, @event, $model, $dep);
       unlink(<${md_dep}_*.?>) unless $keep;
       chdir("../");
       print STDERR "cap.pl: plotting finished.\n";

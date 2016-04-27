@@ -113,7 +113,7 @@ int main (int argc, char **argv) {
   int	n1,n2,ns, mltp, nup, up[3], n_shft, nqP, nqS,isurf=0,ibody=0,istat=0,Nsurf=0,Nbody=0,Nstat=0;
   int	mm[2],n[NCP],max_shft[NCP],npts[NRC];
   int	repeat;
-  char	tmp[128],glib[128],dep[32],dst[16],eve[32],*c_pt;
+  char	tmp[255],glib[128],dep[32],dst[16],eve[32],*c_pt;
   float	x,x1,x2,y,y1,amp,dt,rad[6],arad[4][3],fm_thr,tie,mtensor[3][3],rec2=0.,VR,evla,evlo,evdp;
   float	rms_cut[NCP], t0[NCP], tb[NRC], t1, t2, t3, t4, srcDelay;
   float	con_shft[STN], s_shft, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN],maxamp_syn[200][NCP],maxamp_obs[200][NCP],kcc,lamp_thresh, ppick[200];
@@ -179,7 +179,7 @@ int main (int argc, char **argv) {
   fmpdata = (FMPDATA *) malloc(sizeof(FMPDATA));
 
   /****** input control parameters *************/
-  char mod_dep[]="-999";         /* for renaming .out file */
+  char mod_dep[255]="-999";         /* for renaming .out file */
   char model[128];
   int depth=-999;
   scanf("%s %d",model, &depth); 
@@ -193,7 +193,9 @@ int main (int argc, char **argv) {
   strcpy(fmpdata->evid, eve);
   strcpy(fmpdata->vmod, model);
   fmpdata->idep = depth;
-  sprintf(filename_prefix, "%s/%s_%s_%03d", eve, fmpdata->evid, fmpdata->vmod, fmpdata->idep);
+  sprintf(mod_dep,"%s_%s_%03d",fmpdata->evid, fmpdata->vmod, fmpdata->idep );   
+  if (stat("./OUTPUT_DIR") == -1) {mkdir("./OUTPUT_DIR", 0700);} // create directory is it doesn't exist
+  sprintf(filename_prefix, "OUTPUT_DIR/%s_%s_%03d", fmpdata->evid, fmpdata->vmod, fmpdata->idep);
   sprintf(filename_fmpdata, "%s_fmpdata.txt", filename_prefix);
   fidfmp = fopen(filename_fmpdata, "w");
   // end
@@ -805,8 +807,10 @@ int main (int argc, char **argv) {
   }
 
   fprintf(stderr,"Preparing out file ...\n");
-  sprintf(mod_dep,"%s_%s_%03d", eve, model, depth);                       // rename .out file
-  strcat(strcat(strcat(strcpy(tmp,eve),"/"),mod_dep),".out");   
+  // sprintf(mod_dep,"%s_%s_%03d", eve, model, depth);                       // rename .out file
+  // sprintf(mod_dep,"%s_%s_%03d",fmpdata->evid, fmpdata->vmod, fmpdata->idep);
+  // strcat(strcat(strcat(strcpy(tmp,eve),"/"),mod_dep),".out");  
+  sprintf(tmp, "%s.out", filename_prefix);
   f_out=fopen(tmp,"w");
   fprintf(f_out,"Event %s Model %s FM %4d %9.6f %4d Mw %4.2f rms %9.3e %5d ERR %3d %3d %3d CLVD %3.2f %3.2f ISO %10.6f %3.2f VR %3.1f data2 %9.3e\n",eve,mod_dep,
 	  (int) rint(sol.meca.stk), sol.meca.dip, (int) rint(sol.meca.rak),
@@ -860,7 +864,8 @@ if (plot==1) {
         rad[0]=arad[3][0];
         for(k=1;k<4;k++) rad[k]=arad[3-k][0];
         for(k=4;k<6;k++) rad[k]=arad[6-k][2];
-        strcat(strcat(strcat(strcat(strcat(strcpy(tmp,eve),"/"),dep), "_"),obs->stn),".0");
+        //strcat(strcat(strcat(strcat(strcat(strcpy(tmp,eve),"/"),dep), "_"),obs->stn),".0");
+	strcat(strcat(strcat(strcat(strcat(strcpy(tmp,"OUTPUT_DIR"),"/"),dep), "_"),obs->stn),".0");
         c_pt = strrchr(tmp,(int) '0');
         for(kc=2,f_pt=rad+NRF,spt=obs->com,j=0;j<NCP;j++,spt++,kc=NRF,f_pt=rad) {
             npt=spt->npt;
