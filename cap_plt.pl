@@ -184,8 +184,8 @@ sub plot {
 
   # default: lower hemisphere piercing points on beachballs (x)
   $xplt4 = "| psxy $JP -R0/360/0/1 -Sx0.10i -N -W0.5p,255/0/0 -G255 -O -K >> $outps2";
-  $xplt4c = "| psxy $JP -R0/360/0/1 -Sx0.10i -N -W1p,0/255/0 -G255 -O -K >> $outps2";
-  $xplt4d = "| psxy $JP -R0/360/0/1 -Sx0.10i -N -W1p,0/0/255 -G255 -O -K >> $outps2";
+  $xplt4c = "| psxy $JP -R0/360/0/1 -St0.10i -N -W1p,0/255/0 -G255 -O -K >> $outps2";
+  $xplt4d = "| psxy $JP -R0/360/0/1 -Si0.10i -N -W1p,0/0/255 -G255 -O -K >> $outps2";
 
   # plot text labels
   $xplt5a = "| pstext $JP -R0/360/0/1 -N -O -K >> $outps2";
