@@ -15,8 +15,7 @@ from numpy import pi
 
 if len(sys.argv) < 2 :
     print "Usage: " + os.path.basename(sys.argv[0]) + " RESP-file"
-    print "      Converts a RESP file into a SAC PoleZero file"
-    print "      SAC Polezero file is built from station/net/channel"
+    print "      Converts a RESP file into an Antelope \"paz\" file"
     exit(-1)
 
 file = sys.argv[1]
@@ -51,17 +50,14 @@ data = dict()
 
 block = ""
 
-global warn_fsfn
-global warn_A0
-
 # check A0 values
 # function parameters are made explicit for now but they can be cleaned up
 def getA0_theo(fn, fs, poles, zeros, npoles, nzeros, A0):
     # Add in the additional zeros, converting the output to displacement in meters
-#   for i in range(gamma):
-#       zeros.append(0.0)
-#       zeros.append(0.0)
-#   nzeros = nzeros + gamma
+    for i in range(gamma):
+        zeros.append(0.0)
+        zeros.append(0.0)
+    nzeros = nzeros + gamma
 
     # Save Poles and Zeros in a list of Complex Numbers
     P = list()
@@ -91,9 +87,6 @@ def getA0_theo(fn, fs, poles, zeros, npoles, nzeros, A0):
         print "      Sensitivity Frequency   ", fs
         print "      Normalization Frequency ", fn
         A0 = calc_A0
-        #warn_fsfn = "#"
-        #warn_fsfn = "# Warning: Sensitivity and Normalization Frequencies not equal\n"
-        #warn_fsfn += "# Warning: Setting A0 = calc_A0"
 
     # Handle cases where the A0 values do not match
     if abs(A0 - calc_A0)/calc_A0 > 0.005 :
@@ -103,9 +96,6 @@ def getA0_theo(fn, fs, poles, zeros, npoles, nzeros, A0):
         print "      Calculated", calc_A0, "  from poles and zeros"
         print "      Using Calculated Normalization Constant (rdseed/evalresp default)"
         A0 = calc_A0
-        #warn_A0 = ""
-        #warn_A0 = "Warning: Calculated and Defined A0 do not match"
-        #warn_A0 += "Warning: Setting A0 = calc_A0"
 
     # Find the final normalization constant
     # (doesn't produce the right value. I'm disabling this part)
@@ -131,11 +121,10 @@ def pz2file(poles, zeros, npoles, nzeros, A0, epoch):
 
     print >> fp, "# This response file was derived from: %s" % file
     print >> fp, "# Epoch %s" % epoch
-    print >> fp, "# Format: paz"
+    print >> fp, "# Format: Antelope \"paz\""
     print >> fp, "# See man pages for description of the format"
     print >> fp, "# Antelope version 5.4"
     print >> fp, "# "
-#    print >> fp, warn_fsfn
     print >> fp, "theoretical 1 complete paz LLNL/UAF"
     print >> fp, "%s" % (A0)
     print >> fp, "%s" % (npoles)
