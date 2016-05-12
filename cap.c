@@ -151,7 +151,7 @@ int main (int argc, char **argv) {
 
   SOLN	sol;
   SACHEAD hd[NRC];
-  FILE 	*f_out, *wt, *wt2, *wt3 ;
+  FILE 	*f_out, *wt, *wt2, *wt3, *fid_srcfile ;
   float tau0, riseTime, *src;
   char type[2] = {'B','P'}, proto[2] = {'B','U'};
   double f1_pnl, f2_pnl, f1_sw, f2_sw;
@@ -231,6 +231,13 @@ int main (int argc, char **argv) {
     ns = hd->npts;
     srcDelay = -hd->b;
   }
+  // write source function to a file
+  fid_srcfile = fopen("./OUTPUT_DIR/srcfile","wb");
+  for(i=0;i<=ns;i++) {
+    fprintf(fid_srcfile,"%f \t %f\n",((double)i*dt),src[i]);
+  }
+  fclose(fid_srcfile);
+
   scanf("%lf%lf%lf%lf",&f1_pnl,&f2_pnl,&f1_sw,&f2_sw);
   if (f1_pnl>0.) design(order, type, proto, 1., 1., f1_pnl, f2_pnl, (double) dt, pnl_sn, pnl_sd, &nsects);
   if (f1_sw>0.)  design(order, type, proto, 1., 1., f1_sw, f2_sw, (double) dt, sw_sn, sw_sd, &nsects);
