@@ -139,8 +139,12 @@ echo "diff $ExampleDir/20090407201255351_L1_M111_rand.out $CAPHOME/EXAMPLES/2009
 diff $ExampleDir/20090407201255351_L1_M111_rand.out $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M111_rand.out
 
 # 10. Input source function
-# run source_example.m
-cap.pl -H0.02 -P1/20/60 -p1 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41 -m4.5 -I100000 -Zweight111_subset.dat -Y1 -R0/0 -L./sin_source.sac 20090407201255351
+# run source_example.m (in MATLAB)
+# check generated source time function 
+# diff ./sin_source.sac $CAPHOME/EXAMPLES/20090407201255351_check/sin_source.sac
+cap.pl -H0.02 -P1/20/60 -p1 -S3/10/0 -T15/120 -D1/1/0.5 -C0.2/0.5/0.025/0.06 -W1 -Mscak_41 -m4.5 -I100000 -Zweight111_subset.dat -Y1 -R0/0 -Lsin_source.sac $eid
+diff $ExampleDir/20090407201255351_sin_source.out $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_sin_source.out
+# gv $ExampleDir/20090407201255351_sin_source.ps $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_sin_source.ps
 
 # EXAMPLE 2: Running Nenana triggering example (20120411092157444)
 # This was used in Tape2013 (Nenana eq triggering paper) and Tape2015 (MFSZ paper)
