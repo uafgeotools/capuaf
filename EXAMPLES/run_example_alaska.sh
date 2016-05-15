@@ -45,10 +45,13 @@ dep=39
 # Create a new results directory (CAUTION: ExampleDir will be overwritten)
 ExampleDir=$CAPRUN/inv/"$model"/${eid}_check5
 mkdir -p $ExampleDir
+capout=$CAPRUN/inv/"$model"/${eid}/OUTPUT_DIR
 
 # Prepare data directory. Copy the the data to directory where you will be running cap
 # All commands will be run form here (Alternatively, one could run from $CAPHOME/EXAMPLES/ without copying the data)
 cd $CAPRUN/inv/"$model"
+mkdir $eid
+cd $eid
 rsync -av $CAPHOME/EXAMPLES/$eid .
 
 #========main paper figure (subset of stations)======================
@@ -56,9 +59,9 @@ rsync -av $CAPHOME/EXAMPLES/$eid .
 cap.pl -H0.02 -P1/15/60 -p1 -S2/10/0 -T15/120 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -W1 -M"$model"_$dep -m$mwa/$mwb/0.1 -I1/1/36/10/19 -R0/0 -Zweight111_subset.dat -Y1 $eid
 
 # 4. Save output files for comparison
-cp ${eid}/scak_039.ps $ExampleDir/${eid}_main.ps
-cp ${eid}/scak_039.out $ExampleDir/${eid}_main.out
-cp ${eid}/scak_039_beach.ps $ExampleDir/${eid}_beach_main.ps
+cp $capout/20090407201255351_scak_039.ps $ExampleDir/${eid}_main.ps
+cp $capout/20090407201255351_scak_039.out $ExampleDir/${eid}_main.out
+cp $capout/20090407201255351_scak_039_beach.ps $ExampleDir/${eid}_beach_main.ps
 
 # 5. Compare results
 #-------- To check the result make sure both files are same (if running from the terminal, you will have to replace $ExampleDir with the path above (search $ExampleDir)-----------
@@ -67,6 +70,7 @@ echo "diff $ExampleDir/${eid}_main.out $CAPHOME/EXAMPLES/20090407201255351_check
 diff $ExampleDir/${eid}_main.out $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_main.out
 
 #===== Depth Search - Using different norms and weight files ====================
+# XXX: NOT UPDATED YET
 # 6. Run cap for different depths, different norms (L1 and L2) and weights
 # Eight different weight files options: weightijk.dat (Last three numbers are for (i)-body wave, (j)-surface waves, (k)-station choice)
 #   i = 1 or 0 for whether body waves are used or not
