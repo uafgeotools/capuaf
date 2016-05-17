@@ -69,6 +69,7 @@ cp $capout/20090407201255351_scak_039_beach.ps $ExampleDir/${eid}_beach_main.ps
 echo "diff $ExampleDir/${eid}_main.out $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_main.out"
 diff $ExampleDir/${eid}_main.out $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_main.out
 
+exit
 #===== Depth Search - Using different norms and weight files ====================
 # XXX: NOT UPDATED YET
 # 6. Run cap for different depths, different norms (L1 and L2) and weights
