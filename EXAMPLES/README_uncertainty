@@ -3,6 +3,7 @@ Note: Make sure you run_example_alaska.sh example before trying these examples
 Section 0:
 Directory structure:
 > ls ~/CAP/inv/scak/20090407201255351
+> ls ~/PROJECTS/CAP/inv/scak/20090407201255351/     #<-- UPDATE THIS PATH
 20090407201255351	inp_cmd		OUTPUT_DIR
 
 Note: 
@@ -35,8 +36,10 @@ Uncertainty analysis and writing out the input files for GMT plotting script. Th
 Run following commands in MATLAB command prompt
 >> eid = '20090407201255351';
 >> ddir = '/home/vipul/CAP/inv/scak/'; % This is directory containing event files (same as above)
+>> ddir = '/home/alvizuri/PROJECTS/CAP/inv/scak/' %<-- UPDATE THIS PATH
 >> dep = 41;
 >> gmtdir = '~/CAP/inv/scak/20090407201255351_gmt_data/'; % Directory in which you want to save input files for GMT
+>> gmtdir = '/home/alvizuri/PROJECTS/CAP/inv/scak/20090407201255351_gmt_data/'; %<-- UPDATE THIS PATH
 
 Compute uncertainty using random samples (For this you only need files generated through random search i.e. capout_rand_*)
 >> CAP_unc_binary(eid,ddir,dep,gmtdir);
@@ -55,6 +58,8 @@ Check that script exists1
 
 Generate GMT plot
 > CAP_summary_plot.pl 20090407201255351 /home/vipul/CAP/inv/scak/20090407201255351_gmt_data
+> CAP_summary_plot.pl 20090407201255351 /home/alvizuri/PROJECTS/CAP/inv/scak/20090407201255351_gmt_data #<-- UPDATE THIS PATH
+
 Input par:
 20090407201255351 = event ID
 /home/vipul/CAP/inv/scak/20090407201255351_gmt_data = Directory containing GMT input files (same as used in Section 2)
@@ -63,3 +68,4 @@ Input par:
 
 Check wthe result by comparing with the example figure. The posterior samples and the 20 example beachballs will not match since they are sampeled during every run. 
 > gv $CAPHOME/EXAMPLES/20090407201255351_check/20090407201255351_L1_M111_unc.ps
+
