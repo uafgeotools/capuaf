@@ -21,7 +21,7 @@
 \newcommand{\uy}{\frac{\partial ^2 u}{\partial y^2}}
 \newcommand{\uz}{\frac{\partial ^2 u}{\partial x^2}}
 \newcommand{\ut}{\frac{\partial ^2 u}{\partial t^2}}
-\newcommand{\brho}{\mbox{\boldmath $\bf \rho$}}
+%\newcommand{\brho}{\mbox{\boldmath $\bf \rho$}}
 \newcommand{\nb}{\mbox{$\nu_\beta$}}
 \newcommand{\na}{\mbox{$\nu_\alpha$}}
 \newcommand{\bdes}{\begin{description}}
@@ -46,7 +46,9 @@ Last compiled: \today
 %==================================================================
 \tableofcontents
 
-\section{\cite{Zhao_Helm_1994}}
+\clearpage
+
+\section{\cite{ZhaoHelm1994}}
 \subsection{time shift}
 {\bf Cross-correlation function}
 The relative time shift of the data f(t) from the synthetics g(t) can be estimated with the use of the cross-corrleation function:
@@ -95,7 +97,7 @@ SOL: \min(E) = \frac{1}{n} \sum_{i=1}^{n} (e_{1i} + e_{2i})
 \en
 
 %----------------------------------------------------------------------
-\section{\cite{Zhu_Helm_1996}}
+\section{\cite{ZhuHelm1996}}
 The equations used in this paper are implemented in CAP. 
 \subsection{Misfit}
 We define an object function to measure the misfit error between u and s and search through the parameter space to find the global minimum of the object function.
@@ -198,12 +200,12 @@ Thus for the maximum correlation of two functions $u(t)$ and $s(t)$, we are mult
 
 
 \subsection{Moment magnitude}
- $M_0$, the is seismic moment $M_0 = \mu A D$, where $\mu$ is the shear modulus, $A$ is the area of rupture and $D$ is the average displacement. Relationship between moment magnitude $M_w$ and seismic moment $M_0$ is given by \cite{Kanamori_1977} relation,:
+ $M_0$, the is seismic moment $M_0 = \mu A D$, where $\mu$ is the shear modulus, $A$ is the area of rupture and $D$ is the average displacement. Relationship between moment magnitude $M_w$ and seismic moment $M_0$ is given by \cite{Kanamori1977} relation,:
 \eq
 M_w = \frac{2}{3}(\log_{10}M_0) + k'
 \en
 Actual numbers are cited in Hanks and Kanamori 1979
-GCMT catlaog, \cite{A&K}, and \cite{ShearerE1} uses the following equation:
+GCMT catlaog, \cite{AkiRichardsE1}, and \cite{ShearerE1} uses the following equation:
 \eq
 M_w = \frac{2}{3}(\log_{10}M_0) - \frac{2}{3}(16.1)
 \en
@@ -240,7 +242,7 @@ M_{yz} &=& -(\cos \delta\, \cos \lambda\, \sin \Phi - \cos 2\delta\, \sin \lambd
 \edes
 
 \subsection{Green's function to Synthetics}
-When conducting the grid search over strike, dip and rake, the moment tensor is evaluated. Using this moment tensor and the azimuth of the station, the radiation pattern ({\bf horizontal radiation coefficient}) are found. See \cite{Jost_Herrmann_1989}.
+When conducting the grid search over strike, dip and rake, the moment tensor is evaluated. Using this moment tensor and the azimuth of the station, the radiation pattern ({\bf horizontal radiation coefficient}) are found. See \cite{JostHerrmann1989}.
 
 \eqa
 A1 &=& -\frac{1}{2}(M_{xx} - M_{yy})\cos(2az) + M_{xy}\sin(2az)\\
@@ -412,7 +414,7 @@ The default value of degree of freedom per sample $n =0.01$. Changing this by or
 
 \section{Changes}
 \subsection{Changes in grid search}
-For homogeneous parameterization over dip, $\delta$, and isotropic parameter, $\zeta$, \citep{TapeTape2012beach}, we sample the parameters homogeneously in their cosine space, and then use the arccosine of those equally spaced value. Subsequently, it appears that spacing is larger near equator ($\delta$=0 and densely sampled near the pole ($\delta$=90).
+For homogeneous parameterization over dip, $\delta$, and isotropic parameter, $\zeta$, \citep{TapeTape2012a_beach}, we sample the parameters homogeneously in their cosine space, and then use the arccosine of those equally spaced value. Subsequently, it appears that spacing is larger near equator ($\delta$=0 and densely sampled near the pole ($\delta$=90).
 
 \bdes
 \item $\delta_0$, be the first element of search range in dip
@@ -480,13 +482,13 @@ Since variation reduction is only good for comparing
 Our misfit function needs to be modified because of two following reasons:
 \begin{enumerate}
 \item Low misfit value\\
-This basically is because of small amplitudes in displacement and velocity field of seismograms, hence also in L2 norm of data, synthetics and misfit. One common way of overcoming this is by normalizing it with data norm, but this leads to giving high weight in case of nodal stations \citep{Zhu_Helm_1996}. Another way to get around this is dividing the misfit function by its minimum value and measuring its logarithmic variation.
+This basically is because of small amplitudes in displacement and velocity field of seismograms, hence also in L2 norm of data, synthetics and misfit. One common way of overcoming this is by normalizing it with data norm, but this leads to giving high weight in case of nodal stations \citep{ZhuHelm1996}. Another way to get around this is dividing the misfit function by its minimum value and measuring its logarithmic variation.
 \eq
 \ln \left ( \frac{E}{E_{min}} \right )
 \en
 \item Another issue is with misfit function being too smooth. Possible reasons for this could be :
 \begin{enumerate}
-\item Not using the proper parameterization for moment tensor inversion \citep{TapeTape2012beach}. 
+\item Not using the proper parameterization for moment tensor inversion \citep{TapeTape2012a_beach}. 
 \item Smooth misfit function also arises because of using exact magnitude $M_w$ and not using full 6-parameter space for generating posterior samples. Our misfit function has only 3 model parameter (strike,dip,rake).
 \end{enumerate}
 To overcome this we scale the misfit by:
@@ -505,7 +507,7 @@ The scaled logarithmic variation Eq.\ref{err4prob} of misfit could be used to ge
 \eq
 \sigma(\bem) = \frac {\exp \left (-E_2(\bem) \right )}{k}
 \en
-where $k = \int \exp (-E_2(\bem)\ d\bem$ is the normalization factor and $\bem$ are our model parameters ($\phi,\delta,\lambda$). $\bsigma(\bem)$ is the posterior probability density function. However, this is does not include any knowledge of the {\it shape} of the space in itself, \ie the information about the homoegenous probability of model space parameters. \citep{Tarantola_2006}. To get 'the' solution, homogenous state of information ($\bmu(\bem)$) must be introduced in order to achieve the actual likelihood of solution. This could be done by:
+where $k = \int \exp (-E_2(\bem)\ d\bem$ is the normalization factor and $\bem$ are our model parameters ($\phi,\delta,\lambda$). $\bsigma(\bem)$ is the posterior probability density function. However, this is does not include any knowledge of the {\it shape} of the space in itself, \ie the information about the homoegenous probability of model space parameters. \citep{Tarantola2006}. To get 'the' solution, homogenous state of information ($\bmu(\bem)$) must be introduced in order to achieve the actual likelihood of solution. This could be done by:
 \eq
 L(\bem)=\frac{\bsigma(\bem)}{\bmu(\bem)}
 \en
@@ -526,7 +528,7 @@ Let the orientation of minimum misfit solution be $\bem_0 = {\phi_0, \delta_0, \
 \eq
 [\bem, \bem_0] = \bxi
 \en
-This is an example of surjective mapping (not injective). There are four different angles in quaternion space that make this rotation possible (\cite{Kagan1991}, \cite{TapeTape2012kagan}). If we only take the minimum angle of rotation required for this transformation, the mapping becomes injective.
+This is an example of surjective mapping (not injective). There are four different angles in quaternion space that make this rotation possible (\cite{Kagan1991}, \cite{TapeTape2012c_kagan}). If we only take the minimum angle of rotation required for this transformation, the mapping becomes injective.
 
 Using this transformation, we can find $\sigma'(\bxi)$ from $\sigma(\bem)$. However, they are not the same (due the transformation of variables). What still remains same is the likelihood function. Mathematically, we can write
 \eqa
@@ -537,6 +539,6 @@ L(\bem)&=& L'(\bxi)
 %=================
 \addcontentsline{toc}{section}{Bibliography}
 \bibliographystyle{agu}
-\bibliography{report_ref}
+\bibliography{carl_abbrev,carl_main,carl_him,carl_source}
 %=================
 \end{document}
