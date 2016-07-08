@@ -215,6 +215,14 @@ for s in stages:
         end = s['end']
         y1 = s['end'].split(",")[0]
         d1 = s['end'].split(",")[1]
+
+        # account for end dates like '2286324'
+        # new rule: set YYYYDDD = 9999999 if dates beyond 2016
+        if (int(y1) > 2016):
+            print ("\nold end date = %s%s" % (y1, d1))
+            y1 = 9999
+            d1 = 999
+            print ("new end date = %s%s\n" % (y1, d1))
         epoch = ("%s%s_%s%s" % (y0, d0, y1, d1 ))
         pz[nepoch, 'epoch'] = epoch
 #        print("%s%s_%s%s" % (y0, d0, y1, d1 ))
