@@ -106,7 +106,8 @@ def getA0_theo(fn, fs, poles, zeros, npoles, nzeros, A0):
 def pz2file(poles, zeros, npoles, nzeros, A0, epoch):
     # Create a file name out save the polezero file
     #out = "SAC_PZs_" + network + "_" + station + "_" + channel + "_" + location + "_from_" + file
-    out = "antpz_" + network + "_" + station + "_" + channel + "_" + location + "_" + epoch
+    #out = "antpz_" + network + "_" + station + "_" + channel + "_" + location + "_" + epoch
+    out = network + "_" + station + "_" + channel + "_" + epoch
     fp = open(out, 'w')
 
 #    print >> fp, "ZEROS",nzeros
