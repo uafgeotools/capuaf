@@ -356,7 +356,7 @@ SOLN searchMT(
     fidmt=fopen(outFileMT,"wb");
     fidbb=fopen(outFileBB,"wb");
 
-    fprintf(stderr,"\nPreparing space for moment tensor elements (nsol = %10d) ... ", searchPar->nsol);
+    fprintf(stderr,"\nAllocating space for moment tensors (nsol = %10d) ... ", searchPar->nsol);
     OUTPUTMT * arrayMij = calloc(searchPar->nsol, sizeof(OUTPUTMT));
     if (arrayMT == NULL) {
         fprintf(stderr,"Abort. unable to allocate.\n");

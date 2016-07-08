@@ -538,8 +538,10 @@ if (($v1 == $v2) && ($v2 == 0)) {
 # If using flag k3 then also need to set LUNE_GRID_INSTEAD_OF_UV=1 in cap.c
 if ($nI == 1) {
     $grid_type = 2; # RAND
+    $grid_type_label="random"
 } elsif ($nI == 5) {
     $grid_type = 1; # GRID
+    $grid_type_label="grid"
 } else{
     print STDERR "STOP. Unable to set search type, check entries in flag R or I\n";
     exit(0);
@@ -592,7 +594,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     print STDERR "-------------------------------------------------------------\n";
     print STDERR "cap.pl: print some input parameters:\n";
     print STDERR "EVENT ID = $eve | EVENT DEPTH = $dep |  SOURCE DURATION = $dura\n";
-    print STDERR "GRID TYPE  = $grid_type | NSOL = $nsol\n";
+    print STDERR "GRID TYPE = $grid_type ($grid_type_label search) | NSOL = $nsol\n";
     print STDERR "-------------------------------------------------------------\n\n";
 
     open(WEI, "$eve/$weight") || next;

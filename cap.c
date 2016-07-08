@@ -135,6 +135,7 @@ int main (int argc, char **argv) {
   FM *fm_copy;  /*  copy of all first motions entered in weight file */
 
   fprintf(stderr,"\n----------------------------------------------------------\n");
+  fprintf(stderr,"Initialize CAP routine\n\n");
 
   // start random number generator (randvec function). See also cap.h
   fprintf(stderr,"NOTE random seed = %d (randvec function)\n", RANDSEED);
@@ -159,7 +160,7 @@ int main (int argc, char **argv) {
   long int order=4, nsects;
   void  principal_values(float *);
 
-  fprintf(stderr,"\ncap.c: get input parameters for inversion\n");
+  fprintf(stderr,"\nReading input parameters for inversion\n");
 
 #ifdef DIRECTIVITY
   int ns_pnl, ns_sw;
@@ -286,7 +287,7 @@ int main (int argc, char **argv) {
     return -1;
   }
 
-    fprintf(stderr,"Preparing space for moment tensors (nsol = %10d) ... ", searchPar->nsol);
+    fprintf(stderr,"Allocating memory for moment tensors (nsol = %10d) ... ", searchPar->nsol);
     ARRAYMT * arrayMT = calloc(searchPar->nsol, sizeof(ARRAYMT));
 
     if (arrayMT == NULL) {
@@ -303,9 +304,9 @@ int main (int argc, char **argv) {
   faultDip = grid.x0[1]*DEG2RAD;
 #endif
 
- 
   /** input number of stations **/
   scanf("%d",&nda);
+
   if (nda > STN) {
     fprintf(stderr,"number of station, %d, exceeds max., some stations are discarded\n",nda);
     nda = STN;
@@ -328,7 +329,10 @@ int main (int argc, char **argv) {
   n_shft = 0;
   nfm = 0;
 
+  fprintf(stderr,"Reading waveform data (nsta = %d) ... \n", nda);
  for(i=0;i<nda;i++) {
+
+    fprintf(stderr,"%i ", i+1);
 
     /***** input station name and weighting factor ******/
     scanf("%s%s",tmp,dst);
@@ -726,6 +730,7 @@ int main (int argc, char **argv) {
     fmp_print_parameters(fidfmp, fmpdata);
 
   }	/*********end of loop over stations ********/
+  fprintf(stderr,"\nDone reading waveforms.\n\n");
 
   // WRITE POLARITY AND STATION DATA
   // This section was used in previous CAP with flag only_first_motion=1
@@ -749,7 +754,9 @@ int main (int argc, char **argv) {
   }
 
  INVERSION:
-  fprintf(stderr,"\nBEGIN SEARCH\n\n"); 
+  fprintf(stderr,"\n====================\n"); 
+  fprintf(stderr,"BEGIN SEARCH\n"); 
+  fprintf(stderr,"====================\n"); 
 
   // call to old error function for reference. can be deleted
   /* sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search_type,norm); */
