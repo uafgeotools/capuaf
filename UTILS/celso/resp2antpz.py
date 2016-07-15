@@ -54,6 +54,10 @@ block = ""
 # function parameters are made explicit for now but they can be cleaned up
 def getA0_theo(fn, fs, poles, zeros, npoles, nzeros, A0):
     # Add in the additional zeros, converting the output to displacement in meters
+
+    if not zeros:
+        zeros  = list()
+
     for i in range(gamma):
         zeros.append(0.0)
         zeros.append(0.0)
@@ -86,6 +90,10 @@ def getA0_theo(fn, fs, poles, zeros, npoles, nzeros, A0):
         print "      Will Calcuate Normalization Constant (rdseed/evalresp default)"
         print "      Sensitivity Frequency   ", fs
         print "      Normalization Frequency ", fn
+        A0 = calc_A0
+    elif (fs == '' or fn == ''):
+        print "Warning: NULL values for Fs or Fn"
+        print "Warning: Unable to compare A0 with A0 predicted. Continuing."
         A0 = calc_A0
 
     # Handle cases where the A0 values do not match
@@ -226,7 +234,7 @@ for s in stages:
         epoch = ("%s%s_%s%s" % (y0, d0, y1, d1 ))
         pz[nepoch, 'epoch'] = epoch
 #        print("%s%s_%s%s" % (y0, d0, y1, d1 ))
-#    print("nepoch %s %s  to  %s" % (nepoch, start, end))
+#    print("nepoch %s. start, end =  %s,  %s" % (nepoch, start, end))
 
     # Convert units to Displacement by adding additional Zeros
     if 'units' in s:
@@ -247,18 +255,18 @@ for s in stages:
         fn = s['fn']
         pz[nepoch, 'fn'] = fn
         A0d = (2 * pi * fn)**gamma
-    else:
-        print("Warning. fn not found. setting to null")
-        fn = ''
+#    else:
+#        print("Warning. fn not found. setting to null")
+#        fn = ''
     if 'sd' in s :            sd = s['sd'] * (2 * pi * s['fs'])**gamma
-        
+ 
     # Save Needed Values
     if 'fs' in s :            
         fs = s['fs']
         pz[nepoch, 'fs'] = fs
-    else:
-        print("Warning. fs not found. setting to null")
-        fs = ''
+#    else:
+#        print("Warning. fs not found. setting to null")
+#        fs = ''
 
     if 'station' in s:        station = s['station']
     if 'network' in s:        network = s['network']
@@ -283,10 +291,10 @@ for s in stages:
             poles.append(s['poles'][i])
         pz[nepoch,'p'] = poles, npoles
         npoles = 0
-#   else:
-#       print("warning. no poles, set dict value to null")
-#       pz[nepoch,'p'] = '', 0
-#        print("poles: %s" % poles)
+#    else:
+#        print("warning. no poles, set dict value to null")
+#        pz[nepoch,'p'] = '', 0
+#        print("poles: %s" % npoles)
 
     if 'zeros' in s:
         zeros  = list()
@@ -296,10 +304,11 @@ for s in stages:
             zeros.append(s['zeros'][i])
         pz[nepoch,'z'] = zeros, nzeros
         nzeros = 0
-#    else:
-#        print("warning. no zeros, set dict value to null")
+    else:
+        print("warning. no zeros, set dict value to null")
 #        pz[nepoch,'z'] = '', 0
-#        print("zeros: %s" % zeros)
+        pz[nepoch,'z'] = None, 0
+        print("zeros: %s" % nzeros)
 
 for iepoch in range(1, nepoch+1):
     # check A0 values
