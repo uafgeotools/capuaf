@@ -330,8 +330,28 @@ SOLN searchMT(
     int imag, nmag;
     float VR, best_misfit;
     int tid;
+    FILE * fid_warn;
 
 #ifdef WB
+    // WB option is intended for a point magnitude (nmw = 1).
+    // Stop inversion if nmw > 1. Else the misfit values in the moment tensor 
+    // array will be from mixed magnitudes and will not produce sensible
+    // uncertainty estimates.
+    if(searchPar->nmw > 1) {
+        fid_warn = fopen("capout_error.txt","a");
+        fprintf(stderr, "\n***********************************************************************\n");
+        fprintf(stderr, "\tINVERSION STOPPED. See file capout_error.txt\n");
+        fprintf(stderr, "***********************************************************************\n");
+        fprintf(fid_warn, "\n\n***********************************************************************\n\n");
+        fprintf(fid_warn,"INVERSION STOPPED\n\n");
+        fprintf(fid_warn,"CAP is set to write binary data AND run magnitude search.\n");
+        fprintf(fid_warn,"CAP is currently not set to track best misfit across magnitudes.\n");
+        fprintf(fid_warn,"Either compile without WB flag or run search for a point magnitude.\n\n");
+        fprintf(fid_warn, "***********************************************************************\n");
+        fclose(fid_warn);
+        exit(-1);   // TODO empty arrays first, then exit nicely. (currently nix takes care of this...)
+    }
+
     // output files for postprocessing
     // mt = moment tensor elements
     // bb = gamma, delta, strike, dip, rake
