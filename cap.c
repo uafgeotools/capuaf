@@ -134,6 +134,8 @@ int main (int argc, char **argv) {
   FM	*fm, *fm0;
   FM *fm_copy;  /*  copy of all first motions entered in weight file */
 
+  int nwaveforms=0; // print progress in reading seismograms
+
   fprintf(stderr,"\n----------------------------------------------------------\n");
   fprintf(stderr,"Initialize CAP routine\n\n");
 
@@ -332,7 +334,8 @@ int main (int argc, char **argv) {
   fprintf(stderr,"Reading waveform data (nsta = %d) ... \n", nda);
  for(i=0;i<nda;i++) {
 
-    fprintf(stderr,"%i ", i+1);
+    nwaveforms++;
+    fprintf(stderr,"%d ", nwaveforms);
 
     /***** input station name and weighting factor ******/
     scanf("%s%s",tmp,dst);
