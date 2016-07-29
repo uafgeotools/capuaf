@@ -1,0 +1,527 @@
+% latex report ; bibtex report; latex report; latex report
+% dvips -t letter report.dvi -o report.ps ; ps2pdf report.ps
+% rsync -av report.tex backup/
+\documentclass[11pt,titlepage,fleqn]{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage[round]{natbib}
+\usepackage{xspace}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+%\usepackage{floatflt}   % for a floating figure
+
+%============================================================
+%       SPACING COMMANDS (Latex Companion, p. 52)
+%============================================================
+
+\usepackage{setspace}
+
+% This controls the spacing for the text in the document.
+% When different spacing is desired, use the environment \begin{spacing}
+\renewcommand{\baselinestretch}{1.0}
+
+\textwidth 460pt
+\textheight 690pt
+\oddsidemargin 0pt
+\evensidemargin 0pt
+
+% see Latex Companion, p. 85
+\voffset     -50pt
+\topmargin     0pt
+\headsep      20pt
+\headheight   15pt
+\headheight    0pt
+\footskip     30pt
+\hoffset       0pt
+
+%============================================================
+
+% This is a file containing MY self-defined commands.
+% You do not have to have a separate file, but you might find it
+% convenient, if you find yourself making several documents.
+% The \include command simply inserts all the lines of the separate
+% file right here.
+\include{carlcommands}
+
+% list the directories that contain figures
+\graphicspath{
+  {/home/jcpurba/report/figures/}
+}
+
+%============================================================
+\begin{document}
+%============================================================
+
+\begin{spacing}{1.0}
+\noindent
+{\bf \Large Seismic moment tensor inversions in central Alaska} \\
+GEOS 488, Summer 2016 \\ 
+Josh Purba \\
+\today
+\end{spacing}
+
+\listoffigures
+
+\normalsize
+
+%-----------------------------------------------------------
+\subsection*{Abstract}
+
+
+This paper is designated as a summary for undergraduate-research, GEOS 488,  which I conducted over the summer 2016 at the University of Alaska Fairbanks. This project is about finding seismic moment tensors from earthquakes that have happened in the interior of Alaska from a given time period. I worked through 12 seismic events: performing waveform and depth test (1 or 2 km increment in depth) to examine the stability of the magnitude and beach ball (moment tensor) under changes for depth (At each depth, a full magnitude search is performed.)
+With under supervision of Dr. Carl Tape and his research assistant, Vipul Silwal, the goals of this project are as following: to get a best moment tensor, provide a better framework for interpreting active tectonics, and reduce errors from tomographic inversion that could be due to source.
+
+\section{Introduction}
+\label{sec:intro}
+
+% TEXT HERE Background on CAP: \citet{ZhuHelm1996} found that, \citep{SilwalTape2016}, YTan2006
+
+When an earthquake occurs, a radiation pattern from the earthquake source will appear. Seismic  moment tensors, which are often visualized as a beach ball, can help us to understand the earthquake with some applications from seismology. Any styles of faulting and ground deformation can be reconstructed from moment tensors \citep{SilwalTape2016}. Having understanding about moment tensors, ground motions that are created from earthquakes can be estimated. According to \citet{SilwalTape2016}, they confirmed that “seismic velocity models can be improved by using moment tensors within earthquake-based tomographic inversions.” Interior of Alaska is chosen in this study because it has rich seismic activities.
+In this project, seismic moment tensors that  are generated from filtered seismic waveforms use a ``cut-and-paste'' (short for CAP) method \citep{ZhuHelm1996}. The CAP method of \citet{ZhuHelm1996} uses both surface waves and body waves from seismic waveforms filtered over relatively short periods, for example, 3--10 s of \citet{YTan2006} or 5--100 s of \citet{ZhuHelm1996}.
+The model of moment tensors calculated from both CAP method and Alaska Earthquake Center catalog will be compared and studied as the part of analysis in this research.
+
+
+%-----------------------------------------------------------
+\section{Methods}
+
+There are two methods used in order to achieve the goals of this project, such as: selection of events, and CAP method. 
+
+\vspace{2mm}
+
+1)    Selection of Events.
+% \citet{Tape2015}
+
+\vspace{2mm}
+
+The Alaska Earthquake Center (AEC) provides a very broad range of seismic events in Alaska. AEC moment tensor catalog contains stress moment tensors for $\mw \ge 4$ earthquakes that fit in this research. Interior of Alaska is selected as the region of interest in this project (longitude: -153.5 -145.5, latitude: 62.2 66.2). The very active crustal seismicity along with slab pull makes interior of Alaska (or central Alaska) such a great place for studying earthquakes \citet{Tape2015}. Time of the earthquake events are limited from June 2011 to June 2015. With matlab computation, it can sort out the desired events from AEC catalog, and I chose 12 events out of 47. L1 norm in misfit function is used in calculating the solutions. 
+
+\vspace{2mm}
+
+2)    Cut-and-paste Method.
+
+\vspace{2mm}
+
+%\citet{ZhuHelm1996}    , \citet{ZhaoHelm1994},   \citep{SilwalTape2016}
+The cut-and-paste moment tensor inversion approach of \citet{ZhaoHelm1994} and \citet{ZhuHelm1996} is named for its cutting of sections of synthetic seismograms and pasting them on corresponding portions of observed seismograms \citep{SilwalTape2016}. This method works when each section of synthetic seismogram is allowed to be time shifted to very close solution from the observed seismogram. CAP technique will cause deviation from seismic velocity model because of these different time shifts. When comparing with the real seismic data from a given station, we might expect a different time shift between data and synthetics for the P wave, Rayleigh wave, and Love wave. The choice of different time shifts is very important because the second feature of CAP shows that both body and surface waves are affected from different band-pass filters \citep{SilwalTape2016}. In this project, I consider using both body and surface waves at selected stations. All waveforms will be produced in 1D model. Only double couple events are processed in this project.
+CAP method has the user do waveform selection manually. After getting the “correct” ranges of time shifts, some bad stations need to be thrown away. Start to eliminate bad station that has the largest epicentral distance because it usually has poor signal ratio. Next, there is a waveform selection whether to keep (1) or throw (0) selected waves. For information about waveform selection criteria, please read \citet{SilwalTape2016} under supplemental document S2.
+
+%-----------------------------------------------------------
+\section{Results}
+
+Despite showing all the 12 moment tensors from the 12 events, I will select the best two of which results are interesting enough to be studied. The solution for the rest of 10 events will also be included in the end of this report based on the quality in order; the good ones are in the beginning, and the poor solutions are towards the end. When looking at the moment tensor solution, note that red waveforms are designated for synthetic waves that are calculated using CAP method, whereas black waveforms are observed waveforms taken from AEC catalog. 
+
+\begin{itemize}
+\item Event 1: 20120226234223805. Moment tensor of event 1 is described in figure 1. Depth search is plotted in figure 2.
+
+\vspace{2mm}
+
+According to figure 1, body waves are filtered from 1.5-2.5 s and the surface waves are filtered 13-40 s in this particular event. The red waveforms or the synthetic waves, are shifted along with the black waveforms. This range of time is determined by several attempts with trial and error.  Many body waves excluded, perhaps on account of the shallow event (17 km). Body waves are found out to be bad after 150 km from epicentral distance. This phenomenon can be seen from figure 1, hence, body waves from seven stations after 150 km of epicentral distance are not included. 
+
+Figure 2 shows the grid search over depth for event 1; it can also be called depth test. The test is run with 2 km increment. White inverted triangle represents for the best moment tensor depth from the inversion of CAP method (synthetic), meanwhile the Red inverted triangle is the observed depth from AEC catalog (observed). The observed solution from this depth test is 16.2 km, and the best fitting moment tensor with the synthetic data is 16.7 km with an uncertainty of 1.7 km.
+
+\end{itemize}
+
+\vspace{2mm}
+
+ 
+
+
+\begin{itemize}
+
+
+\item Event 2: 20120412164107780. Moment tensor of event 2 is described in figure 3. Depth search is plotted in figure 4.
+
+\vspace{2mm}
+
+Event 2 can be characterized as a deep event with 67 km of epicentral depth. Figure 3 shows that body waves are filtered from 2.5-3.5 s and the surface waves are filtered 15-40 s in this particular event.  All of the body waves are used in this moment tensor solution, note that some of the surface waves are thrown away after 200 km of epicentral distance at some stations. 
+
+\vspace{2mm}
+
+Figure 4 shows the depth test for event 2. The test is run in 2 km increment. The synthetic solution of depth test for this event is around 69.0 km with an uncertainty of 3.3 km. The thick black line at figure 2 is to plot the orientation of moment tensor solution for each depth. If you follow that  line, the magnitude gets bigger as the event goes deeper; therefore this is according to our expectation: deeper event requires bigger energy (or larger magnitude in earthquake). 
+
+
+\end{itemize}
+
+
+
+
+
+
+%-----------------------------------------------------------
+\section{Discussion and Summary}
+
+\begin{itemize}
+
+\item Moment tensor solution for shallow event (event 1).
+% \citet{AlvizuriTape2016}
+
+The solution for moment tensor of event 1 using CAP method can be seen from figure 1.
+An assumption can be made such as: the shallow structure has an extreme heterogeneity, therefore body waves tend to be poor in shallow event, when comparing to surface waves. The solution of this moment tensor is very good because the variance reductions (VR) is very high, 73.8 percent. For more information about the variance reduction and misfit function, please look at \citet{AlvizuriTape2016}. The more the synthetic waves match with the observed ones, the more reliable the moment tensor solution is. And this event shows a consistent matching pattern between synthetic and observed waveforms.
+
+\item Moment tensor solution for deep event (event 2).
+% \citet{Tape2015}
+Event 2 is a deep event with an epicentral depth of 67 km. The solution from moment tensor for this event is interesting because surface waves have less accuracy in farther stations from the epicenter.
+The only possible explanation for this is the surface ways tend to be weakening at a deep event due to the loss of earthquake energy when it gets to the surface. The pairs of synthetic and observed surface waves do not quite match at a greater epicentral distance (i.e. 237 km). This condition will lead to the same conclusion that deep earthquake can not produce nice surface wave records at a distant seismometer from the epicenter. Crustal topography may play an important role in this event because there is slab-pull activity in the interior of Alaska; slab location can be responsible for seismic activity in a deep event \citet{Tape2015}.
+
+\item Depth estimate between AEC and CAP.
+
+For shallow event (event 1), the observed solution from this depth test is 16.2 km for the best fitting moment tensor with the synthetic data. Note that the red inverted triangle location is still within the uncertainty of the CAP solution (16.7 +/- 1.7 km), therefore the depth search solution is good. 
+For deep event (event 2), the solution of depth test for this event is around 69.0 km with an uncertainty of 3.3 km. The depth from AEC catalog for event 2 is around 67 km. A conclusion can be made that depth search solution for event 2 is reliable since the observed depth is still in the range of the uncertainty. 
+
+\item What makes a ``bad'' inversion result? 
+
+When the signal-to-noise ratio (SNR) is low, 1D model for moment tensor inversions is inappropriate. Perhaps first-motion polarities would help constrain the solution. The location of the station is also important. For example,``PS'' stations in figure 1 and 3 often create bad moment tensor inversion. PS stands for pump station, therefore, seismic data recorded from such stations can be greatly affected with a lot of noises.  
+
+\item References to MT inversion with 3D synthetics.
+
+For further application of moment tensor, I would recommend using 3D synthetics moment tensor inversion. Different area of interest might have  different crustal topography, therefore 3D sinthetic will give a more stable result for finding moment tensor inversions \citep{QLiu2004,ELee2011,CovelloneSavage2012}.
+\end{itemize}
+
+%============================================================
+
+
+
+
+
+
+
+
+%\clearpage\pagebreak
+
+%\small
+\begin{spacing}{1.0}
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{agu}
+% the preamble file is just a way to handle your own abbreviations
+% you may find it useful to have several different .bib files that can be listed here
+\bibliography{carl_abbrev,carl_him,carl_main,carl_source,carl_alaska}
+\end{spacing}
+
+%============================================================
+
+\clearpage\pagebreak
+
+%\citep{Silwal2015catalog_SAK}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Below is Event 1
+
+\begin{figure}
+\centering
+\includegraphics[width=7cm]{20120226234223805_tactmod_016}
+\caption[Moment tensor solution for event 1 (shallow event)]
+{{
+Moment tensor solution and waveform comparisons for event 1. Each column represents for three-component waveform: PV: vertical component P wave, PR = radial component P wave, SurfV = vertical component Rayleigh wave, SurfR = radial component Rayleigh wave, and SurfT = transverse component Love wave. The stations are put according to their increasing epicentral distance, the very top station being the closest epicentral distance. The observed waveform is plotted in black; the synthetic waveform is plotted in red. The number below stations are epicentral distance (top), and station azimuth (bottom). Details on each component can be reffered to \citet{SilwalTape2016}.
+\label{fig:20120226234223805}
+}}
+\end{figure} 
+
+\clearpage\pagebreak
+
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{20120226234223805_tactmod_dep.ps}
+\caption[Depth search solution for event 1 (shallow event)]
+{{
+Grid search or depth search for event 1. The red inverted triangle denotes the observed data from AEC catalog, and the white inverted triangle denotes from synthetic data acquired from CAP method. The gray line with solid circles plots the variance reduction (VR) for the moment tensor solution obtained at that particular depth with scale at right \citep{SilwalTape2016}. The best solution occurs at the maximum in variance reduction VR max at 73.8 percent. Blue thick lines on the x-axis represent for different layer boundaries near the epicenter as the result of CAP inversion.
+
+\label{fig:20120226234223805_dep}
+}}
+\end{figure} 
+
+\clearpage\pagebreak
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%Below is Event 2
+% \citep{SilwalTape2016}
+
+\begin{figure}
+\centering
+\includegraphics[width=5cm]{20120412164107780_tactmod_069.ps}
+\caption[Moment tensor solution for event 2 (deep event)]
+{{
+Moment tensor solution and waveform comparisons for event 2. Details of each component are the same with figure 1.
+\label{fig:20120412164107780}
+}}
+\end{figure} 
+
+\clearpage\pagebreak
+
+
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{20120412164107780_tactmod_dep.ps}
+\caption[Depth search solution for event 2 (deep event)]
+{{
+Grid search or depth search for event 2. The best solution occurs at the maximum in variance reduction (VR max) at 55.4 percent.
+\label{fig:20120412164107780_dep}
+}}
+\end{figure} 
+
+\clearpage\pagebreak
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Below is Event 3
+
+\begin{figure}
+\centering
+\includegraphics[width=5cm]{20110702114506902_tactmod_124.ps}
+\caption[Moment tensor solution for event 3]
+{{
+Moment tensor solution and waveform comparisons for event 3 (2011070211450690).
+\label{fig:20110702114506902}
+}}
+\end{figure} 
+
+
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{20110702114506902_tactmod_dep.ps}
+\caption[Depth search solution for event 3]
+{{
+Grid search or depth search for event 3. The best solution occurs at the maximum in variance reduction (VR max) at 50.4 percent.
+\label{fig:20110702114506902_dep}
+}}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Below is Event 4
+
+
+\begin{figure}
+\centering
+\includegraphics[width=5cm]{20110705130513489_tactmod_082.ps}
+\caption[Moment tensor solution for event 4]
+{{
+Moment tensor solution and waveform comparisons for event 4 (20110705130513489).
+\label{fig:20110705130513489}
+}}
+\end{figure} 
+
+
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{20110705130513489_tactmod_dep.ps}
+\caption[Depth search solution for event 4]
+{{
+Grid search or depth search for event 4. The best solution occurs at the maximum in variance reduction (VR max) at 52.5 percent.
+\label{fig:20110705130513489_dep}
+}}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Below is Event 5
+
+
+\begin{figure}
+\centering
+\includegraphics[width=5cm]{20110928201313646_tactmod_146.ps}
+\caption[Moment tensor solution for event 5]
+{{
+Moment tensor solution and waveform comparisons for event 5 (20110928201313646).
+\label{fig:201109282013136469}
+}}
+\end{figure} 
+
+\clearpage\pagebreak
+
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{20110928201313646_tactmod_dep.ps}
+\caption[Depth search solution for event 5]
+{{
+Grid search or depth search for event 5. The best solution occurs at the maximum in variance reduction (VR max) at 59.8 percent.
+\label{fig:20110928201313646_dep}
+}}
+\end{figure}
+
+\clearpage\pagebreak
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Below is Event 6
+\begin{figure}
+\centering
+\includegraphics[width=5cm]{20111209012542818_tactmod_019.ps}
+\caption[Moment tensor solution for event 6]
+{{
+Moment tensor solution and waveform comparisons for event 6 (20111209012542818).
+\label{fig:20111209012542818}
+}}
+\end{figure} 
+
+\clearpage\pagebreak
+
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{20111209012542818_tactmod_dep.ps}
+\caption[Depth search solution for event 6]
+{{
+Grid search or depth search for event 6. The best solution occurs at the maximum in variance reduction (VR max) at 66.6 percent.
+\label{fig:20111209012542818_dep}
+}}
+\end{figure}
+
+\clearpage\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Below is Event 7
+\begin{figure}
+\centering
+\includegraphics[width=5cm]{20120420235623112_tactmod_115.ps}
+\caption[Moment tensor solution for event 7]
+{{
+Moment tensor solution and waveform comparisons for event 7 (20120420235623112).
+\label{fig:20120420235623112}
+}}
+\end{figure} 
+
+\clearpage\pagebreak
+
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{20120420235623112_tactmod_dep.ps}
+\caption[Depth search solution for event 7]
+{{
+Grid search or depth search for event 7. The best solution occurs at the maximum in variance reduction (VR max) at 32.6 percent.
+\label{fig:20120420235623112_dep}
+}}
+\end{figure}
+
+\clearpage\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Below is Event 8
+\begin{figure}
+\centering
+\includegraphics[width=5cm]{20120426001042323_tactmod_096.ps}
+\caption[Moment tensor solution for event 8]
+{{
+Moment tensor solution and waveform comparisons for event 8 (20120426001042323).
+\label{fig:20120426001042323}
+}}
+\end{figure} 
+
+\clearpage\pagebreak
+
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{20120426001042323_tactmod_dep.ps}
+\caption[Depth search solution for event 8]
+{{
+Grid search or depth search for event 8. The best solution occurs at the maximum in variance reduction (VR max) at 36.8 percent.
+\label{fig:20120426001042323_dep}
+}}
+\end{figure}
+
+\clearpage\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Below is Event 9
+\begin{figure}
+\centering
+\includegraphics[width=5cm]{20110816031852603_tactmod_081.ps}
+\caption[Moment tensor solution for event 9]
+{{
+Moment tensor solution and waveform comparisons for event 9 (20110816031852603).
+\label{fig:20110816031852603}
+}}
+\end{figure} 
+
+\clearpage\pagebreak
+
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{20110816031852603_tactmod_dep.ps}
+\caption[Depth search solution for event 9]
+{{
+Grid search or depth search for event 9. The best solution occurs at the maximum in variance reduction (VR max) at 31.8 percent.
+\label{fig:20110816031852603_dep}
+}}
+\end{figure}
+
+\clearpage\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Below is Event 10
+
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{20120108064733241_tactmod_023.ps}
+\caption[Moment tensor solution for event 10]
+{{
+Moment tensor solution and waveform comparisons for event 10 (20120108064733241).
+\label{fig:20120108064733241}
+}}
+\end{figure} 
+
+\clearpage\pagebreak
+
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{20120108064733241_tactmod_dep.ps}
+\caption[Depth search solution for event 10]
+{{
+Grid search or depth search for event 10. The best solution occurs at the maximum in variance reduction (VR max) at 41.6 percent.
+\label{fig:20120108064733241_dep}
+}}
+\end{figure}
+
+\clearpage\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Below is Event 11
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{20120510022320481_tactmod_007.ps}
+\caption[Moment tensor solution for event 11]
+{{
+Moment tensor solution and waveform comparisons for event 11 (20120510022320481).
+\label{fig:20120510022320481}
+}}
+\end{figure} 
+
+\clearpage\pagebreak
+
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{20120510022320481_tactmod_dep.ps}
+\caption[Depth search solution for event 11]
+{{
+Grid search or depth search for event 11. The best solution occurs at the maximum in variance reduction (VR max) at 41.9 percent.
+\label{fig:20120510022320481_dep}
+}}
+\end{figure}
+
+\clearpage\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Below is Event 12
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{20110715053621148_tactmod_038.ps}
+\caption[Moment tensor solution for event 12]
+{{
+Moment tensor solution and waveform comparisons for event 12 (20110715053621148).
+\label{fig:20110715053621148}
+}}
+\end{figure} 
+
+\clearpage\pagebreak
+
+\begin{figure}
+\centering
+\includegraphics[width=10cm]{20110715053621148_tactmod_dep.ps}
+\caption[Depth search solution for event 12]
+{{
+Grid search or depth search for event 12. The best solution occurs at the maximum in variance reduction (VR max) at 34.4 percent. Note that the solution is out from the figure. This can be related to the quality of the event which is considered as bad event.
+\label{fig:_dep}
+}}
+\end{figure}
+
+
+\clearpage\pagebreak
+
+
+
+
+%============================================================
+\end{document}
+%============================================================
+
+
+

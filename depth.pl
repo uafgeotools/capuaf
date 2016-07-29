@@ -10,7 +10,7 @@ $ballsize = 2.5;		    # controls default beachball size (psmeca)
 $min0 = 1.0e+19;	    # impossibly large misfit value
 $Bscale = "-Ba5f1:\"\":/a20f5:\"\":";
 $onlydc = 0; # only plots DC mechanism (Removes psmeca bugs that arises when plotting DC mechs)
-$imodel = 0; # to draws bars at layer interfaces
+$imodel = 1; # to draws bars at layer interfaces
 
 #------------
 # Structural model info : depth of layer interface
@@ -112,10 +112,13 @@ while (@event)
 	    }
 	    $ii++;
 	}
-	open(OUT,"./${odir}/${smodel}_$dep[${best}].out");
+        # get the catalog depth from line #2 of the CAP output file
+        # NEED A STATEMENT TO EXIT IF THE FILE DOES NOT EXIST
+        $bfile = "./${odir}/${eve}_${smodel}_$dep[${best}].out";
+	open(OUT,$bfile);
 	@outfile=<OUT>;
        (undef,undef,undef,$elat,undef,$elon,undef,$edep)  =split(" ",$outfile[1]);
-	printf STDERR "$edep";
+	printf STDERR "catalog depth (from sac header) is $edep\n";
     
 	# ------------------read MT parameters --------------------------
 	$jj=1;
@@ -286,7 +289,9 @@ while (@event)
 	    }
 	}
 
-	#================== Plot AEC catalog depth
+	#================== Plot the depth(s) as inverted triangles
+        
+        # plot the catalog depth ($edep) as a RED inverted triangle
 	open(PLT, "| psxy $J $R $xy -Si0.5c -G255/0/0 -W.05c");
 	printf PLT "%f %f\n",$edep, -7.5;
 
@@ -300,7 +305,9 @@ while (@event)
     #printf PLT "%f %f\n",$edep + 4.6, -7.5;   # uncomment here for plotting catalog depth
 
 	close(PLT);
-    open(PLT, "| psxy $J $R $xy -Si0.5c -G255/255/255 -W.05c");
+
+        # plot the best-fitting depth ($depth) from the CAP grid search as a WHITE inverted triangle
+        open(PLT, "| psxy $J $R $xy -Si0.5c -G255/255/255 -W.05c");
 	printf PLT "%f %f\n",$depth, -7.5;
 	close(PLT);
 
