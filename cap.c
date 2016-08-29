@@ -136,8 +136,10 @@ int main (int argc, char **argv) {
 
   int nwaveforms=0; // print progress in reading seismograms
 
-  fprintf(stderr,"\n----------------------------------------------------------\n");
-  fprintf(stderr,"Initialize CAP routine\n\n");
+  //fprintf(stderr,"\n----------------------------------------------------------\n");
+  fprintf(stderr,"\n==============================\n"); 
+  fprintf(stderr,"Initialize CAP and read data\n");
+  fprintf(stderr,"==============================\n"); 
 
   // start random number generator (randvec function). See also cap.h
   fprintf(stderr,"NOTE random seed = %d (randvec function)\n", RANDSEED);
@@ -757,10 +759,6 @@ int main (int argc, char **argv) {
   }
 
  INVERSION:
-  fprintf(stderr,"\n====================\n"); 
-  fprintf(stderr,"BEGIN SEARCH\n"); 
-  fprintf(stderr,"====================\n"); 
-
   // call to old error function for reference. can be deleted
   /* sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search_type,norm); */
 
@@ -938,19 +936,24 @@ if (plot==1) {
    fprintf(f_out,"%-9s %5.1f/%-5.2f",obs->stn, obs->dist, con_shft[i]);
    fprintf(wt3,"%s\t %d\t",obs->stn, dis[i]);
    for(j=0;j<NCP;j++) {
-     k = NCP - 1 - j;
-     kc = sol.cfg[i][k]; if (kc<0) kc = 0;
-     //        on_off / station misfit % / kross-corr (what?) / t-shift / log(Aobs/Asyn) / Aobs / Asyn
-     //               4    5    6    7     8     9     10 
-     fprintf(f_out," %1d %6.2f %2d %5.2f %5.2f %8.2e %8.2e",
-	     obs->com[k].on_off, sol.error[i][k]*100/(Ncomp*sol.err), kc, shft0[i][k]+dt*sol.shft[i][k], 
-	     log(maxamp_obs[i][k]/maxamp_syn[i][k]), maxamp_obs[i][k], maxamp_syn[i][k]);
-     if (k<3) lamp_thresh = 1.5;  // log(amplitude) threshold for surface waves
-     else lamp_thresh = 2.5;   // log(amplitude) threshold for body waves
-     if (log(maxamp_obs[i][k]/maxamp_syn[i][k]) > lamp_thresh){
-       fprintf(wt3,"%d\t",0);}
-     else{
-       fprintf(wt3,"%d\t",obs->com[k].on_off);}  
+       k = NCP - 1 - j;
+       kc = sol.cfg[i][k]; if (kc<0) kc = 0;
+       //        on_off / station misfit % / kross-corr (what?) / t-shift / log(Aobs/Asyn) / Aobs / Asyn
+       //               4    5    6    7     8     9     10 
+       fprintf(f_out," %1d %6.2f %2d %5.2f %5.2f %8.2e %8.2e",
+               obs->com[k].on_off, 
+               sol.error[i][k]*100/(Ncomp*sol.err), 
+               kc, 
+               shft0[i][k] + dt * sol.shft[i][k], 
+               log(maxamp_obs[i][k]/maxamp_syn[i][k]), 
+               maxamp_obs[i][k], 
+               maxamp_syn[i][k]);
+       if (k<3) lamp_thresh = 1.5;  // log(amplitude) threshold for surface waves
+       else lamp_thresh = 2.5;   // log(amplitude) threshold for body waves
+       if (log(maxamp_obs[i][k]/maxamp_syn[i][k]) > lamp_thresh){
+           fprintf(wt3,"%d\t",0);}
+       else{
+           fprintf(wt3,"%d\t",obs->com[k].on_off);}  
    }
    fprintf(wt3,"%3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n", ppick[i], 0., 0., 0., 0.);
 
