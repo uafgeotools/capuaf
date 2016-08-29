@@ -48,6 +48,10 @@ SOLN initSearchMT(
 {
     SOLN best_sol;
 
+  fprintf(stderr,"\n====================\n"); 
+  fprintf(stderr,"INITIALIZE GRID\n"); 
+  fprintf(stderr,"====================\n"); 
+
     switch(search_type)
     {
         case 1: 
@@ -67,6 +71,7 @@ SOLN initSearchMT(
     }
 
     // run FMT search
+    fprintf(stderr,"calling searchMT\n");
     best_sol = searchMT(nda, obs0, nfm, fm, fm_thr, max_shft, tie, mt, grid, interp, search_type, norm, searchPar, arrayMT);
     return(best_sol);
 
@@ -137,9 +142,10 @@ void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT)
         h2dip_vec(vec_h, searchPar->nh, vec_theta);          
     }
 
-    fprintf(stderr,"~~~~~~~~~~~input u1 %f \n", searchPar->u1);
-    fprintf(stderr,"~~~~~~~~~~~DEBUG u[0] %f \n", vec_u[0]);
-    fprintf(stderr,"~~~~~~~~~~~DEBUG beta[0] %f \n", vec_beta[0]);
+    // print u and beta values for debugging
+    //fprintf(stderr,"~~~~~~~~~~~DEBUG u1 %f \n", searchPar->u1);
+    //fprintf(stderr,"~~~~~~~~~~~DEBUG u[0] %f \n", vec_u[0]);
+    //fprintf(stderr,"~~~~~~~~~~~DEBUG beta[0] %f \n", vec_beta[0]);
 
     free(vec_v);
     free(vec_u);
@@ -416,9 +422,12 @@ SOLN searchMT(
     best_sol.err = FLT_MAX;
     best_misfit = FLT_MAX;
 
-    fprintf(stderr,"\nRunning searchMT (nsol = %d) ... \n\n", searchPar->nsol);
-
     npol_sol = 0;
+
+    fprintf(stderr,"\n====================\n"); 
+    fprintf(stderr,"RUN SEARCH\n"); 
+    fprintf(stderr,"nsol = %d \n", searchPar->nsol);
+    fprintf(stderr,"====================\n"); 
 
     // LOOP MAGNITUDE
     nmag = searchPar->nmw; 
