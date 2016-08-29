@@ -11,7 +11,7 @@
 
 */
 
-#include "uv2lune.h"
+#include "sub_uv2lune.h"
 
 #include "generated_u2beta.c"   // data for interpolation of beta = beta(u)
                                 // data generated using matlab script gen_u2beta.m

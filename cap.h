@@ -17,7 +17,7 @@
 #include "inversion.h"
 #include "radiats.h"
 
-#include "uv2lune.h"
+#include "sub_uv2lune.h"
 // #include <time.h>   // when using OPTION 2 in the random seed generator
 
 #include <omp.h>

@@ -13,7 +13,7 @@ endif
 
 CAP  = cap cap_dir
 
-SUBS = fft.o Complex.o radiats.o grid3d.o futterman.o sacio.o trap.o sub_tt2cmt.o sub_first_motion_misfit.o sub_fmp_print_params.o sub_misfit.o sub_inversion.o uv2lune.o
+SUBS = fft.o Complex.o radiats.o grid3d.o futterman.o sacio.o trap.o sub_tt2cmt.o sub_first_motion_misfit.o sub_fmp_print_params.o sub_misfit.o sub_inversion.o sub_uv2lune.o
 
 all: $(CAP)
 
