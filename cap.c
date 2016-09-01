@@ -154,6 +154,9 @@ int main (int argc, char **argv) {
   // variables to verify that Mw_best is not near search limits
   FILE * fid_warn;        // output file for warnings
 
+  char out_best_sol[255];   // save best solution parameters
+  FILE * fid_best_sol;
+
   SOLN	sol;
   SACHEAD hd[NRC];
   FILE 	*f_out, *wt, *wt2, *wt3, *fid_srcfile ;
@@ -975,6 +978,18 @@ if (plot==1) {
  }
  fclose(f_out);
  fclose(wt3);
+
+ // output best solution parameters
+ sprintf(out_best_sol, "%s_parameters_best_sol", filename_prefix);
+ fid_best_sol = fopen(out_best_sol, "w");
+ fprintf(fid_best_sol,"best solution parameters\n\nv %13.6f\nw %13.6f\nstk %11.6f\ndip %11.6f \nrak %11.6f \nmag %5.2f\n", 
+         gamma2v(sol.meca.gamma * d2r),
+         delta2w(sol.meca.delta * d2r),
+         sol.meca.stk, 
+         dip2h(sol.meca.dip * d2r),
+         sol.meca.rak,
+         sol.meca.mag); 
+ fclose(fid_best_sol);
 
  /**********ouput weight file **********/
  wt = fopen(strcat(strcat(strcpy(tmp,eve),"/"),"weight_capout.dat"),"w");
