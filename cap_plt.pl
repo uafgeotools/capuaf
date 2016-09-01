@@ -552,13 +552,11 @@ sub plot {
     $y = 0;
     $tgap=0.5;
     # plot four header labels (event type, focal mecha, var red, filters)
-    # Event 20080418093700 Model cus_015 FM 115 90 -2 Mw 5.19 rms 1.207e-06 110 ERR 1 3 4 ISO 0.00 0.00 CLVD 0.00 0.00
-    # Event 20080418093700 Model cus_015 FM 304 81.122581 9 Mw 5.20 rms 5.119e-05 112 ERR 0 0 0 ISO 17.749453 0.00 CLVD -9.86 0.00 VR 70.6 data2 9.443e-05
-    #   0         1          2       3    4  5   6        7  8   9   10      11    12 13 14 1516 17   18       19   20    21    22 23  24    25     26
+    # Event 19910914190000000 Model 19910914190000000_wes_001 FM  350 56.985645  -74 Mw 5.80 rms 2.673e-06     1 CLVD -4.08 ISO  -4.464618 VR 7.8 data2 2.783e-06
+    #   0         1             2       3                     4    5      6        7  8   9   10      11      12  13    14  15       16    17  18   19     20
     open(PLT, $plt4_5);
     printf PLT "$x $y 12 0 0 0 Event $evid Model $model Depth $depth\n"; $y-=$tgap;
-#   printf PLT "$x $y 12 0 0 0 @meca[4] %d %d %d @meca[8,9, 17] %3.0f @meca[20] %3.0f @meca[10,11] VR %3.1f\n",@meca[5], @meca[6], @meca[7], @meca[18],@meca[21],@meca[24];$y-=$tgap;
-    printf PLT "$x $y 12 0 0 0 @meca[4] %d %d %d @meca[8,9] @~g@~ %3.0f @~d@~ %3.0f @meca[10,11] VR %3.1f\n",@meca[5], @meca[6], @meca[7], @meca[18],@meca[21],@meca[24];$y-=$tgap;
+    printf PLT "$x $y 12 0 0 0 @meca[4] %d %d %d @meca[8,9] @~g@~ %3.0f @~d@~ %3.0f @meca[10,11] VR %3.1f\n",@meca[5], @meca[6], @meca[7], @meca[14],@meca[16],@meca[18];$y-=$tgap;
     printf PLT "$x $y 12 0 0 0 $filterBand\n" ; $y-=$tgap;  # 20120719 - filter bands
     printf PLT "$x $y 12 0 0 0 @ncomp[1]" ;
     close(PLT);
