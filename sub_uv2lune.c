@@ -183,6 +183,14 @@ void siso2delta_vec(float *pArray_s, int nsol, float *pArray_dip)
     fprintf(stderr,"done.\tNPTS = %d\n", i);
 }
 
+// compute h(dip)
+float dip2h(float dip)
+{
+    float h;
+    h = cos(dip);
+    return h;
+}
+
 // compute dip(h)
 float h2dip(float h)
 {
