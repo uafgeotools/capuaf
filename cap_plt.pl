@@ -421,7 +421,9 @@ sub plot {
         if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0 || $keepBad!=0)){
 
             $x = 0;
-            printf PLT "%f %f 10 0 0 1 $aa[0]\n",$x-0.8*$spis,$y;            # station label
+            @aa_split = split('\.', $aa[0]);
+            printf PLT "%f %f 10 0 0 1 $aa_split[1].$aa_split[2].$aa_split[3]\n", $x-0.8*$spis, $y;            # station label
+
             if ($ab[1]==0.){
                 printf PLT "%f %f 10 0 0 1 $ab[0]\n",$x-0.7*$spis,$y-0.2;        # distance_km/overal time shift
             }
