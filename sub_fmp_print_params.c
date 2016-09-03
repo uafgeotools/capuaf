@@ -21,10 +21,14 @@ void fmp_print_parameters(FILE *fid, FMPDATA *fmpdata)
     fprintf(fid, "%14s %8s %11.6f %11.6f %2d %12s %02d %7.2f %7.2f %f %6.2f %6.2f %5.1f\n",
             fmpdata->evid, fmpdata->stname,
             fmpdata->stlo, fmpdata->stla,
-            fmpdata->pol,
-            fmpdata->vmod,
-            fmpdata->idep,
-            fmpdata->azim, 
-            fmpdata->toa, fmpdata->strad_lh,
-            fmpdata->tp, fmpdata->ts, fmpdata->dist);
+            fmpdata->pol,           // observed polarity
+            fmpdata->vmod,          // vel model
+            fmpdata->idep,          // inversion depth
+            fmpdata->azim,          // azimuth
+            fmpdata->toa,           // take off angle
+            fmpdata->strad_lh,      // radius of station location on lower hemisphere beachball
+            fmpdata->tp,            // arrival time P wave 
+            fmpdata->ts,            // arrival time S wave
+            fmpdata->dist           // source-receiver distance
+           );
 }
