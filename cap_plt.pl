@@ -620,8 +620,8 @@ sub plot {
 
     open(XPLT, $xplt5a);
     foreach (@staz) {
-      @aa_split = split('\.', $aa[0]);
       @aa = split;
+      @aa_split = split('\.', $aa[2]);
       printf XPLT "%s %s 8 0 0 CB %s.%s.%s\n", 
           $aa[0], $aa[1], $aa_split[1], $aa_split[2], $aa_split[3];
     }
