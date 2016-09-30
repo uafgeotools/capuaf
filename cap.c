@@ -202,7 +202,7 @@ int main (int argc, char **argv) {
   strcpy(fmpdata->vmod, model);
   fmpdata->idep = depth;
   sprintf(mod_dep,"%s_%s_%03d",fmpdata->evid, fmpdata->vmod, fmpdata->idep );   
-  if (stat("./OUTPUT_DIR") == -1) {mkdir("./OUTPUT_DIR", 0700);} // create directory is it doesn't exist
+  if (stat("./OUTPUT_DIR") == -1) {mkdir("./OUTPUT_DIR", 0755);} // create directory is it doesn't exist
   sprintf(filename_prefix, "OUTPUT_DIR/%s_%s_%03d", fmpdata->evid, fmpdata->vmod, fmpdata->idep);
   sprintf(filename_fmpdata, "%s_fmpdata.txt", filename_prefix);
   fidfmp = fopen(filename_fmpdata, "w");
