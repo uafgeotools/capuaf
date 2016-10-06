@@ -28,7 +28,7 @@ $inp_cmd = "inp_cmd";
 #$green = "$home/data/models/Glib";               # original
 $green = "/store/wf/FK_synthetics";               # UAF linux network
 #$green = "/import/c/d/ERTHQUAK/FK_synthetics ";  # UAF cluster
-#$green = "$caprun/models";                       # user testing
+$green = "$caprun/models";                       # user testing
 
 $repeat = 0;
 $fm_thr = 0.01;
@@ -439,10 +439,12 @@ foreach (grep(/^-/,@ARGV)) {
 #-----------------------------------------------------------
 
 # convert strike/dip/rake to radians
-$k1 = $k1 * $deg2rad;
-$k2 = $k2 * $deg2rad;
-$s1 = $s1 * $deg2rad;
-$s2 = $s2 * $deg2rad;
+if ($oldgrid == 0) {
+    $k1 = $k1 * $deg2rad;
+    $k2 = $k2 * $deg2rad;
+    $s1 = $s1 * $deg2rad;
+    $s2 = $s2 * $deg2rad;
+}
 
 unless ($dura) {
   $dura = int(10**(($mg-5)/2)+0.5);
@@ -468,9 +470,14 @@ if( ($oldgrid == 1) && ($nI == 5)) {
         ($k1, $k2) = (  0, 360);
         ($h1, $h2) = (  0, 90);
         ($s1, $s2) = (-90, 90);
-    } elsif (($nv == 1) && ($nw == 1) && ($nR > 0)) {
-        # if Range is set then its a subset
-        # lune points come from user input
+    } elsif (($nv == 1) && ($nw == 1) && ($nR == 5)) {
+        print STDERR "Fixed solution. Input values: $v1 $w1 $k1 $h1 $s1\n";
+        # # if Range is set then its a subset
+        # # lune points come from user input
+        ($dv, $dw) = (0, 0);
+    } elsif (($nv == 1) && ($nw == 1) && ($nR > 5)) {
+        # If range=5 then it's a point solution.
+        # Lune poionts come from user input
         ($dv, $dw) = (0, 0);
         ($k1, $k2) = (  0, 360);
         ($h1, $h2) = (  0, 90);
@@ -489,7 +496,7 @@ if( ($oldgrid == 1) && ($nI == 5)) {
     $dh = sprintf("%.0f", (($h2 - $h1) / $nh));  # dip    -- include 0 at start (though it will be offset later)
     $ds = sprintf("%.0f", (($s2 - $s1) / $ns));  # rake   -- include 0 point
 
-    print STDERR "$dv $dw $dk $dh $ds\n"; 
+    print STDERR "Input parameters:\n$dv $dw $dk $dh $ds\n"; 
     $nsol = $nv * $nw * $nk * $nh * $ns;
 } elsif( ($oldgrid == 1) && ($nI == 1)) {
     # random mode
@@ -504,6 +511,11 @@ if( ($oldgrid == 1) && ($nI == 5)) {
         ($h1, $h2) = (  0, 90);
         ($s1, $s2) = (-90, 90);
         $nk = $nh = $ns = $nsol;
+    } elsif (($nv == 1) && ($nw == 1) && ($nR == 5)) {
+        print STDERR "Fixed solution. Input values: $v1 $w1 $k1 $h1 $s1\n";
+        # # if Range is set then its a subset
+        # # lune points come from user input
+        ($dv, $dw) = (0, 0);
     } elsif (($nv == 1) && ($nw == 1) && ($nR > 0)) {
         # if Range is set then its a subset
         # lune points come from user input
@@ -524,8 +536,9 @@ if( ($oldgrid == 1) && ($nI == 5)) {
 }
 
 # plots for the DC don't have "fmt" in their filenames
-if (($v1 == $v2) && ($v2 == 0)) {
+if (($v1 == 0) && ($w1 == 0)) {
     $fmt_flag="false";   # double couple
+    print STDERR "computing a double couple solution"
 } else {
     $fmt_flag="true";
 }
@@ -550,7 +563,7 @@ if ($nI == 1) {
 #$grid_type = $type;
 
 # Flag I: set defaults
-if (($nI == 5) && ($nv == 1) && ($nw == 1)) {
+if (($nI == 5) && ($nv == 1) && ($nw == 1) && ($oldgrid == 0)) {
     # default to the double couple
     ($v1, $v2) = (0, 0);
     ($w1, $w2) = (0, 0);
