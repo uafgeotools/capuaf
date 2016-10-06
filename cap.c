@@ -395,9 +395,9 @@ int main (int argc, char **argv) {
     obs->dist = distance = hd->dist;
     obs->tele = tele;
     if (x1<=0.) x1 = hd[2].a;
-    if (ts<=0.) ts = hd[2].a;
+    //if (ts<=0.) ts = hd[2].a;  // .a header is for P arrival time and not surface waves arrivals
     x1 -= hd[2].o;
-    ts -= hd[2].o;
+    //ts -= hd[2].o;             // This would save P arrival times in 'ts' (bug?)
     if (tele && s_shft>0.) s_shft -= hd[0].o;
     t1 = hd[2].t1-hd[2].o;
     t2 = hd[2].t2-hd[2].o;
@@ -513,8 +513,8 @@ int main (int argc, char **argv) {
     }
 
     /* do the same for the s/surface wave portion */
-    if (ts<=0.)                                          /*if S wave arrical is not specified */
-      ts= hd[0].t2;
+    if (ts<=0.)                                          /*if S wave arrival is not specified */
+      ts= hd[0].t2;                                      // get S arrival time from green's functions header
     if (t3 < 0 || t4 < 0 ) {
       if (!tele && vs1>0. && vs2> 0.) {
 	t3 = sqrt(distance*distance+depSqr)/vs1 - 0.3*mm[1]*dt;
