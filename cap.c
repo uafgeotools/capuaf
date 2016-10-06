@@ -265,6 +265,9 @@ int main (int argc, char **argv) {
   // NOTE magnitude parameters include dMw and number of points
   scanf("%f%f%d%f", &searchPar->mw1, &searchPar->mw2, &searchPar->nmw, &searchPar->dmw);
   // (v, w, k, h, s) format: (start, end, number of points and grid spacings (for regular grid))
+  if(LUNE_GRID_INSTEAD_OF_UV = 1) {
+      fprintf(stderr,"Warning. using old grid search (v->gamma, w->delta) \n"); 
+  }
   scanf("%f%f%d%d", &searchPar->v1, &searchPar->v2, &searchPar->nv, &searchPar->dv);
   scanf("%f%f%d%d", &searchPar->w1, &searchPar->w2, &searchPar->nw, &searchPar->dw);
   scanf("%f%f%d%d", &searchPar->k1, &searchPar->k2, &searchPar->nk, &searchPar->dk);

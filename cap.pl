@@ -28,7 +28,7 @@ $inp_cmd = "inp_cmd";
 #$green = "$home/data/models/Glib";               # original
 $green = "/store/wf/FK_synthetics";               # UAF linux network
 #$green = "/import/c/d/ERTHQUAK/FK_synthetics ";  # UAF cluster
-$green = "$caprun/models";                       # user testing
+#$green = "$caprun/models";                       # user testing
 
 $repeat = 0;
 $fm_thr = 0.01;
@@ -204,11 +204,12 @@ $usage =
     -G  Green's function library location ($green).
     -H  dt ($dt).
     -I  specify number of solutions (random mode) OR number of points per parameter.
-        RAND: -I<nsol>  e.g. -I10000  --- will generate 10,000 random solutions. This option works with K=2
-        GRID: -I<Nv>/<Nw>/<Nstrike>/<Ndip>/<Nrake>   e.g. -I10/20/10/10/10 --- will generate Nx number of points for each parameter x.
+        RAND: -I<nsol>  e.g. -I10000  --- will generate 10,000 random solutions.
+        GRID: -I<Nv>/<Nw>/<Nstrike>/<Ndip>/<Nrake> where Nx = number of poits for parameter x
     -J  FLAG NOT IN USE.
     -K  FLAG NOT IN USE.
-    -k  specify k1 to build a grid using the old format (not uniform).
+    -k  specify k1 to build a lune grid, not a UV grid.
+        cap.c needs to be compiled with flag LUNE_GRID_INSTEAD_OF_UV = 0
     -L  source duration (estimate from mw, can put a sac file name here).
     -M	specify the model and source depth.
     -m	specify point magnitude: -m<mw0> OR magnitude range: -n<mw1>/<mw2>/<dmw>
@@ -223,8 +224,9 @@ $usage =
         append k if one wants to keep those waveforms.
         -p  (small p) For amplitude scaling of surface waves; example: If set to 2 surface waves amplitude will be multipled by twice 
     -Q  number of freedom per sample ($nof)
-    -R	search range for v/w/strike/dip/rake 
-        ([$v1, $v2]/[$w1, $w2]/[$k1, $k2]/[0, 90], [$s1, $s2]).
+    -R	For double couple use -R0/0.
+        For point solution use -Rv/w/k/h/s
+        For search range use -Rv1/v2/w1/w2/k1/k2/h1/h2/s1/s2
     -S	max. time shifts in sec for Pnl and surface waves ($max_shft1/$max_shift2) and
         tie between SH shift and SV shift:
         tie=0 		shift SV and SH independently,
@@ -438,6 +440,10 @@ foreach (grep(/^-/,@ARGV)) {
 # prepare additional parameters for CAP input
 #-----------------------------------------------------------
 
+# start to output some values
+print STDERR "-------------------------------------------------------------\n";
+print STDERR "cap.pl: input parameters for CAP:\n";
+
 # convert strike/dip/rake to radians
 if ($oldgrid == 0) {
     $k1 = $k1 * $deg2rad;
@@ -459,8 +465,8 @@ unless ($dura) {
 # Function gridvec also avoids endpoints in all parameters.
 if( ($oldgrid == 1) && ($nI == 5)) {
     # Old grid
-    print STDERR "Warning. Using the old grid setup.\n";
-    print STDERR "cap.c should be compiled with flag LUNE_GRID_INSTEAD_OF_UV = 1\n";
+    print STDERR "\nWarning. Using flag -k1 for the lune grid. cap.c should\n";
+    print STDERR "\tbe compiled with flag LUNE_GRID_INSTEAD_OF_UV = 1\n\n";
     # check that K flag works with flag R
     if (($nv == 1) && ($nw == 1) && ($nR == 0)) {
         # default is double couple if Range not specified and it's a single lune point
@@ -496,7 +502,7 @@ if( ($oldgrid == 1) && ($nI == 5)) {
     $dh = sprintf("%.0f", (($h2 - $h1) / $nh));  # dip    -- include 0 at start (though it will be offset later)
     $ds = sprintf("%.0f", (($s2 - $s1) / $ns));  # rake   -- include 0 point
 
-    print STDERR "Input parameters:\n$dv $dw $dk $dh $ds\n"; 
+    #print STDERR "Input parameters:\n$dv $dw $dk $dh $ds\n";  # for debugging
     $nsol = $nv * $nw * $nk * $nh * $ns;
 } elsif( ($oldgrid == 1) && ($nI == 1)) {
     # random mode
@@ -538,7 +544,7 @@ if( ($oldgrid == 1) && ($nI == 5)) {
 # plots for the DC don't have "fmt" in their filenames
 if (($v1 == 0) && ($w1 == 0)) {
     $fmt_flag="false";   # double couple
-    print STDERR "computing a double couple solution"
+    print STDERR "NOTE computing a double couple solution"
 } else {
     $fmt_flag="true";
 }
@@ -604,8 +610,6 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
 
     $md_dep = $model.'_'.$dep;
     next unless -d $eve;
-    print STDERR "-------------------------------------------------------------\n";
-    print STDERR "cap.pl: print some input parameters:\n";
     print STDERR "EVENT ID = $eve | EVENT DEPTH = $dep |  SOURCE DURATION = $dura\n";
     print STDERR "GRID TYPE = $grid_type ($grid_type_label search) | NSOL = $nsol\n";
     print STDERR "-------------------------------------------------------------\n\n";
