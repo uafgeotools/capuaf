@@ -44,7 +44,8 @@ SOLN initSearchMT(
         int search_type,
         int norm,
         SEARCHPAR * searchPar,
-        ARRAYMT * arrayMT)
+        ARRAYMT * arrayMT,
+	float pol_wt)
 {
     SOLN best_sol;
 
@@ -72,7 +73,7 @@ SOLN initSearchMT(
 
     // run FMT search
     fprintf(stderr,"calling searchMT\n");
-    best_sol = searchMT(nda, obs0, nfm, fm, fm_thr, max_shft, tie, mt, grid, interp, search_type, norm, searchPar, arrayMT);
+    best_sol = searchMT(nda, obs0, nfm, fm, fm_thr, max_shft, tie, mt, grid, interp, search_type, norm, searchPar, arrayMT, pol_wt);
     return(best_sol);
 
 } /* end function initSearchMT */
@@ -322,14 +323,15 @@ SOLN searchMT(
         int search_type,
         int norm,
         SEARCHPAR * searchPar,
-        ARRAYMT * arrayMT
-        )
+        ARRAYMT * arrayMT,
+        float pol_wt)
 {
     float mtensor[3][3];
     float amp;
     SOLN sol, best_sol;
     float *grd_err;
     int misfit_fmp;
+    float misfit_pol_weight, misfit_wf_weight, total_misfit;
 
     int sol_count, nreject, npol_sol;
     int isol, isol_best;
@@ -475,14 +477,30 @@ SOLN searchMT(
 
             // waveform misfit
             sol = get_tshift_corr_misfit(nda,obs0,max_shft,tie,norm,mtensor,amp,sol);
-            sol.err = sol.err/Ncomp;    // Ncomp = number of components.
+            sol.wferr = sol.wferr/Ncomp;    // Ncomp = number of components.
+            VR = 100.*(1.-(sol.wferr/data2)*(sol.wferr/data2));
 
-            VR = 100.*(1.-(sol.err/data2)*(sol.err/data2));
+	    //---------------- combine polarity and waveform misfit---------------------------
+	    // XXX: Ongoing
+	    // If -X flag is specified sol.err will contain the total misfit
+	    if ((int)pol_wt != 999){
+	      misfit_pol_weight = pol_wt; // this should come as an input from cap.pl (-X flag)
+	      misfit_wf_weight = 1 - misfit_pol_weight;
+	      sol.polerr = misfit_pol_weight * misfit_fmp/(float)nda;
+	      sol.err = sol.polerr + misfit_wf_weight * sol.wferr/data2;
+	      //fprintf(stderr,"---> %f %f %f %f\n",sol.err/data2, misfit_fmp/(float)nda, total_misfit, misfit_pol_weight);
+	      //sol.err = total_misfit; // replace waveform misfit sol.err by total misfit
+	    }
+	    // For older examples:
+	    // In case -X flag is not specified sol.err will contain the waveform misfit
+	    else { 
+	      sol.err = sol.wferr;
+	    }
 
             // fill additional parameters
             arrayMT[isol].mw           = vec_mag[imag];
             arrayMT[isol].misfit_fmp   = (float) misfit_fmp;
-            arrayMT[isol].misfit_wf    = sol.err/data2;
+            arrayMT[isol].misfit_wf    = sol.wferr/data2;
             arrayMT[isol].VR           = VR;
             arrayMT[isol].v            = gamma2v(arrayMT[isol].gamma);
             arrayMT[isol].w            = delta2w(arrayMT[isol].delta);
@@ -500,10 +518,13 @@ SOLN searchMT(
             arrayMij[isol].mrp = -mtensor[1][2];
             arrayMij[isol].mtp = -mtensor[0][1];
             arrayMij[isol].mw           = vec_mag[imag];
-            arrayMij[isol].misfit_wf    = sol.err/data2;
+            arrayMij[isol].misfit_wf    = sol.wferr/data2;
             arrayMij[isol].misfit_fmp   = (float) misfit_fmp;
+	    
 #endif
 
+	    // This if section will run only if weight for polarity misfit (-X flag) is not specified
+	    if ((int)pol_wt == 999){
 #ifdef OMP
 #pragma critical
             {
@@ -539,7 +560,7 @@ SOLN searchMT(
            best_sol = sol; 
 
            // output search status
-           fprintf(stderr,"(tid %2d) best sol index %10d (%3d%) mag %5.2f %11.6f %11.6f %11.6f %11.6f %11.6f err %12.6e VR %5.1f%\t misfit fmp 0\n",
+           fprintf(stderr,"AAA (tid %2d) best sol index %10d (%3d%) mag %5.2f %11.6f %11.6f %11.6f %11.6f %11.6f err %12.6e VR %5.1f%\t misfit fmp 0\n",
                    tid,
                    isol_best, 100 * isol_best/searchPar->nsol,
                    vec_mag[imag],
@@ -569,7 +590,7 @@ SOLN searchMT(
             best_sol = sol; 
 
             // output search status
-            fprintf(stderr,"(tid %2d) best sol index %10d (%3d%) mag %5.2f %11.6f %11.6f %11.6f %11.6f %11.6f err %12.6e VR %5.1f%\n",
+            fprintf(stderr,"BBB (tid %2d) best sol index %10d (%3d%) mag %5.2f %11.6f %11.6f %11.6f %11.6f %11.6f err %12.6e VR %5.1f%\n",
                     tid,
                     isol_best, 100 * isol_best/searchPar->nsol,
                     vec_mag[imag],
@@ -577,12 +598,41 @@ SOLN searchMT(
                     arrayMT[isol_best].kappa * r2d, arrayMT[isol_best].theta * r2d, arrayMT[isol_best].sigma * r2d,
                     best_sol.err, VR);
         }
-    }
+   }
 
 #ifdef OMP
                 // end critical section
 }
 #endif
+	    }
+	    // Execute this section if weight for polarity misfit (-X flag) is specified
+	    else {
+	      if (best_misfit > sol.err) {
+           best_misfit = sol.err;
+           isol_best = isol;
+           best_sol.err = sol.err;
+#ifdef OMP
+                        tid = omp_get_thread_num();
+#endif
+            sol.meca.gamma = arrayMT[isol_best].gamma * r2d;
+            sol.meca.delta = arrayMT[isol_best].delta * r2d;
+            sol.meca.stk   = arrayMT[isol_best].kappa * r2d;
+            sol.meca.dip   = arrayMT[isol_best].theta * r2d;
+            sol.meca.rak   = arrayMT[isol_best].sigma * r2d;
+            sol.meca.mag   = vec_mag[imag];
+
+            best_sol = sol; 
+
+            // output search status
+            fprintf(stderr,"CCC (tid %2d) best sol index %10d (%3d%) mag %5.2f %11.6f %11.6f %11.6f %11.6f %11.6f wferr %12.6f polerr %5.6f MISFIT %5.6f VR %5.1f%\n",
+                    tid,
+                    isol_best, 100 * isol_best/searchPar->nsol,
+                    vec_mag[imag],
+                    arrayMT[isol_best].gamma * r2d, arrayMT[isol_best].delta * r2d,
+                    arrayMT[isol_best].kappa * r2d, arrayMT[isol_best].theta * r2d, arrayMT[isol_best].sigma * r2d,
+                    misfit_wf_weight * best_sol.wferr/data2, best_sol.polerr, best_sol.err, VR);
+        }
+	    }
 
             //  output binary data
 //#ifdef WB

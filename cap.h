@@ -117,14 +117,16 @@ typedef struct {
 typedef struct {
 	MECA	meca;
 	float	dev[6];			/* uncertainty ellipsis */
-	float	err;			/* chi-square of waveform misfits for this solution */
+	float	wferr;			/* chi-square of waveform misfits for this solution */
 	int	cfg[STN][NCP];		/* correlation for each comp. */
 	int	shft[STN][NCP];		/* time shift for each comp. */
 	float	error[STN][NCP];	/* chi-square of waveform misfits for each component */
 	float   scl[STN][NCP];		/* amplifications to GF for each component */
 	int	ms;			/* number of local minimums < 10 */
 	int	others[10];		/* top 10 best solutions */
-	int	flag;			/* =1 if the best soln is at boundary */
+        int	flag;			/* =1 if the best soln is at boundary */
+        float   polerr;                 /* first motion polarity misfit */
+        float   err;                    /* (weight x polerr) + ((1 - weight) x wferr)  */
 } SOLN;
 
 typedef struct {
@@ -228,7 +230,7 @@ typedef struct
 
 /* function declaration */
   /* SOLN	error(int,int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int,int); */
-SOLN initSearchMT(int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int, SEARCHPAR *, ARRAYMT *);
+SOLN initSearchMT(int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int, SEARCHPAR *, ARRAYMT *, float);
 void    taper(float *aa, int n);
 float	*trap(float, float, float, int *);
 float	*cutTrace(float *, int, int, int);
@@ -242,6 +244,6 @@ SOLN get_tshift_corr_misfit(int,DATA *,const int *, float,int,float mtensor[3][3
 /* functions for uniformMT */
 void getRandMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT);
 void getGridMT(SEARCHPAR * searchPar, ARRAYMT * arrayMT);
-SOLN searchMT(int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int, SEARCHPAR *, ARRAYMT *);
+SOLN searchMT(int,DATA *,int,FM *,float,const int *,float,MTPAR *,GRID,int,int,int, SEARCHPAR *, ARRAYMT *, float);
 
 #endif

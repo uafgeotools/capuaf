@@ -35,6 +35,7 @@ $fm_thr = 0.01;
 $dirct='';
 $disp=0;
 $mltp=0;
+$pol_wt=999;
 $weight="weight.dat";
 $fmt_flag="false";
 
@@ -235,7 +236,7 @@ $usage =
     -U  directivity, specify rupture direction on the fault plane (off).
     -V	apparent velocities for Pnl, Love, and Rayleigh waves (off).
     -W  use displacement for inversion; 1=> data in velocity; 2=> data in disp ($disp).
-    -X  FLAG NOT IN USE.
+    -X  weight for normalized polarity misfit [0,1]. This is combined with the waveform misfit
     -Y  specify norm (1 - L1 norm; 2 - L2 norm)
     -Z  specify a different weight file name ($weight).
 
@@ -424,7 +425,7 @@ foreach (grep(/^-/,@ARGV)) {
    } elsif ($opt eq "W") {
      $disp = $value[0];
    } elsif ($opt eq "X") {
-     $mltp = $value[0];
+     $pol_wt = $value[0];
    } elsif ($opt eq "Y") {
      $norm = $value[0];
    } elsif ($opt eq "Z") {
@@ -628,7 +629,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     print SRC "$vp $love $rayleigh\n";
     print SRC "$power_of_body $power_of_surf $weight_of_pnl $nof\n";
     print SRC "$plot\n";
-    print SRC "$disp $mltp\n";
+    print SRC "$disp $pol_wt\n";
     print SRC "$green/$model/\n";
     print SRC "$grid_type\n";
     print SRC "$norm\n";

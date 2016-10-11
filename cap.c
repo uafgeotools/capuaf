@@ -106,7 +106,7 @@ int skip_zero_weights=1;    // for original CAP set skip_zero_weights=1
 // cap.c which uses rules to account for special grid points.
 // Function gridvec also avoids endpoints in all parameters.
 // See NOTE flag LUNE_GRID_INSTEAD_OF_UV in function sub_inversion.c
-int LUNE_GRID_INSTEAD_OF_UV = 0;    // default = 0 (ie do not run old grid mode)
+int LUNE_GRID_INSTEAD_OF_UV = 1;    // default = 0 (ie do not run old grid mode)
 
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search_type,norm;
@@ -126,6 +126,7 @@ int main (int argc, char **argv) {
   float	*data_obs, *data_syn;   // save seismograms for plotting
   float *f_pt2;
   float *g_pt;  // for FTC_green
+  float pol_wt;
   int npt_data, offset_h=0;
   GRID	grid;
   MTPAR mt[3];  // DELETE
@@ -213,7 +214,7 @@ int main (int argc, char **argv) {
   scanf("%f%f%f",&vp,&vs1,&vs2);
   scanf("%f%f%f%f",&bs_body,&bs_surf,&x2,&nof_per_samp);
   scanf("%d",&plot);
-  scanf("%d%d",&useDisp,&mltp);
+  scanf("%d%f",&useDisp,&pol_wt);
   scanf("%s",glib);
   scanf("%d",&search_type);
   scanf("%d",&norm);
@@ -769,10 +770,10 @@ int main (int argc, char **argv) {
   /* sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search_type,norm); */
 
   // call initSearchMT instead of "error". This call includes extra parameters (searchPar, arrayMT)
-  sol = initSearchMT(nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,search_type,norm, searchPar, arrayMT);
+  sol = initSearchMT(nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,search_type,norm, searchPar, arrayMT, pol_wt);
 
   dof = nof_per_samp*total_n;
-  x2 = sol.err/dof;		/* data variance */
+  x2 = sol.wferr/dof;		/* data variance */
   //fprintf(stderr,"\n=========total_n=%d \t dof=%d \t error=%f\t nof=%f===========\n",total_n,dof,sol.err, nof_per_samp);
   /* repeat grid search if needed */
   if ( repeat && discard_bad_data(nda,obs0,sol,x2,rms_cut) ) {
@@ -782,9 +783,9 @@ int main (int argc, char **argv) {
 
   //Compute variance reduction
   if (norm==1)
-    VR = 100*(1.-(sol.err/data2)*(sol.err/data2));
+    VR = 100*(1.-(sol.wferr/data2)*(sol.wferr/data2));
   if (norm==2) 
-    VR = 100*(1.-sol.err/data2);
+    VR = 100*(1.-sol.wferr/data2);
 
 /***** output waveforms for both data and synthetics ****/
   i = mm[1]; if(mm[0]>i) i=mm[0];
@@ -947,7 +948,7 @@ if (plot==1) {
        //               4    5    6    7     8     9     10 
        fprintf(f_out," %1d %6.2f %2d %5.2f %5.2f %8.2e %8.2e",
                obs->com[k].on_off, 
-               sol.error[i][k]*100/(Ncomp*sol.err), 
+               sol.error[i][k]*100/(Ncomp*sol.wferr), 
                kc, 
                shft0[i][k] + dt * sol.shft[i][k], 
                log(maxamp_obs[i][k]/maxamp_syn[i][k]), 

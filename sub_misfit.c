@@ -18,7 +18,7 @@ SOLN get_tshift_corr_misfit(
   COMP	*spt;
   float	*f_pt0, *f_pt1, *r_pt, *r_pt0, *r_pt1, *r_iso, *z_pt, *z_pt0, *z_pt1,*z_iso;
 
-  for(obs=obs0,sol.err=0.,i=0;i<nda;i++,obs++){
+  for(obs=obs0,sol.wferr=0.,i=0;i<nda;i++,obs++){
     mt_radiat(obs->az,mtensor,arad);
     rad[0]=amp*arad[3][0];
     for(k=1;k<4;k++) rad[k]=amp*arad[3-k][0];
@@ -100,7 +100,7 @@ SOLN get_tshift_corr_misfit(
       x1 = x1/spt->npt;
       sol.error[i][j] = spt->on_off*x1;	/*L2 error for this com.*/
       sol.cfg[i][j] = 100*cfg[j]/sqrt(spt->rec2*x2);
-      sol.err += spt->on_off*x1;
+      sol.wferr += spt->on_off*x1;
     }
   }
   return(sol);
