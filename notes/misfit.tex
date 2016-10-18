@@ -578,10 +578,17 @@ Waveform error is not changed so that:
 \end{enumerate}
 
 \subsubsection*{Possible way of computing VR}
+{\bf Option 1} This didn't worked out :( 
 \begin{align*}
 VR_{wf} &= 100 \times \left( 1 - \left (\frac{\phi_{wf}}{u} \right)^2 \right) \\
 VR_{pol} &= 100 \times \left( 1 - \left ( \frac{N_p}{N} \right) ^2 \right ) \\
-VR &=  \omega \cdot VR_{pol} + (1 - \omega) \cdot VR_{wf} \\
+VR &=  \omega \cdot VR_{pol} + (1 - \omega) \cdot VR_{wf}
+\end{align*}
+
+{\bf Option 2:} This one is currently under testing and seems to work, and it is much cleaner too:
+\begin{align*}
+total\_misfit, \Phi &= \phi_{pol} + (1 - \omega) \cdot \phi_{wf}\\
+VR &= 100. \times (1 - \Phi^2)
 \end{align*}
 
 Here is how it looks in the code (sub\_inversion.c):
