@@ -1,3 +1,4 @@
+# make clean cap d=WB f=omp
 FFLAGS = -O
 FC = gfortran
 CFLAGS = ${FFLAGS}
@@ -19,6 +20,8 @@ all: $(CAP)
 
 # to compile cap with the option of Writing Binary file, run
 # 	make cap d=WB
+# to compile cap so that it runs in parallel mode, run
+# 	make cap f=omp
 cap cap_dir: %:%.o $(SUBS) cap_sub.o
 	$(LINK.f) -o $@ $^ -L$(SACHOME)/lib -lsac -lsacio
 

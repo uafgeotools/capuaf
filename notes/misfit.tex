@@ -146,6 +146,23 @@ w_{surf} &=& (\mu_{surf})\times weight_{surf}
 \ena
 P.S. This weight is given in the input cap command and not the weight file.
 
+\subsubsection*{Notes from Carl 10/13/2016}
+\begin{align*}
+A_{corr}(r) &= A_{raw}(r) \left( \frac{r}{r_0} \right)^p \\
+\frac{A_{corr}(r)}{A_{raw}(r)} &= \left( \frac{r}{r_0} \right)^p \\
+\ln \left(\frac{A_{corr}(r)}{A_{raw}(r)} \right) &= ln \left( \frac{r}{r_0} \right)^p \\
+\ln \left(\frac{A_{corr}(r)}{A_{raw}(r)} \right) &= p \cdot ln \left( \frac{r}{r_0} \right)
+\end{align*}
+
+In CAP $r_0$ = 100 km. Most probably reference distance is chosen as 100 km because its easier to take the square root ! (= 10 km).
+
+For distant stations ($r > r_0$):\\
+$p > 0$ will increase the amplitude\\
+$p < 0$ will decrease the amplitude\\
+For nearby stations ($r < r_0$):\\
+$p > 0$ will decrease the amplitude\\
+$p < 0$ will increase the amplitude\\
+
 \subsection{L2 norm of data and green's function}
 Before computing the norm, both the data and the green's function are subjected to the weighting factor:
 \eqa
@@ -502,7 +519,10 @@ E_2(\bem)=E(\phi,\delta,\lambda) = \frac{\ln \left ( \frac{E}{E_{min}} \right )}
 \label{err4prob}
 \en
 where $T$ is any multiplication factor. This $T$ could be thought of as temparature in the energy function for {\it simulated annealing}.
+
+%------------------------------------------
 \subsection{Misfit to Posterior pdf}
+XXX: THIS SECTION NEEDS TO BE UPDATED (SEE SilwalTape2016) \\ 
 The scaled logarithmic variation Eq.\ref{err4prob} of misfit could be used to get the posterior probability of solution in model space. 
 \eq
 \sigma(\bem) = \frac {\exp \left (-E_2(\bem) \right )}{k}
@@ -536,6 +556,57 @@ Using this transformation, we can find $\sigma'(\bxi)$ from $\sigma(\bem)$. Howe
 \frac{\sigma(\bem)}{\mu(\bem)} &=& \frac{\sigma'(\bxi)}{\mu'(\bxi)}\\
 L(\bem)&=& L'(\bxi)
 \ena
+
+\pagebreak
+\section{Combining Polarity and Waveform misfit}
+-X flag specifies the weight for combining polarity and waveform misfit.
+
+For example, If the polarity weight is $\omega$, \ie \ -X$\omega$
+\begin{align*}
+polarity\_weight &= \omega \\
+waveform\_weight &= 1 - \omega \\
+polarity\_error, \phi_{pol} &= \omega \times \frac{N_p}{N}\\
+waveform\_error, \phi_{wf} &= [SAME\ AS\ BEFORE] \\
+total\_misfit, \Phi &= \phi_{pol} + (1 - \omega) \cdot \phi_{wf}
+\end{align*}
+
+Waveform error is not changed so that:
+\begin{enumerate}
+\item One can still use the post-processing scripts (MATLAB, perl). The waveform error and polarity misfit (number of stations at which polarity is not matching) are also saved in the binary files. If we make the change here then we have to make sure to make changes in other scripts. 
+% This would entail (a) remove the total\_misft.m section from MATLAB scripts (b). Correct K factor is being chosen
+\item {\bf VR estimation is based on waveform misfit and not total misfit. } This means VR in the new CAP is going to same as in old CAP. Maximum VR is NOT the best solution! Minimum total misfit IS the best solution.
+\end{enumerate}
+
+\subsubsection*{Possible way of computing VR}
+\begin{align*}
+VR_{wf} &= 100 \times \left( 1 - \left (\frac{\phi_{wf}}{u} \right)^2 \right) \\
+VR_{pol} &= 100 \times \left( 1 - \left ( \frac{N_p}{N} \right) ^2 \right ) \\
+VR &=  \omega \cdot VR_{pol} + (1 - \omega) \cdot VR_{wf} \\
+\end{align*}
+
+Here is how it looks in the code (sub\_inversion.c):
+\begin{verbatim}
+ // waveform misfit
+       sol = get_tshift_corr_misfit(nda,obs0,max_shft,tie,norm,mtensor,amp,sol);
+       sol.wferr = sol.wferr/Ncomp;    // Ncomp = number of components.
+       VR = 100.*(1.-(sol.wferr/data2)*(sol.wferr/data2));
+
+	    //---------------- combine polarity and waveform misfit---------------------------
+	    // If -X flag is specified sol.err will contain the total misfit
+	    if ((int)pol_wt != 999){
+	      misfit_pol_weight = pol_wt; // this should come as an input from cap.pl (-X flag)
+	      misfit_wf_weight = 1 - misfit_pol_weight;
+	      sol.polerr = misfit_pol_weight * misfit_fmp/(float)nda;
+	      sol.err = sol.polerr + misfit_wf_weight * sol.wferr/data2;
+	    }
+	    // For older examples:
+	    // In case -X flag is not specified sol.err will contain the waveform misfit
+	    else { 
+	      sol.err = sol.wferr;
+	    }
+\end{verbatim}
+
+\pagebreak
 %=================
 \addcontentsline{toc}{section}{Bibliography}
 \bibliographystyle{agu}
