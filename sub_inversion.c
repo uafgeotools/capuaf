@@ -336,7 +336,7 @@ SOLN searchMT(
     int sol_count, nreject, npol_sol;
     int isol, isol_best;
     int imag, nmag;
-    float VR, best_misfit;
+    float VR, best_misfit, VR_wf, VR_pol;
     int tid;
     FILE * fid_warn;
 
@@ -495,6 +495,14 @@ SOLN searchMT(
 	    // In case -X flag is not specified sol.err will contain the waveform misfit
 	    else { 
 	      sol.err = sol.wferr;
+	    }
+
+	    // XXX: Block for testing new VR estimate
+	    if (1) {
+	      VR_wf = 100.*(1.-(sol.wferr/data2)*(sol.wferr/data2));
+	      VR_pol = 100.*(1.-(misfit_fmp/(float)nda)*(misfit_fmp/(float)nda));
+	      VR = misfit_pol_weight * VR_pol + misfit_wf_weight * VR_wf;
+	      VR = 100.0 * (1 - (sol.err * sol.err));
 	    }
 
             // fill additional parameters
