@@ -98,7 +98,7 @@ int FTC_data=1, FTC_green=0;// for original CAP set FTC_data=0, FTC_green=0
 
 /* allows use of polarities even when weight=0.
  * Note CAP still needs at least 1 waveform for the inversion */
-int skip_zero_weights=1;    // for original CAP set skip_zero_weights=1
+int skip_zero_weights=0;    // for original CAP set skip_zero_weights=1
 
 // Flag to create regular grid as in Alvizuri & Tape (2016) and Silwal & Tape (2016).
 // NOTE reproducibility may not be exact since grid spacing uses function gridvec.
@@ -783,9 +783,9 @@ int main (int argc, char **argv) {
 
   //Compute variance reduction
   if (norm==1)
-    VR = 100*(1.-(sol.wferr/data2)*(sol.wferr/data2));
+    VR = 100*(1.-(sol.err)*(sol.err));
   if (norm==2) 
-    VR = 100*(1.-sol.wferr/data2);
+    VR = 100*(1.-sol.err);
 
 /***** output waveforms for both data and synthetics ****/
   i = mm[1]; if(mm[0]>i) i=mm[0];
@@ -948,7 +948,7 @@ if (plot==1) {
        //               4    5    6    7     8     9     10 
        fprintf(f_out," %1d %6.2f %2d %5.2f %5.2f %8.2e %8.2e",
                obs->com[k].on_off, 
-               sol.error[i][k]*100/(Ncomp*sol.wferr), 
+               sol.error[i][k]*100/(Ncomp*sol.wferr*data2), 
                kc, 
                shft0[i][k] + dt * sol.shft[i][k], 
                log(maxamp_obs[i][k]/maxamp_syn[i][k]), 

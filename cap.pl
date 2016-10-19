@@ -236,7 +236,7 @@ $usage =
     -U  directivity, specify rupture direction on the fault plane (off).
     -V	apparent velocities for Pnl, Love, and Rayleigh waves (off).
     -W  use displacement for inversion; 1=> data in velocity; 2=> data in disp ($disp).
-    -X  weight for normalized polarity misfit [0,1]. This is combined with the waveform misfit
+    -X  weight for normalized polarity misfit [0,1). This is combined with the waveform misfit. Don't use -X1 since there could be multiple solutions that could fit the observed polarity, use -X.99 instead in order to include atleast some waveform measure. Suggested value = 0.5
     -Y  specify norm (1 - L1 norm; 2 - L2 norm)
     -Z  specify a different weight file name ($weight).
 

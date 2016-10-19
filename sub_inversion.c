@@ -478,7 +478,7 @@ SOLN searchMT(
             // waveform misfit
             sol = get_tshift_corr_misfit(nda,obs0,max_shft,tie,norm,mtensor,amp,sol);
             sol.wferr = sol.wferr/Ncomp;    // Ncomp = number of components.
-            VR = 100.*(1.-(sol.wferr/data2)*(sol.wferr/data2));
+	    sol.wferr = sol.wferr/data2;    // normalize by data
 
 	    //---------------- combine polarity and waveform misfit---------------------------
 	    // XXX: Ongoing
@@ -486,9 +486,9 @@ SOLN searchMT(
 	    if ((int)pol_wt != 999){
 	      misfit_pol_weight = pol_wt; // this should come as an input from cap.pl (-X flag)
 	      misfit_wf_weight = 1 - misfit_pol_weight;
-	      sol.polerr = misfit_pol_weight * misfit_fmp/(float)nda;
-	      sol.err = sol.polerr + misfit_wf_weight * sol.wferr/data2;
-	      //fprintf(stderr,"---> %f %f %f %f\n",sol.err/data2, misfit_fmp/(float)nda, total_misfit, misfit_pol_weight);
+	      sol.polerr = (float)misfit_pol_weight * misfit_fmp/nfm;
+	      sol.err = sol.polerr + misfit_wf_weight * sol.wferr;
+	      //fprintf(stderr,"---> %f %f %f %f\n",sol.err/data2, (float)misfit_fmp/nfm, total_misfit, misfit_pol_weight);
 	      //sol.err = total_misfit; // replace waveform misfit sol.err by total misfit
 	    }
 	    // For older examples:
@@ -497,18 +497,19 @@ SOLN searchMT(
 	      sol.err = sol.wferr;
 	    }
 
-	    // XXX: Block for testing new VR estimate
-	    if (1) {
-	      VR_wf = 100.*(1.-(sol.wferr/data2)*(sol.wferr/data2));
-	      VR_pol = 100.*(1.-(misfit_fmp/(float)nda)*(misfit_fmp/(float)nda));
-	      VR = misfit_pol_weight * VR_pol + misfit_wf_weight * VR_wf;
-	      VR = 100.0 * (1 - (sol.err * sol.err));
-	    }
+	    // Compute VR
+	    VR = 100.0 * (1 - (sol.err * sol.err));
+	    //if (1) {
+	      //VR_wf = 100.*(1.-(sol.wferr/data2)*(sol.wferr/data2));
+	      //VR_pol = 100.*(1.-(misfit_fmp/(float)nda)*(misfit_fmp/(float)nda));
+	      //VR = misfit_pol_weight * VR_pol + misfit_wf_weight * VR_wf;
+	      //VR = 100.0 * (1 - (sol.err * sol.err));
+	    //}
 
             // fill additional parameters
             arrayMT[isol].mw           = vec_mag[imag];
             arrayMT[isol].misfit_fmp   = (float) misfit_fmp;
-            arrayMT[isol].misfit_wf    = sol.wferr/data2;
+            arrayMT[isol].misfit_wf    = sol.wferr;
             arrayMT[isol].VR           = VR;
             arrayMT[isol].v            = gamma2v(arrayMT[isol].gamma);
             arrayMT[isol].w            = delta2w(arrayMT[isol].delta);
@@ -526,7 +527,7 @@ SOLN searchMT(
             arrayMij[isol].mrp = -mtensor[1][2];
             arrayMij[isol].mtp = -mtensor[0][1];
             arrayMij[isol].mw           = vec_mag[imag];
-            arrayMij[isol].misfit_wf    = sol.wferr/data2;
+            arrayMij[isol].misfit_wf    = sol.wferr;
             arrayMij[isol].misfit_fmp   = (float) misfit_fmp;
 	    
 #endif
@@ -638,7 +639,7 @@ SOLN searchMT(
                     vec_mag[imag],
                     arrayMT[isol_best].gamma * r2d, arrayMT[isol_best].delta * r2d,
                     arrayMT[isol_best].kappa * r2d, arrayMT[isol_best].theta * r2d, arrayMT[isol_best].sigma * r2d,
-                    misfit_wf_weight * best_sol.wferr/data2, best_sol.polerr, best_sol.err, VR);
+                    misfit_wf_weight * best_sol.wferr, best_sol.polerr, best_sol.err, VR);
         }
 	    }
 
