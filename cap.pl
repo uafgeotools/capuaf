@@ -615,7 +615,32 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     print STDERR "GRID TYPE = $grid_type ($grid_type_label search) | NSOL = $nsol\n";
     print STDERR "-------------------------------------------------------------\n\n";
 
-    open(WEI, "$eve/$weight") || next;
+# --------------------------
+# Clean this weight file by removing stations that have nor information (no polarity, no P weight, no S weight)
+    #open(WEI, "$eve/$weight") || next;
+    $input_weight_file = "$eve/$weight";
+    $clean_weight_file = "$eve/WEIGHT_CLEAN.dat";
+
+    open(IN,$input_weight_file) || next;
+    @weightlines = <IN>; $nsta = @weightlines;
+    close(IN);
+    open(OUT,'>',$clean_weight_file);
+    
+    for ($i = 0; $i < $nsta; $i++){
+	$ipol = 1;
+	($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift)=split(" ",@weightlines[$i]);
+	($stnm,$pol) = split("/",$name);
+	if ($pol eq ''){$ipol = 0;}  # no polarity information
+	if ($ipol==0 && $pv==0 && $pr==0 && $sv==0 && $sr==0 && $st==0){
+	    next;} # No information available - skip this station
+	else {     # save in new weight file
+	    print OUT "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";
+	}
+    }
+    close(OUT);
+# --------------------------
+
+    open(WEI,$clean_weight_file);
     @wwf=<WEI>;
     close(WEI);
     $ncom = 2 if $wwf[0] =~ / -1 /;
