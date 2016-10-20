@@ -416,7 +416,6 @@ sub plot {
 # PLMK_XP    11.2/0.14  1   0.67 95 -0.08  0.64 8.19e-07 4.32e-07 1   0.79 80 -0.08 -0.09 8.05e-07 8.79e-07 1   3.48 79  1.89  0.84 9.47e-07 4.10e-07 1   4.47 75  1.89  1.24 1.03e-06 2.98e-07 1   3.68 80  0.23  1.61 7.56e-07 1.51e-07  1   0.45
 #                                                                                                                                                                                               |     |   |   |      |    |         |      |    |
 #                                                                                                                                                                                               30    31 32   33    34    35        36     37   38
-
 # test if weight or polarity exists. if neither then print nothing and dont skip space
         if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0 || $keepBad!=0)){
 
@@ -636,8 +635,8 @@ sub plot {
 
     open(XPLT, $xplt5c);
     foreach (@tklh) {
-      @aa_split = split('\.', $aa[2]);
       @aa = split;
+      @aa_split = split('\.', $aa[2]);
       printf XPLT "%s %s 8 0 0 CB %s.%s.%s\n", 
           $aa[0], $aa[1], $aa_split[1], $aa_split[2], $aa_split[3];
     }
