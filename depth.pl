@@ -23,6 +23,7 @@ $imodel = 1; # to draws bars at layer interfaces
 ($rsl,$rsl2,@event) = @ARGV; # input Event and Tensor lines from files cus_NNN.out, and event id
 #(@event,$smod)=@ARGV;
 
+
 # name of junk files for storing header info while plotting
 #$rsl = "OUTPUT_DIR/junk1.out";
 #$rsl2 = "OUTPUT_DIR/junk2.out";
@@ -79,7 +80,7 @@ while (@event)
     @aa = splice(@event,0,10); # 0=offset, 10=N elements (each element space separated)
     #$odir = "$aa[0]";  # If all the output files (*.out) are in the $eve directory
     $odir = "OUTPUT_DIR";  # If all the output files (*.out) are in the OUTPUT_DIR directory
-    #print STDERR "debug. aa=@aa event=@event\n";
+    # print STDERR "debug. aa=@aa event=@event\n";
     $i=0;
     #$xx = "-K -Ba50f5/a20f5WSne";   # original <-- not enough ticks+labeling
     #$xx = "-K ${Bscale}WS -P";
@@ -98,9 +99,12 @@ while (@event)
 	    # New format:
 	    #   0           1          2               3                4   5    6         7  8   9   10   11        12    13   14  15     16      17  18   19    20
 	    # Event 20160124123742054 Model 20160124123742054_scak_100 FM   50 59.063911   46 Mw 4.40 rms 7.310e-01  3660 CLVD 0.00 ISO   0.000000 VR 46.6 data2 1.297e-06
+	    # OR
+	    # Event Little_Skull_Main Model Little_Skull_Main_wes_001 FM  243 67.006607  -21 Mw 5.10 rms 8.262e-01  2880 CLVD 0.00 ISO   0.000000 VR 31.7 data2 1.986e-05
 	    $line[$ii]=$_;
 	    @bb=split;
-	    ($ename,$smodel,$dep[$ii])=split('_',$bb[3]); # split cus_001 to get depth (= 001km) -- $dep is used for y-axis range
+	    ($ename,$smodel,$dep[$ii])=split('_',$bb[3]); # split 20160124123742054_scak_100 to get depth (= 100km) -- $dep is used for y-axis range
+	    (undef,undef,$ename,$smodel,$dep[$ii])=split('_',$bb[3]); # split Little_Skull_Main_wes_001 to get depth (= 001km) -- $dep is used for y-axis range
 	    $strike[$ii]=$bb[5];		   # not needed
 	    $dip[$ii]=$bb[6];			   # not needed
 	    $rake[$ii]=$bb[7];			   # not needed
