@@ -95,6 +95,9 @@ while (@event)
 	    chop;   
 	    # 20130103 calvizuri - example input to chop:
 	    # Event 20080418093700 Model cus_001 FM 291 51 -13 Mw 5.10 rms 3.748e-02   110 ERR   2   5   8 ISO 0.16 0.11 CLVD 0.14 0.08
+	    # New format:
+	    #   0           1          2               3                4   5    6         7  8   9   10   11        12    13   14  15     16      17  18   19    20
+	    # Event 20160124123742054 Model 20160124123742054_scak_100 FM   50 59.063911   46 Mw 4.40 rms 7.310e-01  3660 CLVD 0.00 ISO   0.000000 VR 46.6 data2 1.297e-06
 	    $line[$ii]=$_;
 	    @bb=split;
 	    ($ename,$smodel,$dep[$ii])=split('_',$bb[3]); # split cus_001 to get depth (= 001km) -- $dep is used for y-axis range
@@ -103,8 +106,8 @@ while (@event)
 	    $rake[$ii]=$bb[7];			   # not needed
 	    $mw[$ii]=$bb[9];
 	    #    printf STDERR "debug. mw[$ii]=%lf\n",$mw[$ii];
-	    $rms[$ii]=$bb[11]/$bb[26]; # Normalized misfit = Residual/Data_norm
-	    $vr[$ii]=$bb[24];
+	    $rms[$ii]=$bb[11]; # this is the total misfit= polarity error + waveform error
+	    $vr[$ii]=$bb[18];
       
 	    if ($vr[$ii]>$max)
 	    { 
