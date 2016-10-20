@@ -10,12 +10,10 @@
 # Full moment tensors for small events ($\mw < 3$) at Uturuncu volcano, Bolivia
 #   
 # This script requires data generated during CAP inversion and post processed
-# in matlab with capout_subset_fmp.m
-#
-# 20160406 celso alvizuri - cralvizuri@alaska.edu 
-#
+# in matlab with cap_fmt_misfit.m
+#   
+# 20150109 celso alvizuri - cralvizuri@alaska.edu 
 #-----------------------------------------------------------
-#
 # If you use this code for your own research, please cite:
 # 
 # @article{AlvizuriTape2016,
@@ -32,16 +30,24 @@
 #
 #-----------------------------------------------------------
 
+#-----------------------------------------------------------
+#                       CHANGE HERE
+datadir_fmt="OUTPUT_DIR"
+
 # preliminary flags
-plot_misfit_fmp=""      # yes/no
-plot_misfit_fmp="yes"   # yes/no
+plot_misfit_fmp="yes"   # yes = first motion polarities were used
+plot_misfit_fmp=""      # 
 
 use_kludge="yes"   # yes/no. for plotting enlarged beachballs to avoid psmeca bug
 use_kludge=""      # yes/no. for plotting enlarged beachballs to avoid psmeca bug
 # use with matlab scripts
 
-flag_make_cpt=""      # yes/no. compute CPT files or not
+flag_make_cpt=""      # yes = compute CPT files. Useful when setting 
 flag_make_cpt="yes"   # yes/no. compute CPT files or not
+
+region="llnl"   # ak, llnl, utu
+
+#-----------------------------------------------------------
 
 # input from command line
 evid=$1
@@ -55,122 +61,49 @@ then
     printf "eg. $0 20100516163454464 utuhalf 5\n"
     exit
 fi
-# if [ -n "$4" ] & [ -n "$5" ] & [ -n "$6" ] & [ -n "$7" ] ; then
-#     wP=`printf "P%02d" $4`
-#     wV=`printf "V%02d" $5`
-#     wR=`printf "R%02d" $6`
-#     wS=`printf "S%02d" $7`
-#     job_name="_${wP}_${wV}_${wR}_${wS}"
-# 
-#     # if inputs 4-7 present then use them as label for inversion type
-#     #filename_add="P$4_V$5_R$6_S$7_"
-#     #inputdir_add="_P$4_V$5_R$6_S$7"
-#     #filename_add="${wP}_${wV}_${wR}_${wS}_"
-#     #inputdir_add="_${wP}_${wV}_${wR}_${wS}"
-#     #echo ${filename_add} ${inputdir_add}
-# 
-#     if [ "$4" == "1" ] || [ "$4" == "01" ] ; then
-#         inversion_type="p PV $5 PR $6 Surf $7"
-#     elif [ "$4" == "0" ] || [ "$4" == "00" ] ; then
-#         plot_misfit_fmp=""      # yes/no
-#         inversion_type="np PV $5 PR $6 Surf $7"
-#     else
-#         printf "$0: abort. expecting pol label 0 or 1, got: \"$4\"\n"
-#         exit 1
-#     fi
-#     printf "\n$0:*** WARNING: using directory for main event tests ***\n"
-#     printf "$0: using labels for inversion type: $inversion_type \n"
-#     datadir_fmt_top="dw_20151024_mainevent_tests"   # test for main event
-# fi
-# 
-# if [ -n "${8}" ] ; then
-#     st=`printf "%s" $8`  # source type
-#     job_name="${job_name}_${st}"
-# fi
-# 
-# if [ -n "${9}" ] ; then
-#     # [sort of security check] more labels than 8 is prob too much. abort
-#     printf "$0: abort. too many labels.\n"
-#     printf "... 9=$9 10=${10} .. "
-#     exit
-# fi
-# 
+
 # clean input vars
 depth_label="$depth"
 depth=`printf "%03d" $depth`
-# 
-# # DATA DIRECTORY
-# if [ -z "${datadir_fmt_top}" ] ; then
-#     #datadir_fmt="${datadir_fmt_top}/$evid/fmt"
-#     #datadir_fmt="${datadir_fmt_top}/job_${evid}_P01_V01_R01_S00/$evid/fmt"
-#     #datadir_fmt="${datadir_fmt_top}/job_${evid}/$evid/fmt"
-#     #datadir_fmt_top="."
-#     #datadir_fmt_top="dw_20150604_results_fmtpaper_test_components_utuhalf_004"
-#     #datadir_fmt_top="dw"
-#     #datadir_fmt_top="dw_test"
-#     #datadir_fmt_top="testdir/job_20100516063454464"
-#     #datadir_fmt_top="dw_20150618_utuhalf_P00_V10_R01_S10_L_dt"
-#     datadir_fmt_top="inv20150618_utuhalf_P01_V10_R01_S10_L_dt"
-# fi
-
-#datadir_top="${datadir_main}"
-#datadir_job="job_${evid}${job_name}"
-#datadir_fmt="${datadir_top}/${datadir_job}/$evid/fmt"
-
-#evid="20100516085611725" ; model="utuhalf" ; depth="010"
-
-datadir_fmt="/home/alvizuri/shared/plutons/data/${evid}"
 
 printf "\n$0: using data directory:\n%s\n\n" ${datadir_fmt}
 
 grid="/home/alvizuri/shared/data/gmt/srtm_23_17.grid"
 grad="/home/alvizuri/shared/data/gmt/srtm_23_17.grad"
+#grid="/home/alvizuri/shared/data/gmt/ETOPO1_Bed_g.grid"
+#grad="/home/alvizuri/shared/data/gmt/ETOPO1_Bed_g.grad"
 
 # size of best beachballs on the lune
 size_lune_bb=0.32   # KLUDGE = 0.11. non kludge=0.32
+size_lune_bb=0.15   # KLUDGE = 0.11. non kludge=0.32
+size_lune_bb=0.22   # Hoya
 
 #-----------------------------------------------------------
 # fmt data
 #-----------------------------------------------------------
-# data_stations="${datadir_fmt}/${evid}_${model}_${depth}_toa_az_stn_fmp"
-# data_misfit_fmp="${datadir_fmt}/${evid}_${model}_${depth}_fmp_summary"
-# #data_misfit_wf="${datadir_fmt}/${evid}_${model}_${depth}_misfit_wf_psmeca"
-# data_misfit_wf="${datadir_fmt}/${evid}_${model}_${depth}_misfit_wf_psmeca_fix"
-# data_misfit_wf_best_solbb="${datadir_fmt}/${evid}_${model}_${depth}_misfit_wf_psmeca_best_sol"
-# data_misfit_wf_best_sol="${datadir_fmt}/${evid}_${model}_${depth}_misfit_wf_psmeca_best_sol"
-# data_inv_result="${datadir_fmt}/../${model}_${depth}.out"
-# 
-# #data_psmeca_legend="${datadir_fmt}/${evid}_${model}_${depth}_psmeca_legend_psmeca_Mw"
-# data_psmeca_legend="${datadir_fmt}/${evid}_${model}_${depth}_psmeca_legend_IEXP_psmeca_custom"
-# #     data_psmeca_legend="${datadir_fmt}/${evid}_IEXP_custom"
-# #     data_psmeca_legend="${datadir_fmt}/${evid}_IEXP_psmeca_custom"
-# #     data_psmeca_legend="${datadir_fmt}/../../../${evid}_IEXP_psmeca_custom"
-# 
-# if [ "$use_kludge" == "yes" ] ; then
-#     printf "\n *** $0: WARNING: Using kludge solutions ***\n\n"
-#     #data_misfit_wf="${data_misfit_wf}_fix_1"                           
-#     #data_misfit_wf_best_sol="${data_misfit_wf_best_sol}_fix_bbsize"    
-#     data_misfit_wf="${data_misfit_wf}_fix_2_IEXP_psmeca"                
-#     # data_psmeca_legend="${data_psmeca_legend}_custom"                 
-#     data_psmeca_legend="${datadir_fmt}/${evid}_${model}_${depth}_psmeca_legend_IEXP_psmeca_custom" # KLUDGE! use with 
-#     size_lune_bb=0.09   # KLUDGE!   # old value=0.11
-# fi
-# 
+          data_stations="${datadir_fmt}/${evid}_${model}_${depth}_fmpdata.txt"
+        data_misfit_fmp="${datadir_fmt}/${evid}_${model}_${depth}_misfit_fmp"
+         data_misfit_wf="${datadir_fmt}/${evid}_${model}_${depth}_misfit_wf_psmeca"
+data_misfit_wf_best_sol="${datadir_fmt}/${evid}_${model}_${depth}_best_sol_psmeca"
+        data_inv_result="${datadir_fmt}/${evid}_${model}_${depth}.out"
+     data_psmeca_legend="${datadir_fmt}/${evid}_${model}_${depth}_psmeca_legend_IEXP_psmeca_custom"
 
-            data_stations="${datadir_fmt}/${evid}_${model}_${depth}_fmpdata.txt"
-          data_misfit_fmp="${datadir_fmt}/${evid}_${model}_${depth}_misfit_fmp"
-           data_misfit_wf="${datadir_fmt}/${evid}_${model}_${depth}_misfit_wf_psmeca"
-  data_misfit_wf_best_sol="${datadir_fmt}/${evid}_${model}_${depth}_best_sol_psmeca"
-          data_inv_result="${datadir_fmt}/${model}_${depth}.out"
+if [ "$use_kludge" == "yes" ] ; then
+    printf "\n *** $0: WARNING: Using kludge solutions ***\n\n"
+    #data_misfit_wf="${data_misfit_wf}_fix_1"                           
+    #data_misfit_wf_best_sol="${data_misfit_wf_best_sol}_fix_bbsize"    
+    data_misfit_wf="${data_misfit_wf}_fix_2_IEXP_psmeca"                
+    # data_psmeca_legend="${data_psmeca_legend}_custom"                 
+    data_psmeca_legend="${datadir_fmt}/${evid}_${model}_${depth}_psmeca_legend_IEXP_psmeca_custom" # KLUDGE! use with 
+    size_lune_bb=0.09   # KLUDGE!   # old value=0.11
+fi
 
-#data_misfit_wf_best_solbb="${datadir_fmt}/${evid}_${model}_${depth}_misfit_wf_psmeca_best_sol"
 # check that data exists
 if [ -e $data_stations ] \
     & [ -e $data_misfit_fmp ] \
     & [ -e $data_misfit_wf ] \
-    & [ -e $data_misfit_wf_best_sol ] \
-    & [ -e $data_psmeca_legend ] \
-    & [ -e $data_inv_result ]
+    & [ -e $data_misfit_wf_best_sol ] 
+
 then
     printf "$0: using input files:\n"
     printf "%s\n%s\n%s\n%s\n%s\n%s\n" $data_stations $data_misfit_fmp $data_misfit_wf $data_inv_result $data_psmeca_legend $data_misfit_wf_best_sol
@@ -187,21 +120,18 @@ evdep=`awk 'NR==2 {printf "%.1f", $8}'  ${data_inv_result}`
 evmag=`awk 'NR==1 {printf "%.2f", $10}' ${data_inv_result}`
 printf "\n$0: event data: $data_inv_result: $evlon $evlat $evdep $evmag\n"
 
-depth2=`printf "%.0f" $depth`
-depth_label="$depth2"
 label_evll="Lon $evlon, Lat $evlat"
 label_evdp="Dep ${evdep} km (inversion ${depth_label} km)"
 
 # mid bb size in scales should have same sizes
 #size_lune_bb=`awk 'NR==2 {printf "%f", 0.0021291531* ($13)^2 - 0.0211156419*($13) + 0.1369811941}' $data_psmeca_legend`
-size_lune_bb="0.18"
 
 # ONLY FOR MAIN EVENT (uturuncu FMT paper) -- inversion depth is from depth test
 # which we only did for the main event for this paper
-#if [ ${evid} == "20100516063454464" ] ; then
-#    label_evdp="Dep -0.6 km (inversion ${depth_label} km)"
-#    printf "\n *** $0: WARNING: MAIN EVENT. using inversion depth from DEPTH TEST = -0.6km *** \n\n"
-#fi
+if [ ${evid} == "20100516063454464" ] ; then
+    label_evdp="Dep -0.6 km (inversion ${depth_label} km)"
+    printf "\n *** $0: WARNING: MAIN EVENT. using inversion depth from DEPTH TEST = -0.6km *** \n\n"
+fi
 
 # output
 out="${datadir_fmt}/${evid}_${model}_${depth}_misfit.ps"
@@ -263,20 +193,41 @@ shiftf="-Xa3.5i -Ya-0.15i"
 shiftg="-Xa6.8i -Ya0.3i"   # mag scale
 
 #       COLUMN 1
-mapregion="-R-67.75/-66.7/-22.7/-21.8 -Jm3.0" 
-grdview $grid -I$grad ${mapregion} -O -K $shifta -Csrtm_utu_gray.cpt -Qi200 >> $out
-psbasemap ${mapregion} -O -K $shifta -Ba0.5f0.1WSne -L-67.6/-22.58/-22.3/10+p1p,0/0/0+fwhite >> $out    #plutons
+#-----------------------------------------------------------
+# geo regions
+# PLUTONS
+if [ "$region" == "utu" ] ; then
+    gmtregion="-R-67.75/-66.7/-22.7/-21.8 -Jm3.0"; ticks="-Ba0.5f0.1WSne"; bmscale="-L-67.6/-22.58/-22.3/10+p1p,0/0/0+fwhite"
+    grdview $grid -I$grad $gmtregion -O -K $shifta -Csrtm_utu_gray.cpt -Qi200 >> $out # PLUTONS
+elif [ "$region" == "llnl" ] ; then
+    # LLNL
+    gmtregion="-R-125.5/-104/32/48 -Jm0.135"; ticks="-Ba5f1WSne"; bmscale="-L-107.0/46.0/40/100+p1p,0/0/0+fwhite"
+    pscoast $gmtregion -O -V -K -Na -Df -W1 -S100/150/255 -A500 $shifta >> $out
+elif [ "$region" == "ak" ] ; then
+    # ALASKA
+    gmtregion="-R-160/55/-134/67r -JS-150/90/7.0c"; ticks="-Ba10f5g10WSne/a5g5"; bmscale="-L-145/57/57/100+p1p,0/0/0+fwhite"
+    pscoast $gmtregion -O -V -K -Na -W100/100/100 -Di \
+        -I1/2p/0/192/255 -I2/2p/0/192/255\
+        -G230/230/230 -S0/192/255 $shifta   >> $out
+else
+    echo "check region!"
+    exit
+fi
+    psbasemap $gmtregion -O -K $shifta $ticks $bmscale >> $out    # PLUTONS
+#-----------------------------------------------------------
 # station + polarity
-awk '{print $3, $4, 6, 0, 0, "CB", $2}' $data_stations \
-    | pstext ${mapregion} -O -K $shifta  -S2.0p,255/255/255 -D0/0.06  >> $out
+#awk '{print $3, $4, 6, 0, 0, "CB", $2}' $data_stations \
+#    | pstext $gmtregion -O -K $shifta  -S2.0p,255/255/255 -D0/0.06  >> $out
+awk '{print $3, $4, $2}' $data_stations | sed 's/\./ /g' | awk '{print $1"."$2, $3"."$4, 6, 0, 0, "CB", $7}' \
+    | pstext $gmtregion -O -K $shifta  -S2.0p,255/255/255 -D0/0.06  >> $out
 awk '{ if ($5>0) print $3, $4}' $data_stations \
-    | psxy ${mapregion} -O -K $shifta -Sc0.25c -G0/175/255 -W1.5p,0/0/0 >> $out
+    | psxy $gmtregion -O -K $shifta -Sc0.25c -G0/175/255 -W1.5p,0/0/0 >> $out
 awk '{ if ($5<0) print $3, $4}' $data_stations \
-    | psxy ${mapregion} -O -K $shifta -Sc0.25c -G255/255/255 -W1.5p,0/0/0 >> $out
+    | psxy $gmtregion -O -K $shifta -Sc0.25c -G255/255/255 -W1.5p,0/0/0 >> $out
 awk '{ if ($5==0) print $3, $4}' $data_stations \
-    | psxy ${mapregion} -O -K $shifta -Ss0.25c -W1.5p,0/0/0 >> $out
+    | psxy $gmtregion -O -K $shifta -Ss0.25c -W1.5p,0/0/0 >> $out
 # epicenter
-echo "$evlon $evlat" | psxy  ${mapregion} -O -K $shifta -Sa0.5c -W0.5p -G255/0/0 >> $out
+echo "$evlon $evlat" | psxy  $gmtregion -O -K $shifta -Sa0.5c -W0.5p -G255/0/0 >> $out
 
 # mini lune plot with polarity misfits
 printf "$0: work on mini lune plot with polarity misfit\n"
@@ -290,7 +241,7 @@ psbasemap $proj_lune_fmp $area_lune_fmp -Bg20/g20 -G255 -O -K $shiftb >> $out
 
 # if polarity misfit not calculated (eg DC-only search), plot only square at center
 if [ "$plot_misfit_fmp" == "yes" ]; then
-    awk '{print $1, $2, $3}' $data_misfit_fmp \
+    awk '{print $1,$2,$3}' $data_misfit_fmp \
         | psxy -N -Sc4p -Ccpt_dots  $proj_lune_fmp $area_lune_fmp -O -K $shiftb >> $out
     #        | psxy -N -Sc4.5p -W0.0p -Ccpt_dots  $proj_lune_fmp $area_lune_fmp -O -K $shiftb >> $out
     echo "0.0 0.0 " | psxy -N -S+15p -W1p,150/150/150   $proj_lune_fmp $area_lune_fmp -O -K $shiftb >> $out
@@ -349,8 +300,10 @@ echo "0 0" | psxy $proj_best_sol $shifte -S+0.2i -N -W1.5p,black -O -K >> $out
 
 # x, y, proj_best_sol_best_bb, angle, fontno, justify, text
 # print all stations regardless of pol info
-awk  '{ print $8, $10, 7, 0, 1, "CM", $2 }' $data_stations  \
+awk '{print $8, $10, $2}' $data_stations | sed 's/\./ /g' | awk '{print $1"."$2, $3"."$4, 7, 0, 1, "CM", $7}' \
     | pstext $proj_best_sol $shifte -D0/0.12 -S1.5p,white -N -O -K  >> $out
+#awk  '{ print $8, $10, 7, 0, 1, "CM", $2 }' $data_stations  \
+#    | pstext $proj_best_sol $shifte -D0/0.12 -S1.5p,white -N -O -K  >> $out
 
 #       COLUMN 2
 # plot best solutions on the lune
@@ -397,7 +350,7 @@ echo  30.0   0.0 10 0 1 LM CLVD  | pstext -N $proj_lune_wf $area_lune_wf -O -K $
 psmeca ${data_misfit_wf} $proj_lune_wf $area_lune_wf -Sm${size_lune_bb}i -N -Zcpt_misfit -W0.5p,100/100/100 -L -O -K $shiftf >> $out
 
 # show best solution on lune
-awk '{print $1, $2}' "${data_misfit_wf_best_sol}" | psxy $area_lune_wf $proj_lune_wf -N -Ss23p -W2.0p,0/255/0 $shiftf -O >> $out
+psxy ${data_misfit_wf_best_sol} $area_lune_wf $proj_lune_wf -N -Ss23p -W2.0p,0/255/0 $shiftf -O >>$out
 
 # magnitude scale
 #psmeca ${data_psmeca_legend} -R0/4/0/4 -JX2.5 -O -K -N $shiftg -Sm${size_lune_bb}i -G150/150/150 >> $out
