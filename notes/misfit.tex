@@ -28,7 +28,7 @@
 \newcommand{\edes}{\end{description}}
 \renewcommand*{\arraystretch}{1.4}
 
-\graphicspath{{/home/vipul/latex/images/}}
+\graphicspath{{/home/vipul/REPOSITORIES/cap/notes/figures/}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -242,6 +242,21 @@ M_w &=& \frac{2}{3}(\log_{10}(A)) + \frac{2}{3}(20 -16.1)\\
 A &=& \frac{M_0}{10^{20}}
 \ena
 P.S. Instead of $M_0$, $A$ will be used to obtain the scaled moment tensor elements. 
+
+\subsection{Source duration}
+Use -L flag. CAP now outputs the source function file (see OUTPUT\_DIR/srcfile). 
+The source function a trapezoidal function with rise\_time = $0.5 \times$ source duration ($\Delta t$)
+\eq
+\Delta t = (int) 10^{\frac{(Mw - 5)}{2} + 0.5}
+\en
+For positive real numbers (int) function in perl is same as floor function of MATLAB, \ie rounds towards zero. 
+
+Then it puts some sanity constrains so that duration do not exceed [1,9] seconds. Use -L flag for manual source duration length.
+\begin{verbatim}
+  $dura = 1 if $dura < 1;
+  $dura = 9 if $dura > 9;
+\end{verbatim}
+
 
 \subsection{Fault plane solution to Moment tensor}
 \eqa
@@ -559,6 +574,7 @@ L(\bem)&=& L'(\bxi)
 
 \pagebreak
 \section{Combining Polarity and Waveform misfit}
+\cite{Zahradnik2015}
 -X flag specifies the weight for combining polarity and waveform misfit.
 
 For example, If the polarity weight is $\omega$, \ie \ -X$\omega$
@@ -617,6 +633,14 @@ Here is how it looks in the code (sub\_inversion.c):
 %=================
 \addcontentsline{toc}{section}{Bibliography}
 \bibliographystyle{agu}
-\bibliography{carl_abbrev,carl_main,carl_him,carl_source}
+\bibliography{carl_abbrev,carl_main,carl_him,carl_source,refs_vipul}
+%=================
+
+% Figures
+\begin{figure}
+\includegraphics{cap_dur.eps}
+\caption{Source duration vs magnitude realtion used in CAP (red) and by GCMT (green).}
+\end{figure}
+
 %=================
 \end{document}
