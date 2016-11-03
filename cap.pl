@@ -29,6 +29,7 @@ $inp_cmd = "inp_cmd";
 $green = "/store/wf/FK_synthetics";               # UAF linux network
 #$green = "/import/c/d/ERTHQUAK/FK_synthetics ";  # UAF cluster
 #$green = "$caprun/models";                       # user testing
+#$green = " /home/alvizuri/PROJECTS/CAP/models";  # western US model (temporary location: move to /store)
 
 $repeat = 0;
 $fm_thr = 0.01;
@@ -228,6 +229,7 @@ $usage =
     -R	For double couple use -R0/0.
         For point solution use -Rv/w/k/h/s
         For search range use -Rv1/v2/w1/w2/k1/k2/h1/h2/s1/s2
+        Note: This should come after -I flag in the command or it crashes sometimes! 
     -S	max. time shifts in sec for Pnl and surface waves ($max_shft1/$max_shift2) and
         tie between SH shift and SV shift:
         tie=0 		shift SV and SH independently,
@@ -235,7 +237,7 @@ $usage =
     -T	max. time window lengths for Pnl and surface waves ($m1/$m2).
     -U  directivity, specify rupture direction on the fault plane (off).
     -V	apparent velocities for Pnl, Love, and Rayleigh waves (off).
-    -W  use displacement for inversion; 1=> data in velocity; 2=> data in disp ($disp).
+    -W  use displacement for inversion; 1=> data in velocity; 2=> data in disp ($disp); 0=> use velocity for inversion
     -X  weight for normalized polarity misfit [0,1). This is combined with the waveform misfit. Don't use -X1 since there could be multiple solutions that could fit the observed polarity, use -X.99 instead in order to include atleast some waveform measure. Suggested value = 0.5
     -Y  specify norm (1 - L1 norm; 2 - L2 norm)
     -Z  specify a different weight file name ($weight).
