@@ -104,7 +104,7 @@ while (@event)
 	    $line[$ii]=$_;
 	    @bb=split;
 	    ($ename,$smodel,$dep[$ii])=split('_',$bb[3]); # split 20160124123742054_scak_100 to get depth (= 100km) -- $dep is used for y-axis range
-	    (undef,undef,$ename,$smodel,$dep[$ii])=split('_',$bb[3]); # split Little_Skull_Main_wes_001 to get depth (= 001km) -- $dep is used for y-axis range
+	    #(undef,undef,$ename,$smodel,$dep[$ii])=split('_',$bb[3]); # split Little_Skull_Main_wes_001 to get depth (= 001km) -- $dep is used for y-axis range
 	    $strike[$ii]=$bb[5];		   # not needed
 	    $dip[$ii]=$bb[6];			   # not needed
 	    $rake[$ii]=$bb[7];			   # not needed

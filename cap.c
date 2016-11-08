@@ -94,7 +94,7 @@ char filename_prefix[255];    // used for all output files
 
 /* workaround for filter issues with small magnitude events (Uturuncu) */
 // this has not been tested with DIRECTIVITY option
-int FTC_data=0, FTC_green=0;// for original CAP set FTC_data=0, FTC_green=0
+int FTC_data=1, FTC_green=0;// for original CAP set FTC_data=0, FTC_green=0
 
 /* allows use of polarities even when weight=0.
  * Note CAP still needs at least 1 waveform for the inversion */
