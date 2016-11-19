@@ -219,6 +219,11 @@ int main (int argc, char **argv) {
   scanf("%d",&search_type);
   scanf("%d",&norm);
   
+
+  if (useDisp == 1) {
+      fprintf(stderr, "\nWARNING flag W1. Will convert velocity to displacement\n\n");
+  }
+
   fprintf(stderr, "search type = %d, norm = %d\n", search_type, norm);
 
   /*** input source functions and filters for pnl and sw ***/
@@ -660,7 +665,12 @@ int main (int argc, char **argv) {
                 }
             }
         }
-        if (useDisp==1) cumsum(f_pt, npt, dt); /*use displacement data*/
+
+        // NOTE convert to displacement!
+        if (useDisp == 1) {
+            cumsum(f_pt, npt, dt);
+        }
+
         for(x2=0.,l=0;l<npt;l++,f_pt++) {
             *f_pt *= weight;
             x2+=(*f_pt)*(*f_pt);
@@ -734,7 +744,11 @@ int main (int argc, char **argv) {
                     }
                 }
             }
-            if (useDisp) cumsum(f_pt, npt, dt);
+
+            // NOTE convert to displacement!
+            if (useDisp == 1) {
+                cumsum(f_pt, npt, dt);
+            }
             for(l=0;l<npt;l++) f_pt[l] *= weight;
             spt->crl[k] = crscrl(npt,spt->rec,f_pt,max_shft[j]);
             for(x=1.,k1=k;k1>=0;k1--,x=2.) {
