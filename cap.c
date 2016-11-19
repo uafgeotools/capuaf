@@ -106,7 +106,7 @@ int skip_zero_weights=0;    // for original CAP set skip_zero_weights=1
 // cap.c which uses rules to account for special grid points.
 // Function gridvec also avoids endpoints in all parameters.
 // See NOTE flag LUNE_GRID_INSTEAD_OF_UV in function sub_inversion.c
-int LUNE_GRID_INSTEAD_OF_UV = 1;    // default = 0 (ie do not run old grid mode)
+int LUNE_GRID_INSTEAD_OF_UV = 0;    // default = 0 (ie do not run old grid mode)
 
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search_type,norm;
@@ -266,8 +266,8 @@ int main (int argc, char **argv) {
   // NOTE magnitude parameters include dMw and number of points
   scanf("%f%f%d%f", &searchPar->mw1, &searchPar->mw2, &searchPar->nmw, &searchPar->dmw);
   // (v, w, k, h, s) format: (start, end, number of points and grid spacings (for regular grid))
-  if(LUNE_GRID_INSTEAD_OF_UV = 1) {
-      fprintf(stderr,"Warning. using old grid search (v->gamma, w->delta) \n"); 
+  if(LUNE_GRID_INSTEAD_OF_UV == 1) {
+      fprintf(stderr,"WARNING. Using non uniform grid (gamma, delta) \n");
   }
   scanf("%f%f%d%d", &searchPar->v1, &searchPar->v2, &searchPar->nv, &searchPar->dv);
   scanf("%f%f%d%d", &searchPar->w1, &searchPar->w2, &searchPar->nw, &searchPar->dw);
