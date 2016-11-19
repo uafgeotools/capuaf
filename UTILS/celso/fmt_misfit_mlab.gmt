@@ -45,7 +45,7 @@ use_kludge=""      # yes/no. for plotting enlarged beachballs to avoid psmeca bu
 flag_make_cpt=""      # yes = compute CPT files. Useful when setting 
 flag_make_cpt="yes"   # yes/no. compute CPT files or not
 
-region="llnl"   # ak, llnl, utu
+region="wes"   # ak, wes, utu
 
 #-----------------------------------------------------------
 
@@ -154,7 +154,8 @@ gmtset BASEMAP_TYPE plain
 gmtset PAPER_MEDIA letter
 gmtset LABEL_FONT_SIZE 12 
 gmtset ANOT_FONT_SIZE 12
-gmtset PLOT_DEGREE_FORMAT ddd.x
+#gmtset PLOT_DEGREE_FORMAT ddd.x
+gmtset PLOT_DEGREE_FORMAT -D.xx
 gmtset COLOR_FOREGROUND 75/75/75 # for polarity cpt
 
 # title
@@ -199,7 +200,7 @@ shiftg="-Xa6.8i -Ya0.3i"   # mag scale
 if [ "$region" == "utu" ] ; then
     gmtregion="-R-67.75/-66.7/-22.7/-21.8 -Jm3.0"; ticks="-Ba0.5f0.1WSne"; bmscale="-L-67.6/-22.58/-22.3/10+p1p,0/0/0+fwhite"
     grdview $grid -I$grad $gmtregion -O -K $shifta -Csrtm_utu_gray.cpt -Qi200 >> $out # PLUTONS
-elif [ "$region" == "llnl" ] ; then
+elif [ "$region" == "wes" ] ; then
     # LLNL
     gmtregion="-R-125.5/-104/32/48 -Jm0.135"; ticks="-Ba5f1WSne"; bmscale="-L-107.0/46.0/40/100+p1p,0/0/0+fwhite"
     pscoast $gmtregion -O -V -K -Na -Df -W1 -S100/150/255 -A500 $shifta >> $out

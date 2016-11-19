@@ -39,6 +39,7 @@ gmtset BASEMAP_TYPE plain
 gmtset LABEL_FONT_SIZE 10
 gmtset ANNOT_FONT_SIZE_PRIMARY 10
 gmtset PLOT_DEGREE_FORMAT ddd.x
+gmtset PAGE_ORIENTATION portrait
 
 grdview $grid -I$grad -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -Csrtm_utu_gray.cpt -Qi200 -K > $out
 pscoast -Di -A1000/0/1 -R-67.75/-66.7/-22.75/-21.75 -Jm2.8 -O -V -K -Sblue >> $out
