@@ -547,7 +547,7 @@ if( ($oldgrid == 1) && ($nI == 5)) {
 # plots for the DC don't have "fmt" in their filenames
 if (($v1 == 0) && ($w1 == 0)) {
     $fmt_flag="false";   # double couple
-    print STDERR "NOTE computing a double couple solution"
+    print STDERR "NOTE computing a double couple solution\n";
 } else {
     $fmt_flag="true";
 }
