@@ -122,9 +122,9 @@ int main (int argc, char **argv) {
   float	bs_body,bs_surf,bs[NCP],weight,nof_per_samp;
   float	w_pnl[NCP];
   float	distance,dmin=100.,vp,vs1,vs2,depSqr=25;
-  float	*f_pt,*f_pt0,*f_pt1;
   float	*data_obs, *data_syn;   // save seismograms for plotting
-  float *f_pt2;
+  float	*f_pt,*f_pt0,*f_pt1;
+  float *pObs_ftc; // a copy of observed waveforms, used with FTC flags
   float *g_pt;  // for FTC_green
   float pol_wt;
   int npt_data, offset_h=0;
@@ -579,33 +579,42 @@ int main (int argc, char **argv) {
         }
         spt->npt = npt = n[j];
         spt->b = t0[j];
- 
-	weight = pow(distance/dmin,bs[j]);  // Caution: This weight scales the amplitude of waveforms. w_pnl = 1 ALWAYS (make changes in cap.pl)
-	spt->on_off = (int)spt->on_off * w_pnl[j]; // multiply -Dflag to the weights
-	if (spt->on_off) {total_n+=npt; Ncomp += spt->on_off;}  // Ncomp = number of all the components
 
-	// count number of surface and body wave components
-    if (j<3) {
-        if (spt->on_off >= 1) isurf ++;
-    }
-    else {
-        if (spt->on_off >= 1) ibody ++;
-    }
+        // Caution: This weight scales the amplitude of waveforms. w_pnl = 1 ALWAYS (make changes in cap.pl)
+        weight = pow(distance/dmin,bs[j]); 
+
+        // multiply -Dflag to the weights
+        spt->on_off = (int)spt->on_off * w_pnl[j]; 
+        
+        if (spt->on_off) {
+            total_n+=npt; 
+            Ncomp += spt->on_off;
+        }  // Ncomp = number of all the components
+
+        // count number of surface and body wave components
+        if (j<3) {
+            if (spt->on_off >= 1) isurf ++;
+        }
+        else {
+            if (spt->on_off >= 1) ibody ++;
+        }
         istat += spt->on_off;
 
-        /* FILTER+CUT options for data */
-        /* filter then cut */
-        if(FTC_data) {
+        // FILTER & CUTTING FOR OBSERVED WAVEFORMS
+        // filter then cut
+        if(FTC_data == 1) {
             npt_data = npts[indx]-offset_h;
-            f_pt2 = cutTrace(data[indx], npts[indx], offset_h, npt_data);
-            taper(f_pt2, npt_data);
-            if (f_pt2 == NULL) {
+            // prepare the whole waveform, then taper it
+            pObs_ftc = cutTrace(data[indx], npts[indx], offset_h, npt_data);
+            taper(pObs_ftc, npt_data);
+            if (pObs_ftc == NULL) {
                 fprintf(stderr, "fail to window the data\n");
                 return -1;
             }
         }
-        /* cut then filter */
+        // cut then filter
         else {
+            // prepare a window of the waveform, then taper it
             f_pt = cutTrace(data[indx], npts[indx], (int) rint((t0[j]-tb[indx])/dt), npt);
             taper(f_pt, npt);
             if (f_pt == NULL) {
@@ -614,32 +623,39 @@ int main (int argc, char **argv) {
             }
             spt->rec = f_pt; 
         }
+
         if (j<3) {
+            // surface waves
             if (f1_sw>0.) {
-                /* filter then cut */
-                if(FTC_data) {
-                    apply(f_pt2,(long int) npt_data, 0,sw_sn,sw_sd,nsects);
-                    f_pt = cutTrace(f_pt2, npt_data, (int) rint((t0[j]-tb[indx])/dt), npt);
+                // filter then cut
+                if(FTC_data == 1) {
+                    // filter the whole waveform, then cut and taper it
+                    apply(pObs_ftc,(long int) npt_data, 0,sw_sn,sw_sd,nsects);
+                    f_pt = cutTrace(pObs_ftc, npt_data, (int) rint((t0[j]-tb[indx])/dt), npt);
                     taper(f_pt, npt);
                     spt->rec = f_pt; 
                 }
-                /* cut then filter */
+                // cut then filter
                 else {
+                    // filter a window of the waveform
                     apply(f_pt,(long int) npt,0,sw_sn,sw_sd,nsects); 
                 }
             }
         }
         else {
+            // body waves
             if (f1_pnl>0.) {
-                /* filter then cut */
-                if(FTC_data) {
-                    apply(f_pt2,(long int) npt_data, 0,pnl_sn,pnl_sd,nsects);
-                    f_pt = cutTrace(f_pt2, npt_data, (int) rint((t0[j]-tb[indx])/dt), npt);
+                // filter then cut
+                if(FTC_data == 1) {
+                    // filter the whole waveform, then cut and taper it
+                    apply(pObs_ftc,(long int) npt_data, 0,pnl_sn,pnl_sd,nsects);
+                    f_pt = cutTrace(pObs_ftc, npt_data, (int) rint((t0[j]-tb[indx])/dt), npt);
                     taper(f_pt, npt);
                     spt->rec = f_pt; 
                 }
-                /* cut then filter */
+                // cut then filter
                 else {
+                    // filter a window of the waveform
                     apply(f_pt,(long int) npt,0,pnl_sn,pnl_sd,nsects);
                 }
             }
@@ -653,10 +669,11 @@ int main (int argc, char **argv) {
         if (norm==1) x2 = sqrt(x2);
         rec2 += spt->on_off*x2/(spt->npt);
 
-        /* FILTER+CUT options for greens functions */
+        // FILTER & CUTTING FOR GREENS FUNCTIONS
         for(m=0,k=0;k<kc;k++) {
-            /* filter then cut */
-            if(FTC_green){
+            // filter then cut
+            if(FTC_green == 1) {
+                // prepare the whole waveform, then taper it
                 g_pt = cutTrace(green[gindx+k], hd[indx].npts, 0, hd[indx].npts);
                 taper(g_pt, hd[indx].npts);
                 if ( g_pt == NULL ) {
@@ -664,8 +681,9 @@ int main (int argc, char **argv) {
                     return -1;
                 }
             }
-            /* cut then filter */
-            else{
+            // cut then filter
+            else {
+                // prepare a window of the waveform, then taper it
                 f_pt = cutTrace(green[gindx+k], hd[indx].npts, (int) rint((t0[j]-con_shft[i]-shft0[i][j]-hd[indx].b)/dt), npt);
                 taper(f_pt, npt);
                 if ( f_pt == NULL ) {
@@ -679,15 +697,17 @@ int main (int argc, char **argv) {
                 conv(src_sw, ns_sw, f_pt, npt);
 #endif
                 if (f1_sw>0.) {
-                    /* filter then cut */
+                    // filter then cut
                     if(FTC_green){
+                        // filter the whole waveform, then cut and taper it
                         apply(g_pt,(long int) hd[indx].npts, 0,sw_sn,sw_sd,nsects);
                         f_pt = cutTrace(g_pt, hd[indx].npts, (int) rint((t0[j]-con_shft[i]-shft0[i][j]-hd[indx].b)/dt), npt);
                         taper(f_pt, npt);
                         spt->syn[k] = f_pt;
                     }
-                    /* cut then filter */
+                    // cut then filter
                     else {
+                        // filter a window of the waveform
                         apply(f_pt,(long int) npt,0,sw_sn,sw_sd,nsects);
                         taper(f_pt, npt);
                     }
@@ -698,15 +718,17 @@ int main (int argc, char **argv) {
                 conv(src_pnl, ns_pnl, f_pt, npt);
 #endif
                 if (f1_pnl>0.) {
-                    /* filter then cut */
+                    // filter then cut
                     if(FTC_green){
+                        // filter the whole waveform, then cut and taper it
                         apply(g_pt,(long int) hd[indx].npts, 0,pnl_sn,pnl_sd,nsects);
                         f_pt = cutTrace(g_pt, hd[indx].npts, (int) rint((t0[j]-con_shft[i]-shft0[i][j]-hd[indx].b)/dt), npt);
                         taper(f_pt, npt);
                         spt->syn[k] = f_pt;
                     }
-                    /* cut then filter */
+                    // cut then filter
                     else {
+                        // filter a window of the waveform
                         apply(f_pt,(long int) npt,0,pnl_sn,pnl_sd,nsects);
                         taper(f_pt, npt);
                     }
