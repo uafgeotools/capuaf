@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Plot FMT probability on the lune and (v, w)
+# Plot FMT probability on the lune and on (v, w)
 #   
 # 20160904 celso alvizuri - cralvizuri@alaska.edu 
 #-----------------------------------------------------------
@@ -139,7 +139,7 @@ depth=`printf "%03d" $depth`
 
 # INPUT
 # TODO get datadir from command line
-datadir="/home/alvizuri/projects/source_inversion_llnl/inv/OUTPUT_DIR"
+datadir="OUTPUT_DIR"
 
   data_stations="${datadir}/${evid}_${model}_${depth}_fmpdata.txt"
 data_misfit_fmp="${datadir}/${evid}_${model}_${depth}_misfit_fmp"
