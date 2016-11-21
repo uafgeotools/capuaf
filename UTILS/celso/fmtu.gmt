@@ -49,6 +49,8 @@ if [ -z $evid ] || [ -z $depth ] || [ -z $model ] ; then
     printf "eg. $0 20100516163454464 utuhalf 5\n"
     exit
 fi
+
+data_vwgrid="/home/alvizuri/shared/data/gmt/vwgrid"
 # if [ -n "$4" ] & [ -n "$5" ] & [ -n "$6" ] & [ -n "$7" ] ; then
 #     wP=`printf "P%02d" $4`
 #     wV=`printf "V%02d" $5`
@@ -234,7 +236,7 @@ label_psscale="polarity misfit n\(@~L@~\)"
 #echo "1.38 2.48 12 90 0 LM ${label_psscale}" | pstext -R0/8.5/0/11 -JX8/11 -O -K -N >> $out
 echo "0 2.48 12 90 0 LM ${label_psscale}" | pstext -R0/8.5/0/11 -JX8/11 -O -K -N >> $out
 label_vwplot="P(v, w)"
-echo "1.9 4.0 12 90 0 LM ${label_vwplot}" | pstext -R0/8.5/0/11 -JX8/11 -O -K -N >> $out
+echo "1.6 4.0 12 90 0 LM ${label_vwplot}" | pstext -R0/8.5/0/11 -JX8/11 -O -K -N >> $out
 
 # panel letters
 panel_common_labels="-R0/8.5/0/11 -JX8/11 -O -K -N"
@@ -250,7 +252,7 @@ echo "0.3 2.1 14 0 0 LM $legendb2" | pstext -R0/8.5/0/11 -JX8/11 -O -K -S2p,whit
 # panel locations
 shifta="-Xa-0.02i -Ya5.5i"
 shiftb="-Xa0.25i -Ya2.5i"
-shiftb2="-Xa2.0i -Ya2.5i"
+shiftb2="-Xa2.1i -Ya2.5i"
 shiftc="-Xa3.5i -Ya-0.15i"
 shiftd="-Xa-0.05i -Ya-0.7i"
 shifte="-Xa6.8i -Ya0.3i"   # mag scale
@@ -318,7 +320,7 @@ fi
 gmtset ANNOT_FONT_SIZE_PRIMARY 10p
 #psscale -Ccpt_dots -Al -D1.2/0.6/1.2/0.1 -Ef0.5c -Bf1a1 -O -K $shiftb >> $out
 psscale -Ccpt_dots -Aa -D-0.5/0.6/1.2/0.1 -Ef0.5c -Bf1a1 -O -K $shiftb >> $out
-psscale -Ccpt_misfit -Aa -D-0.2/0.6/1.2/0.1 -Ef0.5c -Bf2000a1000 -O -K $shiftb2 >> $out
+psscale -Ccpt_misfit -Aa -D-0.4/0.6/1.2/0.1 -Ef0.5c -Bf0.001a0.002 -O -K $shiftb2 >> $out
 
 # plot reference arcs on lune
 (echo -30 35.2644 ; echo 30 54.7356)  | psxy -N -W1p,5/5/5 $proj_lune_fmp $area_lune_fmp -O -K $shiftb >>$out
@@ -421,16 +423,28 @@ echo -30.0   0.0 10 0 1 RM CLVD  | pstext -N $proj_lune_wf $area_lune_wf -O -K $
 echo  30.0   0.0 10 0 1 LM CLVD  | pstext -N $proj_lune_wf $area_lune_wf -O -K $shiftc -D10p/-10p  >> $out
 
 # plot P(v,w)
-psxy ${data_vw_prob} $proj_vw -Bg20/g20 -G255 -O -K -Sc4p -Ccpt_misfit $shiftb2 >> $out
-# plot beachballs
+psxy ${data_vw_prob} $proj_vw -Bg0 -Sc4p -Ccpt_misfit $shiftb2 -O -K >> $out
+awk '{print $3, $4}' ${data_vwgrid}/sourcetype_arc_03.dat | psxy $proj_vw -O -K $shiftb2 >> $out
+awk '{print $3, $4}' ${data_vwgrid}/sourcetype_arc_04.dat | psxy $proj_vw -O -K $shiftb2 >> $out
+awk '{print $3, $4}' ${data_vwgrid}/sourcetype_arc_06.dat | psxy $proj_vw -O -K $shiftb2 >> $out
+echo  0.0 -1.1781 10 0 1 CM ISO | pstext -N $proj_vw -O -K $shiftb2 -D0p/-10p >> $out
+echo  0.0  1.1781 10 0 1 CM ISO | pstext -N $proj_vw -O -K $shiftb2 -D0p/10p >> $out
+echo -0.333 0.0 10 90 1 CM CLVD | pstext -N $proj_vw -O -K $shiftb2 -D-10p/0p >> $out
+echo  0.333 0.0 10 90 1 CM CLVD | pstext -N $proj_vw -O -K $shiftb2 -D10p/0p >> $out
+echo  0.0 -1.1781 | psxy -N -Sp4p -W1p,0 $proj_vw -O -K $shiftb2 >> $out
+echo  0.0  1.1781 | psxy -N -Sp4p -W1p,0 $proj_vw -O -K $shiftb2 >> $out
+echo -0.333 0.0 | psxy -N -Sp4p -W1p,0 $proj_vw -O -K $shiftb2 >> $out
+echo  0.333 0.0 | psxy -N -Sp4p -W1p,0 $proj_vw -O -K $shiftb2 >> $out
+
+#plot beachballs
 #psmeca ${data_vw_prob} $proj_lune_wf $area_lune_wf -Sm${size_lune_bb}i -N -Zcpt_misfit -W0.5p,100/100/100 -L -O -K $shiftc >> $out
 
 # show best solution on lune
-psxy ${data_bestsol_bb} $area_lune_wf $proj_lune_wf -N -Ss23p -W2.0p,0/255/0 $shiftc -O -K >>$out
+psxy ${data_bestsol_bb} $area_lune_wf $proj_lune_wf -N -Ss23p -W2.0p,0/255/0 $shiftc -O >>$out
 
 # magnitude scale
 #psmeca ${data_psmeca_legend} -R0/4/0/4 -JX2.5 -O -K -N $shifte -Sm${size_lune_bb}i -G150/150/150 >> $out
-echo "-0.5 0 12 90 0 BL Mw" | pstext -R0/4/0/4 -JX2 -O -N $shifte >> $out
+#echo "-0.5 0 12 90 0 BL Mw" | pstext -R0/4/0/4 -JX2 -O -N $shifte >> $out
 
 ps2raster -Te -A ${out}
 printf "$0: done. output file: $out\n"
