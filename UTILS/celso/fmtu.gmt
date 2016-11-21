@@ -205,7 +205,7 @@ n_up_polarities=`awk '{ if ($5=="1")  print $5 }' $data_stations | wc -l`
 n_dn_polarities=`awk '{ if ($5=="-1") print $5 }' $data_stations | wc -l`
 
 # get gamma delta for best solution
-label_best_sol="`cat ${data_misfit_wf_best_sol} | awk '{printf \"@~g@~ = %.0f\217, @~d@~ = %.0f\217\", $1, $2}'`"
+label_best_sol="`cat ${data_misfit_wf_best_sol} | awk '{printf \"Solution @~g@~ = %.0f\217, @~d@~ = %.0f\217\", $1, $2}'`"
 
 #                   BEGIN PLOTTING
 #   set gmt parameters
@@ -224,6 +224,7 @@ gmtset COLOR_FOREGROUND 75/75/75 # for polarity cpt
 echo "-0.05 9.60 14 0 0 LM Event $evid, M $evmag" | pstext -R0/8.5/0/11 -JX8/11 -K -N > $out
 echo "-0.05 9.38 14 0 0 LM $label_evll" | pstext -R0/8.5/0/11 -JX8/11 -O -K -N >> $out
 echo "-0.05 9.16 14 0 0 LM $label_evdp" | pstext -R0/8.5/0/11 -JX8/11 -O -K -N >> $out
+echo "-0.05 8.94 14 0 0 LM $label_best_sol" | pstext -R0/8.5/0/11 -JX8/11 -O -K -N >> $out
 
 # legend for polarities
 echo " 0.75 8.60 " | psxy -R0/8.5/0/11 -JX8/11 -O -K -Sc0.25c -G0/175/255 -W2.0p,/0/0/0 -N >> $out
@@ -245,16 +246,12 @@ echo "0.0 4.9 14 0 1 LM (b)" | pstext $panel_common_labels >> $out
 echo "4.3 9.3 14 0 1 LM (c)" | pstext $panel_common_labels >> $out
 echo "0.0 2.1 14 0 1 LM (d)" | pstext $panel_common_labels >> $out
 
-# panel titles
-legendb2="Solution M@-0@- (${label_best_sol})"
-echo "0.3 2.1 14 0 0 LM $legendb2" | pstext -R0/8.5/0/11 -JX8/11 -O -K -S2p,white -N >> $out
-
 # panel locations
 shifta="-Xa-0.02i -Ya5.5i"
 shiftb="-Xa0.25i -Ya2.5i"
 shiftb2="-Xa2.1i -Ya2.5i"
 shiftc="-Xa3.5i -Ya-0.15i"
-shiftd="-Xa-0.05i -Ya-0.7i"
+shiftd="-Xa3.0i -Ya8i"
 shifte="-Xa6.8i -Ya0.3i"   # mag scale
 
 #       COLUMN 1
@@ -351,8 +348,8 @@ fi
 # plot beachball with lowest misfit/highest VR
 printf "$0: plotting solution with lowest misfit\n"
 
-size_best_bb=2.78i      # 2.78i
-proj_size_best_bb=2.5   # 2.5
+size_best_bb=1.67i      # 2.78i Ratio: 1.1120
+proj_size_best_bb=1.5   # 2.5
 proj_best_sol="-JPa${proj_size_best_bb}i -R0/360/0/1"
 
 # NOTE, 
