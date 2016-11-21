@@ -25,15 +25,16 @@
 #-----------------------------------------------------------
 
 # preliminary flags
-plot_misfit_fmp=""      # yes/no
 plot_misfit_fmp="yes"   # yes/no
+plot_misfit_fmp=""      # yes/no
 
-use_kludge="yes"   # yes/no. for plotting enlarged beachballs to avoid psmeca bug
-use_kludge=""      # yes/no. for plotting enlarged beachballs to avoid psmeca bug
-# use with matlab scripts
+use_kludge="yes"        # yes/no. for plotting enlarged beachballs to avoid psmeca bug
+use_kludge=""           # yes/no. for plotting enlarged beachballs to avoid psmeca bug
 
-flag_make_cpt=""      # yes/no. compute CPT files or not
-flag_make_cpt="yes"   # yes/no. compute CPT files or not
+flag_make_cpt=""        # yes/no. compute CPT files or not
+flag_make_cpt="yes"     # yes/no. compute CPT files or not
+
+region="wes"            # utu, ak, wes
 
 #-----------------------------------------------------------
 # prepare to read the data
@@ -147,6 +148,7 @@ data_misfit_fmp="${datadir}/${evid}_${model}_${depth}_misfit_fmp"
    data_gd_prob="${datadir}/${evid}_${model}_${depth}_gd_prob.txt"
 data_bestsol_bb="${datadir}/${evid}_${model}_${depth}_best_sol_psmeca"
    data_cap_out="${datadir}/${evid}_${model}_${depth}.out"
+data_misfit_wf_best_sol="${datadir}/${evid}_${model}_${depth}_best_sol_psmeca"
 
 # OUTPUT
 out="${datadir}/${evid}_${model}_${depth}_fmtu.ps"
@@ -201,7 +203,7 @@ n_up_polarities=`awk '{ if ($5=="1")  print $5 }' $data_stations | wc -l`
 n_dn_polarities=`awk '{ if ($5=="-1") print $5 }' $data_stations | wc -l`
 
 # get gamma delta for best solution
-#label_best_sol="`cat ${data_vw_prob_best_sol} | awk '{printf \"@~g@~ = %.0f\217, @~d@~ = %.0f\217\", $1, $2}'`"
+label_best_sol="`cat ${data_misfit_wf_best_sol} | awk '{printf \"@~g@~ = %.0f\217, @~d@~ = %.0f\217\", $1, $2}'`"
 
 #                   BEGIN PLOTTING
 #   set gmt parameters
@@ -213,7 +215,7 @@ gmtset BASEMAP_TYPE plain
 gmtset PAPER_MEDIA letter
 gmtset LABEL_FONT_SIZE 12 
 gmtset ANOT_FONT_SIZE 12
-gmtset PLOT_DEGREE_FORMAT ddd.x
+gmtset PLOT_DEGREE_FORMAT -D.xx
 gmtset COLOR_FOREGROUND 75/75/75 # for polarity cpt
 
 # title
@@ -254,17 +256,41 @@ shiftd="-Xa-0.05i -Ya-0.7i"
 shifte="-Xa6.8i -Ya0.3i"   # mag scale
 
 #       COLUMN 1
-#grdview $grid -I$grad -R-67.75/-66.7/-22.7/-21.8 -Jm3.0 -O -K $shifta -Csrtm_utu_gray.cpt -Qi200 >> $out
-psbasemap -R-67.75/-66.7/-22.7/-21.8 -Jm3.0 -O -K $shifta -Ba0.5f0.1WSne -L-67.6/-22.58/-22.3/10+p1p,0/0/0+fwhite >> $out    #plutons
+# region
+# PLUTONS
+if [ "$region" == "utu" ] ; then
+    gmtregion="-R-67.75/-66.7/-22.7/-21.8 -Jm3.0"; ticks="-Ba0.5f0.1WSne"; bmscale="-L-67.6/-22.58/-22.3/10+p1p,0/0/0+fwhite"
+    grdview $grid -I$grad $gmtregion -O -K $shifta -Csrtm_utu_gray.cpt -Qi200 >> $out # PLUTONS
+elif [ "$region" == "wes" ] ; then
+    # LLNL
+    gmtregion="-R-125.5/-104/32/48 -Jm0.135"; ticks="-Ba5f1WSne"; bmscale="-L-107.0/46.0/40/100+p1p,0/0/0+fwhite"
+    pscoast $gmtregion -O -V -K -Na -Df -W1 -S100/150/255 -A500 $shifta >> $out
+elif [ "$region" == "ak" ] ; then
+    # ALASKA
+    gmtregion="-R-160/55/-134/67r -JS-150/90/7.0c"; ticks="-Ba10f5g10WSne/a5g5"; bmscale="-L-145/57/57/100+p1p,0/0/0+fwhite"
+    pscoast $gmtregion -O -V -K -Na -W100/100/100 -Di \
+        -I1/2p/0/192/255 -I2/2p/0/192/255\
+        -G230/230/230 -S0/192/255 $shifta   >> $out
+else
+    echo "check GMT region!"
+    exit
+fi
+
+##grdview $grid -I$grad -R-67.75/-66.7/-22.7/-21.8 -Jm3.0 -O -K $shifta -Csrtm_utu_gray.cpt -Qi200 >> $out
+#psbasemap -R-67.75/-66.7/-22.7/-21.8 -Jm3.0 -O -K $shifta -Ba0.5f0.1WSne -L-67.6/-22.58/-22.3/10+p1p,0/0/0+fwhite >> $out    #plutons
+psbasemap $gmtregion -O -K $shifta $ticks $bmscale >> $out    #plutons
+
 # station + polarity
-awk '{print $3, $4, 6, 0, 0, "CB", $2}' $data_stations \
-    | pstext -R-67.75/-66.7/-22.7/-21.8 -Jm3.0 -O -K $shifta  -S2.0p,255/255/255 -D0/0.06  >> $out
+#awk '{print $3, $4, 6, 0, 0, "CB", $2}' $data_stations | pstext $gmtregion -O -K $shifta -S2.0p,255/255/255 -D0/0.06  >> $out
+awk '{print $3, $4, $2}' $data_stations | sed 's/\./ /g' \
+    | awk '{print $1"."$2, $3"."$4, 6, 0, 0, "CB", $7}' \
+    | pstext $gmtregion -O -K $shifta -S2.0p,255/255/255 -D0/0.06  >> $out
 awk '{ if ($5>0) print $3, $4}' $data_stations \
-    | psxy -R-67.75/-66.7/-22.7/-21.8 -Jm3.0 -O -K $shifta -Sc0.25c -G0/175/255 -W1.5p,0/0/0 >> $out
+    | psxy   $gmtregion -O -K $shifta -Sc0.25c -G0/175/255 -W1.5p,0/0/0 >> $out
 awk '{ if ($5<0) print $3, $4}' $data_stations \
-    | psxy -R-67.75/-66.7/-22.7/-21.8 -Jm3.0 -O -K $shifta -Sc0.25c -G255/255/255 -W1.5p,0/0/0 >> $out
+    | psxy   $gmtregion -O -K $shifta -Sc0.25c -G255/255/255 -W1.5p,0/0/0 >> $out
 awk '{ if ($5==0) print $3, $4}' $data_stations \
-    | psxy -R-67.75/-66.7/-22.7/-21.8 -Jm3.0 -O -K $shifta -Ss0.25c -W1.5p,0/0/0 >> $out
+    | psxy   $gmtregion -O -K $shifta -Ss0.25c -W1.5p,0/0/0 >> $out
 # epicenter
 echo "$evlon $evlat" | psxy  -R-67.75/-66.7/-22.7/-21.8 -Jm3.0 -O -K $shifta -Sa0.5c -W0.5p -G255/0/0 >> $out
 
@@ -282,9 +308,10 @@ psbasemap $proj_lune_fmp $area_lune_fmp -Bg20/g20 -G255 -O -K $shiftb >> $out
 
 # if polarity misfit not calculated (eg DC-only search), plot only square at center
 if [ "$plot_misfit_fmp" == "yes" ]; then
-    awk '{print $1,$2,$3}' $data_misfit_fmp | psxy -N -Sc4p -Ccpt_dots  $proj_lune_fmp $area_lune_fmp -O -K $shiftb >> $out
-    #        | psxy -N -Sc4.5p -W0.0p -Ccpt_dots  $proj_lune_fmp $area_lune_fmp -O -K $shiftb >> $out
-    echo "0.0 0.0 " | psxy -N -S+15p -W1p,150/150/150 $proj_lune_fmp $area_lune_fmp -O -K $shiftb >> $out
+    awk '{print $1, $2, $3}' $data_misfit_fmp \
+        | psxy -N -Sc4p -Ccpt_dots  $proj_lune_fmp $area_lune_fmp -O -K $shiftb >> $out
+    echo "0.0 0.0 " \
+        | psxy -N -S+15p -W1p,150/150/150 $proj_lune_fmp $area_lune_fmp -O -K $shiftb >> $out
 fi
 
 # plot scale for mini lune
@@ -301,10 +328,11 @@ psscale -Ccpt_misfit -Aa -D-0.2/0.6/1.2/0.1 -Ef0.5c -Bf2000a1000 -O -K $shiftb2 
 misfit_min=`minmax -C $data_gd_prob | awk '{printf "%e",$5}'`
 misfit_max=`minmax -C $data_gd_prob | awk '{printf "%e",$6}'`
 printf "$0: misfit min= $misfit_min / max= $misfit_max\n"
+#misfit_del=`echo $misfit_min $misfit_max | awk '{printf "%5.2e",($2-$1)/100}'`
 misfit_del=`echo $misfit_min $misfit_max | awk '{printf "%5.2e",($2-$1)/100}'`
 
 # cpt for contour + labels
-misfit_del_c=`echo $misfit_min $misfit_max | awk '{printf "%5.2e",($2-$1)/2}'`
+misfit_del_c=`echo $misfit_min $misfit_max | awk '{printf "%5.2e",($2-$1)/5}'`
 printf "$0: min/misfit_del/max: $misfit_min / $misfit_del / $misfit_max\n"
 
 # cool *, polar, jet,  panoply, polar, seis, sealand
@@ -343,8 +371,11 @@ echo "0 0" | psxy $proj_best_sol $shiftd -S+0.2i -N -W1.5p,black -O -K >> $out
 
 # x, y, proj_best_sol_best_bb, angle, fontno, justify, text
 # print all stations regardless of pol info
-awk  '{ print $8, $10, 7, 0, 1, "CM", $2 }' $data_stations  \
+awk '{print $8, $10, $2}' $data_stations | sed 's/\./ /g' \
+    | awk '{print $1"."$2, $3"."$4, 7, 0, 1, "CM", $7}' \
     | pstext $proj_best_sol $shiftd -D0/0.12 -S1.5p,white -N -O -K  >> $out
+#awk  '{ print $8, $10, 7, 0, 1, "CM", $2 }' $data_stations  \
+#    | pstext $proj_best_sol $shiftd -D0/0.12 -S1.5p,white -N -O -K  >> $out
 
 #       COLUMN 2
 # plot best solutions on the lune
@@ -361,6 +392,8 @@ psscale -Ccpt_misfit -D2.8/9/1/0.2 -Al -Bf1a${tick_major}:"P(@~L@~)": -E $shiftc
 
 # plot misfit
 pscontour ${data_gd_prob} $proj_lune_wf $area_lune_wf -O -K -Ccpt_misfit -I -N $shiftc >> $out
+pscontour ${data_gd_prob} $proj_lune_wf $area_lune_wf -O -K -Ccpt_misfit_c -N -W1 -A100 $shiftc >> $out
+#psxy ${data_gd_prob} $proj_lune_wf $area_lune_wf -Ccpt_misfit -N -Sc8p -W0.5p,0/0/0 -O -K $shiftc >> $out
 
 # plot reference arcs + points
 (echo -30 35.2644 ; echo 30 54.7356)  | psxy -N -W2p,0/0/0/35 $proj_lune_wf $area_lune_wf -O -K $shiftc >> $out
