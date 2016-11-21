@@ -151,6 +151,11 @@ data_misfit_fmp="${datadir}/${evid}_${model}_${depth}_misfit_fmp"
 data_bestsol_bb="${datadir}/${evid}_${model}_${depth}_best_sol_psmeca"
    data_cap_out="${datadir}/${evid}_${model}_${depth}.out"
 data_misfit_wf_best_sol="${datadir}/${evid}_${model}_${depth}_best_sol_psmeca"
+data_vP="${datadir}/${evid}_vP.dat"
+data_mesa_cdf="${datadir}/${evid}_mesa_cdf.dat"
+data_mesa_pdf="${datadir}/${evid}_mesa_pdf.dat"
+data_post_cdf="${datadir}/${evid}_post_cdf.dat"
+data_post_pdf="${datadir}/${evid}_post_pdf.dat"
 
 # OUTPUT
 out="${datadir}/${evid}_${model}_${depth}_fmtu.ps"
@@ -252,7 +257,9 @@ shiftb="-Xa0.25i -Ya2.5i"
 shiftb2="-Xa2.1i -Ya2.5i"
 shiftc="-Xa3.5i -Ya-0.15i"
 shiftd="-Xa3.0i -Ya8i"
-shifte="-Xa6.8i -Ya0.3i"   # mag scale
+shifte1a="-Xa0i -Ya0.8i"
+shifte1b="-Xa0i -Ya-0.4i"
+shifte2="-Xa2.5i -Ya-0.4i"
 
 #       COLUMN 1
 # region
@@ -437,11 +444,20 @@ echo  0.333 0.0 | psxy -N -Sp4p -W1p,0 $proj_vw -O -K $shiftb2 >> $out
 #psmeca ${data_vw_prob} $proj_lune_wf $area_lune_wf -Sm${size_lune_bb}i -N -Zcpt_misfit -W0.5p,100/100/100 -L -O -K $shiftc >> $out
 
 # show best solution on lune
-psxy ${data_bestsol_bb} $area_lune_wf $proj_lune_wf -N -Ss23p -W2.0p,0/255/0 $shiftc -O >>$out
+psxy ${data_bestsol_bb} $area_lune_wf $proj_lune_wf -N -Ss23p -W2.0p,0/255/0 $shiftc -O -K >>$out
 
 # magnitude scale
 #psmeca ${data_psmeca_legend} -R0/4/0/4 -JX2.5 -O -K -N $shifte -Sm${size_lune_bb}i -G150/150/150 >> $out
 #echo "-0.5 0 12 90 0 BL Mw" | pstext -R0/4/0/4 -JX2 -O -N $shifte >> $out
+psxy ${data_mesa_cdf} -R0/180/0/1 -Jx0.01/1 -Bf40a60/f1a1Wens $shifte1a -W1.1p,0/255/0 -O -K >> $out
+psxy ${data_post_cdf} -R0/180/0/1 -Jx0.01/1 -Bf40a60/f1a1wens $shifte1a -W1.1p,0/0/255 -O -K >> $out
+psxy ${data_mesa_pdf} -R0/180/0/1 -Jx0.01/1 -Bf40a60/f1a1wens $shifte1b -W1.1p,0/255/0 -O -K >> $out
+psxy ${data_post_pdf} -R0/180/0/1 -Jx0.01/1 -Bf40a60/f1a1WenS $shifte1b -W1.1p,0/0/255 -O -K >> $out
+psxy ${data_vP} -R0/1/0/1 -JX1.3 -Bf0.1a1/f0.1a1WSen $shifte2 -W1.1p,255/0/0 -O >> $out
+# pstext -JM7i -R0/1/0/1 -Xa-1c       -Ya${y1m}c -G50/205/50  -K -N -O -V    >> $psfile<<EOF\n0 0 8 90 1 LB P(\@~w\@~)\nEOF\n";
+# pstext -JM7i -R0/1/0/1 -Xa-1.15c    -Ya${y1m}c -G50/205/50  -K -N -O -V    >> $psfile<<EOF\n0 0 8 90 1 LB \136 \nEOF\n";
+# pstext -JM7i -R0/1/0/1 -Xa-1c       -Ya${y2m}c -G0/0/255    -K -N -O -V    >> $psfile<<EOF\n0 0 8 90 1 LB V(\@~w\@~)\nEOF\n";
+# pstext -JM7i -R0/1/0/1 -Xa-1.15c    -Ya${y2m}c -G0/0/255    -K -N -O -V    >> $psfile<<EOF\n0 0 8 90 1 LB \136 \nEOF\n";
 
 ps2raster -Te -A ${out}
 printf "$0: done. output file: $out\n"
