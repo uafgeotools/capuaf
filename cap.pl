@@ -210,8 +210,8 @@ $usage =
         GRID: -I<Nv>/<Nw>/<Nstrike>/<Ndip>/<Nrake> where Nx = number of poits for parameter x
     -J  FLAG NOT IN USE.
     -K  FLAG NOT IN USE.
-    -k  specify k1 to build a lune grid, not a UV grid.
-        cap.c needs to be compiled with flag LUNE_GRID_INSTEAD_OF_UV = 0
+    -k  Specify k1 to build a lune grid, not a UV grid.
+        Use only when LUNE_GRID_INSTEAD_OF_UV = 0 (and recompile cap)
     -L  source duration (estimate from mw, can put a sac file name here).
     -M	specify the model and source depth.
     -m	specify point magnitude: -m<mw0> OR magnitude range: -n<mw1>/<mw2>/<dmw>
