@@ -259,7 +259,7 @@ shifta="-Xa-0.02i -Ya5.5i"
 shiftb="-Xa0.25i -Ya2.5i"
 shiftb2="-Xa2.1i -Ya2.5i"
 shiftc="-Xa3.5i -Ya-0.15i"
-shiftd="-Xa3.0i -Ya8i"
+shiftd="-Xa2.0i -Ya-0.8i"
 shifte1a="-Xa0i -Ya0.8i"
 shifte1b="-Xa0i -Ya0.8i"
 shifte2="-Xa0i -Ya-0.6i"
@@ -361,8 +361,6 @@ printf "$0: plotting solution with lowest misfit\n"
 size_best_bb=1.67i      # 2.78i Ratio: 1.1120
 proj_size_best_bb=1.5   # 2.5
 proj_best_sol="-JPa${proj_size_best_bb}i -R0/360/0/1"
-
-# NOTE, 
 awk '{print "0 1e-10", $3, $4, $5, $6, $7, $8, $9, "23"}' ${data_bestsol_bb} \
     | psmeca $proj_best_sol $shiftd -Sm${size_best_bb} -N -W1.0p,0/0/0 -Zcpt_misfit -L -O -K >> $out
 
