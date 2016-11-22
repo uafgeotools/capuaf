@@ -36,6 +36,8 @@ flag_make_cpt="yes"     # yes/no. compute CPT files or not
 
 region="wes"            # utu, ak, wes
 
+size_lune_bb=0.15
+
 #-----------------------------------------------------------
 # prepare to read the data
 #-----------------------------------------------------------
@@ -144,6 +146,7 @@ depth=`printf "%03d" $depth`
 # TODO get datadir from command line
 datadir="OUTPUT_DIR"
 
+data_misfit_wf="${datadir}/${evid}_${model}_${depth}_misfit_wf_psmeca"
   data_stations="${datadir}/${evid}_${model}_${depth}_fmpdata.txt"
 data_misfit_fmp="${datadir}/${evid}_${model}_${depth}_misfit_fmp"
    data_vw_prob="${datadir}/${evid}_${model}_${depth}_vw_prob.txt"
@@ -176,7 +179,7 @@ if [ -e $data_stations ] \
 
 then
     printf "$0: using input files:\n"
-    printf "%s\n%s\n%s\n%s\n%s\n%s\n" $data_stations $data_misfit_fmp $data_vw_prob $data_cap_out $data_psmeca_legend $data_vw_prob_best_sol
+    printf "%s\n%s\n%s\n%s\n%s\n%s\n" $data_misfit_wf $data_stations $data_misfit_fmp $data_vw_prob $data_cap_out $data_psmeca_legend $data_vw_prob_best_sol
 else
     printf "$0: abort. input files missing. check:\n"
     printf "%s\n%s\n%s\n%s\n%s\n%s\n" $data_stations $data_misfit_fmp $data_vw_prob $data_cap_out $data_psmeca_legend $data_vw_prob_best_sol
@@ -258,8 +261,8 @@ shiftb2="-Xa2.1i -Ya2.5i"
 shiftc="-Xa3.5i -Ya-0.15i"
 shiftd="-Xa3.0i -Ya8i"
 shifte1a="-Xa0i -Ya0.8i"
-shifte1b="-Xa0i -Ya-0.4i"
-shifte2="-Xa2.5i -Ya-0.4i"
+shifte1b="-Xa0i -Ya0.8i"
+shifte2="-Xa0i -Ya-0.6i"
 
 #       COLUMN 1
 # region
@@ -441,23 +444,21 @@ echo -0.333 0.0 | psxy -N -Sp4p -W1p,0 $proj_vw -O -K $shiftb2 >> $out
 echo  0.333 0.0 | psxy -N -Sp4p -W1p,0 $proj_vw -O -K $shiftb2 >> $out
 
 #plot beachballs
-#psmeca ${data_vw_prob} $proj_lune_wf $area_lune_wf -Sm${size_lune_bb}i -N -Zcpt_misfit -W0.5p,100/100/100 -L -O -K $shiftc >> $out
+#psmeca ${data_misfit_wf} $proj_lune_wf $area_lune_wf -Sm${size_lune_bb}i -N -Zcpt_misfit -W0.5p,100/100/100 -L -O -K $shiftc >> $out
+psmeca ${data_misfit_wf} $proj_lune_wf $area_lune_wf -Sm${size_lune_bb}i -N -G100/100/100 -W0.5p,100/100/100 -L -O -K $shiftc >> $out
 
 # show best solution on lune
 psxy ${data_bestsol_bb} $area_lune_wf $proj_lune_wf -N -Ss23p -W2.0p,0/255/0 $shiftc -O -K >>$out
 
-# magnitude scale
-#psmeca ${data_psmeca_legend} -R0/4/0/4 -JX2.5 -O -K -N $shifte -Sm${size_lune_bb}i -G150/150/150 >> $out
-#echo "-0.5 0 12 90 0 BL Mw" | pstext -R0/4/0/4 -JX2 -O -N $shifte >> $out
-psxy ${data_mesa_cdf} -R0/180/0/1 -Jx0.01/1 -Bf40a60/f1a1Wens $shifte1a -W1.1p,0/255/0 -O -K >> $out
-psxy ${data_post_cdf} -R0/180/0/1 -Jx0.01/1 -Bf40a60/f1a1wens $shifte1a -W1.1p,0/0/255 -O -K >> $out
-psxy ${data_mesa_pdf} -R0/180/0/1 -Jx0.01/1 -Bf40a60/f1a1wens $shifte1b -W1.1p,0/255/0 -O -K >> $out
-psxy ${data_post_pdf} -R0/180/0/1 -Jx0.01/1 -Bf40a60/f1a1WenS $shifte1b -W1.1p,0/0/255 -O -K >> $out
-psxy ${data_vP} -R0/1/0/1 -JX1.3 -Bf0.1a1/f0.1a1WSen $shifte2 -W1.1p,255/0/0 -O >> $out
-# pstext -JM7i -R0/1/0/1 -Xa-1c       -Ya${y1m}c -G50/205/50  -K -N -O -V    >> $psfile<<EOF\n0 0 8 90 1 LB P(\@~w\@~)\nEOF\n";
-# pstext -JM7i -R0/1/0/1 -Xa-1.15c    -Ya${y1m}c -G50/205/50  -K -N -O -V    >> $psfile<<EOF\n0 0 8 90 1 LB \136 \nEOF\n";
-# pstext -JM7i -R0/1/0/1 -Xa-1c       -Ya${y2m}c -G0/0/255    -K -N -O -V    >> $psfile<<EOF\n0 0 8 90 1 LB V(\@~w\@~)\nEOF\n";
-# pstext -JM7i -R0/1/0/1 -Xa-1.15c    -Ya${y2m}c -G0/0/255    -K -N -O -V    >> $psfile<<EOF\n0 0 8 90 1 LB \136 \nEOF\n";
+# fractional and confidence curves
+psxy ${data_mesa_pdf} -R0/180/0/1 -Jx0.006/0.9 -Bf30a60N/a1W $shifte1b -W1.1p,0/255/0 -O -K >> $out
+psxy ${data_post_pdf} -R0/180/0/1 -Jx0.006/0.9 -Bf0s/f0e $shifte1b -W1.1p,0/0/255 -O -K >> $out
+echo "-25 0.2 8 90 1 LB P'(@~w@~)" | pstext -R0/180/0/1 -Jx0.006/0.9 $shifte1b -G50/205/50 -K -N -O >> $out
+echo "-25 0.6 8 90 1 LB V'(@~w@~)" | pstext -R0/180/0/1 -Jx0.006/0.9 $shifte1b -G0/0/255 -K -N -O >> $out 
+psxy ${data_vP} -R0/1/0/1 -JX1.10 -Bf0.1a1/f0.1a1WS $shifte2 -W1.1p,255/0/0 -O -K >> $out
+echo "-25 0.4 12 90 12 LB \303" | pstext -R0/180/0/1 -Jx0.006/0.9 $shifte2 -G0/0/0 -K -N -O >> $out 
+echo "-25 0.6 12 90 0 LB (\126)" | pstext -R0/180/0/1 -Jx0.006/0.9 $shifte2 -G0/0/0 -K -N -O >> $out 
+psbasemap -R0/1/0/1 -JX1.10 -Bf0N/f0E $shifte2 -O >> $out
 
 ps2raster -Te -A ${out}
 printf "$0: done. output file: $out\n"
