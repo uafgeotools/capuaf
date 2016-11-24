@@ -145,7 +145,6 @@ depth=`printf "%03d" $depth`
 # INPUT
 # TODO get datadir from command line
 datadir="OUTPUT_DIR"
-
 data_misfit_wf="${datadir}/${evid}_${model}_${depth}_misfit_wf_psmeca"
   data_stations="${datadir}/${evid}_${model}_${depth}_fmpdata.txt"
 data_misfit_fmp="${datadir}/${evid}_${model}_${depth}_misfit_fmp"
@@ -162,13 +161,6 @@ data_post_pdf="${datadir}/${evid}_post_pdf.dat"
 
 # OUTPUT
 out="${datadir}/${evid}_${model}_${depth}_fmtu.ps"
-#   data_vw_prob_best_sol="${datadir_fmt}/${evid}_${model}_${depth}_misfit_wf_psmeca_best_sol"
-
-#data_psmeca_legend="${datadir_fmt}/${evid}_${model}_${depth}_psmeca_legend_psmeca_Mw"
-#data_psmeca_legend="${datadir_fmt}/${evid}_${model}_${depth}_psmeca_legend_IEXP_psmeca_custom"
-#     data_psmeca_legend="${datadir_fmt}/${evid}_IEXP_custom"
-#     data_psmeca_legend="${datadir_fmt}/${evid}_IEXP_psmeca_custom"
-#     data_psmeca_legend="${datadir_fmt}/../../../${evid}_IEXP_psmeca_custom"
 
 # check that data exists
 if [ -e $data_stations ] \
@@ -273,7 +265,7 @@ if [ "$region" == "utu" ] ; then
 elif [ "$region" == "wes" ] ; then
     # LLNL
     gmtregion="-R-125.5/-104/32/48 -Jm0.135"; ticks="-Ba5f1WSne"; bmscale="-L-107.0/46.0/40/100+p1p,0/0/0+fwhite"
-    pscoast $gmtregion -O -V -K -Na -Df -W1 -S100/150/255 -A500 $shifta >> $out
+    pscoast $gmtregion -O -V -K -Na -Df -W1 -S100/150/255 -A2000 $shifta >> $out
 elif [ "$region" == "ak" ] ; then
     # ALASKA
     gmtregion="-R-160/55/-134/67r -JS-150/90/7.0c"; ticks="-Ba10f5g10WSne/a5g5"; bmscale="-L-145/57/57/100+p1p,0/0/0+fwhite"
@@ -285,12 +277,9 @@ else
     exit
 fi
 
-##grdview $grid -I$grad -R-67.75/-66.7/-22.7/-21.8 -Jm3.0 -O -K $shifta -Csrtm_utu_gray.cpt -Qi200 >> $out
-#psbasemap -R-67.75/-66.7/-22.7/-21.8 -Jm3.0 -O -K $shifta -Ba0.5f0.1WSne -L-67.6/-22.58/-22.3/10+p1p,0/0/0+fwhite >> $out    #plutons
-psbasemap $gmtregion -O -K $shifta $ticks $bmscale >> $out    #plutons
+psbasemap $gmtregion -O -K $shifta $ticks $bmscale >> $out
 
 # station + polarity
-#awk '{print $3, $4, 6, 0, 0, "CB", $2}' $data_stations | pstext $gmtregion -O -K $shifta -S2.0p,255/255/255 -D0/0.06  >> $out
 awk '{print $3, $4, $2}' $data_stations | sed 's/\./ /g' \
     | awk '{print $1"."$2, $3"."$4, 6, 0, 0, "CB", $7}' \
     | pstext $gmtregion -O -K $shifta -S2.0p,255/255/255 -D0/0.06  >> $out
@@ -301,7 +290,7 @@ awk '{ if ($5<0) print $3, $4}' $data_stations \
 awk '{ if ($5==0) print $3, $4}' $data_stations \
     | psxy   $gmtregion -O -K $shifta -Ss0.25c -W1.5p,0/0/0 >> $out
 # epicenter
-echo "$evlon $evlat" | psxy  -R-67.75/-66.7/-22.7/-21.8 -Jm3.0 -O -K $shifta -Sa0.5c -W0.5p -G255/0/0 >> $out
+echo "$evlon $evlat" | psxy  $gmtregion -O -K $shifta -Sa0.5c -W0.5p -G255/0/0 >> $out
 
 # mini lune plot with polarity misfits
 printf "$0: work on mini lune plot with polarity misfit\n"
