@@ -21,21 +21,13 @@
 #-----------------------------------------------------------
 
 #-----------------------------------------------------------
-# customize these
+# customize here
 #-----------------------------------------------------------
 
-# preliminary flags
 plot_misfit_fmp=""      # yes/no
-plot_misfit_fmp="yes"   # yes/no
-
-use_kludge="yes"        # yes/no. for plotting enlarged beachballs to avoid psmeca bug
-use_kludge=""           # yes/no. for plotting enlarged beachballs to avoid psmeca bug
-
-flag_make_cpt=""        # yes/no. compute CPT files or not
-flag_make_cpt="yes"     # yes/no. compute CPT files or not
-
+use_kludge=""           # yes/no. plot enlarged beachballs to avoid psmeca bug
+flag_make_cpt="yes"     # yes/no. compute CPT files
 region="wes"            # utu, ak, wes
-
 size_lune_bb=0.15
 
 #-----------------------------------------------------------
@@ -205,7 +197,7 @@ n_up_polarities=`awk '{ if ($5=="1")  print $5 }' $data_stations | wc -l`
 n_dn_polarities=`awk '{ if ($5=="-1") print $5 }' $data_stations | wc -l`
 
 # get gamma delta for best solution
-label_best_sol="`cat ${data_misfit_wf_best_sol} | awk '{printf \"Solution @~g@~ = %.0f\217, @~d@~ = %.0f\217\", $1, $2}'`"
+label_best_sol="`cat ${data_misfit_wf_best_sol} | awk '{printf \"Best solution @~g@~ %.0f\217, @~d@~ %.0f\217\", $1, $2}'`"
 
 #                   BEGIN PLOTTING
 #   set gmt parameters
@@ -259,18 +251,18 @@ echo "1.3 0.7 14 0 1 LM (g)" | pstext $panel_common_labels >> $out
 # panel locations
 shifta="-Xa-0.02i -Ya5.5i"
 shiftb="-Xa0.25i -Ya2.5i"
-shiftc="-Xa1.5i -Ya1.1i"
+shiftc="-Xa1.6i -Ya1.3i"
 shiftd="-Xa3.5i -Ya-0.15i"
 shifte="-Xa0i -Ya1.1i"
 shiftf="-Xa0i -Ya-0.6i"
-shiftg="-Xa1.3i -Ya-0.8i"
+shiftg="-Xa1.5i -Ya-0.8i"
 
 #       COLUMN 1
 # region
-# PLUTONS
 if [ "$region" == "utu" ] ; then
+    # PLUTONS
     gmtregion="-R-67.75/-66.7/-22.7/-21.8 -Jm3.0"; ticks="-Ba0.5f0.1WSne"; bmscale="-L-67.6/-22.58/-22.3/10+p1p,0/0/0+fwhite"
-    grdview $grid -I$grad $gmtregion -O -K $shifta -Csrtm_utu_gray.cpt -Qi200 >> $out # PLUTONS
+    grdview $grid -I$grad $gmtregion -O -K $shifta -Csrtm_utu_gray.cpt -Qi200 >> $out
 elif [ "$region" == "wes" ] ; then
     # LLNL
     gmtregion="-R-125.5/-104/32/48 -Jm0.135"; ticks="-Ba5f1WSne"; bmscale="-L-107.0/46.0/40/100+p1p,0/0/0+fwhite"
@@ -298,6 +290,7 @@ awk '{ if ($5<0) print $3, $4}' $data_stations \
     | psxy   $gmtregion -O -K $shifta -Sc0.25c -G255/255/255 -W1.5p,0/0/0 >> $out
 awk '{ if ($5==0) print $3, $4}' $data_stations \
     | psxy   $gmtregion -O -K $shifta -Ss0.25c -W1.5p,0/0/0 >> $out
+
 # epicenter
 echo "$evlon $evlat" | psxy  $gmtregion -O -K $shifta -Sa0.5c -W0.5p -G255/0/0 >> $out
 
@@ -306,7 +299,7 @@ printf "$0: work on mini lune plot with polarity misfit\n"
 
 proj_lune_fmp="-JH0/0.85i"
 area_lune_fmp="-R-30/30/-90/90"
-proj_vw="-R-0.35/0.35/-1.178/1.178 -Jx1.6/1.6"
+proj_vw="-R-0.35/0.35/-1.178/1.178 -Jx1.5/1.5"
 
 # if polarity misfit not calculated (eg DC-only search), plot only square at center
 if [ "$plot_misfit_fmp" == "yes" ]; then
@@ -425,7 +418,7 @@ echo -30.0   0.0 10 0 1 RM CLVD  | pstext -N $proj_lune_wf $area_lune_wf -O -K $
 echo  30.0   0.0 10 0 1 LM CLVD  | pstext -N $proj_lune_wf $area_lune_wf -O -K $shiftd -D10p/-10p  >> $out
 
 # plot P(v,w)
-psscale -Ccpt_probs_c -Al -D1.2/0.6/1.2/0.1 -Ef0.5c -Bf0.001a0.002 -O -K $shiftc >> $out
+psscale -Ccpt_probs_c -Aa -D1.7/0.5/1.0/0.1 -Ef0.5c -Bf0.001a0.002 -O -K $shiftc >> $out
 pscontour ${data_vw_prob} $proj_vw -Bg0 -Ccpt_probs $shiftc -I -N -O -K >> $out # paint
 awk '{print $3, $4}' ${data_vwgrid}/sourcetype_arc_03.dat | psxy $proj_vw -O -K $shiftc -W2p,0/0/0/35 >> $out
 awk '{print $3, $4}' ${data_vwgrid}/sourcetype_arc_04.dat | psxy $proj_vw -O -K $shiftc -W2p,0/0/0/35 >> $out
@@ -451,10 +444,12 @@ psxy ${data_mesa_pdf} -R0/180/0/1 -Jx0.006/0.9 -Bf30a90S/a1W $shifte -W1.1p,0/25
 psxy ${data_post_pdf} -R0/180/0/1 -Jx0.006/0.9 -Bf0n/f0e $shifte -W1.1p,0/0/255 -O -K >> $out
 echo "-25 0.2 8 90 1 LB P'(@~w@~)" | pstext -R0/180/0/1 -Jx0.006/0.9 $shifte -G50/205/50 -K -N -O >> $out
 echo "-25 0.6 8 90 1 LB V'(@~w@~)" | pstext -R0/180/0/1 -Jx0.006/0.9 $shifte -G0/0/255 -K -N -O >> $out 
+
 psxy ${data_vP} -R0/1/0/1 -JX1.10 -Bf0.1a1/f0.1a1WS $shiftf -W1.1p,255/0/0 -O -K -N -G150/150/150 >> $out
 printf "0 0\n1 1" | psxy -R0/1/0/1 -JX1.10 $shiftf -W1p -O -K -N >> $out
 echo "-25 0.4 12 90 12 LB \303" | pstext -R0/180/0/1 -Jx0.006/0.9 $shiftf -G0/0/0 -K -N -O >> $out 
 echo "-25 0.6 12 90 0 LB (\126)" | pstext -R0/180/0/1 -Jx0.006/0.9 $shiftf -G0/0/0 -K -N -O >> $out 
+echo "80 -0.3 12 0 0 LB V" | pstext -R0/180/0/1 -Jx0.006/0.9 $shiftf -G0/0/0 -K -N -O >> $out 
 psbasemap -R0/1/0/1 -JX1.10 -Bf0N/f0E $shiftf -O >> $out
 
 ps2eps ${out}
