@@ -538,83 +538,20 @@ SOLN searchMT(
 #pragma critical
 {
 #endif
-                // The next 2 sections guarantee that CAP outputs a best solution even when there
-                // are no solutions allowed from first motion polarities.
-                if (check_first_motion(mtensor, fm, nfm, fm_thr) >= 0) {
-                    // From all solutions that satisfy polarities find the one with best waveform fit.
-                    // If there are no solutions that satisfy polarities then npol_sol = 0 and
-                    // the next section executes.
+            // The next 2 blocks ensure that CAP outputs a best solution even when there are no solutions allowed from first motion polarities.
 
-                    // if there is at least one solution allowed by polarities then set this
-                    // as the new best solution and set as reference solution
-                    if (npol_sol == 0) {
-                        //best_sol.err = FLT_MAX;
-                        best_misfit = FLT_MAX;
-                    }
+            // BLOCK 1
+            // From all solutions that satisfy polarities find the one with best waveform fit.
+            // If at least one solution matches all observed polarities then use it as the best solution
+            // If no solutions match observed polarities then npol_sol = 0 and the next block executes.
+            //if (check_first_motion(mtensor, fm, nfm, fm_thr) == 0) {
+            if (misfit_fmp == 0) {
 
-                    if (best_misfit > sol.err) {
-                        best_misfit = sol.err;
-                        isol_best = isol;
-                        best_sol.err = sol.err;
-#ifdef OMP
-                        tid = omp_get_thread_num();
-#endif
-                        sol.meca.gamma = arrayMT[isol_best].gamma * r2d;
-                        sol.meca.delta = arrayMT[isol_best].delta * r2d;
-                        sol.meca.stk   = arrayMT[isol_best].kappa * r2d;
-                        sol.meca.dip   = arrayMT[isol_best].theta * r2d;
-                        sol.meca.rak   = arrayMT[isol_best].sigma * r2d;
-                        sol.meca.mag   = vec_mag[imag];
-
-                        best_sol = sol; 
-
-                        // output search status
-                        fprintf(stderr,"AAA (tid %2d) best sol index %10d (%3d%) mag %5.2f %11.6f %11.6f %11.6f %11.6f %11.6f err %12.6e VR %5.1f%\t misfit fmp 0\n",
-                                tid,
-                                isol_best, 100 * isol_best/searchPar->nsol,
-                                vec_mag[imag],
-                                arrayMT[isol_best].gamma * r2d, arrayMT[isol_best].delta * r2d,
-                                arrayMT[isol_best].kappa * r2d, arrayMT[isol_best].theta * r2d, arrayMT[isol_best].sigma * r2d,
-                                best_sol.err, VR);
-                    }
-
-                    npol_sol++;
-
-                } else if (npol_sol == 0) {
-                    // This section does not run if there is at least one solution allowed by first motion polarities
-                    if (best_misfit > sol.err) {
-                        best_misfit = sol.err;
-                        isol_best = isol;
-                        best_sol.err = sol.err;
-#ifdef OMP
-                        tid = omp_get_thread_num();
-#endif
-                        sol.meca.gamma = arrayMT[isol_best].gamma * r2d;
-                        sol.meca.delta = arrayMT[isol_best].delta * r2d;
-                        sol.meca.stk   = arrayMT[isol_best].kappa * r2d;
-                        sol.meca.dip   = arrayMT[isol_best].theta * r2d;
-                        sol.meca.rak   = arrayMT[isol_best].sigma * r2d;
-                        sol.meca.mag   = vec_mag[imag];
-
-                        best_sol = sol; 
-
-                        // output search status
-                        fprintf(stderr,"BBB (tid %2d) best sol index %10d (%3d%) mag %5.2f %11.6f %11.6f %11.6f %11.6f %11.6f err %12.6e VR %5.1f%\n",
-                                tid,
-                                isol_best, 100 * isol_best/searchPar->nsol,
-                                vec_mag[imag],
-                                arrayMT[isol_best].gamma * r2d, arrayMT[isol_best].delta * r2d,
-                                arrayMT[isol_best].kappa * r2d, arrayMT[isol_best].theta * r2d, arrayMT[isol_best].sigma * r2d,
-                                best_sol.err, VR);
-                    }
+                if (npol_sol == 0) {
+                    //best_sol.err = FLT_MAX;
+                    best_misfit = FLT_MAX;
                 }
 
-#ifdef OMP
-} // end critical section
-#endif
-            }
-            // Execute this section if weight for polarity misfit (-X flag) is specified
-            else {
                 if (best_misfit > sol.err) {
                     best_misfit = sol.err;
                     isol_best = isol;
@@ -632,15 +569,50 @@ SOLN searchMT(
                     best_sol = sol; 
 
                     // output search status
-                    fprintf(stderr,"CCC (tid %2d) best sol index %10d (%3d%) mag %5.2f %11.6f %11.6f %11.6f %11.6f %11.6f wferr %12.6f polerr %5.6f MISFIT %5.6f VR %5.1f%\n",
+                    fprintf(stderr,"AAA (tid %2d) best sol index %10d (%3d%) mag %5.2f %11.6f %11.6f %11.6f %11.6f %11.6f wfe %6.3e pole %6.3e VR %5.1f%% fmp misfit 0\n",
                             tid,
                             isol_best, 100 * isol_best/searchPar->nsol,
                             vec_mag[imag],
                             arrayMT[isol_best].gamma * r2d, arrayMT[isol_best].delta * r2d,
                             arrayMT[isol_best].kappa * r2d, arrayMT[isol_best].theta * r2d, arrayMT[isol_best].sigma * r2d,
-                            misfit_wf_weight * best_sol.wferr, best_sol.polerr, best_sol.err, VR);
+                            misfit_wf_weight * best_sol.wferr, best_sol.polerr, VR);
+                }
+
+                npol_sol++;
+
+            } else if (npol_sol == 0) {
+                // BLOCK 2
+                // This section does not run if there is at least one solution allowed by first motion polarities
+                if (best_misfit > sol.err) {
+                    best_misfit = sol.err;
+                    isol_best = isol;
+                    best_sol.err = sol.err;
+#ifdef OMP
+                    tid = omp_get_thread_num();
+#endif
+                    sol.meca.gamma = arrayMT[isol_best].gamma * r2d;
+                    sol.meca.delta = arrayMT[isol_best].delta * r2d;
+                    sol.meca.stk   = arrayMT[isol_best].kappa * r2d;
+                    sol.meca.dip   = arrayMT[isol_best].theta * r2d;
+                    sol.meca.rak   = arrayMT[isol_best].sigma * r2d;
+                    sol.meca.mag   = vec_mag[imag];
+
+                    best_sol = sol; 
+
+                    // output search status
+                    fprintf(stderr,"BBB (tid %2d) best sol index %10d (%3d%) mag %5.2f %11.6f %11.6f %11.6f %11.6f %11.6f wfe %6.3e pole %6.3e VR %5.1f%\n",
+                            tid,
+                            isol_best, 100 * isol_best/searchPar->nsol,
+                            vec_mag[imag],
+                            arrayMT[isol_best].gamma * r2d, arrayMT[isol_best].delta * r2d,
+                            arrayMT[isol_best].kappa * r2d, arrayMT[isol_best].theta * r2d, arrayMT[isol_best].sigma * r2d,
+                            misfit_wf_weight * best_sol.wferr, best_sol.polerr, VR);
                 }
             }
+
+#ifdef OMP
+} // end critical section
+#endif
 
             //  output binary data
             //#ifdef WB
