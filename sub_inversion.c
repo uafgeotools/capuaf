@@ -499,12 +499,6 @@ SOLN searchMT(
 
             // Compute VR
             VR = 100.0 * (1 - (sol.err * sol.err));
-            //if (1) {
-            //VR_wf = 100.*(1.-(sol.wferr/data2)*(sol.wferr/data2));
-            //VR_pol = 100.*(1.-(misfit_fmp/(float)nda)*(misfit_fmp/(float)nda));
-            //VR = misfit_pol_weight * VR_pol + misfit_wf_weight * VR_wf;
-            //VR = 100.0 * (1 - (sol.err * sol.err));
-            //}
 
             // fill additional parameters
             arrayMT[isol].mw           = vec_mag[imag];
