@@ -420,7 +420,7 @@ echo -30.0   0.0 10 0 1 RM CLVD  | pstext -N $proj_lune_wf $area_lune_wf -O -K $
 echo  30.0   0.0 10 0 1 LM CLVD  | pstext -N $proj_lune_wf $area_lune_wf -O -K $shiftd -D10p/-10p  >> $out
 
 # plot P(v,w)
-psscale -Ccpt_probs -Aa -D1.7/0.5/1.0/0.1 -Ef0.5c -Bf0.001a0.005 -O -K $shiftc >> $out
+psscale -Ccpt_probs -Aa -D1.7/0.5/1.0/0.1 -Ef0.5c -Bf0.25a0.5 -O -K $shiftc >> $out
 pscontour ${data_vw_prob} $proj_vw -Bg0 -Ccpt_probs $shiftc -I -N -O -K >> $out # paint
 awk '{print $3, $4}' ${data_vwgrid}/sourcetype_arc_03.dat | psxy $proj_vw -O -K $shiftc -W2p,0/0/0/35 >> $out
 awk '{print $3, $4}' ${data_vwgrid}/sourcetype_arc_04.dat | psxy $proj_vw -O -K $shiftc -W2p,0/0/0/35 >> $out
