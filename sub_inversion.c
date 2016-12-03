@@ -415,6 +415,11 @@ SOLN searchMT(
     }
     // END DELETE SECTION
 
+    // Balance polarity and waveform weights. The polarity weight comes through
+    // flag X, and the default value from cap.pl is now 0 (no weights to
+    // polarities)
+    misfit_wf_weight = 1 - pol_wt;
+
     // prepare magnitude array
     // NOTE magnitude points include boundaries (unlike gridvec)
     float * vec_mag = calloc(searchPar->nmw, sizeof(float));
@@ -470,9 +475,15 @@ SOLN searchMT(
             //}
 
             // polarity misfit
-            misfit_fmp = misfit_first_motion(mtensor, nfm, fm, fidfmp, arrayMT[isol].gamma * r2d, arrayMT[isol].delta * r2d, vec_mag[imag], sol.meca.stk, sol.meca.dip, sol.meca.rak);
-            if(misfit_fmp > 0) {
-                nreject++;
+            // the weighted polarity misfit is 0 if there are no observed polarities in the weight file
+            if (nfm > 0) {
+                misfit_fmp = misfit_first_motion(mtensor, nfm, fm, fidfmp, arrayMT[isol].gamma * r2d, arrayMT[isol].delta * r2d, vec_mag[imag], sol.meca.stk, sol.meca.dip, sol.meca.rak);
+                if (misfit_fmp > 0) {
+                    nreject++;
+                }
+                sol.polerr = pol_wt * misfit_fmp/nfm;
+            } else {
+                sol.polerr = 0;
             }
 
             // waveform misfit
@@ -480,22 +491,9 @@ SOLN searchMT(
             sol.wferr = sol.wferr/Ncomp;    // Ncomp = number of components.
             sol.wferr = sol.wferr/data2;    // normalize by data
 
-            //---------------- combine polarity and waveform misfit---------------------------
+            // combine polarity and waveform misfit
             // XXX: Ongoing
-            // If -X flag is specified sol.err will contain the total misfit
-            if ((int)pol_wt != 999){
-                misfit_pol_weight = pol_wt; // this should come as an input from cap.pl (-X flag)
-                misfit_wf_weight = 1 - misfit_pol_weight;
-                sol.polerr = (float)misfit_pol_weight * misfit_fmp/nfm;
-                sol.err = sol.polerr + misfit_wf_weight * sol.wferr;
-                //fprintf(stderr,"---> %f %f %f %f\n",sol.err/data2, (float)misfit_fmp/nfm, total_misfit, misfit_pol_weight);
-                //sol.err = total_misfit; // replace waveform misfit sol.err by total misfit
-            }
-            // For older examples:
-            // In case -X flag is not specified sol.err will contain the waveform misfit
-            else { 
-                sol.err = sol.wferr;
-            }
+            sol.err = sol.polerr + misfit_wf_weight * sol.wferr;
 
             // Compute VR
             VR = 100.0 * (1 - (sol.err * sol.err));
@@ -526,8 +524,6 @@ SOLN searchMT(
 
 #endif
 
-            // This if section will run only if weight for polarity misfit (-X flag) is not specified
-            if ((int)pol_wt == 999){
 #ifdef OMP
 #pragma critical
 {
