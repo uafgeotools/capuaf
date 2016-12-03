@@ -330,7 +330,7 @@ SOLN searchMT(
     float amp;
     SOLN sol, best_sol;
     float *grd_err;
-    int misfit_fmp;
+    int misfit_fmp = -999;
     float misfit_pol_weight, misfit_wf_weight, total_misfit;
 
     int sol_count, nreject, npol_sol;
@@ -442,11 +442,6 @@ SOLN searchMT(
         fprintf(stderr,"Loop Mw[%d/%d] = %6.3f\n", imag+1, nmag, vec_mag[imag]);
         amp = pow(10., 1.5 * vec_mag[imag] + 16.1 - 20);
 
-        // LOOP THROUGH ALL SOLUTIONS
-        // MAIN LOOP 
-        // WARNING Anything inside the following loop will likely run millions of times.
-        // WARNING Consider carefully before adding any code inside this loop.
-
         nreject = 0;
         sol_count = 0;
 
@@ -460,6 +455,13 @@ SOLN searchMT(
         lastprivate(sol) \
         reduction(+:sol_count, nreject)
 #endif
+
+        //---------------------------------------------------------- 
+        // MAIN LOOP 
+        // WARNING 
+        //  Anything inside the following loop will likely run millions of times.
+        //  Consider carefully before adding code inside this loop.
+        //---------------------------------------------------------- 
         for(isol = 0; isol < searchPar->nsol; isol++) {
 
             sol_count++;
