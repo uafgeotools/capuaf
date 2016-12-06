@@ -127,6 +127,7 @@ int main (int argc, char **argv) {
   float *pObs_ftc; // a copy of observed waveforms, used with FTC flags
   float *g_pt;  // for FTC_green
   float pol_wt;
+  float pnl_reward, sw_reward;
   int npt_data, offset_h=0;
   GRID	grid;
   MTPAR mt[3];  // DELETE
@@ -255,6 +256,11 @@ int main (int argc, char **argv) {
   scanf("%lf%lf%lf%lf",&f1_pnl,&f2_pnl,&f1_sw,&f2_sw);
   if (f1_pnl>0.) design(order, type, proto, 1., 1., f1_pnl, f2_pnl, (double) dt, pnl_sn, pnl_sd, &nsects);
   if (f1_sw>0.)  design(order, type, proto, 1., 1., f1_sw, f2_sw, (double) dt, sw_sn, sw_sd, &nsects);
+
+  // Compute reward factors
+  pnl_reward = x1*(f2_pnl-f1_pnl);
+  sw_reward = y1*(f2_sw-f1_sw);
+  fprintf(stderr, "Pnl reward: %f ; Sw reward: %f \n",pnl_reward, sw_reward);
 
   /** max. window length, shift, and weight for Pnl portion **/
   mm[0]=rint(x1/dt);
@@ -590,7 +596,13 @@ int main (int argc, char **argv) {
 
         // multiply -Dflag to the weights
         spt->on_off = (int)spt->on_off * w_pnl[j]; 
-        
+
+	// multiple weights by reward factors
+	if (j<3) {
+	  spt->on_off = spt->on_off * sw_reward;}
+	else {
+	  spt->on_off = spt->on_off * pnl_reward;}
+	         
         if (spt->on_off) {
             total_n+=npt; 
             Ncomp += spt->on_off;
