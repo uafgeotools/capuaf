@@ -34,9 +34,9 @@ $green = "/store/wf/FK_synthetics";               # UAF linux network
 $repeat = 0;
 $fm_thr = 0.01;
 $dirct='';
-$disp=0;
+$disp=1;
 $mltp=0;
-$pol_wt=-999;
+$pol_wt=0;
 $weight="weight.dat";
 $fmt_flag="false";
 
