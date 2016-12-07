@@ -257,11 +257,6 @@ int main (int argc, char **argv) {
   if (f1_pnl>0.) design(order, type, proto, 1., 1., f1_pnl, f2_pnl, (double) dt, pnl_sn, pnl_sd, &nsects);
   if (f1_sw>0.)  design(order, type, proto, 1., 1., f1_sw, f2_sw, (double) dt, sw_sn, sw_sd, &nsects);
 
-  // Compute reward factors
-  pnl_reward = x1*(f2_pnl-f1_pnl);
-  sw_reward = y1*(f2_sw-f1_sw);
-  fprintf(stderr, "Pnl reward: %f ; Sw reward: %f \n",pnl_reward, sw_reward);
-
   /** max. window length, shift, and weight for Pnl portion **/
   mm[0]=rint(x1/dt);
   max_shft[3]=max_shft[4]=2*rint(x/dt);
@@ -328,6 +323,13 @@ int main (int argc, char **argv) {
 
   /** input number of stations **/
   scanf("%d",&nda);
+
+  // Compute reward factors
+  pnl_reward = (x1*(f2_pnl-f1_pnl));
+  sw_reward = (y1*(f2_sw-f1_sw));
+  //pnl_reward = 1;
+  //sw_reward = 1;
+  fprintf(stderr, "Pnl reward: %f ; Sw reward: %f \n",pnl_reward, sw_reward);
 
   if (nda > STN) {
     fprintf(stderr,"number of station, %d, exceeds max., some stations are discarded\n",nda);
@@ -589,7 +591,7 @@ int main (int argc, char **argv) {
             if (j==3) {indx=2; gindx=kk[2];}	/* no radial P, use the vertical */
         }
         spt->npt = npt = n[j];
-        spt->b = t0[j];
+        spt->b = t0[j]; 
 
         // Caution: This weight scales the amplitude of waveforms. w_pnl = 1 ALWAYS (make changes in cap.pl)
         weight = pow(distance/dmin,bs[j]); 
@@ -598,10 +600,15 @@ int main (int argc, char **argv) {
         spt->on_off = (int)spt->on_off * w_pnl[j]; 
 
 	// multiple weights by reward factors
+	// Add reward factor to each component
 	if (j<3) {
-	  spt->on_off = spt->on_off * sw_reward;}
+	  spt->on_off = spt->on_off;
+	  spt->rew = sw_reward;
+	}
 	else {
-	  spt->on_off = spt->on_off * pnl_reward;}
+	  spt->on_off = spt->on_off;
+	  spt->rew = pnl_reward;
+	}
 	         
         if (spt->on_off) {
             total_n+=npt; 
@@ -683,13 +690,15 @@ int main (int argc, char **argv) {
             cumsum(f_pt, npt, dt);
         }
 
+	// Compute Data norm
         for(x2=0.,l=0;l<npt;l++,f_pt++) {
             *f_pt *= weight;
             x2+=(*f_pt)*(*f_pt);
         }
         spt->rec2 = x2;
         if (norm==1) x2 = sqrt(x2);
-        rec2 += spt->on_off*x2/(spt->npt);
+        rec2 += spt->on_off*x2/(spt->npt * spt->rew);
+	
 
         // FILTER & CUTTING FOR GREENS FUNCTIONS
         for(m=0,k=0;k<kc;k++) {

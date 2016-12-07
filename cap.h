@@ -101,6 +101,7 @@ typedef struct {
 	float	rec2;		/* sum rec*rec */
 	float	syn2[10];	/* c*sum syn[i]*syn[j], i=0..NRF-1, j=i..0, c=1 if i=j, 2 otherwise */
 	float	*crl[NRF];	/* sum rec*syn[i], i=0..NRF-1 */
+        float   rew;            /* reward factor for each component (based on window length and bandpass)*/
 } COMP;
 
 typedef struct {

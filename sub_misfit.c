@@ -97,7 +97,7 @@ SOLN get_tshift_corr_misfit(
       x1 = spt->rec2+x2*y1*y1-2.*cfg[j]*y1; // MISIFIT FUNCTION
        //fprintf(stderr,"%d\n",spt->npt);
       if (norm==1) x1 = sqrt(x1);
-      x1 = x1/spt->npt;
+      x1 = x1/(spt->npt * spt->rew);
       sol.error[i][j] = spt->on_off*x1;	/*L2 error for this com.*/
       sol.cfg[i][j] = 100*cfg[j]/sqrt(spt->rec2*x2);
       sol.wferr += spt->on_off*x1;
