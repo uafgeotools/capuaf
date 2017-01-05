@@ -27,7 +27,7 @@
 plot_misfit_fmp="es"      # yes/no
 use_kludge=""           # yes/no. plot enlarged beachballs to avoid psmeca bug
 flag_make_cpt="yes"     # yes/no. compute CPT files
-region="utu"            # utu, ak, wes
+region="wes"            # utu, ak, wes
 size_lune_bb=0.22
 
 #-----------------------------------------------------------
@@ -142,8 +142,8 @@ datadir="OUTPUT_DIR"
 data_misfit_wf="${datadir}/${evid}_${model}_${depth}_misfit_wf_psmeca"
   data_stations="${datadir}/${evid}_${model}_${depth}_fmpdata.txt"
 data_misfit_fmp="${datadir}/${evid}_${model}_${depth}_misfit_fmp"
-   data_vw_prob="${datadir}/${evid}_${model}_${depth}_vw_prob.txt"
-   data_gd_prob="${datadir}/${evid}_${model}_${depth}_gd_prob.txt"
+   data_vw_prob="${datadir}/${evid}_${model}_${depth}_vw_p_density.txt"
+   data_gd_prob="${datadir}/${evid}_${model}_${depth}_gd_p_density.txt"
 data_bestsol_bb="${datadir}/${evid}_${model}_${depth}_best_sol_psmeca"
    data_cap_out="${datadir}/${evid}_${model}_${depth}.out"
 data_misfit_wf_best_sol="${datadir}/${evid}_${model}_${depth}_best_sol_psmeca"
@@ -221,7 +221,7 @@ echo "-0.05 9.16 14 0 0 LM $label_evdp" | pstext -R0/8.5/0/11 -JX8/11 -O -K -N >
 echo "-0.05 8.94 14 0 0 LM $label_best_sol" | pstext -R0/8.5/0/11 -JX8/11 -O -K -N >> $out
 
 # legend for polarities
-if [ "$plot_misfit_fmp" == "yes" ]; then
+if [ "$model" == "utuhalf" ]; then
     echo " 0.75 8.60 " | psxy -R0/8.5/0/11 -JX8/11 -O -K -Sc0.25c -G0/175/255 -W2.0p,/0/0/0 -N >> $out
     echo " 1.80 8.60 " | psxy -R0/8.5/0/11 -JX8/11 -O -K -Sc0.25c -G255/255/255 -W2.0p,/0/0/0 -N >> $out
     echo " 0.90 8.60 14 0 0 LM Up: $n_up_polarities"   | pstext -R0/8.5/0/11 -JX8/11 -O -K -N >> $out
@@ -261,20 +261,20 @@ shiftg="-Xa1.5i -Ya-0.8i"
 
 #       COLUMN 1
 # region
-if [ "$region" == "utu" ] ; then
+if [ "$model" == "utuhalf" ] ; then
     # PLUTONS
     gmtregion="-R-67.75/-66.7/-22.7/-21.8 -Jm3.0"; ticks="-Ba0.5f0.1WSne"; bmscale="-L-67.6/-22.58/-22.3/10+p1p,0/0/0+fwhite"
     grdview $grid -I$grad $gmtregion -O -K $shifta -Csrtm_utu_gray.cpt -Qi200 >> $out
-elif [ "$region" == "wes" ] ; then
+elif [ "$model" == "wes" ] ; then
     # LLNL
     gmtregion="-R-125.5/-104/32/48 -Jm0.135"; ticks="-Ba5f1WSne"; bmscale="-L-107.0/46.0/40/100+p1p,0/0/0+fwhite"
-    pscoast $gmtregion -O -V -K -Na -Df -W1 -S100/150/255 -A3000 $shifta >> $out
-elif [ "$region" == "ak" ] ; then
+    pscoast $gmtregion -O -V -K -Na -Df -W1 -S0/192/255 -A3000 $shifta >> $out
+elif [ "$model" == "scak" ] ; then
     # ALASKA
+    grid="/home/alvizuri/shared/data/gmt/ETOPO1_Bed_g.grid"
+    grad="/home/alvizuri/shared/data/gmt/ETOPO1_Bed_g.grad"
     gmtregion="-R-160/55/-134/67r -JS-150/90/7.0c"; ticks="-Ba10f5g10WSne/a5g5"; bmscale="-L-145/57/57/100+p1p,0/0/0+fwhite"
-    pscoast $gmtregion -O -V -K -Na -W100/100/100 -Di \
-        -I1/2p/0/192/255 -I2/2p/0/192/255\
-        -G230/230/230 -S0/192/255 $shifta   >> $out
+    pscoast $gmtregion -O -V -K -Na -W100/100/100 -Di -S0/192/255 $shifta -A2000 >> $out
 else
     echo "check GMT region!"
     exit
@@ -304,7 +304,7 @@ area_lune_fmp="-R-30/30/-90/90"
 proj_vw="-R-0.35/0.35/-1.178/1.178 -Jx1.5/1.5"
 
 # if polarity misfit not calculated (eg DC-only search), plot only square at center
-if [ "$plot_misfit_fmp" == "yes" ]; then
+if [ "$model" == "utuhalf" ]; then
     # cpt for polarity misfit
     makecpt -I -Cseis -T-0.6/4.6/1 -N > cpt_dots
 
@@ -344,8 +344,8 @@ if [ "$flag_make_cpt" == "yes" ] ; then
     else
         makecpt -Cpanoply -D -I -T${misfit_min}/${misfit_max}/${misfit_del} > cpt_misfit
         makecpt -Cpanoply -D -I -T${misfit_min}/${misfit_max}/${misfit_del_c} > cpt_misfit_c
-        makecpt -Chot -D  -T${prob_min}/${prob_max}/${prob_del} > cpt_probs   # ocean, red2green, polar, wysiwyg, jet, hot
-        makecpt -Chot -D  -T${prob_min}/${prob_max}/${prob_del_c} > cpt_probs_c
+        makecpt -Cwysiwyg -D  -T${prob_min}/${prob_max}/${prob_del} > cpt_probs   # ocean, red2green, polar, wysiwyg, jet, hot
+        makecpt -Cwysiwyg -D  -T${prob_min}/${prob_max}/${prob_del_c} > cpt_probs_c
     fi
 fi
 
@@ -420,7 +420,7 @@ echo -30.0   0.0 10 0 1 RM CLVD  | pstext -N $proj_lune_wf $area_lune_wf -O -K $
 echo  30.0   0.0 10 0 1 LM CLVD  | pstext -N $proj_lune_wf $area_lune_wf -O -K $shiftd -D10p/-10p  >> $out
 
 # plot P(v,w)
-psscale -Ccpt_probs -Aa -D1.7/0.5/1.0/0.1 -Ef0.5c -Bf0.25a0.5 -O -K $shiftc >> $out
+psscale -Ccpt_probs -Aa -D1.7/0.5/1.0/0.1 -Ef0.5c -Bf1a1 -O -K $shiftc >> $out
 pscontour ${data_vw_prob} $proj_vw -Bg0 -Ccpt_probs $shiftc -I -N -O -K >> $out # paint
 awk '{print $3, $4}' ${data_vwgrid}/sourcetype_arc_03.dat | psxy $proj_vw -O -K $shiftc -W2p,0/0/0/35 >> $out
 awk '{print $3, $4}' ${data_vwgrid}/sourcetype_arc_04.dat | psxy $proj_vw -O -K $shiftc -W2p,0/0/0/35 >> $out
@@ -434,6 +434,7 @@ echo  0.0 -1.1781 | psxy -N -Sp4p -W1p,0 $proj_vw -O -K $shiftc >> $out
 echo  0.0  1.1781 | psxy -N -Sp4p -W1p,0 $proj_vw -O -K $shiftc >> $out
 echo -0.35 0.0 | psxy -N -Sp4p -W1p,0 $proj_vw -O -K $shiftc >> $out
 echo  0.35 0.0 | psxy -N -Sp4p -W1p,0 $proj_vw -O -K $shiftc >> $out
+echo  0 0 | psxy -N -S+10p -W1p,black $proj_vw -O -K $shiftc >> $out
 
 #plot beachballs
 psmeca ${data_misfit_wf} $proj_lune_wf $area_lune_wf -Sm${size_lune_bb}i -N -Zcpt_misfit -W0.5p,100/100/100 -L -O -K $shiftd >> $out
@@ -442,13 +443,13 @@ psmeca ${data_misfit_wf} $proj_lune_wf $area_lune_wf -Sm${size_lune_bb}i -N -Zcp
 psxy ${data_bestsol_bb} $area_lune_wf $proj_lune_wf -N -Ss23p -W2.0p,0/255/0 $shiftd -O -K >>$out
 
 # fractional and confidence curves
-psxy ${data_mesa_pdf} -R0/180/0/1 -Jx0.006/0.9 -Bf30a90S/a1W $shifte -W1.1p,0/255/0 -O -K >> $out
-psxy ${data_post_pdf} -R0/180/0/1 -Jx0.006/0.9 -Bf0n/f0e $shifte -W1.1p,0/0/255 -O -K >> $out
-echo "-25 0.2 8 90 1 LB P'(@~w@~)" | pstext -R0/180/0/1 -Jx0.006/0.9 $shifte -G50/205/50 -K -N -O >> $out
-echo "-25 0.6 8 90 1 LB V'(@~w@~)" | pstext -R0/180/0/1 -Jx0.006/0.9 $shifte -G0/0/255 -K -N -O >> $out 
+psxy ${data_mesa_pdf} -R0/180/0/2 -Jx0.006/0.45 -Bf30a90S/f1a2W $shifte -W1.1p,0/255/0 -O -K >> $out
+psxy ${data_post_pdf} -R0/180/0/2 -Jx0.006/0.45 -Bf0n/f0e $shifte -W1.1p,0/0/255 -O -K >> $out
+echo "-25 0.3 9 90 1 LB P'(@~w@~)" | pstext -R0/180/0/2 -Jx0.006/0.45 $shifte -G50/205/50 -K -N -O >> $out
+echo "-25 1.0 9 90 1 LB V'(@~w@~)" | pstext -R0/180/0/2 -Jx0.006/0.45 $shifte -G0/0/255 -K -N -O >> $out 
 
-psxy ${data_vP} -R0/1/0/1 -JX1.10 -Bf0.1a1/f0.1a1WS $shiftf -W1.1p,255/0/0 -O -K -N -G150/150/150 >> $out
-printf "0 0\n1 1" | psxy -R0/1/0/1 -JX1.10 $shiftf -W1p -O -K -N >> $out
+psxy ${data_vP} -R-0.0/1.0/-0.0/1.0 -JX1.1 -Bf0.1a1/f0.1a1WS $shiftf -W1.1p,255/0/0 -O -N -K -G150/150/150 >> $out
+printf "0 0\n1 1" | psxy -R0/1/0/1 -JX1.10 $shiftf -W0.5p,0/0/0,- -O -K -N >> $out
 echo "-25 0.4 12 90 12 LB \303" | pstext -R0/180/0/1 -Jx0.006/0.9 $shiftf -G0/0/0 -K -N -O >> $out 
 echo "-25 0.6 12 90 0 LB (\126)" | pstext -R0/180/0/1 -Jx0.006/0.9 $shiftf -G0/0/0 -K -N -O >> $out 
 echo "80 -0.3 12 0 0 LB V" | pstext -R0/180/0/1 -Jx0.006/0.9 $shiftf -G0/0/0 -K -N -O >> $out 
