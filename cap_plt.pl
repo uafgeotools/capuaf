@@ -431,21 +431,26 @@ sub plot {
             # station label
             printf PLT "%f %f 10 0 0 1 $sensor_label[1].$sensor_label[2].$sensor_label[3]\n", $x-0.8*$spis, $y;
             # station distance and overall time-shift
-            if ($ab[1]==0.){
-                printf PLT "%f %f 10 0 0 1 %d km\n", $x-0.8*$spis, $y-0.2, $dist_km;     
-                printf PLT "%f %f 10 0 0 1 %.1f s\n", $x-0.8*$spis, $y-0.4, $tshift_all; 
+            if ($tshift_all==0.){
+                printf PLT "%f %f 10 0 0 1 %d km\n", $x-0.8*$spis, $y-0.2, $dist_km;
+		printf PLT "%f %f 10 0 0 1 %d\260 \n", $x-0.8*$spis, $y-0.4, $az[$i];  # azimuth (see az above)
             }
-            else {
-                printf PLT "%f %f 10 0 0 1 %d km\n", $x-0.8*$spis, $y-0.2, $dist_km;     
-                printf PLT "%f %f 10 0 0 1 %.1f s\n", $x-0.8*$spis, $y-0.4, $tshift_all; 
+            else { 
+                printf PLT "%f %f 10 0 0 1 %d km\n", $x-0.8*$spis, $y-0.2, $dist_km;
+		printf PLT "%f %f 10 0 0 1 %d\260 \n", $x-0.8*$spis, $y-0.4, $az[$i];  # azimuth (see az above)
+                printf PLT "%f %f 10 0 0 1 %.1f s\n", $x-0.8*$spis, $y-0.6, $tshift_all;  # tshift = Green_P_arrival - Input_P_arrival_weight_file
             }
             # azimuth
-            printf PLT "%f %f 10 0 0 1 %d\260 \n", $x-0.8*$spis, $y-0.6, $az[$i];  # azimuth (see az above)
+            # printf PLT "%f %f 10 0 0 1 %d\260 \n", $x-0.8*$spis, $y-0.6, $az[$i];  # azimuth (see az above)
             # polarities
             # NOTE if polarity is 0 or does not exist, then nothing is written
             if ($pol_syn || $keepBad==1) {
-                #  printf PLT "%f %f 10 0 0 1 $aa[22] ($aa[23])\n",$x-0.7*$spis,$y-0.6;
-                printf PLT "%f %f 10 0 0 1 $pol_syn ($pol_obs)\n", $x-0.8*$spis, $y-0.8;
+		if ($ab[1]==0.) {
+		    printf PLT "%f %f 10 0 0 1 $pol_syn ($pol_obs)\n", $x-0.8*$spis, $y-0.6;
+		}
+		else {
+		    printf PLT "%f %f 10 0 0 1 $pol_syn ($pol_obs)\n", $x-0.8*$spis, $y-0.8;
+		}
             }
             $i=$i+1;
             $y--;
