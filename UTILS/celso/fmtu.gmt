@@ -237,7 +237,7 @@ fi
 
 
 # legend for probability on VW plot
-label_vwplot="P(v, w)"
+label_vwplot="p(v,w)"
 echo "2.9 2.6 12 0 0 LM ${label_vwplot}" | pstext -R0/8.5/0/11 -JX8/11 -O -K -N >> $out
 
 # panel letters
@@ -344,8 +344,10 @@ if [ "$flag_make_cpt" == "yes" ] ; then
     else
         makecpt -Cpanoply -D -I -T${misfit_min}/${misfit_max}/${misfit_del} > cpt_misfit
         makecpt -Cpanoply -D -I -T${misfit_min}/${misfit_max}/${misfit_del_c} > cpt_misfit_c
-        makecpt -Cwysiwyg -D  -T${prob_min}/${prob_max}/${prob_del} > cpt_probs   # ocean, red2green, polar, wysiwyg, jet, hot
-        makecpt -Cwysiwyg -D  -T${prob_min}/${prob_max}/${prob_del_c} > cpt_probs_c
+        #makecpt -Cwysiwyg -D  -T${prob_min}/${prob_max}/${prob_del} > cpt_probs   # ocean, red2green, polar, wysiwyg, jet, hot
+        #makecpt -Cwysiwyg -D  -T${prob_min}/${prob_max}/${prob_del_c} > cpt_probs_c
+        makecpt -Cwysiwyg -D  -T0/1.5/0.01 > cpt_probs   # ocean, red2green, polar, wysiwyg, jet, hot
+        makecpt -Cwysiwyg -D  -T0/1.5/0.5 > cpt_probs_c     # alaska data
     fi
 fi
 
@@ -372,9 +374,13 @@ echo "0 0" | psxy $proj_best_sol $shiftg -S+0.2i -N -W1.5p,black -O -K >> $out
 
 # x, y, proj_best_sol_best_bb, angle, fontno, justify, text
 # print all stations regardless of pol info
+nsta=`wc ${data_stations} | awk '{print $1}'`
+if [ "$nsta" -le "10" ]; then
 awk '{print $8, $10, $2}' $data_stations | sed 's/\./ /g' \
     | awk '{print $1"."$2, $3"."$4, 7, 0, 1, "CM", $7}' \
     | pstext $proj_best_sol $shiftg -D0/0.12 -S1.5p,white -N -O -K  >> $out
+fi
+
 #awk  '{ print $8, $10, 7, 0, 1, "CM", $2 }' $data_stations  \
 #    | pstext $proj_best_sol $shiftg -D0/0.12 -S1.5p,white -N -O -K  >> $out
 
@@ -420,12 +426,16 @@ echo -30.0   0.0 10 0 1 RM CLVD  | pstext -N $proj_lune_wf $area_lune_wf -O -K $
 echo  30.0   0.0 10 0 1 LM CLVD  | pstext -N $proj_lune_wf $area_lune_wf -O -K $shiftd -D10p/-10p  >> $out
 
 # plot P(v,w)
-psscale -Ccpt_probs -Aa -D1.7/0.5/1.0/0.1 -Ef0.5c -Bf1a1 -O -K $shiftc >> $out
-pscontour ${data_vw_prob} $proj_vw -Bg0 -Ccpt_probs $shiftc -I -N -O -K >> $out # paint
+#psscale -Ccpt_probs -Aa -D1.7/0.5/1.0/0.1 -Ef0.5c -Bf1a1 -O -K $shiftc >> $out
+psscale -Ccpt_probs -Aa -D1.6/0.5/1.0/0.1 -Ef0.5c -Bf0.1a0.5 -O -K $shiftc >> $out
+
+#pscontour ${data_vw_prob} $proj_vw -Bg0 -Ccpt_probs $shiftc -I -N -O -K >> $out # paint
+#psxy ${data_vw_prob} $proj_vw -Sc0.23c -Bg0 -Ccpt_probs $shiftc -I -N -O -K >> $out # paint
+psxy ${data_vw_prob} $proj_vw -Ss0.37c -Bg0 -Ccpt_probs $shiftc -I -N -O -K >> $out # paint
 awk '{print $3, $4}' ${data_vwgrid}/sourcetype_arc_03.dat | psxy $proj_vw -O -K $shiftc -W2p,0/0/0/35 >> $out
 awk '{print $3, $4}' ${data_vwgrid}/sourcetype_arc_04.dat | psxy $proj_vw -O -K $shiftc -W2p,0/0/0/35 >> $out
 awk '{print $3, $4}' ${data_vwgrid}/sourcetype_arc_06.dat | psxy $proj_vw -O -K $shiftc -W2p,0/0/0/35 >> $out
-pscontour ${data_vw_prob} $proj_vw -Bg0 -Ccpt_probs_c $shiftc -W1 -N -O -K >> $out # contours
+pscontour ${data_vw_prob} $proj_vw -Gn1 -Bg0 -Ccpt_probs_c $shiftc -W2 -N -O -K >> $out # contours
 echo  0.0 -1.1781 10 0 1 CM ISO | pstext -N $proj_vw -O -K $shiftc -D0p/-10p >> $out
 echo  0.0  1.1781 10 0 1 CM ISO | pstext -N $proj_vw -O -K $shiftc -D0p/10p >> $out
 echo -0.333 0.0 10 90 1 CM CLVD | pstext -N $proj_vw -O -K $shiftc -D-10p/0p >> $out
@@ -455,6 +465,6 @@ echo "-25 0.6 12 90 0 LB (\126)" | pstext -R0/180/0/1 -Jx0.006/0.9 $shiftf -G0/0
 echo "80 -0.3 12 0 0 LB V" | pstext -R0/180/0/1 -Jx0.006/0.9 $shiftf -G0/0/0 -K -N -O >> $out 
 psbasemap -R0/1/0/1 -JX1.10 -Bf0N/f0E $shiftf -O >> $out
 
-ps2eps ${out}
+#ps2eps ${out}
 printf "$0: done. output file: $out\n"
 
