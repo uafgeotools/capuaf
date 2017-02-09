@@ -8,7 +8,7 @@ sub plot {
   local($nn,$tt,$plt1,$plt2,$plt3,$plt4,$i,$nam,$com1,$com2,$j,$x,$y,@aa,$rslt,@name,@aztk);
 
 # set this =1 if you want to plot time windows that have been excluded
-  local $keepBad = 1;
+  local $keepBad = 0;
   
   @trace = ("1/255/255/255","3/0/0/0");       # plot data trace
   @name = ("P V","P R","Surf V"," Surf R","Surf T");
