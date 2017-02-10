@@ -36,7 +36,7 @@ $fm_thr = 0.01;
 $dirct='';
 $disp=1;
 $mltp=0;
-$pol_wt=0;
+$pol_wt=999;
 $weight="weight.dat";
 $fmt_flag="false";
 
