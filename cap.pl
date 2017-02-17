@@ -72,6 +72,9 @@ $grid_type = -1.0;
 # minimization (norm)
 $norm = 1;
 
+# for sorting the output file by distance or azimuth
+$isort = 0;
+
 #----------------------------------------------------------- 
 # DEFAULT VALUES FOR SEARCH PARAMETERS
 use Math::Trig ':pi';
@@ -209,7 +212,7 @@ $usage =
         RAND: -I<nsol>  e.g. -I10000  --- will generate 10,000 random solutions.
         GRID: -I<Nv>/<Nw>/<Nstrike>/<Ndip>/<Nrake> where Nx = number of poits for parameter x
     -J  FLAG NOT IN USE.
-    -K  FLAG NOT IN USE.
+    -K  sort output file by distance (=1) or azimuth (=2). default (=0) does nothing.
     -k  Specify k1 to build a lune grid, not a UV grid.
         Use only when LUNE_GRID_INSTEAD_OF_UV = 0 (and recompile cap)
     -L  source duration (estimate from mw, can put a sac file name here).
@@ -348,9 +351,9 @@ foreach (grep(/^-/,@ARGV)) {
 #    $clvd1  = $value[2] if $value[2];
 #    $clvd2 = $value[3] if $value[3];
 #    $fmt_flag="true";     # used later for renaming output figures with fmt
-#  } 
-#   } elsif ($opt eq "K") {
-#     $type = $value[0];
+#  }
+   } elsif ($opt eq "K") {
+     $isort = $value[0];
    } elsif ($opt eq "k") {
      $oldgrid = $value[0];
    } elsif ($opt eq "L") {
@@ -620,20 +623,56 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     print STDERR "-------------------------------------------------------------\n\n";
 
 # --------------------------
-# Clean this weight file by removing stations that have nor information (no polarity, no P weight, no S weight)
-    #open(WEI, "$eve/$weight") || next;
+# Sort weight file by distance or azimuth
+# Default is to use the weight file as it is
     $input_weight_file = "$eve/$weight";
     $clean_weight_file = "$eve/WEIGHT_CLEAN.dat";
+    $station_info_file = "$eve/${eve}_station_list_ALL.dat";
 
     open(IN,$input_weight_file) || next;
     @weightlines = <IN>; $nsta = @weightlines;
     close(IN);
-    open(OUT,'>',$clean_weight_file);
-    
+
+    open(IN,$station_info_file) || next;
+    @stnlines = <IN>; $nstn = @stnlines;
+    close(IN);
+
+    if ($isort == 1){
+	print "Ouput file will be sorted by distance";
+    }
+    elsif ($isort == 2){
+	print "Ouput file will be sorted by azimuth";
+    }
+
     for ($i = 0; $i < $nsta; $i++){
-	$ipol = 1;
 	($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift)=split(" ",@weightlines[$i]);
 	($stnm,$pol) = split("/",$name);
+	($eve1,$net1,$name1,$loc1,$chan1) = split(/\./,$stnm);
+
+	for ($j = 0; $j < $nstn; $j++){
+	    ($name2,$net2,$lat2,$lon2,$dist2,$az2) = split(" ",@stnlines[$j]);
+	    if (($name1 eq $name2) && ($net1 eq $net2)) {
+		if ($isort == 1){    # sort by distance
+		    $sort_ele[$i] = $dist2;
+		}
+		elsif ($isort == 2){ # sort by azimuth
+		    $sort_ele[$i] = $az2;
+		}
+		else {               # do nothing
+		    $sort_ele[$i] = $i;
+		}
+	    }
+	}
+    }
+
+# Clean this weight file by removing stations that have no information (no polarity, no P weight, no S weight)
+    open(OUT,'>',$clean_weight_file);
+    @sort_indx = sort{$sort_ele[$a] <=> $sort_ele[$b]} 0 .. $#sort_ele;
+    for ($i = 0; $i < $nsta; $i++){
+	$ipol = 1;
+	($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift)=split(" ",@weightlines[$sort_indx[$i]]);
+	($stnm,$pol) = split("/",$name);
+
 	if ($pol eq ''){$ipol = 0;}  # no polarity information
 	if ($ipol==0 && $pv==0 && $pr==0 && $sv==0 && $sr==0 && $st==0){
 	    next;} # No information available - skip this station
