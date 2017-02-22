@@ -8,6 +8,7 @@
 \usepackage{xspace}
 \usepackage{graphicx}
 \usepackage{fancybox}
+\usepackage{url}
 
 \textwidth 17cm
 \textheight 23.8cm
@@ -28,7 +29,8 @@
 \newcommand{\edes}{\end{description}}
 \renewcommand*{\arraystretch}{1.4}
 
-\graphicspath{{/home/vipul/REPOSITORIES/cap/notes/figures/}}
+\graphicspath{{/home/vipul/REPOSITORIES/cap/notes/figures/}
+{/home/vipul/manuscripts/2016/nehrp/figures/cap/}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -36,11 +38,11 @@
 \begin{center}
 \huge{\bf CAP Moment Tensor Inversion} \\
 \large{
-Vipul Silwal \\
-Geophysical Institute \\
+Vipul Silwal, Celso Alvizuri, Carl Tape \\
+\textit{Geophysical Institute \\
 University of Alaksa\\
 Fairbanks, Alaska\\
-Last compiled: \today
+Last compiled: \today }
 }
 \end{center}
 %==================================================================
@@ -537,6 +539,8 @@ where $T$ is any multiplication factor. This $T$ could be thought of as temparat
 
 %------------------------------------------
 \subsection{Misfit to Posterior pdf}
+See \cite{SilwalTape2016,TapeTape2016}
+\iffalse
 XXX: THIS SECTION NEEDS TO BE UPDATED (SEE SilwalTape2016) \\ 
 The scaled logarithmic variation Eq.\ref{err4prob} of misfit could be used to get the posterior probability of solution in model space. 
 \eq
@@ -571,10 +575,11 @@ Using this transformation, we can find $\sigma'(\bxi)$ from $\sigma(\bem)$. Howe
 \frac{\sigma(\bem)}{\mu(\bem)} &=& \frac{\sigma'(\bxi)}{\mu'(\bxi)}\\
 L(\bem)&=& L'(\bxi)
 \ena
+\fi
 
 \pagebreak
 \section{Combining Polarity and Waveform misfit}
-\cite{Zahradnik2015}
+\cite{Zahradnik2015} - We are NOT using the same approach. They used polarity as a constraint and searched for the possible solution  \\
 -X flag specifies the weight for combining polarity and waveform misfit.
 
 For example, If the polarity weight is $\omega$, \ie \ -X$\omega$
@@ -586,11 +591,13 @@ waveform\_error, \phi_{wf} &= [SAME\ AS\ BEFORE] \\
 total\_misfit, \Phi &= \phi_{pol} + (1 - \omega) \cdot \phi_{wf}
 \end{align*}
 
+See \refFig{fig:pol_weight} to see the effect of increasing the polarity weight on the obtained minimum total misfit solution.
+
 Waveform error is not changed so that:
 \begin{enumerate}
 \item One can still use the post-processing scripts (MATLAB, perl). The waveform error and polarity misfit (number of stations at which polarity is not matching) are also saved in the binary files. If we make the change here then we have to make sure to make changes in other scripts. 
 % This would entail (a) remove the total\_misft.m section from MATLAB scripts (b). Correct K factor is being chosen
-\item {\bf VR estimation is based on waveform misfit and not total misfit. } This means VR in the new CAP is going to same as in old CAP. Maximum VR is NOT the best solution! Minimum total misfit IS the best solution.
+%\item {\bf VR estimation is based on waveform misfit and not total misfit. } This means VR in the new CAP is going to same as in old CAP. Maximum VR is NOT the best solution! Minimum total misfit IS the best solution.
 \end{enumerate}
 
 \subsubsection*{Possible way of computing VR}
@@ -601,11 +608,15 @@ VR_{pol} &= 100 \times \left( 1 - \left ( \frac{N_p}{N} \right) ^2 \right ) \\
 VR &=  \omega \cdot VR_{pol} + (1 - \omega) \cdot VR_{wf}
 \end{align*}
 
+\fbox{
+\begin{minipage}{35em}
 {\bf Option 2:} This one is currently under testing and seems to work, and it is much cleaner too:
 \begin{align*}
 total\_misfit, \Phi &= \phi_{pol} + (1 - \omega) \cdot \phi_{wf}\\
 VR &= 100. \times (1 - \Phi^2)
 \end{align*}
+\end{minipage}
+}
 
 Here is how it looks in the code (sub\_inversion.c):
 \begin{verbatim}
@@ -629,6 +640,90 @@ Here is how it looks in the code (sub\_inversion.c):
 	    }
 \end{verbatim}
 
+TO DO: Add a figure
+
+\section{Adding reward factor}
+
+\begin{enumerate}
+\item longer time-window for Pnl and surface waves
+\item broader bandpass for Pnl and surface waves
+\item usage of more stations
+\end{enumerate}
+
+\subsection{Reward for longer time-windows and broader bandpass}
+The reward factor is applied alike to the body waves and the surface waves. Here is an example for the body wave:
+
+\begin{description}
+\item Pw = length of Pnl window (example: 5 seconds) 
+\item Pband = Width of bandpass in Hz (example: 1- 10 Hz) 
+\end{description}
+
+\fbox{
+\begin{minipage}{20em}
+\eq
+Pnl\_reward  = Pw \times Pband
+\en
+\end{minipage}
+}
+
+This is how is looks like in cap.c:
+\begin{verbatim}
+---------------------Line 327 (cap.c)---------------------------
+// Compute reward factors
+  pnl_reward = (x1*(f2_pnl-f1_pnl));
+  sw_reward = (y1*(f2_sw-f1_sw));
+
+---------------------Line 602 (cap.c)---------------------------
+// multiply weights by reward factors
+	// Add reward factor to each component
+	if (j<3) {
+	  spt->on_off = spt->on_off;
+	  spt->rew = sw_reward;
+	}
+	else {
+	  spt->on_off = spt->on_off;
+	  spt->rew = pnl_reward;
+	}
+
+---------------------Line 700 (cap.c)---------------------------
+        rec2 += spt->on_off*x2/(spt->npt * spt->rew);
+
+---------------------Line 100 (sub_misfit.c)---------------------------
+        x1 = x1/(spt->npt * spt->rew);
+
+\end{verbatim}
+
+
+\subsection{Reward when using more stations}
+While fitting the data with the synthetics we frequently encounter a case where the total normalized misfit when using more data is larger than the one obtained when using fewer data. This happens because it is much easier to fit a single waveform (or waveforms for a single/few stations) and could easily be done using a wrong MT solution (\refFig{fig:wf_fits_1}). 
+
+Also the variance reduction (VR) is not an actual reprentation of the `goodness' of the solution, since usually the VR decreases as we use more stations. In order to solve this issue we had to apply an exponential penalty function such that the fewer station inversions are penalized and the more data inversion is rewarded. 
+
+(Functions tested here are saved in: cap/test\_station\_reward.m)
+
+\eq
+k = (\exp (-N/CONST)*1.5) + 0.5
+\en 
+where $k$ is the station penalty factor, $N$ is the number of stations, and $CONST$ defines the shape of the penatly curve (see \refFig{fig:Nstn_reward}). The shape of the curve ($CONST$) governs how severly the fewer station inversion needs to be penalized. An inverse exponential function scales between 0 and 1. For the test cases (\refFig{fig:wf_fits_1} and \refFig{fig:wf_fits_2}) it was soon observed that scaling needs to be done in a wider range in order to reasonably scale the misfit values across wider range of stations. However, the number 1.5 in the above equation could possibly be event dependent and maybe removed by combining with the $CONST$. An additional constant 0.5 was added at the end to prevent the misfit from going to zero in case of a large number of stations. 
+
+Therefore the final scaled misfit is:
+\eq
+\Phi = k \times \Phi
+\en
+
+
+\fbox{
+\begin{minipage}{35em}
+Note: Other similar functions could also be used. I first started by using an inverse tangential function:
+\eq
+k = (1 - \frac{2}{\pi}*atan(N/CONST))
+\en
+But since this is just an ad-hoc function, using an inverse tangetial makes things look more complicated.
+\end{minipage}
+}
+
+\section{Examples}
+\cite{SilwalTape2016,AlvizuriTape2016,Silwal2015catalog_SAK,Silwal2015catalog_MFFZ,Alvizuri2015catalog,Alvizuri2017}
 \pagebreak
 %=================
 \addcontentsline{toc}{section}{Bibliography}
@@ -638,8 +733,50 @@ Here is how it looks in the code (sub\_inversion.c):
 
 % Figures
 \begin{figure}
-\includegraphics{cap_dur.eps}
+\includegraphics{cap_dur_2.eps}
 \caption{Source duration vs magnitude realtion used in CAP (red) and by GCMT (green).}
+\end{figure}
+
+\begin{figure}
+\includegraphics{Nstn_reward.eps}
+\caption{Station reward factor}
+\label{fig:Nstn_reward}
+\end{figure}
+
+
+\begin{tabular}{ccc}
+%(a) A  & (b) B \\
+\includegraphics[width=5.5cm]{20151124212557376_scak_020_beach_X1.eps} &
+\includegraphics[width=5.5cm]{20151124212557376_scak_020_beach_X2.eps} &
+\includegraphics[width=5.5cm]{20151124212557376_scak_020_beach_X3.eps} \\
+\includegraphics[width=5.5cm]{20151124212557376_scak_020_beach_X4.eps} &
+\includegraphics[width=5.5cm]{20151124212557376_scak_020_beach_X5.eps} &
+\includegraphics[width=5.5cm]{20151124212557376_scak_020_beach_X6.eps} \\
+\includegraphics[width=5.5cm]{20151124212557376_scak_020_beach_X7.eps} &
+\includegraphics[width=5.5cm]{20151124212557376_scak_020_beach_X8.eps} &
+\includegraphics[width=5.5cm]{20151124212557376_scak_020_beach_X9.eps} \\
+\end{tabular} 
+\begin{figure}
+\caption{
+Effect of using different polarity weight factors (-X0.1 to -X0.9 => from left to right and top to bottom). TO DO: Use a more dramatic example!
+\label{fig:pol_weight}
+}
+\end{figure}
+
+
+\begin{figure}
+\includegraphics[width=17cm]{20090407201253480_scak_041_1.ps}
+\includegraphics[width=17cm]{20090407201253480_scak_041_5.ps}
+\caption{Waveform fits for CAP moment tensor solution when using 3 and 7 stations (top and bottom). Notice the increase in VR (also the decrease in the rms misfit) as we increase the number of stations. Also compare the moment tensor beachball with the actual solution in \refFig{fig:wf_fits_2}.
+\label{fig:wf_fits_1}
+}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=17cm]{20090407201253480_scak_041_10.ps}
+\caption{Waveform fits for the same solution as in \refFig{fig:wf_fits_2} when using 9 stations. 
+\label{fig:wf_fits_2}
+}
 \end{figure}
 
 %=================

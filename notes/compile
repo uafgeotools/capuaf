@@ -1,0 +1,7 @@
+rm -f misfit.aux misfit.bbl misfit.blg misfit.log
+latex misfit
+bibtex misfit
+latex misfit
+latex misfit
+dvips -t letter misfit.dvi -o misfit.ps
+ps2pdf -dAutoRotatePages=/None misfit.ps
