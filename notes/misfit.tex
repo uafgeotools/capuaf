@@ -253,7 +253,9 @@ The source function a trapezoidal function with rise\_time = $0.5 \times$ source
 \en
 For positive real numbers (int) function in perl is same as floor function of MATLAB, \ie rounds towards zero. 
 
-Then it puts some sanity constrains so that duration do not exceed [1,9] seconds. Use -L flag for manual source duration length.
+Then it puts some sanity constrains so that duration do not exceed [1,9] seconds. Use -L flag for manual source duration length. See \refFig{fig:cap_dur} for variation of source duration with magnitude. 
+
+CAUTION: Using a wrong source duration can cause error in magnitude estimates. This become extremely crucial for small magnitude events. Smaller source duration (-L) will underestimate the magnitude and larger source duration will overestimate the magnitude.
 \begin{verbatim}
   $dura = 1 if $dura < 1;
   $dura = 9 if $dura > 9;
@@ -734,7 +736,9 @@ But since this is just an ad-hoc function, using an inverse tangetial makes thin
 % Figures
 \begin{figure}
 \includegraphics{cap_dur_2.eps}
-\caption{Source duration vs magnitude realtion used in CAP (red) and by GCMT (green).}
+\caption{Source duration vs magnitude realtion used in CAP (red) and by GCMT (green). Using a wrong source duration can make a big difference in the magnitude estimate. (ADD A FIGURE TO SHOW THIS).
+\label{fig:cap_dur}
+}
 \end{figure}
 
 \begin{figure}
