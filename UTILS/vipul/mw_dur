@@ -1,0 +1,28 @@
+#!/bin/bash
+# 
+# Copy the script in the event directory
+# Also make sure to change the cap input command
+
+Mmin=3   # minimum magnitude
+Mmax=4.5 # maximum magnitude
+Minc=0.1 # magnitude increment
+Lmin=5   # minimum duration
+Lmax=30  # maximum duration
+Linc=5   # duration increment
+fmin=20  # minimum period of the first filter
+fmax=140 # minimum period of the last filter
+fwid=60  # filter width
+finc=20  # increment in minimum period of the filter
+
+for f1 in $(seq $fmin $finc $fmax) # filter loop
+do
+    ((f2=f1+fwid)) # maximum period of the filter
+    c1=$(awk -v m=$f1 'BEGIN { print 1/m }') # bash can not handle floats
+    c2=$(awk -v m=$f2 'BEGIN { print 1/m }')
+    #echo "$f2 $c1 $c2"
+    for l in $(seq $Lmin $Linc $Lmax) # duration loop
+    do
+	cap.pl -H0.02 -P1/6/150 -p1 -S1/20/0 -T6/600 -D1/1/0.5 -C0.4/2/$c2/$c1 -Mtactmod_20 -m$Mmin/$Mmax/$Minc -I50000 -R0/0 -Zweight011.dat -L$l 20150912032512711 -K1 # magnitude search
+	mv OUTPUT_DIR "OUTPUT_DIR_L${l}_${f1}bp${f2}" # rename and save
+    done
+done
