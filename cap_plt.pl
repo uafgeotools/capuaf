@@ -4,7 +4,7 @@ use List::Util qw[min max];
 sub plot {
 
 #  local($mdl, $t1, $t2, $am, $num_com, $spis) = @_; # original
-  local($mdl, $t1, $t2, $am, $ampfact, $num_com, $spib, $spis, $filterBand, $fmt_flag, $evid, $model, $depth) = @_;
+  local($mdl, $t1, $t2, $am, $ampfact, $num_com, $spib, $spis, $filterBand, $fmt_flag, $evid, $model, $depth, $dura, $riseTime) = @_;
   local($nn,$tt,$plt1,$plt2,$plt3,$plt4,$i,$nam,$com1,$com2,$j,$x,$y,@aa,$rslt,@name,@aztk);
 
 # set this =1 if you want to plot time windows that have been excluded
@@ -14,6 +14,7 @@ sub plot {
   @name = ("P V","P R","Surf V"," Surf R","Surf T");
 
   $filterBand = "Filter periods (seconds): $filterBand";    # 20120719 - report filter bands
+  $duration = "duration: $dura/$riseTime s";
   
 #--------------------------
 # plotting GMT file with synthetics and data
@@ -574,7 +575,7 @@ sub plot {
     open(PLT, $plt4_5);
     printf PLT "$x $y 12 0 0 0 Event $evid Model $model Depth $depth\n"; $y-=$tgap;
     printf PLT "$x $y 12 0 0 0 @meca[4] %d %d %d @meca[8,9] @~g@~ %3.0f @~d@~ %3.0f @meca[10,11] VR %3.1f\n",@meca[5], @meca[6], @meca[7], @meca[14],@meca[16],@meca[18];$y-=$tgap;
-    printf PLT "$x $y 12 0 0 0 $filterBand\n" ; $y-=$tgap;  # 20120719 - filter bands
+    printf PLT "$x $y 12 0 0 0 $filterBand $duration\n" ; $y-=$tgap;  # 20120719 - filter bands
     printf PLT "$x $y 12 0 0 0 @ncomp[1]" ;
     close(PLT);
 

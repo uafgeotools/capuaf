@@ -3,7 +3,8 @@
 void    taper(float *aa, int n) {
   int	i, m;
   float	tt, pi1;
-  m = rint(0.3*n);
+  float taper_fraction = 0.3;//fraction of the waveform tapered from both sides
+  m = rint(taper_fraction*n);
   pi1 = 3.1415926/m;
   for (i=0; i<m; i++) {
     tt = 0.5*(1.-cos(i*pi1));
