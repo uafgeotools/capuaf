@@ -29,6 +29,7 @@
  */
 
 #include "cap.h"
+#include "sub_tt2cmt.h"
 
 SOLN initSearchMT( 
         int nda,
@@ -339,6 +340,7 @@ SOLN searchMT(
     float VR, best_misfit, VR_wf, VR_pol;
     int tid;
     FILE * fid_warn;
+    float stn_rew;
 
 #ifdef WB
     // WB option is intended for a point magnitude (nmw = 1).
@@ -496,6 +498,11 @@ SOLN searchMT(
             else { 
                 sol.err = sol.wferr;
             }
+
+	    // Implement station reward factor
+	    // stn_rew = (float) (1.0 - ((2.0/pi)*atan(nda)))*5.0;
+	    stn_rew = (exp(((float)-nda/7.0))*1.5)+0.5;
+	    sol.err = stn_rew * sol.err;
 
             // Compute VR
             VR = 100.0 * (1 - (sol.err * sol.err));
@@ -709,6 +716,8 @@ SOLN searchMT(
     free(arrayMij);
     fprintf(stderr,"writing done.\n\n");
 #endif
+
+    fprintf(stderr," ==== Nstn = %d; Station factor = %f\n", nda, stn_rew);
 
     return(best_sol);
 }
