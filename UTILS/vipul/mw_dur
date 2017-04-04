@@ -9,22 +9,22 @@ rm filt_log
 rm -fr OUTPUT_DIR*
 
 # Set search ranges
-Mmin=2   # minimum magnitude
+Mmin=2.5   # minimum magnitude
 Mmax=5   # maximum magnitude
 Minc=0.1 # magnitude increment
-Lmin=5.0   # minimum duration (in seconds)
+Lmin=1.0   # minimum duration (in seconds)
 Lmax=50.0  # maximum duration (in seconds)
-Lsamples=10.0
+Lsamples=12.0
 LminLog=`perl -le "print (log(1.0 / $Lmin) / log(10.0))"`   # minimum duration (in log(hz))
 LmaxLog=`perl -le "print (log(1.0 / $Lmax) / log(10.0))"`   # maximum duration (in log(hz))
 LincLog=`perl -le "print (($LmaxLog - $LminLog)/($Lsamples - 1.0))"`   # duration increment (in log(hz)) (computed in matlab)
-Tmin=10.0
+Tmin=5.0
 Tmax=200.0
 Fsamples=20.0
 fminLog=`perl -le "print (log(1.0 / $Tmin) / log(10.0))"`
 fmaxLog=`perl -le "print (log(1.0 / $Tmax) / log(10.0))"`
 fincLog=`perl -le "print (($fmaxLog - $fminLog) / ($Fsamples - 1.0))"`
-oct=1.75 # equal octave filters
+#oct=.4 # equal octave filters
 p=.2     # perturbation = 2*octave ; 2*decade
 
 # search
@@ -37,21 +37,26 @@ do
     f2=`perl -le "print ((10.0 ** ($p)) * $fc)"`   # convert frequency from log(hz) to hz
     c1=`perl -le "print (1.0 / $f1)"`            # convert frequency from hz to sec
     c2=`perl -le "print (1.0 / $f2)"`            # convert frequency from hz to sec
+    #c1out=$(echo "scale=2; $c1/1" | bc)
+    c1out=`perl -le "printf('%.1f',$c1)"`
+    c2out=`perl -le "printf('%.1f',$c2)"`
     # Window length depends on f1 (longer period of the filter)
     slen=`perl -le "print (5.0 / $f1)"`
     # allowed time-shift depends on f1 (longer period of the filter)
     tshift=`perl -le "print ($c1 / 5)"`
-    echo "$fc $f1 $f2 $c1 $c2 $slen $tshift" | tee -a filt_log
+    echo "$fc $f1 $f2 $c1 $c2 $c1out $c2out $slen $tshift" | tee -a filt_log
     for lg in $(seq $LminLog $LincLog $LmaxLog) # duration loop
     do
 	lsec=`perl -le "print (1.0 / (10.0 ** $lg))"`
-	#echo "$lsec"
+	lsecout=`perl -le "printf('%.1f',$lsec)"`
+	#echo "$lsec $lsecout"
 	## CALL CAP 
 	## Tips: For testing comment out this line and match the echoed output with the matlab output from ~/REPOSITORIES/GEOTOOLS/matlab_util/util_data_syn/paper_nenana_vipul.m
 	## magnitude search and moment tensor search
 	#cap.pl -H0.02 -P1/6/150 -p1 -S1/$tshift/0 -T6/$slen -D1/1/0.5 -C0.4/2/$f1/$f2 -Mtactmod_20 -m$Mmin/$Mmax/$Minc -I50000 -R0/0/211/50/-16 -Zweight011.dat -L$l 20150912032512711 -K1
 	## magnitude search ONLY
-	cap.pl -H0.02 -P1/6/150 -p1 -S1/$tshift/0 -T6/$slen -D1/1/0.5 -C0.4/2/$f1/$f2 -Mtactmod_20 -m$Mmin/$Mmax/$Minc -I1 -R0/0/211/50/-16 -Zweight011.dat -L$lsec 20150912032512711 -K1
-	mv OUTPUT_DIR "OUTPUT_DIR_L${lsec}_${c2}bp${c1}" # rename and save
+	#cap.pl -H0.02 -P1/6/150 -p1 -S1/$tshift/0 -T6/$slen -D1/1/0.5 -C0.4/2/$f1/$f2 -Mtactmod_20 -m$Mmin/$Mmax/$Minc -I1 -R0/0/209/52/-14 -Zweight_v1.dat -L$lsec 20150912032512711 -K1
+	## rename and save
+	#mv OUTPUT_DIR "OUTPUT_DIR_L${lsec}_${c2}bp${c1}" 
     done
 done
