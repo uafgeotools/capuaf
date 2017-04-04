@@ -38,8 +38,8 @@ do
     c1=`perl -le "print (1.0 / $f1)"`            # convert frequency from hz to sec
     c2=`perl -le "print (1.0 / $f2)"`            # convert frequency from hz to sec
     #c1out=$(echo "scale=2; $c1/1" | bc)
-    c1out=`perl -le "printf('%.1f',$c1)"`
-    c2out=`perl -le "printf('%.1f',$c2)"`
+    c1out=`perl -le "printf('%05.1f',$c1)"`
+    c2out=`perl -le "printf('%05.1f',$c2)"`
     # Window length depends on f1 (longer period of the filter)
     slen=`perl -le "print (5.0 / $f1)"`
     # allowed time-shift depends on f1 (longer period of the filter)
@@ -48,15 +48,15 @@ do
     for lg in $(seq $LminLog $LincLog $LmaxLog) # duration loop
     do
 	lsec=`perl -le "print (1.0 / (10.0 ** $lg))"`
-	lsecout=`perl -le "printf('%.1f',$lsec)"`
-	#echo "$lsec $lsecout"
+	lsecout=`perl -le "printf('%04.1f',$lsec)"`
+	echo "$lsec $lsecout"
 	## CALL CAP 
 	## Tips: For testing comment out this line and match the echoed output with the matlab output from ~/REPOSITORIES/GEOTOOLS/matlab_util/util_data_syn/paper_nenana_vipul.m
 	## magnitude search and moment tensor search
 	#cap.pl -H0.02 -P1/6/150 -p1 -S1/$tshift/0 -T6/$slen -D1/1/0.5 -C0.4/2/$f1/$f2 -Mtactmod_20 -m$Mmin/$Mmax/$Minc -I50000 -R0/0/211/50/-16 -Zweight011.dat -L$l 20150912032512711 -K1
 	## magnitude search ONLY
-	#cap.pl -H0.02 -P1/6/150 -p1 -S1/$tshift/0 -T6/$slen -D1/1/0.5 -C0.4/2/$f1/$f2 -Mtactmod_20 -m$Mmin/$Mmax/$Minc -I1 -R0/0/209/52/-14 -Zweight_v1.dat -L$lsec 20150912032512711 -K1
+	cap.pl -H0.02 -P1/6/150 -p1 -S1/$tshift/0 -T6/$slen -D1/1/0.5 -C0.4/2/$f1/$f2 -Mtactmod_20 -m$Mmin/$Mmax/$Minc -I1 -R0/0/209/52/-14 -Zweight_v1.dat -L$lsec 20150912032512711 -K1
 	## rename and save
-	#mv OUTPUT_DIR "OUTPUT_DIR_L${lsec}_${c2}bp${c1}" 
+	mv OUTPUT_DIR "OUTPUT_DIR_L${lsecout}_${c2out}bp${c1out}" 
     done
 done

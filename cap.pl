@@ -247,6 +247,13 @@ $usage =
     -Y  specify norm (1 - L1 norm; 2 - L2 norm)
     -Z  specify a different weight file name ($weight).
 
+-----------------------------------------------------------------------------------------------------
+Weight file description:
+Column No:        1                2          3           4            5            6         7             8                   9               10                  11               12
+Description:   Station_Name    Distance   PV_weight   PR_weight    SV_weight   SR_weight   SH_weight   P_arrival_time    P_window_length   S_arrival_time    S_window_length   shift_synthetics
+
+Convention: Postive time-shift means synthetics is arriving earlier (faster velocity model) and it needs to be shifted in the positive direction in order to match it with the data.
+
 =====================================================================================================
 Examples:
 RANDOM SEARCH

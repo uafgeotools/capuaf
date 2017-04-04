@@ -15,7 +15,7 @@ sub plot {
 
   $filterBand = "Filter periods (seconds): $filterBand";    # 20120719 - report filter bands
   $dura = sprintf("%.1f",$dura);
-  $riseTime = sprintf("%.1f",$riseTime)
+  $riseTime = sprintf("%.1f",$riseTime);
   $duration = "duration: $dura/$riseTime s";
   
 #--------------------------

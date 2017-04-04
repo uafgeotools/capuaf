@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 /* unit sum trapzoid from convolution of two boxes (durations t1 and t2) */
 float *trap(float t1, float t2, float dt, int *n) {
