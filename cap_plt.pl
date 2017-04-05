@@ -431,8 +431,13 @@ sub plot {
 
             $x = 0;
             @sensor_label = split('\.', $aa[0]);
+            $inet = $sensor_label[1];
+            $ista = $sensor_label[2];
+            $iloc = $sensor_label[3];
+            $icha = $sensor_label[4];
             # station label
-            printf PLT "%f %f 10 0 0 1 $sensor_label[1].$sensor_label[2].$sensor_label[3]\n", $x-0.8*$spis, $y;
+            printf PLT "%f %f 10 0 0 1 $inet.$ista.$iloc.$icha\n", $x-0.8*$spis, $y;
+            #printf PLT "%f %f 10 0 0 1 $sensor_label[1].$sensor_label[2].$sensor_label[3]\n", $x-0.8*$spis, $y;
             # station distance and overall time-shift
             if ($tshift_all==0.){
                 printf PLT "%f %f 10 0 0 1 %d km\n", $x-0.8*$spis, $y-0.2, $dist_km;
