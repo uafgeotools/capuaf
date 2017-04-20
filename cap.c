@@ -1024,7 +1024,7 @@ if (plot==1) {
        else{
            fprintf(wt3,"%d\t",obs->com[k].on_off);} 
    }
-   fprintf(f_tshift,"%s\t %3.1f\t %3.1f\t %3.4f %3.4f %3.3f %3.3f %f %f\n",obs->stn, obs->dist, obs->az, obs->stla, obs->stlo, 
+   fprintf(f_tshift,"%s\t %3.1f\t %3.1f\t %3.4f\t %3.4f\t %3.3f\t %3.3f\t %f\t %f\n",obs->stn, obs->dist, obs->az, obs->stla, obs->stlo, 
 	   Sshift_max, Sshift_static[i], Sshift_static[i]-Sshift_max, Sshift_static[i]+Sshift_max);
    fprintf(wt3,"%3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n", ppick[i], 0., 0., 0., 0.);
 
