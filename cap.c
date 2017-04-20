@@ -115,6 +115,7 @@ int main (int argc, char **argv) {
   int	repeat;
   char	tmp[255],glib[128],dep[32],dst[16],eve[32],*c_pt;
   float	x,x1,x2,y,y1,amp,dt,rad[6],arad[4][3],fm_thr,tie,mtensor[3][3],rec2=0.,VR,evla,evlo,evdp;
+  float Pshift_max, Sshift_max,  Sshift_static[STN];
   float	rms_cut[NCP], t0[NCP], tb[NRC], t1, t2, t3, t4, srcDelay;
   float	con_shft[STN], s_shft, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN],maxamp_syn[200][NCP],maxamp_obs[200][NCP],kcc,lamp_thresh, ppick[200];
   float	tstarP, tstarS, attnP[NFFT], attnS[NFFT];
@@ -161,7 +162,7 @@ int main (int argc, char **argv) {
 
   SOLN	sol;
   SACHEAD hd[NRC];
-  FILE 	*f_out, *wt, *wt2, *wt3, *fid_srcfile ;
+  FILE 	*f_out, *wt, *wt2, *wt3, *fid_srcfile, *f_tshift ;
   float tau0, riseTime, *src;
   char type[2] = {'B','P'}, proto[2] = {'B','U'};
   double f1_pnl, f2_pnl, f1_sw, f2_sw;
@@ -210,7 +211,7 @@ int main (int argc, char **argv) {
   fidfmp = fopen(filename_fmpdata, "w");
   // end
 
-  scanf("%f%f%f%f%d%f%f",&x1,&y1,&x,&y,&repeat,&fm_thr,&tie);
+  scanf("%f%f%f%f%d%f%f",&x1,&y1,&Pshift_max,&Sshift_max,&repeat,&fm_thr,&tie);
   if (repeat) for(j=0;j<NCP;j++) scanf("%f",rms_cut+4-j);
   scanf("%f%f%f",&vp,&vs1,&vs2);
   scanf("%f%f%f%f",&bs_body,&bs_surf,&x2,&nof_per_samp);
@@ -259,11 +260,11 @@ int main (int argc, char **argv) {
 
   /** max. window length, shift, and weight for Pnl portion **/
   mm[0]=rint(x1/dt);
-  max_shft[3]=max_shft[4]=2*rint(x/dt);
+  max_shft[3]=max_shft[4]=2*rint(Pshift_max/dt);
   w_pnl[3]=w_pnl[4]=x2;
   /** max. window length, shift, and weight for P-SV, SH **/
   mm[1]=rint(y1/dt);
-  max_shft[0]=max_shft[1]=max_shft[2]=2*rint(y/dt);
+  max_shft[0]=max_shft[1]=max_shft[2]=2*rint(Sshift_max/dt);
   w_pnl[0]=w_pnl[1]=w_pnl[2]=1;
   /** and tie of time shifts between SH and P-SV **/
 
@@ -366,6 +367,7 @@ int main (int argc, char **argv) {
       nup += obs->com[4-j].on_off;
     }
     scanf("%f%f%f%f%f",&x1,&Pnl_win,&ts,&surf_win,&s_shft);
+    Sshift_static[i] = s_shft;
 
     tsurf[i]=ts;
     tele = 0;
@@ -455,6 +457,8 @@ int main (int argc, char **argv) {
     fmpdata->stlo = hd->stlo;
     fmpdata->stla = hd->stla;
     fmpdata->dist = hd->dist;
+    obs->stla = hd->stla;
+    obs->stlo = hd->stlo;
     // end
 
     for(j=0;j<NGR;j++) {
@@ -992,6 +996,8 @@ if (plot==1) {
    for(i=0;i<nda;i++, fm_copy--);
  }
 
+ sprintf(tmp, "%s_tshift.out", filename_prefix);
+ f_tshift = fopen(tmp,"w");
  wt3 = fopen(strcat(strcat(strcpy(tmp,eve),"/"),"weight_run.dat"),"w");
  for(obs=obs0,i=0;i<nda;i++,obs++) {
    //             stname /  distance / shift (what)
@@ -1016,8 +1022,10 @@ if (plot==1) {
        if (log(maxamp_obs[i][k]/maxamp_syn[i][k]) > lamp_thresh){
            fprintf(wt3,"%d\t",0);}
        else{
-           fprintf(wt3,"%d\t",obs->com[k].on_off);}  
+           fprintf(wt3,"%d\t",obs->com[k].on_off);} 
    }
+   fprintf(f_tshift,"%s\t %3.1f\t %3.1f\t %3.4f %3.4f %3.3f %3.3f %f %f\n",obs->stn, obs->dist, obs->az, obs->stla, obs->stlo, 
+	   Sshift_max, Sshift_static[i], Sshift_static[i]-Sshift_max, Sshift_static[i]+Sshift_max);
    fprintf(wt3,"%3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n", ppick[i], 0., 0., 0., 0.);
 
    /* output observed polarity and predicted rad amplitude */
@@ -1038,6 +1046,7 @@ if (plot==1) {
  }
  fclose(f_out);
  fclose(wt3);
+ fclose(f_tshift);
 
  // output best solution parameters
  sprintf(out_best_sol, "%s_parameters_best_sol", filename_prefix);

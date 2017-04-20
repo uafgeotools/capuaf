@@ -110,6 +110,8 @@ typedef struct {
 	float	*grn[NGR];
 	float	az;
 	float	dist;
+        float   stla;
+        float   stlo;
 	float	alpha;		/* take-off angle */
 	int	tele;		/* 1 if the station is at teleseismic distances*/
 	COMP	com[NCP];
