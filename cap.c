@@ -996,8 +996,11 @@ if (plot==1) {
    for(i=0;i<nda;i++, fm_copy--);
  }
 
+ // prepare file for timeshift output
  sprintf(tmp, "%s_tshift.out", filename_prefix);
  f_tshift = fopen(tmp,"w");
+
+ // 
  wt3 = fopen(strcat(strcat(strcpy(tmp,eve),"/"),"weight_run.dat"),"w");
  for(obs=obs0,i=0;i<nda;i++,obs++) {
    //             stname /  distance / shift (what)
@@ -1024,8 +1027,16 @@ if (plot==1) {
        else{
            fprintf(wt3,"%d\t",obs->com[k].on_off);} 
    }
-   fprintf(f_tshift,"%s\t %3.1f\t %3.1f\t %3.4f\t %3.4f\t %3.3f\t %3.3f\t %f\t %f\n",obs->stn, obs->dist, obs->az, obs->stla, obs->stlo, 
-	   Sshift_max, Sshift_static[i], Sshift_static[i]-Sshift_max, Sshift_static[i]+Sshift_max);
+
+   // output timeshifts
+   fprintf(f_tshift,"%30s %6.1f %6.1f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n",
+           obs->stn, obs->dist, obs->az, obs->stla, obs->stlo,
+           Sshift_max, 
+           Sshift_static[i], 
+           Sshift_static[i]-Sshift_max, 
+           Sshift_static[i]+Sshift_max);
+
+   // 
    fprintf(wt3,"%3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n", ppick[i], 0., 0., 0., 0.);
 
    /* output observed polarity and predicted rad amplitude */
