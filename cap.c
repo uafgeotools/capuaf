@@ -1029,12 +1029,13 @@ if (plot==1) {
    }
 
    // output timeshifts
-   fprintf(f_tshift,"%30s %6.1f %6.1f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n",
+   fprintf(f_tshift,"%30s %6.1f %6.1f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n",
            obs->stn, obs->dist, obs->az, obs->stla, obs->stlo,
            Sshift_max, 
            Sshift_static[i], 
            Sshift_static[i]-Sshift_max, 
-           Sshift_static[i]+Sshift_max);
+           Sshift_static[i]+Sshift_max,
+	   shft0[i][1] + dt * sol.shft[i][1], shft0[i][0] + dt * sol.shft[i][0]);
 
    // 
    fprintf(wt3,"%3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n", ppick[i], 0., 0., 0., 0.);
