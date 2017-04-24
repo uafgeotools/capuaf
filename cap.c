@@ -1029,13 +1029,16 @@ if (plot==1) {
    }
 
    // output timeshifts
-   fprintf(f_tshift,"%30s %6.1f %6.1f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f %8.4f\n",
+   fprintf(f_tshift,"%38s %6.1f %6.1f %9.4f %9.4f %8.4f %8.4f %8.4f %8.4f %8.4f %d %d %8.4f %d\n",
            obs->stn, obs->dist, obs->az, obs->stla, obs->stlo,
-           Sshift_max, 
-           Sshift_static[i], 
-           Sshift_static[i]-Sshift_max, 
-           Sshift_static[i]+Sshift_max,
-	   shft0[i][1] + dt * sol.shft[i][1], shft0[i][0] + dt * sol.shft[i][0]);
+           Sshift_max,                  // allowable
+           Sshift_static[i],            // static (user input in weight file)
+           Sshift_static[i]-Sshift_max, // min shift
+           Sshift_static[i]+Sshift_max, // max shift
+           // best timeshifts found by cap, weights
+           // Rayleigh. Output both weights for SV and SR
+           shft0[i][1] + dt * sol.shft[i][1], obs->com[1].on_off, obs->com[2].on_off,
+           shft0[i][0] + dt * sol.shft[i][0], obs->com[0].on_off); // Love
 
    // 
    fprintf(wt3,"%3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n", ppick[i], 0., 0., 0., 0.);
