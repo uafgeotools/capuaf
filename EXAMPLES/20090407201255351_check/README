@@ -1,0 +1,20 @@
+Output file description:
+20090407201255351_scak_039_beach.ps		-	Beachball plot (with piercing points and polarities)
+20090407201255351_scak_039.out                  -	KEY output files (can be read in matlab by read_capout.m - in GEOTOOLS)	
+20090407201255351_scak_039.ps          		-	KEY figure showing data and synthetics waveform fit
+inp_cmd  					-	input command used
+weight.dat					- 	input weight file
+20090407201255351_scak_039_fmpdata.txt  	-	First motion polarity data
+20090407201255351_scak_039_parameters_best_sol  -	Minimum misfit solution
+20090407201255351_scak_039_tshift.out  		-	time-shift for various components
+srcfile						-	default source time function used to compute the synthetics
+
+%===========================================================
+
+TO DO:
+-> Description of various columns for:
+20090407201255351_scak_039.out
+weight.dat
+20090407201255351_scak_039_fmpdata.txt
+20090407201255351_scak_039_parameters_best_sol
+20090407201255351_scak_039_tshift.out
