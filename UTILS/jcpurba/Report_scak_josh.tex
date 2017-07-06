@@ -1,0 +1,417 @@
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%     Joshua Purba, 03-Feb-2017
+%     A catalog for earthquakes that I did on the Fall 2016
+%     This file contains output files
+%
+%     
+%     
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,titlepage,fleqn]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\pagestyle{plain}                                                      %%
+\pagestyle{empty}
+%%%%%%%%%% EXACT 1in MARGINS %%%%%%%                                   %%
+\setlength{\textwidth}{6.5in}     %%                                   %%
+\setlength{\oddsidemargin}{0in}   %% (It is recommended that you       %%
+\setlength{\evensidemargin}{0in}  %%  not change these parameters,     %%
+\setlength{\textheight}{8.5in}    %%  at the risk of having your       %%
+\setlength{\topmargin}{0in}       %%  proposal dismissed on the basis  %%
+\setlength{\headheight}{0in}      %%  of incorrect formatting!!!)      %%
+\setlength{\headsep}{0in}         %%                                   %%
+\setlength{\footskip}{.5in}       %%                                   %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                                   %%
+\newcommand{\required}[1]{\section*{\hfil #1\hfil}}                    %%
+\renewcommand{\refname}{References Cited}                   %%
+%\bibliographystyle{plain}                                              %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage[round]{natbib}
+\usepackage{xspace}
+\usepackage{epsfig}
+\usepackage{bm}
+\usepackage{pifont}   % search for \dings
+
+\usepackage{times} 
+
+%\usepackage{floatflt}
+\usepackage{wrapfig}
+
+%--------------------------------------------------------------
+%       SPACING COMMANDS (Latex Companion, p. 52)
+%       http://www.terminally-incoherent.com/blog/2007/09/19/latex-squeezing-the-vertical-white-space/
+%--------------------------------------------------------------
+
+\usepackage{setspace}    % double-space or single-space
+
+% \renewcommand{\baselinestretch}{1.0}
+
+% spacing between paragraphs
+\setlength{\parskip}{0pt}
+\setlength{\parsep}{0pt}
+
+% spacing near section headers
+\usepackage[compact]{titlesec}
+\titlespacing{\section}{0pt}{*2}{*1}
+\titlespacing{\subsection}{0pt}{*2}{*0}
+\titlespacing{\subsubsection}{0pt}{*1}{*0}
+
+% enumerated lists (use enumerate* and itemize*)
+\usepackage{mdwlist}
+
+% \textwidth 6.5in
+% \textheight 9.4in
+% \oddsidemargin 0pt
+% \evensidemargin 0pt
+
+% % see Latex Companion, p. 85
+% \voffset     -50pt
+% \topmargin     0pt
+% \headsep      20pt
+% \headheight   15pt
+% \headheight    0pt
+% \footskip     30pt
+% \hoffset       0pt
+
+%so text can run along a page with mostly figure
+%http://dcwww.camd.dtu.dk/~schiotz/comp/LatexTips/LatexTips.html
+\renewcommand\floatpagefraction{.9}
+\renewcommand\topfraction{.9}
+\renewcommand\bottomfraction{.9}
+\renewcommand\textfraction{.1}   
+\setcounter{totalnumber}{50}
+\setcounter{topnumber}{50}
+\setcounter{bottomnumber}{50}
+
+% reduce space above and below captions
+% http://www.eng.cam.ac.uk/help/tpl/textprocessing/squeeze.html
+%\addtolength{\abovecaptionskip}{0pt}
+%\addtolength{\belowcaptionskip}{-10pt}
+
+\usepackage[font=small,labelfont=bf,belowskip=0pt,aboveskip=5pt]{caption}
+%\usepackage[belowskip=0pt,aboveskip=0pt,font=small,labelfont=bf]{caption}
+
+%http://tex.stackexchange.com/questions/26521/how-to-lessen-spaces-between-figure-and-text
+\setlength{\textfloatsep}{10pt plus 2.0pt minus 4.0pt}
+%\setlength{\floatsep}{6pt plus 2.0pt minus 2.0pt}
+%\setlength{\intextsep}{6pt plus 2.0pt minus 2.0pt}
+
+%----------------------------
+%Different font in captions
+% %http://dcwww.camd.dtu.dk/~schiotz/comp/LatexTips/LatexTips.html
+% \newcommand{\captionfonts}{\small}
+
+% \makeatletter  % Allow the use of @ in command names
+% \long\def\@makecaption#1#2{%
+%   \vskip\abovecaptionskip
+%   \sbox\@tempboxa{{\captionfonts #1: #2}}%
+%   \ifdim \wd\@tempboxa >\hsize
+%     {\captionfonts #1: #2\par}
+%   \else
+%     \hbox to\hsize{\hfil\box\@tempboxa\hfil}%
+%   \fi
+%   \vskip\belowcaptionskip}
+% \makeatother   % Cancel the effect of \makeatletter
+%----------------------------
+
+\include{carlcommands}
+
+\graphicspath{
+%  {/home/carltape/gmt/alaska/save/fa_proposal/}
+  {./figures/}
+}
+
+%-----------------------------------------------
+\begin{document}
+%-----------------------------------------------
+
+%-----------------------------------------------
+
+\noindent
+\\
+TO DO:\\
+1. Add README (from Josh Plan)\\
+2. Update event selection criteria\\
+3. Split table 2 into two parts (going out of page)\\
+
+
+\subsection*{README for Josh's Southern Alaska Catalog}
+
+
+
+Step-by-step instructions for CAP inversion:
+
+
+1) Selection of events\\
+2) Scripts involved:\\
+
+read\_eq\_AEC.m - selection of events from AEC catalog\\
+read\_eq\_AECfp.m - fault-plane solutions from AEC catalog (double couple)\\
+read\_mech\_AEC - moment tensor catalog from AEC \\
+\\
+\\
+Example:
+
+\begin{verbatim}
+ax2= [-154 -139 59 62.5];      
+oran = [datenum(2009,8,12) datenum(2015,6,1)];     
+ax3 = [axtomo -10 200];
+Mwran = [4 10];
+[otime,lat,lon,dep,M,M0,mag,eid] = read_mech_AECfp(oran,ax3,Mwran);
+\end{verbatim}
+
+Waveform extraction: 
+Scripts involved:
+\\
+\\
+1) ~/REPOSITORIES/GEOTOOLS/python\_util/util\_data\_syn/run\_getwaveform.py \\
+2) add\_picks2weight.m - Get polarity from AEC database
+\\
+\\
+Run CAP:\\
+Copy a template inp\_cmd into the event directory\\
+Update inp\_cmd \\
+Remove bad stations - See event selection criteria (www.XXX.link from google docs UAF seismo group)\\
+Key flags - frequency, depth, magnitude, eventID, window length, polarity weight\\
+-R0/0 - double couple search (usually remains same for a specific study)
+\\
+\\
+Tips:\\
+Write cap.pl (in terminal) to see basic information about running cap (and related input flags).
+If MT switches between two almost opposite solutions then include polarities to constrain the solution (-X flag).
+\\
+\\
+Pperform depth test\\
+ (-A flag) by varying depths. When done, type this: \\
+depth\_test 20*****(event id) scak \\
+then open the dep.ps file on the OUTPUT\_DIR.\\
+\\
+Now generate time-shift plot if to see the distribution of the time shift (CAP method). The routines are in the following:
+\\ \\
+go to output file \\
+cp ../20130911010259396/20130911010259396\_station.dat  20130911010259396\_station.dat\\
+cp 20130911010259396\_scak\_040.out 20130911010259396.out \\
+capmap.pl 20130911010259396 \\
+ev ./allcap\_20130911010259396.pdf \\
+
+
+
+\subsection*{29 Moment Tensor Inversions in the Southern Alaska: 1st year of Salmon Seismic Network}
+
+As a part of an undergraduate research, moment tensor inversions are done in the Fall 2016. The inversions are done with a python script that considers first p-wave arrival time and with polarity added. The catalog has an event selection criteria as follows,  
+\begin{verbatim}
+ax0 = [-154 -146 58 62.5];   
+ax3 = [ax0 -10 200];   
+oran = [datenum(2015,6,1) datenum(2016,6,1)];  
+Mwran = [4 10];.
+[otime,lat,lon,dep,M,M0,mag,eid] = read_mech_AECfp(oran,ax3,Mwran);
+\end{verbatim}
+
+\vspace{5mm} %5mm vertical space
+
+\subsection*{63  Moment Tensor Inversions in the Southern Alaska (other than Vipuls events)}
+A moment tensor catalog is done in the Spring 2016. The inversions are done with a python script that considers first p-wave arrival time and with polarity added. The catalog has an event selection criteria as follows,  
+
+
+\begin{verbatim}
+axint = [-154 -139 59 62.5] ;  
+ax3 = [axint -10 700];
+oran = [datenum(2009,8,12) datenum(2015,6,1)];       % JoshMT catalog - Spring 2017
+Mwran= [4 10];
+[otime,lat,lon,dep,M,M0,mag,eid] = read_mech_AECfp(oran,ax3,Mwran);
+\end{verbatim}
+
+
+
+\vspace{10mm} % vertical space
+
+
+
+This document contains output files.
+
+
+%-----------------------------------------------
+\clearpage\pagebreak
+\begin{table}[]
+\centering
+\caption{Josh's Southern Alaska Catalog - Fall 2016}
+
+\label{my-label}
+\begin{tabular}{llllllllll}
+\hline
+1 & 20150624223221166 & 61.66 & -151.96 &  67 &  51 &  66 & 5.4 & 90.0 & 65 \\ 
+2 & 20150706004957492 & 62.13 & -150.80 &  56 &  55 &  44 & 3.9 & 68.0 & 47 \\ 
+3 & 20150706005033729 & 62.13 & -150.79 &  89 &  34 &  23 & 4.8 & 61.0 & 81 \\ 
+4 & 20150721030832903 & 62.34 & -149.70 & 203 &  46 & -19 & 4.2 & 64.0 & 97 \\ 
+5 & 20150725195743227 & 61.95 & -152.05 &  90 &  54 &  43 & 5.0 & 100.0 & 96 \\ 
+6 & 20150729023559449 & 59.89 & -153.20 &  82 &  53 &  47 & 6.2 & 116.0 & 35 \\ 
+7 & 20151101052112090 & 62.21 & -152.00 &   1 &  84 &  89 & 4.4 & 110.0 & 78 \\ 
+8 & 20151106142650635 & 62.00 & -149.88 &  51 &  32 & -81 & 4.4 & 58.0 & 92 \\ 
+9 & 20151124032444092 & 59.73 & -152.99 &  29 &  58 &  51 & 4.1 & 117.0 & 24 \\ 
+10 & 20151202100525798 & 61.70 & -147.26 & 250 &  84 & -15 & 4.4 & 39.0 & 103 \\ 
+11 & 20160118040556098 & 62.10 & -150.64 & 156 &  50 &  20 & 4.4 & 7.0 & 87 \\ 
+12 & 20160124103029557 & 59.62 & -153.34 &  57 &  63 &  32 & 7.0 & 116.0 & 21 \\ 
+13 & 20160124123742054 & 59.72 & -153.17 & 143 &  16 &  48 & 4.6 & 111.0 & 21 \\ 
+14 & 20160124173729439 & 59.74 & -153.12 &  41 &  72 &  28 & 4.2 & 109.0 & 24 \\ 
+15 & 20160125080642033 & 59.75 & -153.12 &  39 &  73 &  24 & 4.2 & 91.0 & 25 \\ 
+16 & 20160128053022261 & 59.70 & -153.17 &  62 &  55 &  57 & 4.4 & 113.0 & 41 \\ 
+17 & 20160203203125777 & 60.33 & -153.55 & 345 &  69 &  42 & 4.2 & 153.0 & 38 \\ 
+18 & 20160209211713603 & 59.79 & -152.97 &  63 &  59 &  32 & 4.1 & 94.0 & 42 \\ 
+19 & 20160210173955972 & 59.71 & -153.15 &  46 &  62 &  29 & 4.0 & 90.0 & 31 \\ 
+20 & 20160210175212212 & 59.72 & -153.17 &  52 &  54 &  38 & 4.4 & 128.0 & 51 \\ 
+21 & 20160215104146974 & 60.90 & -150.01 & 240 &  77 & -29 & 4.1 & 44.0 & 39 \\ 
+22 & 20160220000032337 & 59.66 & -153.26 &  59 &  81 &  48 & 3.9 & 103.0 & 25 \\ 
+23 & 20160228134851632 & 61.78 & -150.69 &  83 &  60 &  16 & 4.2 & 60.0 & 85 \\ 
+24 & 20160408032418180 & 61.46 & -149.92 & 187 &  79 & -77 & 4.0 & 46.0 & 51 \\ 
+25 & 20160429081733045 & 58.90 & -152.34 &  63 &  84 &  20 & 4.7 & 61.0 & 37 \\ 
+26 & 20160501203846663 & 60.11 & -152.99 &  79 &  88 & -29 & 4.7 & 111.0 & 49 \\ 
+27 & 20160518224925265 & 60.04 & -153.60 &  72 &  49 &  41 & 4.2 & 130.0 & 26 \\ 
+28 & 20160521113409789 & 62.36 & -152.46 & 352 &  84 &  79 & 4.4 & 151.0 & 58 \\ 
+29 & 20160530190129827 & 59.08 & -153.76 &  61 &  67 &  56 & 4.2 & 91.0 & 19 \\ 
+ &  &  &  &  &  &  &  &  &  \\ \hline
+\end{tabular}
+\end{table}
+
+
+\clearpage\pagebreak
+\iffalse
+% Waveforms for these events were extracted from MATLAB 
+% They have been redone using obspy extraction (SEE Spring 2017 catalog)
+\begin{table}[]
+\centering
+\caption{Josh's Southern Alaska Catalog}
+\label{my-label}
+\begin{tabular}{llllllllll}
+\hline
+No & Eid & Lat & Long & Strike & Dip & Rake & Mw & Depth & Nstn \\ \hline \\
+1 & 20080828231418631 & 62.12 & -149.60 & 214 &  68 & -23 & 4.1 & 43.0 & 40 \\ 
+2 & 20110915002105181 & 59.90 & -151.83 &  64 &  81 &  32 & 4.0 & 55.9 & 26 \\ 
+3 & 20130911010259396 & 61.90 & -149.22 & 131 &  71 &  28 & 4.3 & 5.1 & 31 \\ 
+4 & 20140505045944304 & 60.65 & -149.56 &  75 &  69 & -38 & 4.4 & 38.2 & 50 \\ 
+5 & 20140510141610095 & 60.01 & -152.13 & 247 &  47 &  66 & 5.5 & 89.1 & 57 \\ 
+6 & 20140924073057077 & 61.35 & -146.78 &  17 &  28 & -85 & 4.5 & 27.4 & 118 \\ 
+7 & 20140925175117606 & 61.94 & -151.82 &  47 &  66 &  16 & 6.2 & 108.9 & 84 \\ 
+8 & 20141106154655115 & 60.01 & -153.29 &  51 &  83 &  87 & 4.0 & 150.5 & 52 \\ 
+9 & 20141123173243768 & 60.44 & -151.03 & 195 &  67 & -60 & 4.1 & 68.8 & 30 \\ 
+ &  &  &  &  &  &  &  &  &  \\ \hline
+\end{tabular}
+\end{table}
+\fi
+
+
+% Spring catalog
+% See /home/jcpurba/PROJECTS/CAP/inv/scak/scak_Spring2017
+\begin{table}[]
+\centering
+\caption{Josh's Southern Alaska Catalog - Spring 2017}
+\label{my-label}
+\begin{tabular}{llllllllll}
+\hline
+No & Eid & Lat & Long & Strike & Dip & Rake & Mw & Depth & Nstn \\ \hline \\
+1 & 20091004112244605 & 61.91 & -151.56 & 325 &  66 &  74 & 4.5 & 151.0 & 15 \\ 
+2 & 20100211152903238 & 60.22 & -152.48 &  99 &  47 &  69 & 4.3 & 117.0 & 16 \\ 
+3 & 20100310130544893 & 60.24 & -152.88 & 230 &  65 &  51 & 4.4 & 155.0 & 6 \\ 
+4 & 20100418022836030 & 59.31 & -153.17 &  36 &  73 &  58 & 4.2 & 62.0 & 9 \\ 
+5 & 20101127101802554 & 60.04 & -151.93 & 344 &  55 & -54 & 4.3 & 65.0 & 23 \\ 
+6 & 20110130181923169 & 60.60 & -152.05 & 201 &  85 & -80 & 4.4 & 85.0 & 22 \\ 
+7 & 20110513203043401 & 60.04 & -152.59 &   2 &  53 &  16 & 4.5 & 95.0 & 20 \\ 
+8 & 20110520125151213 & 59.89 & -153.27 &  74 &  58 &  52 & 4.2 & 112.0 & 11 \\ 
+9 & 20110721062011601 & 60.03 & -152.83 &   1 &   9 &  34 & 4.3 & 88.0 & 16 \\ 
+10 & 20110915002105181 & 59.90 & -151.83 &  78 &  73 &  48 & 4.1 & 64.0 & 23 \\ 
+11 & 20111022143220848 & 61.48 & -151.91 &  58 &  53 &  68 & 4.1 & 15.0 & 27 \\ 
+12 & 20111105005721125 & 59.49 & -153.40 & 201 &  27 & -26 & 4.7 & 104.0 & 13 \\ 
+13 & 20111129203446292 & 59.74 & -152.68 &  93 &  10 &  -3 & 4.5 & 110.0 & 14 \\ 
+14 & 20120303133555888 & 60.05 & -152.86 &  69 &  49 &  67 & 4.3 & 140.0 & 14 \\ 
+15 & 20120308105743275 & 61.01 & -150.91 & 150 &  38 &  30 & 4.2 & 25.0 & 27 \\ 
+16 & 20120401031823332 & 59.98 & -153.28 &  63 &  65 &  46 & 4.2 & 132.0 & 13 \\ 
+17 & 20120728190107860 & 59.38 & -152.01 &  42 &  72 & -73 & 4.4 & 85.0 & 23 \\ 
+18 & 20120809164323973 & 60.35 & -147.54 &  63 &  34 & -31 & 4.7 & 29.0 & 39 \\ 
+19 & 20120913055804209 & 59.62 & -153.16 &  59 &  66 &  12 & 4.3 & 82.0 & 13 \\ 
+20 & 20121014095827159 & 60.11 & -152.56 & 212 &  83 & -82 & 4.6 & 71.0 & 17 \\ 
+21 & 20121030220247099 & 61.49 & -150.72 & 181 &  76 & -80 & 4.5 & 70.0 & 32 \\ 
+22 & 20121031025743166 & 62.05 & -146.55 & 241 &  65 &  -6 & 4.1 & 44.0 & 45 \\ 
+23 & 20121101141335932 & 60.77 & -151.94 &  51 &  42 &  39 & 4.2 & 79.0 & 28 \\ 
+24 & 20121130142705260 & 61.36 & -151.52 &  66 &  27 &  26 & 4.2 & 65.0 & 29 \\ 
+25 & 20121224172825031 & 61.24 & -150.76 & 111 &  30 &  23 & 4.1 & 62.0 & 29 \\ 
+26 & 20121225034332550 & 61.30 & -147.44 &  66 &  40 & -70 & 4.5 & 51.0 & 45 \\ 
+27 & 20130310210519659 & 61.54 & -150.48 &  59 &  80 &  29 & 4.2 & 67.0 & 29 \\ 
+28 & 20130619071943894 & 61.44 & -149.84 &  64 &  40 & -41 & 4.2 & 53.0 & 24 \\ 
+29 & 20130620230606881 & 62.23 & -145.69 &  92 &  38 &  36 & 4.7 & 23.0 & 48 \\ 
+30 & 20130712110116303 & 60.27 & -153.06 & 141 &  82 & -49 & 4.1 & 143.0 & 14 \\ 
+31 & 20130825174908626 & 60.06 & -152.86 & 342 &  78 &  67 & 4.6 & 82.0 & 16 \\ 
+32 & 20130911010259396 & 61.35 & -149.51 &  10 &  39 & -42 & 4.1 & 54.0 & 39 \\ 
+33 & 20131107051308891 & 62.03 & -150.49 &  39 &  19 & -30 & 4.4 & 65.0 & 42 \\ 
+34 & 20131111181814688 & 60.02 & -152.67 &  65 &   9 & -44 & 4.3 & 96.0 & 21 \\ 
+35 & 20131117114012065 & 62.30 & -151.23 &  94 &  12 &   5 & 4.7 & 68.0 & 32 \\ 
+36 & 20131122135808101 & 59.99 & -153.61 & 284 &  51 &  80 & 4.6 & 169.0 & 11 \\ 
+37 & 20131228144300038 & 59.41 & -153.43 & 131 &  20 &   1 & 4.8 & 79.0 & 5 \\ 
+38 & 20140127173901903 & 59.95 & -153.36 & 234 &  19 &  88 & 4.3 & 116.0 & 14 \\ 
+39 & 20140305031319760 & 62.08 & -149.46 & 194 &  67 & -65 & 4.4 & 54.0 & 50 \\ 
+40 & 20140406165504270 & 60.09 & -153.34 &  40 &  89 &  89 & 4.2 & 101.0 & 13 \\ 
+41 & 20140505045944304 & 60.65 & -149.56 &  66 &  62 & -49 & 4.5 & 42.0 & 24 \\ 
+42 & 20140510141610095 & 60.01 & -152.13 & 247 &  42 &  56 & 5.6 & 81.0 & 24 \\ 
+43 & 20140605053759752 & 61.15 & -140.25 &  69 &  82 &  16 & 5.2 & 18.0 & 18 \\ 
+44 & 20140605054427512 & 61.18 & -140.28 &  65 &  80 &  16 & 5.2 & 18.0 & 14 \\ 
+45 & 20140712111531058 & 61.16 & -140.31 &  69 &  85 &  12 & 4.7 & 13.0 & 24 \\ 
+46 & 20140717114933548 & 60.35 & -140.33 &   4 &  85 &  -2 & 6.0 & 12.0 & 18 \\ 
+47 & 20140717115301037 & 60.37 & -140.33 &  12 &  68 &  48 & 4.8 & 11.0 & 25 \\ 
+48 & 20140720021544154 & 60.32 & -140.31 & 359 &  86 &  20 & 4.8 & 12.0 & 24 \\ 
+49 & 20140819101122438 & 60.03 & -153.09 &  72 &  58 &  22 & 4.2 & 109.0 & 32 \\ 
+50 & 20140919200813034 & 60.16 & -153.22 & 349 &  45 &  40 & 4.2 & 152.0 & 20 \\ 
+&  &  &  &  &  &  &  &  &  \\ \hline
+\end{tabular}
+\end{table}
+
+
+
+\clearpage\pagebreak
+
+% Spring catalog continue
+% See /home/jcpurba/PROJECTS/CAP/inv/scak/scak_Spring2017
+\begin{table}[]
+\centering
+\caption{Josh's Southern Alaska Catalog - Spring 2017 - Continue}
+\label{my-label}
+\begin{tabular}{llllllllll}
+\hline
+No & Eid & Lat & Long & Strike & Dip & Rake & Mw & Depth & Nstn \\ \hline \\
+
+51 & 20140924073057077 & 61.35 & -146.78 & 214 &  62 & -85 & 4.4 & 37.0 & 64 \\ 
+52 & 20140925175117606 & 61.94 & -151.82 &  48 &  72 &  13 & 6.3 & 102.0 & 43 \\ 
+53 & 20140927035311652 & 62.01 & -149.82 & 347 &  47 & -86 & 4.8 & 50.0 & 80 \\ 
+54 & 20141018053205360 & 60.14 & -150.98 & 223 &  66 &  -9 & 4.4 & 54.0 & 14 \\ 
+55 & 20141106154655115 & 60.01 & -153.29 &  37 &  90 &  80 & 4.1 & 112.0 & 15 \\ 
+56 & 20141123173243768 & 60.44 & -151.03 & 164 &  73 & -61 & 4.1 & 55.0 & 36 \\ 
+57 & 20150119103611702 & 62.19 & -150.57 & 167 &  51 &  11 & 4.0 & 17.0 & 50 \\ 
+58 & 20150402131505532 & 59.35 & -153.92 &  73 &  81 &  60 & 4.3 & 114.0 & 26 \\ 
+59 & 20150425062154905 & 60.07 & -153.50 &  79 &  53 &  23 & 4.1 & 129.0 & 26 \\ 
+60 & 20150509101549734 & 61.52 & -146.57 & 181 &  11 &  36 & 4.2 & 43.0 & 46 \\ 
+61 & 20150518154910522 & 61.94 & -150.45 & 343 &  60 &  72 & 4.3 & 28.0 & 57 \\
+&  &  &  &  &  &  &  &  &  \\ \hline
+\end{tabular}
+\end{table}
+
+
+
+% %\clearpage\pagebreak
+% \begin{figure}
+% \centering
+% \includegraphics[width=15cm]{scak_28_mod.eps} 
+% \caption[]
+% {{
+% %\small
+% Moment tensor inversion for a small (\magw{2.5}) event in southern Alaska, beneath the MOOS array \citep{MOOSabstract}. The inversion demonstrates the feasibility of estimating moment tensos for $M < 3$ events, given a dense array in the vicinity of crustal seismicity.
+% \label{fig:MTsmall}
+% }}
+% \end{figure}
+
+%-----------------------------------------------
+\end{document}
+%-----------------------------------------------
