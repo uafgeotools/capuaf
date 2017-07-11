@@ -243,7 +243,7 @@ $usage =
     -W  Integration.
         W$disp => (default) Do not integrate. Uses data in its original form
         W1 => Integrate
-    -X  weight for normalized polarity misfit [0,1). This is combined with the waveform misfit. Don't use -X1 since there could be multiple solutions that could fit the observed polarity, use -X.99 instead in order to include atleast some waveform measure. Suggested value = 0.5
+    -X  weight for normalized polarity misfit [0,1). This is combined with the waveform misfit. Don't use -X1 since there could be multiple solutions that could fit the observed polarity, use -X.99 instead in order to include atleast some waveform measure. Suggested value = 0.5 (Bug: Crashes when using -X flag and no polarity is available in the weight file)
     -Y  specify norm (1 - L1 norm; 2 - L2 norm)
     -Z  specify a different weight file name ($weight).
 
@@ -735,7 +735,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
       open(my $out,'>>',$outfile);
       say $out "INPUT_PAR $md_dep P_win $m1 S_win $m2 P $amplify p $ampfact NCOM $ncom spiB $spib spiS $spis $filterBand FMT $fmt_flag";
 
-      &plot($md_dep, $m1, $m2, $amplify, $ampfact, $ncom, $spib, $spis, $filterBand, $fmt_flag, @event, $model, $dep, $dura, $riseTime);
+      &plot($md_dep, $m1, $m2, $amplify, $ampfact, $ncom, $spib, $spis, $filterBand, $fmt_flag, @event, $model, $dep, $dura, $riseTime, $pol_wt);
       unlink(<${md_dep}_*.?>) unless $keep;
       chdir("../");
       print STDERR "cap.pl: plotting finished.\n";

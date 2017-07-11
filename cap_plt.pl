@@ -4,18 +4,21 @@ use List::Util qw[min max];
 sub plot {
 
 #  local($mdl, $t1, $t2, $am, $num_com, $spis) = @_; # original
-  local($mdl, $t1, $t2, $am, $ampfact, $num_com, $spib, $spis, $filterBand, $fmt_flag, $evid, $model, $depth, $dura, $riseTime) = @_;
+  local($mdl, $t1, $t2, $am, $ampfact, $num_com, $spib, $spis, $filterBand, $fmt_flag, $evid, $model, $depth, $dura, $riseTime, $pol_wt) = @_;
   local($nn,$tt,$plt1,$plt2,$plt3,$plt4,$i,$nam,$com1,$com2,$j,$x,$y,@aa,$rslt,@name,@aztk);
 
 # set this =1 if you want to plot time windows that have been excluded
   local $keepBad = 0;
+
+# if you want to plot only polarities on the big beachball plot (No azimuth, station info or title)  - default 0
+$only_pol = 0;
   
   @trace = ("1/255/255/255","3/0/0/0");       # plot data trace
   @name = ("P V","P R","Surf V"," Surf R","Surf T");
 
   $filterBand = "Filter periods (seconds): $filterBand";    # 20120719 - report filter bands
-  $dura = sprintf("%.1f",$dura);
-  $riseTime = sprintf("%.1f",$riseTime);
+  $dura = sprintf("%.2f",$dura);
+  $riseTime = sprintf("%.2f",$riseTime);
   $duration = "duration: $dura/$riseTime s";
   
 #--------------------------
@@ -187,8 +190,8 @@ sub plot {
 
   # default: lower hemisphere piercing points on beachballs (x)
   $xplt4 = "| psxy $JP -R0/360/0/1 -Sx0.10i -N -W0.5p,255/0/0 -G255 -O -K >> $outps2";
-  $xplt4c = "| psxy $JP -R0/360/0/1 -St0.10i -N -W1p,0/255/0 -G255 -O -K >> $outps2";
-  $xplt4d = "| psxy $JP -R0/360/0/1 -Si0.10i -N -W1p,0/0/255 -G255 -O -K >> $outps2";
+  $xplt4c = "| psxy $JP -R0/360/0/1 -St0.30i -N -W1p,0/255/0 -G255 -O -K >> $outps2";
+  $xplt4d = "| psxy $JP -R0/360/0/1 -Si0.30i -N -W1p,0/0/255 -G255 -O -K >> $outps2";
 
   # plot text labels
   $xplt5a = "| pstext $JP -R0/360/0/1 -N -O -K >> $outps2";
@@ -581,7 +584,7 @@ sub plot {
     #   0         1             2       3                     4    5      6        7  8   9   10      11      12  13    14  15       16    17  18   19     20
     open(PLT, $plt4_5);
     printf PLT "$x $y 12 0 0 0 Event $evid Model $model Depth $depth\n"; $y-=$tgap;
-    printf PLT "$x $y 12 0 0 0 @meca[4] %d %d %d @meca[8,9] @~g@~ %3.0f @~d@~ %3.0f @meca[10,11] VR %3.1f\n",@meca[5], @meca[6], @meca[7], @meca[14],@meca[16],@meca[18];$y-=$tgap;
+    printf PLT "$x $y 12 0 0 0 @meca[4] %d %d %d @meca[8,9] @~g@~ %3.0f @~d@~ %3.0f @meca[10,11] VR %3.1f pol_wt %0.2f \n",@meca[5], @meca[6], @meca[7], @meca[14],@meca[16],@meca[18],$pol_wt;$y-=$tgap;
     printf PLT "$x $y 12 0 0 0 $filterBand $duration\n" ; $y-=$tgap;  # 20120719 - filter bands
     printf PLT "$x $y 12 0 0 0 @ncomp[1]" ;
     close(PLT);
@@ -612,6 +615,22 @@ sub plot {
     }
     close(XPLT);
 
+    # plot piercing points on beachballs (see tklh above)
+    $i=0; $j=0; $k=0;
+    open(XPLT, $xplt4);
+    open(XPLTC, $xplt4c);
+    open(XPLTD, $xplt4d);
+    foreach (@tklh) {
+	if ($ifmp[$i]>0){printf XPLTC; $j=$j+1;}
+	elsif ($ifmp[$i]<0){printf XPLTD; $k=$k+1;}
+	#else {printf XPLT;}
+	$i=$i+1;
+    }
+    close(XPLT);
+    close(XPLTC);
+    close(XPLTD);
+
+if ($only_pol == 0) {
     # plot station azimuths beachballs (see staz above)
     open(XPLT, $xplt4b);
     foreach (@staz) {
@@ -623,21 +642,6 @@ sub plot {
     foreach (@tkuh) {
       printf XPLT;
     }
-
-    # plot piercing points on beachballs (see tklh above)
-    $i=0; $j=0; $k=0;
-    open(XPLT, $xplt4);
-    open(XPLTC, $xplt4c);
-    open(XPLTD, $xplt4d);
-    foreach (@tklh) {
-	if ($ifmp[$i]>0){printf XPLTC; $j=$j+1;}
-	elsif ($ifmp[$i]<0){printf XPLTD; $k=$k+1;}
-	else {printf XPLT;}
-	$i=$i+1;
-    }
-    close(XPLT);
-    close(XPLTC);
-    close(XPLTD);
 
 #------------
 
@@ -673,12 +677,12 @@ sub plot {
     printf XPLT "0 0 16 0 0 0 @meca[0..3]\n";
     # Event 19910914190000000 Model 19910914190000000_wes_001 FM  350 56.985645  -74 Mw 5.80 rms 2.673e-06     1 CLVD -4.08 ISO  -4.464618 VR 7.8 data2 2.783e-06
     #   0         1             2       3                     4    5      6        7  8   9   10      11      12  13    14  15       16    17  18   19     20
-    printf XPLT "0 -0.05 16 0 0 0 @meca[4] %d %d %d @meca[8,9] @~g@~ %3.0f @~d@~ %3.0f @meca[10,11] VR %3.1f\n",@meca[5], @meca[6], @meca[7], @meca[14],@meca[16],@meca[18];
+    printf XPLT "0 -0.05 16 0 0 0 @meca[4] %d %d %d @meca[8,9] @~g@~ %3.0f @~d@~ %3.0f @meca[10,11] VR %3.1f pol_wt\n",@meca[5], @meca[6], @meca[7], @meca[14],@meca[16],@meca[18], $pol_wt;
     close(XPLT);
 
-  }  # while (@rslt) {
+}
   print STDERR "cap_plt.pl: done.\n";
-
+}
 #---------------------------------
 
 }

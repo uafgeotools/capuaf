@@ -527,7 +527,7 @@ int main (int argc, char **argv) {
 	t1 = sqrt(distance*distance+depSqr)/vp;	/* use vp to compute t1 */
       else
 	t1 = hd[2].t1;					/* use tp as t1 */
-      t1 = t1 - 0.4*mm[0]*dt + con_shft[i];
+      t1 = t1 - 0.4*mm[0]*dt + con_shft[i];             /* 0.4 governs the length of waveform before the parrival */
       t2 = hd[0].t2 + 0.2*mm[0]*dt + con_shft[i];	/* ts plus some delay */
       if (Pnl_win != 0)                                 /* for specific length of time window */
 	t2 = t1 + Pnl_win;
@@ -875,6 +875,7 @@ int main (int argc, char **argv) {
   // END DELETE SECTION -- NOT APPLICABLE ANYMORE
 
   // output warning if best magnitude = magnitude limit in magnitude search.
+  if(1) {
   if ( (sol.meca.mag <= searchPar->mw1 && searchPar->dmw != 0) || (sol.meca.mag >= searchPar->mw2 && searchPar->dmw != 0) ) {
       fid_warn = fopen("capout_error.txt","w");
       fprintf(stderr, "\n***********************************************************************\n");
@@ -887,7 +888,7 @@ int main (int argc, char **argv) {
       fprintf(fid_warn, "***********************************************************************\n");
       fclose(fid_warn);
       return(-1);
-  }
+  }}
 
   fprintf(stderr,"Preparing out file ...\n");
   // sprintf(mod_dep,"%s_%s_%03d", eve, model, depth);                       // rename .out file
@@ -895,11 +896,11 @@ int main (int argc, char **argv) {
   // strcat(strcat(strcat(strcpy(tmp,eve),"/"),mod_dep),".out");  
   sprintf(tmp, "%s.out", filename_prefix);
   f_out=fopen(tmp,"w");
-  fprintf(f_out,"Event %s Model %s FM %4d %9.6f %4d Mw %4.2f rms %9.3e %5d CLVD %3.2f ISO %10.6f VR %3.1f data2 %9.3e\n",
+  fprintf(f_out,"Event %s Model %s FM %4d %9.6f %4d Mw %4.2f rms %9.3e %5d CLVD %3.2f ISO %10.6f VR %3.1f data2 %9.3e pol_wt %0.2f\n",
           eve,mod_dep,
           (int) rint(sol.meca.stk), sol.meca.dip, (int) rint(sol.meca.rak),
           sol.meca.mag, sol.err, dof,
-          sol.meca.gamma, sol.meca.delta, VR , data2);
+          sol.meca.gamma, sol.meca.delta, VR , data2, pol_wt);
   fprintf(f_out,"# Hypocenter_sac_header elat %e elon %e edep %e\n",evla,evlo,evdp);
 
   // convert Mw to M0 using GCMT convention (also in Aki and Richards, 2002)
@@ -1022,7 +1023,7 @@ if (plot==1) {
                maxamp_syn[i][k]);
        if (k<3) lamp_thresh = 1.5;  // log(amplitude) threshold for surface waves
        else lamp_thresh = 2.5;   // log(amplitude) threshold for body waves
-       if (log(maxamp_obs[i][k]/maxamp_syn[i][k]) > lamp_thresh){
+       if (abs(log(maxamp_obs[i][k]/maxamp_syn[i][k])) > lamp_thresh){
            fprintf(wt3,"%d\t",0);}
        else{
            fprintf(wt3,"%d\t",obs->com[k].on_off);} 
