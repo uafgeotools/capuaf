@@ -190,8 +190,9 @@ $only_pol = 0;
 
   # default: lower hemisphere piercing points on beachballs (x)
   $xplt4 = "| psxy $JP -R0/360/0/1 -Sx0.10i -N -W0.5p,255/0/0 -G255 -O -K >> $outps2";
-  $xplt4c = "| psxy $JP -R0/360/0/1 -St0.30i -N -W1p,0/255/0 -G255 -O -K >> $outps2";
-  $xplt4d = "| psxy $JP -R0/360/0/1 -Si0.30i -N -W1p,0/0/255 -G255 -O -K >> $outps2";
+  $xplt4c = "| psxy $JP -R0/360/0/1 -St0.30i -N -W1p,0/255/0 -G255 -O -K >> $outps2";  # up polarity (green) - triangle
+  $xplt4d = "| psxy $JP -R0/360/0/1 -Si0.30i -N -W1p,0/0/255 -G255 -O -K >> $outps2";  # down polarity (blue) - triangle
+  $xplt4e = "| psxy $JP -R0/360/0/1 -Si0.30i -N -W1p,255/0/0 -G255 -O -K >> $outps2";  # non-matching polarity (red) - triangle
 
   # plot text labels
   $xplt5a = "| pstext $JP -R0/360/0/1 -N -O -K >> $outps2";
@@ -231,7 +232,8 @@ $only_pol = 0;
     if ($aa[21]>$S_val && $aa[16]!=0){$S_val=$aa[21];} # Maximum amplitude of vertical surface wave
     if ($aa[28]>$S_val && $aa[23]!=0){$S_val=$aa[28];} # Maximum amplitude of radial surface wave
     if ($aa[35]>$S_val && $aa[30]!=0){$S_val=$aa[35];} # maximum amplitude of love wave 
-    $ifmp[$i] = $aa[37];
+    $ifmp[$i] = $aa[37];  # first-motion polarity (input - data)
+    $ifmpt[$i] = $aa[38];  # first-motion polarity (theoretical)
     $stnm = $aa[0];                              # station name
     #next if $aa[2] == 0;                        # skip if no body waves
     $x = `saclst az user1 f ${mdl}_$aa[0].0`;    # get the azimuth and P take-off angle
@@ -620,15 +622,18 @@ $only_pol = 0;
     open(XPLT, $xplt4);
     open(XPLTC, $xplt4c);
     open(XPLTD, $xplt4d);
+    open(XPLTE, $xplt4e);
     foreach (@tklh) {
-	if ($ifmp[$i]>0){printf XPLTC; $j=$j+1;}
+	if ($ifmp[$i] * $ifmpt[$i] < 0) {printf XPLTE; $j=$j+1;}
+	elsif ($ifmp[$i]>0){printf XPLTC; $j=$j+1;}
 	elsif ($ifmp[$i]<0){printf XPLTD; $k=$k+1;}
-	#else {printf XPLT;}
+	else {printf XPLT;}
 	$i=$i+1;
     }
     close(XPLT);
     close(XPLTC);
     close(XPLTD);
+    close(XPLTE);
 
 if ($only_pol == 0) {
     # plot station azimuths beachballs (see staz above)
