@@ -685,7 +685,7 @@ if ($only_pol == 0) {
     printf XPLT "0 0 16 0 0 0 @meca[0..3]\n";
     # Event 19910914190000000 Model 19910914190000000_wes_001 FM  350 56.985645  -74 Mw 5.80 rms 2.673e-06     1 CLVD -4.08 ISO  -4.464618 VR 7.8 data2 2.783e-06
     #   0         1             2       3                     4    5      6        7  8   9   10      11      12  13    14  15       16    17  18   19     20
-    printf XPLT "0 -0.05 16 0 0 0 @meca[4] %d %d %d @meca[8,9] @~g@~ %3.0f @~d@~ %3.0f @meca[10,11] VR %3.1f pol_wt\n",@meca[5], @meca[6], @meca[7], @meca[14],@meca[16],@meca[18], $pol_wt;
+    printf XPLT "0 -0.05 16 0 0 0 @meca[4] %d %d %d @meca[8,9] @~g@~ %3.0f @~d@~ %3.0f @meca[10,11] VR %3.1f pol_wt %0.2f\n",@meca[5], @meca[6], @meca[7], @meca[14],@meca[16],@meca[18], $pol_wt;
     close(XPLT);
 
 }
