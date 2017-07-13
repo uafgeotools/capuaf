@@ -624,33 +624,37 @@ $only_pol = 0;
     open(XPLTC, $xplt4c);
     open(XPLTD, $xplt4d);
     open(XPLTE, $xplt4e);
+    open(XPLTF, $xplt4f);
     foreach (@tklh) {
-	if ($ifmp[$i] * $ifmpt[$i] < 0) {
-	    if ($ifmp[$i]>0){printf XPLTE; $j=$j+1;}
-	    else {printf XPLTF; $j=$j+1;}}
-	elsif ($ifmp[$i]>0){printf XPLTC; $j=$j+1;}
-	elsif ($ifmp[$i]<0){printf XPLTD; $k=$k+1;}
-	else {printf XPLT;}
+	if ($ifmp[$i] * $ifmpt[$i] < 0) {     # mismatcing polarities
+	    if ($ifmp[$i]>0){printf XPLTE;}   # input is UP (+1); theoretical is DOWN (-1)
+	    else {printf XPLTF;}}             # input is DOWN (-1); theoretical is UP (+1)
+	elsif ($ifmp[$i]>0){printf XPLTC;}    # both input and theoretical are UP (+1)
+	elsif ($ifmp[$i]<0){printf XPLTD;}    # both input and theoretical are DOWN (-1)
+        else {printf XPLT;}                   # no input polarity pick in the weight file
 	$i=$i+1;
     }
     close(XPLT);
     close(XPLTC);
     close(XPLTD);
     close(XPLTE);
+    close(XPLTF);
 
+# Section for plotting azimuths and station name
 if ($only_pol == 0) {
     # plot station azimuths beachballs (see staz above)
     open(XPLT, $xplt4b);
     foreach (@staz) {
       printf XPLT;
     }
+    close(XPLT);
 
     # plot station azimuths beachballs (see tkuh above)
-    open(XPLT, $xplt4a);
+    open(XPLT, $xplt4);
     foreach (@tkuh) {
       printf XPLT;
     }
-
+    close(XPLT);
 #------------
 
     open(XPLT, $xplt5a);
