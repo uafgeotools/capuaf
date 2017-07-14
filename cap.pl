@@ -643,61 +643,61 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     close(IN);
 
     if ($isort != 0){
-	open(IN,$station_info_file) || die "{eid}/{eid}_station_list_ALL.dat file not present\n";
-	@stnlines = <IN>; $nstn = @stnlines;
-	close(IN);
+        open(IN,$station_info_file) || die "{eid}/{eid}_station_list_ALL.dat file not present\n";
+        @stnlines = <IN>; $nstn = @stnlines;
+        close(IN);
 
-	if ($isort == 1){
-	    print "Ouput file will be sorted by distance";
-	}
-	elsif ($isort == 2){
-	    print "Ouput file will be sorted by azimuth";
-	}
-	else {
-	    die "sorting can only be by distance (-K1) or azimuth (-K2)";
-	}
+        if ($isort == 1){
+            print "Ouput file will be sorted by distance";
+        }
+        elsif ($isort == 2){
+            print "Ouput file will be sorted by azimuth";
+        }
+        else {
+            die "sorting can only be by distance (-K1) or azimuth (-K2)";
+        }
 
 
-	for ($i = 0; $i < $nsta; $i++){
-	    ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift)=split(" ",@weightlines[$i]);
-	    ($stnm,$pol) = split("/",$name);
-	    ($eve1,$net1,$name1,$loc1,$chan1) = split(/\./,$stnm);
+        for ($i = 0; $i < $nsta; $i++){
+            ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift)=split(" ",@weightlines[$i]);
+            ($stnm,$pol) = split("/",$name);
+            ($eve1,$net1,$name1,$loc1,$chan1) = split(/\./,$stnm);
 
-	    for ($j = 0; $j < $nstn; $j++){
-		($name2,$net2,$lat2,$lon2,$dist2,$az2) = split(" ",@stnlines[$j]);
-		if (($name1 eq $name2) && ($net1 eq $net2)) {
-		    if ($isort == 1){    # sort by distance
-			$sort_ele[$i] = $dist2;
-		}
-		    elsif ($isort == 2){ # sort by azimuth
-			$sort_ele[$i] = $az2;
-		    }
-		    else {               # do nothing
-			$sort_ele[$i] = $i;
-		    }
-		}
-	    }
-	}
+            for ($j = 0; $j < $nstn; $j++){
+                ($name2,$net2,$lat2,$lon2,$dist2,$az2) = split(" ",@stnlines[$j]);
+                if (($name1 eq $name2) && ($net1 eq $net2)) {
+                    if ($isort == 1){    # sort by distance
+                        $sort_ele[$i] = $dist2;
+                    }
+                    elsif ($isort == 2){ # sort by azimuth
+                        $sort_ele[$i] = $az2;
+                    }
+                    else {               # do nothing
+                        $sort_ele[$i] = $i;
+                    }
+                }
+            }
+        }
 
-	# Clean this weight file by removing stations that have no information (no polarity, no P weight, no S weight)
-	open(OUT,'>',$clean_weight_file);
-	@sort_indx = sort{$sort_ele[$a] <=> $sort_ele[$b]} 0 .. $#sort_ele;
-	for ($i = 0; $i < $nsta; $i++){
-	    $ipol = 1;
-	    ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift)=split(" ",@weightlines[$sort_indx[$i]]);
-	    ($stnm,$pol) = split("/",$name);
+        # Clean this weight file by removing stations that have no information (no polarity, no P weight, no S weight)
+        open(OUT,'>',$clean_weight_file);
+        @sort_indx = sort{$sort_ele[$a] <=> $sort_ele[$b]} 0 .. $#sort_ele;
+        for ($i = 0; $i < $nsta; $i++){
+            $ipol = 1;
+            ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift)=split(" ",@weightlines[$sort_indx[$i]]);
+            ($stnm,$pol) = split("/",$name);
 
-	    if ($pol eq ''){$ipol = 0;}  # no polarity information
-	    if ($ipol==0 && $pv==0 && $pr==0 && $sv==0 && $sr==0 && $st==0){
-		next;} # No information available - skip this station
-	    else {     # save in new weight file
-		print OUT "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";
-	    }
-	}
-	close(OUT);
+            if ($pol eq ''){$ipol = 0;}  # no polarity information
+            if ($ipol==0 && $pv==0 && $pr==0 && $sv==0 && $sr==0 && $st==0){
+                next;} # No information available - skip this station
+            else {     # save in new weight file
+                print OUT "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";
+            }
+        }
+        close(OUT);
     }
     else {
-	copy $input_weight_file, $clean_weight_file;
+        copy $input_weight_file, $clean_weight_file;
     }
 # --------------------------
 
