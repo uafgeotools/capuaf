@@ -522,15 +522,29 @@ int main (int argc, char **argv) {
     /** calculate time windows for Pnl and Surface wave portions **/
 
     /* for Pnl portion */
-    if (t1 < 0 || t2 < 0 ) {	/* no time window in the data trace. use default time window in syn */
-      if (!tele && vp>0.)
-	t1 = sqrt(distance*distance+depSqr)/vp;	/* use vp to compute t1 */
-      else
-	t1 = hd[2].t1;					/* use tp as t1 */
-      t1 = t1 - 0.4*mm[0]*dt + con_shft[i];             /* 0.4 governs the length of waveform before the parrival */
-      t2 = hd[0].t2 + 0.2*mm[0]*dt + con_shft[i];	/* ts plus some delay */
-      if (Pnl_win != 0)                                 /* for specific length of time window */
-	t2 = t1 + Pnl_win;
+    if (t1 < 0 || t2 < 0 ) {
+        /* no time window in the data trace. use default time window in syn */
+
+        if (!tele && vp>0.) {
+            /* use vp to compute t1 */
+            t1 = sqrt(distance*distance+depSqr)/vp;
+        }
+        else {
+            /* use tp as t1 */
+            t1 = hd[2].t1;
+        }
+        /* 0.4 governs the length of waveform before the parrival */
+        t1 = t1 - 0.4*mm[0]*dt + con_shft[i];
+
+        /* ts plus some delay */
+        t2 = hd[0].t2 + 0.2*mm[0]*dt + con_shft[i];
+
+        if (Pnl_win != 0) {
+            /* for specific length of time window */
+            t2 = t1 + Pnl_win;
+        }
+        fprintf(stderr,"WARNING ti<0 for SAC headers t1 and/or t2\n");
+        fprintf(stderr,"Estimated new values: t1 %7.4f t2 %7.4f\n", t1, t2);
     }
 
     /* do the same for the s/surface wave portion */
