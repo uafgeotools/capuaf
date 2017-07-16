@@ -548,28 +548,43 @@ int main (int argc, char **argv) {
     }
 
     /* do the same for the s/surface wave portion */
-    if (ts<=0.)                                          /*if S wave arrival is not specified */
-      ts= hd[0].t2;                                      // get S arrival time from green's functions header
+    if (ts<=0.) {
+        /*if S wave arrival is not specified */
+
+        // get S arrival time from green's functions header
+        ts= hd[0].t2;
+    }
+    else {
+        fprintf(stderr,"WARNING arrival time for surface waves not specified\n");
+    }
+
     if (t3 < 0 || t4 < 0 ) {
-      if (!tele && vs1>0. && vs2> 0.) {
-	t3 = sqrt(distance*distance+depSqr)/vs1 - 0.3*mm[1]*dt;
-	t4 = sqrt(distance*distance+depSqr)/vs2 + 0.7*mm[1]*dt;
-      }
-      else {
-	t3 = ts - 0.3*mm[1]*dt;
-	t4 = t3+mm[1]*dt;
-      }
-      if (ts > 0.){                                      /* if surface wave arrival time is given */
-	t3 += s_shft;
-        t4 += s_shft;
-      }
-      else{
-	t3 += con_shft[i] + s_shft;              /* add con_shft only if surf arrival time is not specified*/
-	t4 += con_shft[i] + s_shft;
-	fprintf(stderr,"%f %f %f %f\n",t3,t4,hd[0].t2,con_shft[i]);
-      }
-      if (surf_win != 0)                                /* for specific length of time window */
-	t4 = t3 + surf_win;
+        if (!tele && vs1>0. && vs2> 0.) {
+            t3 = sqrt(distance*distance+depSqr)/vs1 - 0.3*mm[1]*dt;
+            t4 = sqrt(distance*distance+depSqr)/vs2 + 0.7*mm[1]*dt;
+        }
+        else {
+            t3 = ts - 0.3*mm[1]*dt;
+            t4 = t3+mm[1]*dt;
+        }
+        if (ts > 0.) {
+            /* if surface wave arrival time is given */
+            t3 += s_shft;
+            t4 += s_shft;
+        }
+        else {
+            /* add con_shft only if surf arrival time is not specified*/
+            t3 += con_shft[i] + s_shft;
+            t4 += con_shft[i] + s_shft;
+            fprintf(stderr,"%f %f %f %f\n",t3,t4,hd[0].t2,con_shft[i]);
+        }
+
+        /* for specific length of time window */
+        if (surf_win != 0) {
+            t4 = t3 + surf_win;
+        }
+        fprintf(stderr,"WARNING ti<0 for SAC headers t3 and/or t4\n");
+        fprintf(stderr,"Estimated new values: t3 %7.4f t4 %7.4f\n", t3, t4);
     }
 
     /*calculate the time windows */
