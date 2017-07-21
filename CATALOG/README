@@ -1,0 +1,42 @@
+Moment tensor catalogs
+
+columns in CAP_database:
+
+1. event ID (origin time) [EVID]
+
+2. version of moment tensor solution
+   NOTE: For any published moment tensor, the published version should have index 1. Any future modifications would have higher version numbers, as well as different authors.
+
+3. publication index (see .bib files for tags)
+   A. SilwalTape2016
+   B. Silwal2015catalog_SAK
+   C. Tape2015
+   D. Silwal2015catalog_MFFZ
+
+   Use XXX if there is no publication.
+
+4. Original author of the moment tensor solution.
+  
+5. Reviewed author of the moment tensor solution.
+   In many cases, the reviewed author will update the inversion parameters and obtain a different moment tensor solution.
+
+6. Home directory that output directory resides in [COLUMNSIX]
+   (In most cases, this will be the same person as the reviewed author.)
+ 
+7. tag for 1D model used
+
+==========  
+
+The CAP moment tensor output directories should be found at the path
+
+/home/[COLUMNSIX]/CAPRUN/
+
+For example, for this entry 
+
+20170501123153000 V2 XXX Vipul_Silwal Vipul_Silwal vipul scak 
+
+the output resides here
+
+/home/vipul/CAPRUN/20170501123153000/V2/
+
+========== 
