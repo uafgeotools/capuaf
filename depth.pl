@@ -92,33 +92,45 @@ while (@event)
 	$min=$min0;
 	$max=-100.;
 	foreach (grep(/$eve/,@aaa))
-	{
-	    chop;   
-	    # 20130103 calvizuri - example input to chop:
-	    # Event 20080418093700 Model cus_001 FM 291 51 -13 Mw 5.10 rms 3.748e-02   110 ERR   2   5   8 ISO 0.16 0.11 CLVD 0.14 0.08
-	    # New format:
-	    #   0           1          2               3                4   5    6         7  8   9   10   11        12    13   14  15     16      17  18   19    20
-	    # Event 20160124123742054 Model 20160124123742054_scak_100 FM   50 59.063911   46 Mw 4.40 rms 7.310e-01  3660 CLVD 0.00 ISO   0.000000 VR 46.6 data2 1.297e-06
-	    # OR
-	    # Event Little_Skull_Main Model Little_Skull_Main_wes_001 FM  243 67.006607  -21 Mw 5.10 rms 8.262e-01  2880 CLVD 0.00 ISO   0.000000 VR 31.7 data2 1.986e-05
-	    $line[$ii]=$_;
-	    @bb=split;
-	    ($ename,$smodel,$dep[$ii])=split('_',$bb[3]); # split 20160124123742054_scak_100 to get depth (= 100km) -- $dep is used for y-axis range
-	    #(undef,undef,$ename,$smodel,$dep[$ii])=split('_',$bb[3]); # split Little_Skull_Main_wes_001 to get depth (= 001km) -- $dep is used for y-axis range
-	    $strike[$ii]=$bb[5];		   # not needed
-	    $dip[$ii]=$bb[6];			   # not needed
-	    $rake[$ii]=$bb[7];			   # not needed
-	    $mw[$ii]=$bb[9];
-	    #    printf STDERR "debug. mw[$ii]=%lf\n",$mw[$ii];
-	    $rms[$ii]=$bb[11]; # this is the total misfit= polarity error + waveform error
-	    $vr[$ii]=$bb[18];
-      
-	    if ($vr[$ii]>$max)
-	    { 
-		$max=$vr[$ii]; $best=$ii;
-	    }
-	    $ii++;
-	}
+    {
+        chop;   
+        # Split long names into 1, 2 or 3 strings
+        # 20130103 calvizuri - example input to chop:
+        # Event 20080418093700 Model cus_001 FM 291 51 -13 Mw 5.10 rms 3.748e-02   110 ERR   2   5   8 ISO 0.16 0.11 CLVD 0.14 0.08
+        # New format:
+        #   0           1          2               3                4   5    6         7  8   9   10   11        12    13   14  15     16      17  18   19    20
+        # Event 20160124123742054 Model 20160124123742054_scak_100 FM   50 59.063911   46 Mw 4.40 rms 7.310e-01  3660 CLVD 0.00 ISO   0.000000 VR 46.6 data2 1.297e-06
+        # OR
+        # Event Little_Skull_Main Model Little_Skull_Main_wes_001 FM  243 67.006607  -21 Mw 5.10 rms 8.262e-01  2880 CLVD 0.00 ISO   0.000000 VR 31.7 data2 1.986e-05
+        $line[$ii]=$_;
+        @bb=split;
+        $nwords = split('_',$bb[3]);
+        if ($nwords == 3) {
+            ($evname, $smodel, $dep[$ii]) = split('_',$bb[3]);
+        }
+        elsif ($nwords == 4) {
+            ($evname1, $evname2, $smodel, $dep[$ii]) = split('_',$bb[3]); 
+            $evname = join '', $evname1, " ", $evname2;
+        }
+        elsif ($nwords == 5) {
+            ($evname1, $evname2, $evname3,$smodel,$dep[$ii]) = split('_',$bb[3]);
+            $evname = join '', $evname1, " ", $evname2, " ", $evname3;
+        }
+
+        $strike[$ii]=$bb[5];		   # not needed
+        $dip[$ii]=$bb[6];			   # not needed
+        $rake[$ii]=$bb[7];			   # not needed
+        $mw[$ii]=$bb[9];
+        #    printf STDERR "debug. mw[$ii]=%lf\n",$mw[$ii];
+        $rms[$ii]=$bb[11]; # this is the total misfit= polarity error + waveform error
+        $vr[$ii]=$bb[18];
+
+        if ($vr[$ii]>$max)
+        { 
+            $max=$vr[$ii]; $best=$ii;
+        }
+        $ii++;
+    }
         # get the catalog depth from line #2 of the CAP output file
         # NEED A STATEMENT TO EXIT IF THE FILE DOES NOT EXIST
         $bfile = "./${odir}/${eve}_${smodel}_$dep[${best}].out";
