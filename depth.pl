@@ -372,8 +372,8 @@ while (@event)
     # $sigma gives much larger estimation of uncertainties
     # NOTE  for figure in Uturuncu FMT paper replace 'h' with 'depth', 'utuhalf' with more descriptive 'halfspace'
     #       Also follow comments #1 and #2 next
-    printf PLT "%f %f $fsizet 0 0 1 %s  %s h=%4.1f \261 %.1f km\n",$xtitle,$ytitle,$eve,$smodel,$depth,$unc;       # 1. comment for Uturuncu FMT paper
-    #printf PLT "%f %f $fsizet 0 0 1 %s | halfspace | depth%4.1f \261 %.1f km\n",$xtitle,$ytitle, $eve,$depth,$unc; # 2. uncomment for Uturuncu FMT paper
+    printf PLT "%f %f $fsizet 0 0 1 %s | Model %s | Best depth %4.1f \261 %.1f km\n",$xtitle,$ytitle,$evname,$smodel,$depth,$unc;       # 1. comment for Uturuncu FMT paper
+    #printf PLT "%f %f $fsizet 0 0 1 %s | halfspace | depth%4.1f \261 %.1f km\n",$xtitle,$ytitle, $evname,$depth,$unc; # 2. uncomment for Uturuncu FMT paper
 
 	close(PLT);
 	$xx = "-O -K -Y2 $B";	# shift up
