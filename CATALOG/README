@@ -1,5 +1,12 @@
 Moment tensor catalogs
 
+Motivation:
+1. reproducibility (for ourselves and for others outside of UAF)
+2. attribution (so people get credit for their work)
+3. accuracy (so we can access the latest and greatest catalogs)
+
+====================================
+
 columns in CAP_database:
 
 1. event ID (origin time) [EVID]
@@ -25,7 +32,7 @@ columns in CAP_database:
  
 7. tag for 1D model used
 
-==========  
+==========
 
 The CAP moment tensor output directories should be found at the path
 
@@ -33,10 +40,25 @@ The CAP moment tensor output directories should be found at the path
 
 For example, for this entry 
 
-20170501123153000 V2 XXX Vipul_Silwal Vipul_Silwal vipul scak 
+20170501123153000 V2 SilwalTape2016 Vipul_Silwal Vipul_Silwal vipul scak 
 
 the output resides here
 
 /home/vipul/CAPRUN/20170501123153000/V2/
 
-========== 
+This might represent an event that was published in SilwalTape2016 as V1 but has since been updated,
+either with a different set of data, different CAP version, different inversion parameters, etc.
+
+IN MOST CASES EACH PERSON WILL PROBABLY SET SYMBOLIC LINKS FROM HIS WORKING DIRECTORY TO CAPRUN.
+This way, people can work on projects in various places, but we can always find the folders in CAPRUN.
+
+==========
+
+TO DO (and to think about)
+
++ need gitversion.txt file for cap.pl and for run_getwaveform.py
+  This way we can always determine which version of CAP and run_getwaveform.py were used.
++ There needs to be a way to identify the preferred depth in cases where a depth test is done.
+  How about a file like preferred_depth.txt that simply says something like 17 (for 17 km depth)?
+
+==========
