@@ -735,7 +735,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     #-----save a copy of inpur command and weight file in the OUTPUT_DIR
     system("cp", $input_weight_file, './OUTPUT_DIR/weight.dat');
     system("cp", $inp_cmd, "./OUTPUT_DIR/inp_cmd");
-    system("git log | head -12 > ./OUTPUT_DIR/last_git_commit.txt");
+    system("git log | head -12 > ./OUTPUT_DIR/last_2git_commits.txt");
 
   plot:
     if ( $plot > 0 && ($? >> 8) == 0 ) {
