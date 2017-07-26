@@ -650,7 +650,7 @@ if ($only_pol == 0) {
     close(XPLT);
 
     # plot station azimuths beachballs (see tkuh above)
-    open(XPLT, $xplt4);
+    open(XPLT, $xplt4a);
     foreach (@tkuh) {
       printf XPLT;
     }
