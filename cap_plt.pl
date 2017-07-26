@@ -3,7 +3,7 @@ use List::Util qw[min max];
 
 sub plot {
 
-#  local($mdl, $t1, $t2, $am, $num_com, $spis) = @_; # original
+#  local($mdl, $t1, $t2 $am, $num_com, $spis) = @_; # original
   local($mdl, $t1, $t2, $am, $ampfact, $num_com, $spib, $spis, $filterBand, $fmt_flag, $evid, $model, $depth, $dura, $riseTime, $pol_wt) = @_;
   local($nn,$tt,$plt1,$plt2,$plt3,$plt4,$i,$nam,$com1,$com2,$j,$x,$y,@aa,$rslt,@name,@aztk);
 
@@ -192,7 +192,7 @@ $only_pol = 0;
   $xplt4 = "| psxy $JP -R0/360/0/1 -Sx0.10i -N -W0.5p,255/0/0 -G255 -O -K >> $outps2";
   $xplt4c = "| psxy $JP -R0/360/0/1 -St0.30i -N -W1p,0/255/0 -G255 -O -K >> $outps2";  # up polarity (green) - triangle
   $xplt4d = "| psxy $JP -R0/360/0/1 -Si0.30i -N -W1p,0/0/255 -G255 -O -K >> $outps2";  # down polarity (blue) - triangle
-  $xplt4e = "| psxy $JP -R0/360/0/1 -St0.30i -N -W1p,255/0/0 -G255 -O -K >> $outps2";  # non-matching polarity (red) - triangle
+  $xplt4e = "| psxy $JP -R0/360/0/1 -St0.30i -N -W1p,255/0/0 -G255 -O -K >> $outps2";  # non-matching polarity red) - triangle
   $xplt4f = "| psxy $JP -R0/360/0/1 -Si0.30i -N -W1p,255/0/0 -G255 -O -K >> $outps2";  # non-matching polarity (red) - triangle
 
   # plot text labels
@@ -223,9 +223,9 @@ $only_pol = 0;
   # compute piercing points for beachballs
   $P_val=0; # maximum aplitude for pssac plotting (-P flag) - Body
   $S_val=0; # maximum aplitude for pssac plotting (-P flag) - Surface
-  $i = 0; $j = 0;
+  $i = 0; $j = 0; $i2 = 1;
   $pi = 3.14159265358979323846;
-  @tklh=(); @tkuh=(); @staz=(); @az=();
+  @tklh=(); @tkuh=(); @staz=(); @az=(); @tklh_useweights=(); @staz_useweights=();
   foreach (@rslt) {
     @aa = split;
     if ($aa[7]>$P_val && $aa[2]!=0){$P_val=$aa[7];}   # maximum amplitude for pssac plotting (-P flag) [Maximum amplitude of vertical body wave]
@@ -238,7 +238,9 @@ $only_pol = 0;
     $stnm = $aa[0];                              # station name
     #next if $aa[2] == 0;                        # skip if no body waves
     $x = `saclst az user1 f ${mdl}_$aa[0].0`;    # get the azimuth and P take-off angle
+    @dd = @aa;
     @aa = split(' ', $x);
+    @aa_pre = @aa;
     #print "\n--> saclst az user1 f ${mdl}_$aa[0].0";
 
     # compute polar coordinates azimuth and radius
@@ -249,13 +251,18 @@ $only_pol = 0;
        $rad = sqrt(2.)*cos($aa[2]*$pi/360);
        $tkuh[$j] = sprintf("%s %f %s\n",$aa[1],$rad,$stnm);
        $j++;
-
        # project piercing point to lower hemisphere
        $aa[1] += 180;
        $aa[2]=180-$aa[2];
     }
     $rad = sqrt(2.)*sin($aa[2]*$pi/360);
     $tklh[$i] = sprintf("%s %f %s\n",$aa[1],$rad,$stnm);        # lower hemisphere
+    if (($dd[37]!=0) || ($dd[2]!=0 || $dd[9]!=0 || $dd[16]!=0 || $dd[23]!=0 || $dd[30]!=0 || $dd[37]!=0 || $keepBad!=0)){
+	$tklh_useweights[$i2] = sprintf("%s %f %s\n",$aa[1],$rad,$stnm);
+	$staz_useweights[$i2] = sprintf("%s %f %s\n",$aa_pre[1],1.1,$stnm);
+	print "HOLA EL MUNDO $dd[0] $dd[2] $dd[9] $dd[16] $dd[23] $dd[30] $dd[37]\n";
+	$i2++;
+    }
     $i++;
   }
 #--------------------------compute pssac plotting info (scaling factor P_val)
@@ -559,11 +566,17 @@ $only_pol = 0;
     close(PLT);
 
     # plot station azimuths beachballs (see staz above)
+    #open(PLT, $plt4b);
+    #foreach (@staz) {
+    #  printf PLT;
+    #}
+
     open(PLT, $plt4b);
-    foreach (@staz) {
+    foreach (@staz_useweights) {
       printf PLT;
     }
 
+    # Does this do anything??
     # plot station azimuths beachballs (see tkuh above)
     open(PLT, $plt4a);
     foreach (@tkuh) {
@@ -571,8 +584,14 @@ $only_pol = 0;
     }
 
     # plot piercing points on beachballs (see tklh above)
+    #open(PLT, $plt4);
+    #foreach (@tklh) {
+    #  printf PLT;
+    #}
+    #close(PLT);
+
     open(PLT, $plt4);
-    foreach (@tklh) {
+    foreach (@tklh_useweights) {
       printf PLT;
     }
     close(PLT);
