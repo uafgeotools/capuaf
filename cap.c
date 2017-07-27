@@ -925,7 +925,7 @@ int main (int argc, char **argv) {
   // strcat(strcat(strcat(strcpy(tmp,eve),"/"),mod_dep),".out");  
   sprintf(tmp, "%s.out", filename_prefix);
   f_out=fopen(tmp,"w");
-  fprintf(f_out,"Event %s Model %s FM %4d %9.6f %4d Mw %4.2f rms %9.3e %5d CLVD %3.2f ISO %10.6f VR %3.1f data2 %9.3e pol_wt %0.2f\n",
+  fprintf(f_out,"Event %s Model %s FM %4d %9.6f %4d Mw %4.2f rms %9.3e %5d CLVD %3.2f ISO %10.6f VR %10.6f data2 %9.3e pol_wt %0.2f\n",
           eve,mod_dep,
           (int) rint(sol.meca.stk), sol.meca.dip, (int) rint(sol.meca.rak),
           sol.meca.mag, sol.err, dof,
