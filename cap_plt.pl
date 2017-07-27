@@ -223,9 +223,9 @@ $only_pol = 0;
   # compute piercing points for beachballs
   $P_val=0; # maximum aplitude for pssac plotting (-P flag) - Body
   $S_val=0; # maximum aplitude for pssac plotting (-P flag) - Surface
-  $i = 0; $j = 0; $i2 = 1;
+  $i = 0; $j = 0; $i2 = 1; $j2 = 0;
   $pi = 3.14159265358979323846;
-  @tklh=(); @tkuh=(); @staz=(); @az=(); @tklh_useweights=(); @staz_useweights=();
+  @tklh=(); @tkuh=(); @staz=(); @az=(); @tklh_useweights=(); @staz_useweights=(); @tkuh_useweights=();
   foreach (@rslt) {
     @aa = split;
     if ($aa[7]>$P_val && $aa[2]!=0){$P_val=$aa[7];}   # maximum amplitude for pssac plotting (-P flag) [Maximum amplitude of vertical body wave]
@@ -260,6 +260,10 @@ $only_pol = 0;
     if ($dd[2]!=0 || $dd[9]!=0 || $dd[16]!=0 || $dd[23]!=0 || $dd[30]!=0 || $keepBad!=0){
 	$tklh_useweights[$i2] = sprintf("%s %f %s\n",$aa[1],$rad,$stnm);
 	$staz_useweights[$i2] = sprintf("%s %f %s\n",$aa_pre[1],1.1,$stnm);
+	if ($aa_pre[2]>90.) {
+	    $tkuh_useweights[$j2] = sprintf("%s %f %s\n",$aa_pre[1],$rad,$stnm);
+	    $j2++;
+	}
 	$i2++;
     }
     $i++;
@@ -643,7 +647,7 @@ $only_pol = 0;
     open(XPLTD, $xplt4d);
     open(XPLTE, $xplt4e);
     open(XPLTF, $xplt4f);
-    foreach (@tklh) {
+    foreach (@tklh_useweights) {
 	if ($ifmp[$i] * $ifmpt[$i] < 0) {     # mismatcing polarities
 	    if ($ifmp[$i]>0){printf XPLTE;}   # input is UP (+1); theoretical is DOWN (-1)
 	    else {printf XPLTF;}}             # input is DOWN (-1); theoretical is UP (+1)
@@ -662,21 +666,21 @@ $only_pol = 0;
 if ($only_pol == 0) {
     # plot station azimuths beachballs (see staz above)
     open(XPLT, $xplt4b);
-    foreach (@staz) {
+    foreach (@staz_useweights) {
       printf XPLT;
     }
     close(XPLT);
 
     # plot station azimuths beachballs (see tkuh above)
     open(XPLT, $xplt4a);
-    foreach (@tkuh) {
+    foreach (@tkuh_useweights) {
       printf XPLT;
     }
     close(XPLT);
 #------------
 
     open(XPLT, $xplt5a);
-    foreach (@staz) {
+    foreach (@staz_useweights) {
       @aa = split;
       @aa_split = split('\.', $aa[2]);
       printf XPLT "%s %s 8 0 0 CB %s.%s.%s\n", 
@@ -692,7 +696,7 @@ if ($only_pol == 0) {
 #     close(XPLT);
 
     open(XPLT, $xplt5c);
-    foreach (@tklh) {
+    foreach (@tklh_useweights) {
       @aa = split;
       @aa_split = split('\.', $aa[2]);
       printf XPLT "%s %s 8 0 0 CB %s.%s.%s\n", 
