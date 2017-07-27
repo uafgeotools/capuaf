@@ -257,7 +257,7 @@ $only_pol = 0;
     }
     $rad = sqrt(2.)*sin($aa[2]*$pi/360);
     $tklh[$i] = sprintf("%s %f %s\n",$aa[1],$rad,$stnm);        # lower hemisphere
-    if (($dd[37]!=0) || ($dd[2]!=0 || $dd[9]!=0 || $dd[16]!=0 || $dd[23]!=0 || $dd[30]!=0 || $dd[37]!=0 || $keepBad!=0)){
+    if ($dd[2]!=0 || $dd[9]!=0 || $dd[16]!=0 || $dd[23]!=0 || $dd[30]!=0 || $keepBad!=0){
 	$tklh_useweights[$i2] = sprintf("%s %f %s\n",$aa[1],$rad,$stnm);
 	$staz_useweights[$i2] = sprintf("%s %f %s\n",$aa_pre[1],1.1,$stnm);
 	$i2++;
