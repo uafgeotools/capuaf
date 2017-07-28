@@ -688,7 +688,8 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
             ($stnm,$pol) = split("/",$name);
 
             if ($pol eq ''){$ipol = 0;}  # no polarity information
-            if ($ipol==0 && $pv==0 && $pr==0 && $sv==0 && $sr==0 && $st==0){
+            if (($ipol==0 || $pol_wt==0 || $pol_wt==999) && $pv==0 && $pr==0 && $sv==0 && $sr==0 && $st==0){
+		print STDERR "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";
                 next;} # No information available - skip this station
             else {     # save in new weight file
                 print OUT "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";

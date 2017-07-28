@@ -223,7 +223,7 @@ $only_pol = 0;
   # compute piercing points for beachballs
   $P_val=0; # maximum aplitude for pssac plotting (-P flag) - Body
   $S_val=0; # maximum aplitude for pssac plotting (-P flag) - Surface
-  $i = 0; $j = 0; $i2 = 1; $j2 = 0;
+  $i = 0; $j = 0; $i2 = 0; $j2 = 0;
   $pi = 3.14159265358979323846;
   @tklh=(); @tkuh=(); @staz=(); @az=(); @tklh_useweights=(); @staz_useweights=(); @tkuh_useweights=();
   foreach (@rslt) {
@@ -257,7 +257,7 @@ $only_pol = 0;
     }
     $rad = sqrt(2.)*sin($aa[2]*$pi/360);
     $tklh[$i] = sprintf("%s %f %s\n",$aa[1],$rad,$stnm);        # lower hemisphere
-    if ($dd[2]!=0 || $dd[9]!=0 || $dd[16]!=0 || $dd[23]!=0 || $dd[30]!=0 || $keepBad!=0){
+    if (($dd[37] != 0  && $pol_wt != 0) || $dd[2]!=0 || $dd[9]!=0 || $dd[16]!=0 || $dd[23]!=0 || $dd[30]!=0 || $keepBad!=0){
 	$tklh_useweights[$i2] = sprintf("%s %f %s\n",$aa[1],$rad,$stnm);
 	$staz_useweights[$i2] = sprintf("%s %f %s\n",$aa_pre[1],1.1,$stnm);
 	if ($aa_pre[2]>90.) {
