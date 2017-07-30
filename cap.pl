@@ -270,9 +270,23 @@ Double Couple:
 FMT search:
 > cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15 -m4.5/5.5/0.1 -Y1 -I10/10/37/10/19 20080418093700
 
-which finds the best focal mechanism and moment magnitude of the 2008/4/18 Southern Illinois earthquake
-20080418093700 using the central US crustal velocity model cus with the earthquake at a depth of 15 km.
-Here we assume that the Greens functions have already been computed and saved in $green/cus/cus_15/.
+The commands abouve find the best focal mechanism and moment magnitude of the
+2008/4/18 Southern Illinois earthquake 20080418093700 using the central US
+crustal velocity model cus with the earthquake at a depth of 15 km.
+Here we assume that the Greens functions have already been computed and saved
+in $green/cus/cus_15/.
+
+DEPTH SEARCH
+To find the best focal depth, repeat the inversion for different focal depths
+either by using a for-loop or the '-A' flag
+# for loop with depths 5 to 30 km at 5-km intervals
+> for h in 5 10 15 20 25 30; do cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_$h/5.0 -E0 -K0 -Y2 20080418093700; done
+# same as above but using the A flag in the format -Astart/end/incr
+> cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15 -m4.5/5.5/0.1 -R0/0 -Y1 -I1/1/37/10/19 20080418093700 -A5/30/5
+
+# to plot the depth test
+> depth_test 20080418093700 cus
+> gv dep_20080418093700.ps
 -------------------------------------------------------------------------------------
 [Header Info] 
 The inversion results are saved in cus_15.out
@@ -287,13 +301,6 @@ tensor in Mxx Mxy Mxz Myy Myz Mzz (where x=North, y=East, z=Down).
 norm info (L1 or L2); Duration of P (Pwin) and S windows; Number of stations (N); Number of P components (Np) and Number of S components (Ns)
   The rest of the files shows rms, cross-correlation coef., and time shift of individual waveforms.
   The waveform fits are plotted in file cus_15.ps in the event directory.
-------------------------------------------------------------------------------------------------------
-[Depth search]
-  To find the best focal depth, repeat the inversion for different focal depths (by -A flag)
-> for h in 5 10 15 20 25 30; do cap.pl -H0.2 -P1 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_$h/5.0 -E0 -K0 -Y2 20080418093700; done
-> cap.pl -H0.2 -P0.6 -S2/5/0 -T35/70 -F -D1/1/0.5 -C0.05/0.3/0.02/0.1 -W1 -X10 -Mcus_15 -m4.5/5.5/0.1 -R0/0 -Y1 -I1/1/37/10/19 20080418093700 -A5/30/5
-> depth_test 20080418093700 cus
-> gv dep_20080418093700.ps
 ------------------------------------------------------------------------------------------------------
 
 ";
