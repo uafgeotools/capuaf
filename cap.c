@@ -543,8 +543,10 @@ int main (int argc, char **argv) {
             /* for specific length of time window */
             t2 = t1 + Pnl_win;
         }
-        fprintf(stderr,"WARNING ti<0 for SAC headers t1 and/or t2\n");
-        fprintf(stderr,"Estimated new values: t1 %7.4f t2 %7.4f\n", t1, t2);
+        /* 20170730 these outputs are mainly for debugging. disabled for now 
+         * See also below for surface waves */
+        //fprintf(stderr,"WARNING ti<0 for SAC headers t1 and/or t2\n");
+        //fprintf(stderr,"Estimated new values: t1 %7.4f t2 %7.4f\n", t1, t2);
     }
 
     /* do the same for the s/surface wave portion */
@@ -583,8 +585,10 @@ int main (int argc, char **argv) {
         if (surf_win != 0) {
             t4 = t3 + surf_win;
         }
-        fprintf(stderr,"WARNING ti<0 for SAC headers t3 and/or t4\n");
-        fprintf(stderr,"Estimated new values: t3 %7.4f t4 %7.4f\n", t3, t4);
+        /* 20170730 these outputs are mainly for debugging. disabled for now 
+         * See also above for body waves */
+        //fprintf(stderr,"WARNING ti<0 for SAC headers t3 and/or t4\n");
+        //fprintf(stderr,"Estimated new values: t3 %7.4f t4 %7.4f\n", t3, t4);
     }
 
     /*calculate the time windows */
