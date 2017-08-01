@@ -349,7 +349,7 @@ $only_pol = 0;
     @aaaa = splice(@rslt,0,$nn-2);
     foreach (@aaaa) {   # go over each line in .out file
         @aa = split;
-	if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0 || $keepBad!=0)){
+	if (($aa[37]!=0 && $pol_wt != 0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $keepBad!=0)){
         $nam = "${mdl}_$aa[0].";
         $x=0;
         for($j=0;$j<2;$j+=$inc) {
@@ -375,7 +375,7 @@ $only_pol = 0;
     $i = 0;
     foreach (@aaaa) {
         @aa = split;
-	if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0 || $keepBad!=0)){
+	if (($aa[37]!=0 && $pol_wt != 0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $keepBad!=0)){
         $nam = "${mdl}_$aa[0].";
 #        $x=$x0[1];
         $x=0;
@@ -443,7 +443,7 @@ $only_pol = 0;
         $pol_obs = $aa[38];
 
         # test if weight or polarity exists. if neither then print nothing and dont skip space
-        if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0 || $keepBad!=0)){
+        if (($aa[37]!=0  && $pol_wt != 0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $keepBad!=0)){
 
             $x = 0;
             @sensor_label = split('\.', $aa[0]);
@@ -487,7 +487,7 @@ $only_pol = 0;
     $y = $nn-2;
     foreach (@aaaa) {
       @aa = split;
-      if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0 || $keepBad!=0)){
+      if (($aa[37]!=0 && $pol_wt != 0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $keepBad!=0)){
       $x = 0;
       for($j=0;$j<2;$j+=$inc) {
           if ($aa[7*$j+2]>0 || $keepBad) {
@@ -518,7 +518,7 @@ $only_pol = 0;
     $y = $nn-2;
     foreach (@aaaa) {
       @aa = split;
-      if (($aa[37]!=0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $aa[37]!=0 || $keepBad!=0)){
+      if (($aa[37]!=0 && $pol_wt != 0) || ($aa[2]!=0 || $aa[9]!=0 || $aa[16]!=0 || $aa[23]!=0 || $aa[30]!=0 || $keepBad!=0)){
 #      $x = $x0[1];
       $x = 0;
       for($j=2;$j<5;$j+=$inc) {
