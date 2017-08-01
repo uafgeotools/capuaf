@@ -13,6 +13,11 @@ columns in CAP_database:
 
 2. version of moment tensor solution
    NOTE: For any published moment tensor, the published version should have index 1. Any future modifications would have higher version numbers, as well as different authors.
+   The version could change with:
+       different CAP version
+       different waveforms extracted or processed
+       different weights in input file
+       different input command (including different 1D model)
 
 3. publication index (see .bib files for tags)
    A. SilwalTape2016
@@ -36,29 +41,40 @@ columns in CAP_database:
 
 The CAP moment tensor output directories should be found at the path
 
-/home/[COLUMNSIX]/CAPRUN/
+/home/[COLUMNSIX]/CAP_DATABASE/
 
 For example, for this entry 
 
-20170501123153000 V2 SilwalTape2016 Vipul_Silwal Vipul_Silwal vipul scak 
+20170501123153000 V1 SilwalTape2016 Vipul_Silwal Vipul_Silwal vipul scak 
 
 the output resides here
 
-/home/vipul/CAPRUN/20170501123153000/V2/
+/home/vipul/CAP_DATABASE/20170501123153000/
 
-This might represent an event that was published in SilwalTape2016 as V1 but has since been updated,
-either with a different set of data, different CAP version, different inversion parameters, etc.
+IN MOST CASES EACH PERSON WILL PROBABLY SET SYMBOLIC LINKS FROM HIS WORKING DIRECTORY TO CAP_DATABASE.
+This way, people can work on projects in various places, but we can always find the folders in CAP_DATABASE.
 
-IN MOST CASES EACH PERSON WILL PROBABLY SET SYMBOLIC LINKS FROM HIS WORKING DIRECTORY TO CAPRUN.
-This way, people can work on projects in various places, but we can always find the folders in CAPRUN.
+Note that links are not the safest route, since if you delete your working directory, we lose the event output.
+Ideally the original, saved versions of output files are in CAP_DATABASE (rsync -av).
 
 ==========
 
 TO DO (and to think about)
 
-+ need gitversion.txt file for cap.pl and for run_getwaveform.py
-  This way we can always determine which version of CAP and run_getwaveform.py were used.
 + There needs to be a way to identify the preferred depth in cases where a depth test is done.
   How about a file like preferred_depth.txt that simply says something like 17 (for 17 km depth)?
+
++ VERSIONING. Some scripting is needed to establish how to handle multiple versions of the same event.
+
+For example, for this entry 
+
+20170501123153000 V2 SilwalTape2016 Vipul_Silwal Vipul_Silwal vipul scak 
+
+the output could reside here
+
+/home/vipul/CAP_DATABASE/20170501123153000/V2/
+
+This might represent an event that was published in SilwalTape2016 as V1 but has since been updated,
+either with a different set of data, different CAP version, different inversion parameters, etc.
 
 ==========
