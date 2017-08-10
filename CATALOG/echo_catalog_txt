@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Before creating link in the DATABASE directory first move them in a separate directory and run this script
+
+# Copy the output to:
+# ~/REPOSITORIES/cap/CATALOG/CAP_database.txt
+
+# Also see: create_version
+
+# Then move the links the output directory
+
+for ii in 2*
+do
+    echo $ii V1 Tape2015 Vipul_Silwal Vipul_Silwal vipul tactmod
+    # echo $ii V1 SilwalTape2016 Vipul_Silwal Vipul_Silwal vipul scak
+done
