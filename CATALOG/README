@@ -78,3 +78,25 @@ This might represent an event that was published in SilwalTape2016 as V1 but has
 either with a different set of data, different CAP version, different inversion parameters, etc.
 
 ==========
+
+HOW TO RUN THE SCRIPTS
+1. Create a sub directory 'process' inside CAP_DATABASE
+> mkdir ~/CAP_DATABASE/process
+
+2. copy scripts:
+> cp create_version ~/CAP_DATABASE/process/
+> cp echo_catalog_txt ~/CAP_DATABASE/process/
+
+3. create links inside the 'process' subdirectory:
+This will depend on where you are running CAP
+> cd ~/CAP_DATABASE/process/
+> ln -s /home/vipul/CAP/inv/scak/MOOS/2* .
+
+4. move all the links in the version directory
+- All eid links will be changed to directories and the links will be moved inside them with 
+> create_version
+
+5. Output text for the ~/REPOSITORIES/cap/CATALOG/CAP_database.txt
+> echo_catalog_txt
+
+Note: You will have to make minor edits to create_version and echo_catalog_txt scripts as per your needs
