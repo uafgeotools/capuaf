@@ -17,6 +17,7 @@ $imodel = 1; # to draws bars at layer interfaces
 @tactmod = (3,11,24,31,76);
 @scak = (4,9,14,19,24,33,49,66);
 @cus =(1,10,20,30);
+@wes = (2.5,32.5);
 #------------
 
 #($rsl,@event) = @ARGV;      # original
@@ -217,15 +218,14 @@ while (@event)
     $B2 = "-Ba${xtick1}f${xtick2}:\" \":/a${ytick1}f${ytick2}:\"ln(VR_max / VR)\":nW";
     
 	# Set the model for plotting layer interface
-	if ($smodel eq "tactmod")
-	{
+	if ($smodel eq "tactmod") {
 	    @model=@tactmod;
-	} elsif ($smodel eq "scak")
-	{
+	} elsif ($smodel eq "scak") {
 	    @model=@scak;
-	} elsif ($smodel eq "cus")
-	{
+	} elsif ($smodel eq "cus") {
 	    @model=@cus;
+	} elsif ($smodel eq "wes") {
+	    @model=@wes;
 	}
 
 	#================== PLot misfit parabola
