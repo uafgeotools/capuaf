@@ -108,14 +108,17 @@ while (@event)
         $nwords = split('_',$bb[3]);
         if ($nwords == 3) {
             ($evname, $smodel, $dep[$ii]) = split('_',$bb[3]);
+            $evname_ = $evname;
         }
         elsif ($nwords == 4) {
             ($evname1, $evname2, $smodel, $dep[$ii]) = split('_',$bb[3]); 
             $evname = join '', $evname1, " ", $evname2;
+            $evname_ = join '', $evname1, "_", $evname2;
         }
         elsif ($nwords == 5) {
             ($evname1, $evname2, $evname3,$smodel,$dep[$ii]) = split('_',$bb[3]);
             $evname = join '', $evname1, " ", $evname2, " ", $evname3;
+            $evname_ = join '', $evname1, "_", $evname2, "_", $evname3;
         }
 
         $strike[$ii]=$bb[5];		   # not needed
@@ -137,7 +140,7 @@ while (@event)
     # # Hypocenter_sac_header elat 3.741330e+01 elon -1.170986e+02 edep 6.100000e+00
     # | |                     |    |            |    |             |    |
     $fcapout1 = "./${odir}/${evname}_${smodel}_$dep[${best}].out";
-    $fcapout2 = "./${evname}_${smodel}_$dep[${best}].out";
+    $fcapout2 = "./${evname_}_${smodel}_$dep[${best}].out";
     if (-e $fcapout1) {
         $fcapout = $fcapout1;
     }
@@ -151,9 +154,34 @@ while (@event)
     open(OUT,$fcapout);
     @outfile=<OUT>;
     (undef,undef,undef,$elat,undef,$elon,undef,$edep)=split(" ",$outfile[1]);
-    if ($edep eq "") {
-        printf STDERR "*** WARNING Event depth not available ***\n";
-    } else {
+
+    # For each of the the Ford quakes replace the SAC header depths with those from the USGS catalog
+    # The best depths and their sources are in the USGS catalog (usgs.gov)
+    #       Little_Skull_Main "9070.0", " CI", "5.4 ", "ms ", "CI "], 
+    # Little_Skull_Aftershock "5070.0", " CI", "4.44", "ml ", "CI "], 
+    #         Timber_Mountain "4487.0", " CI", "4.0 ", "ml ", "CI "], 
+    #                Amargosa "9070.0", " CI", "3.7 ", "ml ", "CI "], 
+    #              Groom_Pass "5000.0", " US", "4.3 ", "ml ", "US "], 
+    #          Indian_Springs "5793.0", " CI", "3.81", "ml ", "CI "], 
+    #              Calico_Fan "6037.0", " CI", "4.05", "ml ", "CI "], 
+    #            Warm_Springs "0.0   ", "REN", "4.1 ", "mb ", "US "], 
+    #        Frenchman_Flat_1 "0.0   ", "REN", "3.7 ", "ml ", "US "], 
+    #        Frenchman_Flat_2 "5000.0", "US ", "4.8 ", "mwr", "BRK"], 
+    #            Little_Skull "9653.0", "CI ", "4.58", "mw ", "CI "], 
+    #                 Ralston "6100.0", "NN ", "4.1 ", "ml ", "NN "] 
+    if    ($evname_ eq "Little_Skull_Main")      {$edep="9070.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Little_Skull_Aftershock"){$edep="5070.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Timber_Mountain")        {$edep="4487.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Amargosa")               {$edep="9070.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Groom_Pass")             {$edep="5000.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Indian_Springs")         {$edep="5793.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Calico_Fan")             {$edep="6037.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Warm_Springs")           {$edep="0.0";    $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Frenchman_Flat_1")       {$edep="0.0";    $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Frenchman_Flat_2")       {$edep="5000.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Little_Skull")           {$edep="9653.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Ralston")                {$edep="6100.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    else {
         printf STDERR "Using catalog depth (from sac header) $edep\n";
     }
     close(OUT);
