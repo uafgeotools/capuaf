@@ -398,7 +398,8 @@ tick_major=`echo $misfit_min $misfit_max | awk '{printf "%.0f", ($2-$1)/5}'`
 psscale -Ccpt_misfit -D2.8/9/1/0.2 -Al -Bf1a${tick_major}:"VR(@~L@~)": -E $shiftd -O -K >> $out
 
 # plot misfit
-pscontour ${data_misfit_wf} $proj_lune_wf $area_lune_wf -O -K -Ccpt_misfit -I -N $shiftd >> $out
+#pscontour ${data_misfit_wf} $proj_lune_wf $area_lune_wf -O -K -Ccpt_misfit -I -N $shiftd >> $out
+pscontour ${data_misfit_wf} $proj_lune_wf $area_lune_wf -O -K -Ccpt_misfit -I -N -V $shiftd -W+ -A- >> $out
 
 # plot reference arcs + points
 (echo -30 35.2644 ; echo 30 54.7356)  | psxy -N -W2p,0/0/0/35 $proj_lune_wf $area_lune_wf -O -K $shiftd >> $out
