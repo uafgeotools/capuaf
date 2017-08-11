@@ -34,18 +34,22 @@
 #                       CHANGE HERE
 datadir_fmt="OUTPUT_DIR"
 
-# preliminary flags
-plot_misfit_fmp="yes"   # yes = first motion polarities were used
-plot_misfit_fmp=""      # 
+# yes = first motion polarities were used
+plot_misfit_fmp="yes"  
+plot_misfit_fmp="" 
 
-use_kludge="yes"   # yes/no. for plotting enlarged beachballs to avoid psmeca bug
-use_kludge=""      # yes/no. for plotting enlarged beachballs to avoid psmeca bug
+# yes = plot enlarged beachballs to avoid psmeca bug
 # use with matlab scripts
+use_kludge="yes"
+use_kludge="" 
 
-flag_make_cpt=""      # yes = compute CPT files. Useful when setting 
-flag_make_cpt="yes"   # yes/no. compute CPT files or not
+# yes = compute CPT files. Else use preexisting files
+# useful when comparing solutions using the same VR scale
+flag_make_cpt=""     
+flag_make_cpt="yes"   
 
-region="wes"   # ak, wes, utu
+# utu, ak, wes, stb
+region="wes"
 
 #-----------------------------------------------------------
 
@@ -155,7 +159,7 @@ gmtset PAPER_MEDIA letter
 gmtset LABEL_FONT_SIZE 12 
 gmtset ANOT_FONT_SIZE 12
 #gmtset PLOT_DEGREE_FORMAT ddd.x
-gmtset PLOT_DEGREE_FORMAT -D.xx
+gmtset PLOT_DEGREE_FORMAT D.xx
 gmtset COLOR_FOREGROUND 75/75/75 # for polarity cpt
 
 # title
@@ -207,6 +211,12 @@ elif [ "$region" == "wes" ] ; then
 elif [ "$region" == "ak" ] ; then
     # ALASKA
     gmtregion="-R-160/55/-134/67r -JS-150/90/7.0c"; ticks="-Ba10f5g10WSne/a5g5"; bmscale="-L-145/57/57/100+p1p,0/0/0+fwhite"
+    pscoast $gmtregion -O -V -K -Na -W100/100/100 -Di \
+        -I1/2p/0/192/255 -I2/2p/0/192/255\
+        -G230/230/230 -S0/192/255 $shifta   >> $out
+elif [ "$region" == "stb" ] ; then
+    gmtregion="-Rd83/89/26/31 -JM8c"; ticks="-Ba2f1WSen"; bmscale="-L84/26.7/26.7/50+p1p,0/0/0+fwhite"
+    #grdview $grid -I$grad $gmtregion -O -K $shifta -Ccpt_HIMNT.cpt -Qi200 >> $out # PLUTONS
     pscoast $gmtregion -O -V -K -Na -W100/100/100 -Di \
         -I1/2p/0/192/255 -I2/2p/0/192/255\
         -G230/230/230 -S0/192/255 $shifta   >> $out
