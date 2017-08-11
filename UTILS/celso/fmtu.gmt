@@ -27,7 +27,7 @@
 plot_misfit_fmp="es"      # yes/no
 use_kludge=""           # yes/no. plot enlarged beachballs to avoid psmeca bug
 flag_make_cpt="yes"     # yes/no. compute CPT files
-region="wes"            # utu, ak, wes
+region="wes"            # utu, ak, wes, stb
 size_lune_bb=0.22
 
 #-----------------------------------------------------------
@@ -275,6 +275,12 @@ elif [ "$model" == "scak" ] ; then
     grad="/home/alvizuri/shared/data/gmt/ETOPO1_Bed_g.grad"
     gmtregion="-R-160/55/-134/67r -JS-150/90/7.0c"; ticks="-Ba10f5g10WSne/a5g5"; bmscale="-L-145/57/57/100+p1p,0/0/0+fwhite"
     pscoast $gmtregion -O -V -K -Na -W100/100/100 -Di -S0/192/255 $shifta -A2000 >> $out
+elif [ "$region" == "stb" ] ; then
+    gmtregion="-Rd83/89/26/31 -JM8c"; ticks="-Ba2f1WSen"; bmscale="-L84/26.7/26.7/50+p1p,0/0/0+fwhite"
+    #grdview $grid -I$grad $gmtregion -O -K $shifta -Ccpt_HIMNT.cpt -Qi200 >> $out # PLUTONS
+    pscoast $gmtregion -O -V -K -Na -W100/100/100 -Di \
+        -I1/2p/0/192/255 -I2/2p/0/192/255\
+        -G230/230/230 -S0/192/255 $shifta   >> $out
 else
     echo "check GMT region!"
     exit
