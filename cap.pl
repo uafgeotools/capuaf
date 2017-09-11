@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+
 # if on pacman uncomment the following
 #use v5.10;
 #
@@ -19,6 +20,7 @@ $caphome = $ENV{CAPHOME};                  # CAP home directory
 $caprun = $ENV{CAPRUN};                    # run directory
 
 require "$caphome/cap_plt.pl";             # include plot script
+require "$caphome/sub_read_parameter_file.pl";  #  read parameter file
 
 #================defaults======================================
 $cmd = "cap";
@@ -77,6 +79,9 @@ $norm = 1;
 # for sorting the output file by distance or azimuth
 $isort = 0;
 
+# Use parameter file instead
+$parameter_file = '';
+
 #----------------------------------------------------------- 
 # DEFAULT VALUES FOR SEARCH PARAMETERS
 use Math::Trig ':pi';
@@ -112,7 +117,7 @@ $nh = 1; $dh = 10;    # dip
 $ns = 1; $ds = 10;    # rake
 
 # magnitude default is to run a single point
-$nmw = 1;   
+$nmw = 1;
 $dmw = 0;
 
 # search type = RAND -- specify number of solutions to generate
@@ -305,9 +310,9 @@ norm info (L1 or L2); Duration of P (Pwin) and S windows; Number of stations (N)
 
 ";
 
-@ARGV > 1 || die $usage;
+@ARGV > 0 || die $usage;
 
-$ncom = 5;	# 5 segemnts to plot
+$ncom = 5;	# 5 segments to plot
 
 open(INP,">$inp_cmd");
 print INP "cap.pl ";
@@ -459,6 +464,14 @@ foreach (grep(/^-/,@ARGV)) {
    }
 }
 @event = grep(!/^-/,@ARGV);
+
+#-----------------------------------------------------------
+#  Read parameter file instead
+if (@ARGV == 1) {
+   $parameter_file = $ARGV[0];
+   sub_read_parameter_file($parameter_file)
+}
+#-----------------------------------------------------------
 
 #-----------------------------------------------------------
 # prepare additional parameters for CAP input
