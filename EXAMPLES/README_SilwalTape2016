@@ -1,14 +1,16 @@
 DATA EXTRACTION and SETUP
 
 2. Extract waveforms from IRIS:
-> cd ~/REPOSITORIES/GEOTOOLS/python_util/util_data_syn/
+> cd ~/REPOSITORIES/pyseis
 
-In run_getwaveform.py set "iex = 100" 
+In run_getwaveform.py set "iex = 0" (reading event parameters from: event_input.py)
 > python run_getwaveform.py
 
-This will create the data directory 20090407201255351 inside ~/REPOSITORIES/GEOTOOLS/python_util/util_data_syn/.
+This will create the data directory 20090407201255351 inside ~/REPOSITORIES/pyseis/.
 
 3. Copy input weight file into the data directory:
+Only the clean stations are selected in this weight file
+
 > cp ~/REPOSITORIES/cap/EXAMPLES/20090407201255351_check/weight.dat ~/REPOSITORIES/GEOTOOLS/python_util/util_data_syn/20090407201255351/weight_test.dat
 
 %--------------------------------------------------------------------------------------------
@@ -16,3 +18,7 @@ RUN CAP
 
 4. Input command
 > cap.pl -H0.02 -P1/15/60 -p1 -S2/10/0 -T15/150 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -Y1 -Zweight_test.dat -Mscak_39 -m4.5 -I50000 -R0/0 20090407201255351
+
+OR  use a parameter file
+> cp $CAPHOME/EXAMPLES/flags.pf ~/REPOSITORIES/pyseis/
+> cap.pl flags.pf
