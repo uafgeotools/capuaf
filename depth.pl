@@ -17,6 +17,7 @@ $imodel = 1; # to draws bars at layer interfaces
 @tactmod = (3,11,24,31,76);
 @scak = (4,9,14,19,24,33,49,66);
 @cus =(1,10,20,30);
+@wes = (2.5,32.5);
 #------------
 
 #($rsl,@event) = @ARGV;      # original
@@ -107,14 +108,17 @@ while (@event)
         $nwords = split('_',$bb[3]);
         if ($nwords == 3) {
             ($evname, $smodel, $dep[$ii]) = split('_',$bb[3]);
+            $evname_ = $evname;
         }
         elsif ($nwords == 4) {
             ($evname1, $evname2, $smodel, $dep[$ii]) = split('_',$bb[3]); 
             $evname = join '', $evname1, " ", $evname2;
+            $evname_ = join '', $evname1, "_", $evname2;
         }
         elsif ($nwords == 5) {
             ($evname1, $evname2, $evname3,$smodel,$dep[$ii]) = split('_',$bb[3]);
             $evname = join '', $evname1, " ", $evname2, " ", $evname3;
+            $evname_ = join '', $evname1, "_", $evname2, "_", $evname3;
         }
 
         $strike[$ii]=$bb[5];		   # not needed
@@ -131,14 +135,57 @@ while (@event)
         }
         $ii++;
     }
-        # get the catalog depth from line #2 of the CAP output file
-        # NEED A STATEMENT TO EXIT IF THE FILE DOES NOT EXIST
-        $bfile = "./${odir}/${eve}_${smodel}_$dep[${best}].out";
-	open(OUT,$bfile);
-	@outfile=<OUT>;
-       (undef,undef,undef,$elat,undef,$elon,undef,$edep)  =split(" ",$outfile[1]);
-	printf STDERR "catalog depth (from sac header) is $edep\n";
-    
+
+    # get the catalog depth from line #2 of the CAP output file
+    # # Hypocenter_sac_header elat 3.741330e+01 elon -1.170986e+02 edep 6.100000e+00
+    # | |                     |    |            |    |             |    |
+    $fcapout1 = "./${odir}/${evname}_${smodel}_$dep[${best}].out";
+    $fcapout2 = "./${evname_}_${smodel}_$dep[${best}].out";
+    if (-e $fcapout1) {
+        $fcapout = $fcapout1;
+    }
+    elsif (-e $fcapout2) {
+        $fcapout = $fcapout2;
+    }
+    else {
+        die "Stop. CAP out file not found\n$fcapout\n";
+    }
+    printf STDERR "Reading $fcapout\n";
+    open(OUT,$fcapout);
+    @outfile=<OUT>;
+    (undef,undef,undef,$elat,undef,$elon,undef,$edep)=split(" ",$outfile[1]);
+
+    # For each of the the Ford quakes replace the SAC header depths with those from the USGS catalog
+    # The best depths and their sources are in the USGS catalog (usgs.gov)
+    #       Little_Skull_Main "9070.0", " CI", "5.4 ", "ms ", "CI "], 
+    # Little_Skull_Aftershock "5070.0", " CI", "4.44", "ml ", "CI "], 
+    #         Timber_Mountain "4487.0", " CI", "4.0 ", "ml ", "CI "], 
+    #                Amargosa "9070.0", " CI", "3.7 ", "ml ", "CI "], 
+    #              Groom_Pass "5000.0", " US", "4.3 ", "ml ", "US "], 
+    #          Indian_Springs "5793.0", " CI", "3.81", "ml ", "CI "], 
+    #              Calico_Fan "6037.0", " CI", "4.05", "ml ", "CI "], 
+    #            Warm_Springs "0.0   ", "REN", "4.1 ", "mb ", "US "], 
+    #        Frenchman_Flat_1 "0.0   ", "REN", "3.7 ", "ml ", "US "], 
+    #        Frenchman_Flat_2 "5000.0", "US ", "4.8 ", "mwr", "BRK"], 
+    #            Little_Skull "9653.0", "CI ", "4.58", "mw ", "CI "], 
+    #                 Ralston "6100.0", "NN ", "4.1 ", "ml ", "NN "] 
+    if    ($evname_ eq "Little_Skull_Main")      {$edep="9070.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Little_Skull_Aftershock"){$edep="5070.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Timber_Mountain")        {$edep="4487.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Amargosa")               {$edep="9070.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Groom_Pass")             {$edep="5000.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Indian_Springs")         {$edep="5793.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Calico_Fan")             {$edep="6037.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Warm_Springs")           {$edep="0.0";    $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Frenchman_Flat_1")       {$edep="0.0";    $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Frenchman_Flat_2")       {$edep="5000.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Little_Skull")           {$edep="9653.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    elsif ($evname_ eq "Ralston")                {$edep="6100.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+    else {
+        printf STDERR "Using catalog depth (from sac header) $edep\n";
+    }
+    close(OUT);
+ 
 	# ------------------read MT parameters --------------------------
 	$jj=1;
 	foreach (grep(/tensor/,@data_fmt))
@@ -217,15 +264,14 @@ while (@event)
     $B2 = "-Ba${xtick1}f${xtick2}:\" \":/a${ytick1}f${ytick2}:\"ln(VR_max / VR)\":nW";
     
 	# Set the model for plotting layer interface
-	if ($smodel eq "tactmod")
-	{
+	if ($smodel eq "tactmod") {
 	    @model=@tactmod;
-	} elsif ($smodel eq "scak")
-	{
+	} elsif ($smodel eq "scak") {
 	    @model=@scak;
-	} elsif ($smodel eq "cus")
-	{
+	} elsif ($smodel eq "cus") {
 	    @model=@cus;
+	} elsif ($smodel eq "wes") {
+	    @model=@wes;
 	}
 
 	#================== PLot misfit parabola
@@ -321,26 +367,30 @@ while (@event)
 	}
 
 	#================== Plot the depth(s) as inverted triangles
-        
-        # plot the catalog depth ($edep) as a RED inverted triangle
-	open(PLT, "| psxy $J $R $xy -Si0.5c -G255/0/0 -W.05c");
-	printf PLT "%f %f\n",$edep, -7.5;
+    # offset the depth if there is a topography correction
+    if ($evname eq "20100516063454464") {
+        # NOTE Catalog depth for Uturuncu main event is 0.6 below sea level.
+        # The depth test for the main event gives a best depth of 4.4km, then rounded to 4km.
+        # But this is 4km from the surface, which is at elevation 4.6km. 
+        # Therefore the inversion is with respect to the elevation:
+        # 4.6 (elevation) - 4 (best depth) = 0.6 km above sea level.
+        $topocorr = 4.6;
+    }
+    elsif ($evname eq "XYZ") { # add corrections as needed
+        $topocorr = 0;
+    }
+    if (length $topocorr) {
+        printf STDERR "*** WARNING Applying topo correction: $topocorr km ***\n";
+    }
+    # plot the catalog depth ($edep) as a RED inverted triangle
+    open(PLT, "| psxy $J $R $xy -Si0.5c -G255/0/0 -W.05c");
+    printf PLT "%f %f\n", $edep + $topocorr, -7.5;
+    close(PLT);
 
-    # Uncomment the following for depth test main event, FMT Uturuncu paper.
-    # This is a tweak to plot red triangle at catalog depth.
-    # NOTE Catalog depth for this event is 0.6 below sea level.
-    # The depth test for the main event gives a best depth of 4.4km, then rounded to 4km.
-    # But this is 4km from the surface, which is at elevation 4.6km. 
-    # Therefore the inversion is with respect to the elevation:
-    # 4.6 (elevation) - 4 (best depth) = 0.6 km above sea level.
-    #printf PLT "%f %f\n",$edep + 4.6, -7.5;   # uncomment here for plotting catalog depth
-
-	close(PLT);
-
-        # plot the best-fitting depth ($depth) from the CAP grid search as a WHITE inverted triangle
-        open(PLT, "| psxy $J $R $xy -Si0.5c -G255/255/255 -W.05c");
-	printf PLT "%f %f\n",$depth, -7.5;
-	close(PLT);
+    # plot the best-fitting depth ($depth) from the CAP grid search as a WHITE inverted triangle
+    open(PLT, "| psxy $J $R $xy -Si0.5c -G255/255/255 -W.05c");
+    printf PLT "%f %f\n",$depth, -7.5;
+    close(PLT);
 
 	#=============== plot the beach balls
 	#  open(PLT, "| psmeca -JX -R -O -K -Sa0.3");   # original
