@@ -12,9 +12,9 @@ PREREQUISITE
 > cd capuaf
 > make all
 
-1. Get a copy of GEOTOOLS (https://github.com/uafseismo/GEOTOOLS)
+1. Get a copy of pyseis (https://github.com/uafseismo/pyseis)
 > cd ~/REPOSITORIES/
-> git clone --depth=1 https://GITHUBUSERNAME@github.com/uafseismo/GEOTOOLS.git GEOTOOLS
+> git clone --depth=1 https://GITHUBUSERNAME@github.com/uafseismo/pyseis.git pyseis
 
 %------------------------------------------------------------------------------
 DATA EXTRACTION and RUNNING CAP
