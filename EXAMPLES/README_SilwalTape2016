@@ -1,5 +1,6 @@
 DATA EXTRACTION and SETUP
 
+0. See README_setup first to install CAP.
 
 1. Extract waveforms from IRIS:
 > cd ~/REPOSITORIES/pyseis

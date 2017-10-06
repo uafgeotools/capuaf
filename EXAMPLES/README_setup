@@ -1,4 +1,7 @@
-Create a ~/REPOSITORIES direcotry and download CAP and GEOTOOLS inside it. These are private repositories so you will need permisson from Carl Tape (ctape@alaska.edu)
+Create a ~/REPOSITORIES direcotry and download CAP and GEOTOOLS inside it. 
+These are private repositories so you will need permisson from Carl Tape (ctape@alaska.edu)
+
+Following instructions are UAF seismo lab network machine. For installing somewhere else please see: ../README and ../README_orig.
 
 > mkdir ~/REPOSITORIES/
 
