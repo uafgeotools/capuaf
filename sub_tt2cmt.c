@@ -9,10 +9,10 @@
  *
  *          Usage: tt2cmt(gamma, delta, m0, kappa, theta, sigma, tensor)
  *          input: gamma, delta, m0, kappa, theta, sigma
- *         output: tensor[3][3]
+ *         output: tensor[3][3] in basis north-east-down (Aki and Richards convention)
  *
- *         NOTE: output is in Aki and Richards format to match original output
- *         by cap.c. Output from cap.c is then changed to GCMT by cap_plt.pl
+ *         NOTE: Plotting beachballs in GMT requires GCMT convention (up-south-east);
+ *               the transformation occurs in cap_plt.pl
  *
  * =============================================================================
  */
