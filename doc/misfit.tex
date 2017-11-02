@@ -747,23 +747,33 @@ But since this is just an ad-hoc function, using an inverse tangetial makes thin
 \label{fig:Nstn_reward}
 \end{figure}
 
-
-\begin{tabular}{ccc}
-\includegraphics[width=5cm]{20150727022154395_scak_016_beach_pol_wt_0p0.eps} &
-\includegraphics[width=5cm]{20150727022154395_scak_016_beach_pol_wt_0p1.eps} &
-\includegraphics[width=5cm]{20150727022154395_scak_016_beach_pol_wt_0p2.eps} \\
-\includegraphics[width=5cm]{20150727022154395_scak_016_beach_pol_wt_0p3.eps} &
-\includegraphics[width=5cm]{20150727022154395_scak_016_beach_pol_wt_0p4.eps} &
-\includegraphics[width=5cm]{20150727022154395_scak_016_beach_pol_wt_0p5.eps} \\
-\includegraphics[width=5cm]{20150727022154395_scak_016_beach_pol_wt_0p6.eps} &
-\includegraphics[width=5cm]{20150727022154395_scak_016_beach_pol_wt_0p7.eps} &
-\includegraphics[width=5cm]{20150727022154395_scak_016_beach_pol_wt_0p8.eps} \\
-\includegraphics[width=5cm]{20150727022154395_scak_016_beach_pol_wt_0p9.eps} &
-\includegraphics[width=5cm]{20150727022154395_scak_016_beach_pol_wt_1p0.eps} &\\
-\end{tabular} 
+\clearpage
 \begin{figure}
+\centering
+\begin{tabular}{ccc}
+polarity weight = 0.0 & polarity weight = 0.1 & polarity weight = 0.2  \\
+\includegraphics[width=4cm]{20150727022154395_scak_016_beach_pol_wt_0p0.eps} &
+\includegraphics[width=4cm]{20150727022154395_scak_016_beach_pol_wt_0p1.eps} &
+\includegraphics[width=4cm]{20150727022154395_scak_016_beach_pol_wt_0p2.eps} \\
+polarity weight = 0.3 & polarity weight = 0.4 & polarity weight = 0.5  \\
+\includegraphics[width=4cm]{20150727022154395_scak_016_beach_pol_wt_0p3.eps} &
+\includegraphics[width=4cm]{20150727022154395_scak_016_beach_pol_wt_0p4.eps} &
+\includegraphics[width=4cm]{20150727022154395_scak_016_beach_pol_wt_0p5.eps} \\
+polarity weight = 0.6 & polarity weight = 0.7 & polarity weight = 0.8  \\
+\includegraphics[width=4cm]{20150727022154395_scak_016_beach_pol_wt_0p6.eps} &
+\includegraphics[width=4cm]{20150727022154395_scak_016_beach_pol_wt_0p7.eps} &
+\includegraphics[width=4cm]{20150727022154395_scak_016_beach_pol_wt_0p8.eps} \\
+polarity weight = 0.9 & polarity weight = 1.0 &  \\
+\includegraphics[width=4cm]{20150727022154395_scak_016_beach_pol_wt_0p9.eps} &
+\includegraphics[width=4cm]{20150727022154395_scak_016_beach_pol_wt_1p0.eps} &\\
+\end{tabular} 
+
 \caption{
-Effect of using different polarity weight factors (-X0.0 to -X1.0 = from left to right and top to bottom). 
+Effect of using different polarity weight factors. 
+Marked in green are upward polarities, blue are downward polaritites, and in red are mismatching polarities. Polarities are plotted at the lower-hemisphere piercing points on the beachball.
+%(0.0 to 1.0 from left to right and top to bottom). 
+Solution for polarity weight = 0.0 is obtained by minimizing waveform misfit only; solution for polarity weight = 1.0 is obtained using polarity only.
+Poorer the quality of inversion, more drastic are the variability in beachball to the changes in weight factor.
 %TO DO: Use a more dramatic example!
 \label{fig:pol_weight}
 }
