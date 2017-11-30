@@ -239,12 +239,19 @@ $only_pol = 0;
     #next if $aa[2] == 0;                        # skip if no body waves
     $x = `saclst az user1 f ${mdl}_$aa[0].0`;    # get the azimuth and P take-off angle
     @dd = @aa;
-    @aa = split(' ', $x);
+    @aa = split(' ', $x);       # outputs something like this: wes_1_HOYA.LL.TPH..LH.0 323.513 90.72
     @aa_pre = @aa;
     #print "\n--> saclst az user1 f ${mdl}_$aa[0].0";
 
     # compute polar coordinates azimuth and radius
+    # NOTE this part outputs all azimuths in the weight file, even if the
+    # station was not used in the inversion. Unless the input weigh files are
+    # pre-sorted and clean.
+    # WARNING if the weight files are not clean this line may cause a mismatch
+    # between STNAME and AZIM 
+    # CHECK
     $az[$i] = $aa[1];
+
     $azvec[$i] = sprintf("%s\n",$aa[1]);
     $staz[$i] = sprintf("%s %f %s\n",$aa[1],1.1,$stnm);      # station azimuth
     if ($aa[2]>90.) {                                         # upper hemisphere
@@ -457,11 +464,11 @@ $only_pol = 0;
             # station distance and overall time-shift
             if ($tshift_all==0.){
                 printf PLT "%f %f 10 0 0 1 %d km\n", $x-0.8*$spis, $y-0.2, $dist_km;
-		printf PLT "%f %f 10 0 0 1 %d\260 \n", $x-0.8*$spis, $y-0.4, $az[$i];  # azimuth (see az above)
+                printf PLT "%f %f 10 0 0 1 %d\260 \n", $x-0.8*$spis, $y-0.4, $az[$i];  # azimuth (see az above)
             }
             else { 
                 printf PLT "%f %f 10 0 0 1 %d km\n", $x-0.8*$spis, $y-0.2, $dist_km;
-		printf PLT "%f %f 10 0 0 1 %d\260 \n", $x-0.8*$spis, $y-0.4, $az[$i];  # azimuth (see az above)
+                printf PLT "%f %f 10 0 0 1 %d\260 \n", $x-0.8*$spis, $y-0.4, $az[$i];  # azimuth (see az above)
                 printf PLT "%f %f 10 0 0 1 %.1f s\n", $x-0.8*$spis, $y-0.6, $tshift_all;  # tshift = Green_P_arrival - Input_P_arrival_weight_file
             }
             # azimuth
