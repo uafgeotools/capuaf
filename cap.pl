@@ -662,6 +662,9 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     @weightlines = <IN>; $nsta = @weightlines;
     close(IN);
 
+    # THIS SECTION DOES NOT RUN IF K IS NOT SPECIFIED
+    # BUG: VR changes whether K is used or not.
+    #      To avoid this we might have to run this section by default.
     if ($isort != 0){
 
         if ($isort == 1){
@@ -723,6 +726,12 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
         open(OUT,'>',$clean_weight_file);
         for ($i = 0; $i < $nsta; $i++) {
             $ipol = 1;
+
+            # **** CHECK HERE ****
+            #   NOTE sort_indx comes from station_list_ALL.dat, not from the weight files.
+            #   NOTE the following sort is done on the weight files, but the
+            #        sort index comes from a different file which may be sorted
+            #        differently. Does this work?
             ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift) = split(" ",@weightlines[$sort_indx[$i]]);
             ($stnm,$pol) = split("/",$name);
 
