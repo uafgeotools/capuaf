@@ -697,24 +697,30 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
                 if (($name1 eq $name2) && ($net1 eq $net2)) {
                     # by distance
                     if ($isort == 1) {
-                        $sort_ele[$i] = $dist2;
+                        $col_to_sort[$i] = $dist2;
                     }
                     # by azimuth
                     elsif ($isort == 2) {
-                        $sort_ele[$i] = $az2;
+                        $col_to_sort[$i] = $az2;
                     }
+                    # THIS CODE IS NEVER REACHED
                     # do nothing
                     else {
-                        $sort_ele[$i] = $i;
+                        $col_to_sort[$i] = $i;
                     }
                 }
             }
         }
+        # GET INDICES OF SORTED ELEMENTS IN station_list_ALL.dat
+        @sort_indx = sort{$col_to_sort[$a] <=> $col_to_sort[$b]} 0 .. $#col_to_sort;
 
-        # Remove stations that have no information.
+        #-----------------------------------------------------------
+        # Remove stations that have no information. 
+        # DO THIS REGARDLESS. AT PRESENT THE SCRIPT SEEMS TO TAKE A STATION
+        # INTO ACCOUNT WHETHER THE STATION IS USED OR NOT
+        #-----------------------------------------------------------
         # NO polarity, NO P weight, NO S weight
         open(OUT,'>',$clean_weight_file);
-        @sort_indx = sort{$sort_ele[$a] <=> $sort_ele[$b]} 0 .. $#sort_ele;
         for ($i = 0; $i < $nsta; $i++) {
             $ipol = 1;
             ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift) = split(" ",@weightlines[$sort_indx[$i]]);
@@ -739,7 +745,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
 
 #        # Clean this weight file by removing stations that have no information (no polarity, no P weight, no S weight)
 #        open(OUT,'>',$clean_weight_file);
-#        @sort_indx = sort{$sort_ele[$a] <=> $sort_ele[$b]} 0 .. $#sort_ele;
+#        @sort_indx = sort{$col_to_sort[$a] <=> $col_to_sort[$b]} 0 .. $#col_to_sort;
 #        for ($i = 0; $i < $nsta; $i++){
 #            $ipol = 1;
 #            ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift)=split(" ",@weightlines[$sort_indx[$i]]);
