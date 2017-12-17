@@ -1,0 +1,86 @@
+REPOSITORIES/GEOTOOLS/tomo_util/capsupp/README_fklib
+2016-04-10
+Carl Tape
+
+The directory 
+/store/wf/FK_synthetics
+contains Green's functions for 1D models computed using a frequency-wavenumber method. Each directory corresponds to a different 1D latered model. The Green's functions are then computed for different depths and distances.
+
+See also
+REPOSITORIES/GEOTOOLS/tomo_util/fkmodels/
+/usr/local/seismo/grp-utils/fk/
+REPOSITORIES/cap/
+
+--------------
+STATE OF LIBRARIES COMPUTED
+
+model          max-depth   inc-depth  min-dist   max-dist   inc-dist    FMT
+
+utu06topo4p6   ??
+tactmod        200         1          1          1000       1           YES
+aleut          200         1          1          500        1           NO
+scak           200         1          1          500        1           YES
+northak        200         1          501        1000       1           YES
+
+--------------
+EXAMPLE FOR TACTMOD
+
+WARNING TRY THIS ON A SMALL SUBSET BEFORE THE WHOLE THING!
+NOTE: These instructions can be adapted for non-admin users.
+
+1. from ~/REPOSITORIES/GEOTOOLS/tomo_util/capsupp/
+   > cd ~/REPOSITORIES/GEOTOOLS/tomo_util/capsupp/
+   > fklib.pl
+
+2. create directory tactmod_all and subdirectories tactmod_00, tactmod_01, ..., tactmod_09
+   These direcotries will be generated in the $basedir = "$HOME/Downloads/tempx"
+   > bash fklib.csh
+
+3. find some temporary disk space on your machine (preferably in /data)
+   [CARL: log into any machine EXCEPT walrus (which seems slow) as admin]
+   Example: (Copy files to your own directory here)
+   > cp -r $HOME/Downloads/tempx/tactmod_all/ /data/vipul/fkmodels/
+
+4. from tactmod_00 (go to the directory where you want to create green's functions)
+   > cd /data/vipul/fkmodels/tactmod_all/tactmod_00
+   > csh -f fklib_depmin000_depinc100.csh &
+
+5. as the Green's functions are produced, copy them in to a 'master' directory:
+   from tactmod_00
+   > rsync -av tactmod_* ../../tactmod/
+
+NOTE: If you need to recompile fk, then you need to copy versions into the local directories.
+Probably this is not necessary, but when running 10 fk programs at once,
+it seems safer to use local copies of the executable.
+
+This means we have two copies of everything (okay for now).
+NOTE 1: we need a script to check which Green's functions are missing.
+
+--------------
+
+STEPS PERFORMED FOR DEFAULT EXAMPLE
+
+1. Follow instructions to compile /usr/local/seismo/
+    
+2. check paths
+
+> echo $CAPHOME
+> echo $NRHOME_C
+> echo $GMTHOME
+> which cap fk pssac2
+
+3. prepare directory for fk synthetics
+
+> cd /store/wf/FK_synthetics
+> mkdir cus
+> cd cus
+> cp $SUTIL/grp-utils/fk/cus .
+
+4. generate Green's functions
+   (see /usr/local/seismo/grp-utils/cap/README_CAP)
+
+> fk.pl -Mcus/15 -N512/0.4/2 140 145 205 230 260 275 295
+
+This makes the files junk.p and junk.s and the directory cus_15, which contains Green's functions for depth 15 km, distances 140 km, 145 km, 205 km, etc. These are the minimal number of Green's functions that will work for the default CAP example.
+
+--------------

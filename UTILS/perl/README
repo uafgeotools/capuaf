@@ -1,0 +1,8 @@
+GEOTOOLS/tomo_util/capsupp/README
+
+capsupp contains supplemental material for the cut-and-paste (CAP) moment tensor inversion algorithm of Zhu and Helmberger (1996)
+
+CAP itself resides here:
+/usr/local/seismo/grp-utils/cap/
+
+--------------
