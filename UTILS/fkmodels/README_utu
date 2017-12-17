@@ -1,0 +1,158 @@
+README file to describe 1D models addociated with Uturuncu volcano
+
+See GEOTOOLS/matlab_util/util_vel/read_tomo_fk.m for reading and plotting.
+
+---------- Forwarded message ----------
+From: Michael West <mewest@alaska.edu>
+Date: Mon, Jul 8, 2013 at 8:26 AM
+Subject: velocity models
+To: Carl Tape <carltape@gi.alaska.edu>, Celso Alvizuri <alvizuri@gi.alaska.edu>
+
+I apologize to both of you for the long delay on this. You should not have had to wait. It was a simple request. If you have already moved on, then so be it - I missed my opportunity.
+
+The two models below are what I had settled on at AGU last fall. MODEL_06 was obviously the latest version. I was getting some trade off between shallow velocities and the Vp/Vs ratio. This was part of my uncertainty.
+
+I would use MODEL_06. If something feels very off (as it often does in this data set), try MODEL_05 which is slower at shallow depths.
+
+- Mike
+
+------------------------
+
+% MODEL_05
+% VpVs = 1.65;
+
+M = [
+  -10.000000       4.6      1    
+   0.0000000       4.9      1    
+   10.000000       5.4      1    
+   20.000000       6.0      1    
+   30.000000       6.4      1    
+   40.000000       6.8      1    
+   55.000000       7.2      1    
+   75.000000       7.6      1  
+   100.00000       7.9      1    
+   130.00000       8.0      1    
+   160.00000       8.1      1  
+   200.00000       8.2      1  
+   300.00000       8.4      1
+];
+
+% MODEL_06
+% VpVs = 1.7;
+
+M = [
+  -10.000000       4.8      1    
+   0.0000000       5.1      1    
+   10.000000       5.6      1    
+   20.000000       6.2      1    
+   30.000000       6.6      1    
+   40.000000       7.0      1    
+   55.000000       7.4      1    
+   75.000000       7.8      1  
+   100.00000       8.1      1    
+   130.00000       8.2      1    
+   160.00000       8.3      1  
+   200.00000       8.4      1  
+   300.00000       8.6      1
+];
+
+------------------------
+CONVERT MIKE'S 1D MODEL TO A 1D MODEL FOR FK
+
+TOPOCORR = 4.6
+M(1,1) = -TOPOCORR
+M(1:end-1,1) = diff(M(:,1))
+M(end,1) = 0
+M = [M(:,1) M(:,2)/1.7 M(:,2)]
+
+fid = fopen('utu06_topo4p6','w');
+for ii=1:length(M), fprintf(fid,'%6.2f %6.2f %6.2f\n',M(ii,:)); end
+fclose(fid);
+
+------------------------
+1D MODEL FOR UTURUNCU FROM FAN_CHI LIN AND WEISEN SHEN
+
+MC.ALL.mod
+
+THIS MODE NEEDS TO BE CONVERTED TO FK 1D FORMAT.
+ADD CODE OR SCRIPT HERE.
+
+Hi Carl,
+
+1. The 5 columns in MC.ALL.mod are:
+0(depth to surface)  1.69102(Vs) 3.44099(Vp) 2.69019(density) 80(Qmiu) 0.480875(thickness of this layer).
+
+2. Yes, all depths are relative to the surface of the earth, which is 4.6 km above sea level.
+
+3. The model is already staircase (you will find two nodes at each depth, and if you plot it directly you will see it).
+
+Best,
+Weisen
+
+---------- Forwarded message ----------
+From: Fan-Chi Lin <gilllin2@gmail.com>
+Date: Tue, Nov 4, 2014 at 8:25 AM
+Subject: Fwd: model
+To: Carl Tape <carltape@gi.alaska.edu>
+Cc: Weisen Shen <Weisen.Shen@colorado.edu>
+
+
+Hi Carl,
+
+Sorry for the delay, but I think now we have a decent 1D model for the PLUTONS area.
+
+In the attachment, you can find the best 1D model inverted by Weisen using Rayleigh wave phase velocity, Rayleigh wave H/V ratio, and receiver function measurements.
+
+Overall, the model can fit all three measurements fairly well. The only part that is not fitted well is short period Rayleigh wave phase velocity measurements which is likely due to the near surface complexity. The shear velocity model is consistent with those inverted by Ward et al., 2014. By inverting all three measurements together, there are also some resolution for Vp/Vs and density ratio. In particular, the model prefers a low density and slightly higher Vp/Vs ratio middle crust corresponding to the low velocity zone. While it makes sense to have a low velocity and high Vp/Vs ratio uppermost crust layer, the slightly higher density in the uppermost crust is likely, again, due to the near surface complexity that also messes up with the phase velocity measurements. Weisen will plot the posterior distribution of the model to give us a better understanding of the model uncertainty.
+
+Please let us know if you have any question regarding to the 1D model or if you can use it in your earthquake study.
+Best,
+Fan-Chi
+---------- Forwarded message ----------
+From: Weisen Shen <weisen.shen@colorado.edu>
+Date: Mon, Nov 3, 2014 at 11:17 PM
+Subject: model
+To: Fan-Chi Lin <gilllin2@gmail.com>
+
+
+Hi Fanchi,
+The 1-D model that fits all three types data is attached. Also the plot of fitting is there.
+The model is parameterized as described below:
+1 layer of thin sediment, described by a gradient Vs structure.
+1 layer of fast Vs lid at the uppermost crust.
+1 layer of the crystalline crust parameterized by 6 cubic B-splines.
+1 layer of the mantle, for which the uppermost Vs is continuous with lower crustal Vs (no Moho).
+The Vp/Vs for the sedimentary layer and crustal layers and density in these layers are set to be free parameters during the inversion. But we introduce penalty function for the selection of the best-fitting model so they are not perturbing crazily from empirical relationships.
+Please let me know if you have any questions about the resulting model.  
+Best,
+Weisen
+-- 
+Graduate Research Assistant
+Center for Imaging the Earth's Interior, Department of Physics
+University of Colorado at Boulder
+http://ciei.colorado.edu/~weisen
+
+
+#-----------------------------------------------------------
+# 20150111 cralvizuri - 
+
+Added model utu1D adapted model MC.ALL.mod to run with fk
+utu1D was adapted manually
+
+Format for FK:
+thickness           vs  vp_or_vp/vs_if_less_than_2      [rho Qs Qp]
+
+Format MC.ALL.mod:
+depth_to_surface    Vs       Vp   density   Qmiu    thickness_of_this_layer
+
+0                 1.69102 3.44099 2.69019    80       0.480875
+0.480875          1.69102 3.44099 2.69019    80       0
+0.480875          1.98026 4.02955 2.69019    80       0.480875
+
+Format utu1D:
+ thickness         vs         vp        rho         Qs
+  0.480875    1.69102    3.44099    2.69019         80
+  0.480875    1.98026    4.02955    2.69019         80
+  0.480875     2.2695     4.6181    2.69019         80
+
+

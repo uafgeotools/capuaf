@@ -1,0 +1,127 @@
+
+---------- Forwarded message ----------
+From: Natalia Ruppert (Seismologist) <natasha@gi.alaska.edu>
+Date: Thu, Jun 9, 2011 at 2:23 PM
+Subject: models for MT inversions in Alaska
+To: carltape@gi.alaska.edu
+
+Carl:
+
+Go over info below. I'll take too long to put all details on the paper, but if
+you have any further questions, just stop by my office.
+
+I'm using 3 models for regional moment tensors. See brief description here:
+
+http://www.aeic.alaska.edu/html_docs/moment_tensors.html
+
+They are a little different than what is used for routine earthquake locations.
+
+Southern Alaska model (SCAK). The same for moment tensors and earthquake
+locations. Used south of 62.5N, except for Aleutians.
+
+Matumoto, T., and R. A. Page, Microaftershocks following the Alaska earthquake
+of 28 March 1964: Determination of hypocenters and crustal velocities in the
+Kenai Peninsula-Prince William Sound area, The Prince William Sound, alaska,
+Earthquake of 1964 and Aftershocks, 2B&C, U.S. Coast and Geodetic Surv. Publ.
+10-3, U.S. Govt. Printing Office, Washington, 157-173, 1969.
+
+Lahr, J. C., Detailed seismic investigation of Pacific-North American plate
+interaction in southern Alaska, Ph. D. Thesis, Columbia University, New York,
+88pp., 1975.
+
+Lahr, J. C., HYPOELLIPSE/version 2.00: A computer program for determining local
+earthquakes hypocentral parameters, magnitude, and first motion pattern, U.S.
+Geol. Surv. Open File Rep., 89-116, 89 pp., 1989.
+
+# layer_thickness(km) Vp(km/s) Vs(km/s) density(g/cc) Qalpha Qbeta
+ 0.4000E+01 0.5300E+01 0.3010E+01 0.2520E+01   600.00    300.00
+ 0.5000E+01 0.5600E+01 0.3180E+01 0.2610E+01   600.00    300.00
+ 0.5000E+01 0.6200E+01 0.3520E+01 0.2780E+01   600.00    300.00
+ 0.5000E+01 0.6900E+01 0.3920E+01 0.2970E+01   600.00    300.00
+ 0.5000E+01 0.7400E+01 0.4200E+01 0.3120E+01   600.00    300.00
+ 0.9000E+01 0.7700E+01 0.4370E+01 0.3200E+01   600.00    300.00
+ 0.1600E+02 0.7900E+01 0.4490E+01 0.3260E+01   600.00    300.00
+ 0.1700E+02 0.8100E+01 0.4600E+01 0.3320E+01   600.00    300.00
+ 0.4000E+03 0.8300E+01 0.4720E+01 0.3370E+01   600.00    300.00
+
+Northern Alaska model (NORTHAK). Used for earthquake locations, but not for MT
+north of 62.5N.
+
+Biswas, N.N., J. Pujol, G. Tytgat, and K. Dean, Synthesis of seismicity studies
+for Western Alaska, Tectonophysics, 131, 369-392, 1986.
+
+Huang, P. Y.-F., and Biswas, N. N., Rampart seismic zone of central Alaska,
+Bull. Seism. Soc. Am., 73, 813-829, 1983.
+
+# depth to the top(km) Vp(km/s) Vs(km/s)
+   0.0000                 5.9    3.31
+  24.4000                 7.4    4.15
+  40.2000                 7.9    4.43
+  76.0000                8.29    4.65
+ 301.0000                10.4    5.83
+ 545.0000                12.6    7.06
+
+Alternative northern Alaska model (TACT). Used for MT inversions north of 62.5N,
+and sometimes for other crustal events elsewhere in the Mainland. Based on TACT
+results.
+
+Beaudoin, B. C., G. S. Fuis, W. D. Mooney, W. J. Nokleberg, and N. I.
+Christensen, Thin, low-velocity crust beneath the southern Yukon-Tanana terrane,
+east central Alaska: Results from Trans-Alaska Crustal Transect
+refraction/wide-angle reflection data, J. Geophys. Res., 97, 1921-1942, 1992.
+
+Ratchkovski, N.A. and R.A. Hansen, New constraints on tectonics of interior
+Alaska: Earthquake locations, source mechanisms and stress regime, Bull. Seism.
+Soc. Am., 92, 998-1014, 2002.
+
+# layer_thickness(km) Vp(km/s) Vs(km/s) density(g/cc) Qalpha Qbeta
+ 0.3000E+01 0.5400E+01 0.3070E+01 0.2550E+01   600.00    300.00
+ 0.8000E+01 0.5900E+01 0.3350E+01 0.2690E+01   600.00    300.00
+ 0.1300E+02 0.6250E+01 0.3550E+01 0.2790E+01   600.00    300.00
+ 0.7000E+01 0.7100E+01 0.4030E+01 0.3030E+01   600.00    300.00
+ 0.4500E+02 0.7900E+01 0.4490E+01 0.3260E+01   600.00    300.00
+ 0.4000E+03 0.8290E+01 0.4710E+01 0.3370E+01   600.00    300.00
+
+Aleutian model for moment tensors (ALEUT). Based on seismic profiles in the
+eastern Aleutians:
+
+# layer_thickness(km) Vp(km/s) Vs(km/s) density(g/cc) Qalpha Qbeta
+ 0.4000E+01 0.4700E+01 0.2670E+01 0.2350E+01   600.00    300.00
+ 0.4000E+01 0.5300E+01 0.3010E+01 0.2520E+01   600.00    300.00
+ 0.4000E+01 0.6600E+01 0.3750E+01 0.2890E+01   600.00    300.00
+ 0.1900E+02 0.7100E+01 0.4030E+01 0.3030E+01   600.00    300.0
+ 0.1600E+02 0.7900E+01 0.4490E+01 0.3260E+01   600.00    300.00
+ 0.1700E+02 0.8100E+01 0.4600E+01 0.3320E+01   600.00    300.00
+ 0.4000E+03 0.8300E+01 0.4720E+01 0.3370E+01   600.00    300.00
+
+
+Aleutian model for earthquake locations (PAVDUT).Based on:
+
+Fliedner, M.M. and S.L. Klemperer, structure of an island arc: Wide-angle
+seismic studies in the eastern Aleutian Islands, Alaska, J. Geophys. Res., 104,
+10667-10694, 1999.
+
+Fliedner, M.M. and S.L. Klemperer, Crustal structure transition from oceanic arc
+to continental arc, eastern Aleutian Islands and Alaska Peninsula, Earth Planet.
+Sci. Lett., 179, 567-579, 2000.
+
+Holbrook, W.S., D. Lizarralde, S. McGeary, N. Bangs, and J. Diebold, Structure
+and composition of the Aleutian island arc and implications for continental
+crustal growth, Geology, 27, 31-34, 1999.
+
+# depth to the top(km) Vp(km/s) Vs(km/s)
+   0.0000               3.05     1.71
+   3.0000               3.44     1.93
+   4.7900               5.56     3.12
+   6.6500               6.06     3.4
+  13.1800               6.72     3.78
+  25.6300               7.61     4.28
+  41.5100               7.9      4.44
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ Natalia (Natasha) Ruppert, Ph.D.
+ Seismologist, Alaska Earthquake Information Center
+ Geophysical Institute, University of Alaska Fairbanks
+ phone: 907-474-7472   fax: 907-474-5618
+ http://www.giseis.alaska.edu/Input/natasha/
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

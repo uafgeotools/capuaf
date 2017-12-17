@@ -1,0 +1,131 @@
+/seismo-util/grp-utils/fkmodels/README
+
+1D models used as input for FK code
+
+INPUT FORMAT: 
+[Layer thickness(Km) | Vs(km/s) | Vp(km/s) or Vp/Vs | density(rho)(g/cm3) | Qs | Qp]
+
+density, Qs and Qp are optional.
+	If third column is less 2 it is assumed to Vp/Vs
+	If density is not given it is computed by relation: rho = -.77 + 0.32*Vp
+	Fourth column is considered to be density, only if it is less than 20. If greater, fourth column is taken as Qs.
+	If neither of Qs and Qp are given deafult values are 500 and 1000 respectively.
+	If Qp is not given it taken to be twice of Qs.
+
+Bottom layer thickness is always considered to be zero, which means considering it as elastic half-sapce.
+If top-most layer thickness is zero, the above half-space would be considered elastic (as in marine case for water above sea floor).
+Otherwise, it is considered as vaccum (free space).
+
+EXAMPLE MODELS:
+
+cus   -- Central United States (Lupei Zhu)
+hk    -- "Hadley-Kanamori model" (but does not match the publications)
+      -- probably Dreger and Helmberger (1990) is best reference
+socal -- Qinya modification of hk model (?)
+
+--------------------------------------------------------------------- 
+ALASKA MODELS
+- see Ratchkovski and Roger A. Hansen, BSSA 2002,
+  "New Constraints on Tectonics of Interior Alaska: Earthquake Locations, Source Mechanisms, and Stress Regime"
+  Figure 5 shows four of these models (two versions of TACT).
+- see email from Natasha in the file 'Email_Natalia_ak1D'
+--------------------------------------------------------------------- 
+ak_scak     -- Southern Alaska model (SCAK)
+            -- The same for moment tensors and earthquake locations. Used south of 62.5N, except for Aleutians.
+
+Matumoto, T., and R. A. Page, Microaftershocks following the Alaska earthquake of 28 March 1964: Determination of hypocenters and crustal velocities in the Kenai Peninsula-Prince William Sound area, The Prince William Sound, alaska, Earthquake of 1964 and Aftershocks, 2B&C, U.S. Coast and Geodetic Surv. Publ. 10-3, U.S. Govt. Printing Office, Washington, 157-173, 1969.
+
+Lahr, J. C., Detailed seismic investigation of Pacific-North American plate interaction in southern Alaska, Ph. D. Thesis, Columbia University, New York, 88pp., 1975.
+
+Lahr, J. C., HYPOELLIPSE/version 2.00: A computer program for determining local earthquakes hypocentral parameters, magnitude, and first motion pattern, U.S. Geol. Surv. Open File Rep., 89-116, 89 pp., 1989.
+
+-----------------------------------------------------------------------
+ak_tactmod  -- Alternative northern Alaska model, based on TACT model
+            -- Used for MT inversions north of 62.5N, and sometimes for other crustal events elsewhere in the Mainland.
+
+Beaudoin, B. C., G. S. Fuis, W. D. Mooney, W. J. Nokleberg, and N. I. Christensen, Thin, low-velocity crust beneath the southern Yukon-Tanana terrane,
+east central Alaska: Results from Trans-Alaska Crustal Transect refraction/wide-angle reflection data, J. Geophys. Res., 97, 1921-1942, 1992.
+
+Ratchkovski, N.A. and R.A. Hansen, New constraints on tectonics of interior Alaska: Earthquake locations, source mechanisms and stress regime, Bull. Seism.
+Soc. Am., 92, 998-1014, 2002
+
+-----------------------------------------------------------------------
+ak_northak  -- Northern Alaska model (NORTHAK)
+            -- Used for earthquake locations, but not for MT north of 62.5N
+            -- WHERE IS VP/VS (=1.78) STATED IN THE PUBLISHED PAPERS?
+
+Biswas, N.N., J. Pujol, G. Tytgat, and K. Dean, Synthesis of seismicity studies for Western Alaska, Tectonophysics, 131, 369-392, 1986.
+
+Huang, P. Y.-F., and Biswas, N. N., Rampart seismic zone of central Alaska, Bull. Seism. Soc. Am., 73, 813-829, 1983.
+
+----------------------------------------------------------------------
+ak_aleut    -- Aleutian model for moment tensors (ALEUT)
+            -- Based on seismic profiles in the eastern Aleutians
+----------------------------------------------------------------------
+ak_pavdut   -- Aleutian model for earthquake locations (PAVDUT)
+
+Fliedner, M.M. and S.L. Klemperer, structure of an island arc: Wide-angle seismic studies in the eastern Aleutian Islands, Alaska, J. Geophys. Res., 104,
+10667-10694, 1999.
+
+Fliedner, M.M. and S.L. Klemperer, Crustal structure transition from oceanic arc to continental arc, eastern Aleutian Islands and Alaska Peninsula, Earth Planet. Sci. Lett., 179, 567-579, 2000.
+
+Holbrook, W.S., D. Lizarralde, S. McGeary, N. Bangs, and J. Diebold, Structure and composition of the Aleutian island arc and implications for continental
+crustal growth, Geology, 27, 31-34, 1999.
+
+------------------------------------------------------------------------
+ak_cola     -- Based on Searcy1996, email from Natasha on 16-June-2011
+------------------------------------------------------------------------
+ak_eberhart -- Based on Eberhart2006
+ak_eberhart_mod -- remove the shallowest slow layer, which is too slow
+
+--------------------------------------------------------------------- 
+UTURUNCU MODEL
+
+utu06       -- AGU2012 Mike West poster
+            -- adjusted to land surface level of 4 km above sea level
+
+Mike West email 7/8/2013
+
+% MODEL_06
+% VpVs = 1.7;
+
+depth below sea level / Vp / ??
+
+M = [
+  -10.000000 4.8 1
+   0.0000000 5.1 1
+   10.000000 5.6 1
+   20.000000 6.2 1
+   30.000000 6.6 1
+   40.000000 7.0 1
+   55.000000 7.4 1
+   75.000000 7.8 1
+   100.00000 8.1 1
+   130.00000 8.2 1
+   160.00000 8.3 1
+   200.00000 8.4 1
+   300.00000 8.6 1
+];
+
+--------------------------------------------------------------------- 
+Western US model (wes_noQ) -- Song1996 (Table 1, model tbPB)
+thick   Vs      Vp      rho
+2.5     2.05    3.6     2.2
+32.5    3.57    6.1     2.8
+0       4.53    7.85    3.3
+
+Song, X. J., Helmberger, D. V., & Zhao, L. (1996). Broad-band modelling of
+regional seismograms: The basin and range crustal structure. Geophysical
+Journal International, 125(1), 15-29.
+
+NOTE Ford (2009) uses the wes model with added attenuation
+thick   Vs      Vp      rho     Qbeta   Qalpha
+2.5     2.05    3.6     2.2     40      100
+32.5    3.57    6.1     2.8     172     286
+0       4.53    7.85    3.3     300     600
+
+Ford, S. R., Dreger, D. S., & Walter, W. R. (2009). Identifying isotropic
+events using a regional moment tensor inversion. Journal of Geophysical
+Research: Solid Earth, 114(B1).
+--------------------------------------------------------------------- 
+
