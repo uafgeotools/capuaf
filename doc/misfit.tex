@@ -603,7 +603,7 @@ Waveform error is not changed so that:
 \end{enumerate}
 
 \subsubsection*{Possible way of computing VR}
-{\bf Option 1} This didn't worked out :( 
+{\bf Option 1} This didn't work out
 \begin{align*}
 VR_{wf} &= 100 \times \left( 1 - \left (\frac{\phi_{wf}}{u} \right)^2 \right) \\
 VR_{pol} &= 100 \times \left( 1 - \left ( \frac{N_p}{N} \right) ^2 \right ) \\
@@ -621,25 +621,36 @@ VR &= 100. \times (1 - \Phi^2)
 }
 
 Here is how it looks in the code (sub\_inversion.c):
+\subsubsection*{waveform misfit}
 \begin{verbatim}
- // waveform misfit
-       sol = get_tshift_corr_misfit(nda,obs0,max_shft,tie,norm,mtensor,amp,sol);
-       sol.wferr = sol.wferr/Ncomp;    // Ncomp = number of components.
-       VR = 100.*(1.-(sol.wferr/data2)*(sol.wferr/data2));
+// waveform misfit
+sol = get_tshift_corr_misfit(nda,obs0,max_shft,tie,norm,mtensor,amp,sol);
+sol.wferr = sol.wferr/Ncomp;    // Ncomp = number of components.
+sol.wferr = sol.wferr/data2;    // normalize by data
 
-	    //---------------- combine polarity and waveform misfit---------------------------
-	    // If -X flag is specified sol.err will contain the total misfit
-	    if ((int)pol_wt != 999){
-	      misfit_pol_weight = pol_wt; // this should come as an input from cap.pl (-X flag)
-	      misfit_wf_weight = 1 - misfit_pol_weight;
-	      sol.polerr = misfit_pol_weight * misfit_fmp/(float)nda;
-	      sol.err = sol.polerr + misfit_wf_weight * sol.wferr/data2;
-	    }
-	    // For older examples:
-	    // In case -X flag is not specified sol.err will contain the waveform misfit
-	    else { 
-	      sol.err = sol.wferr;
-	    }
+//---------------- combine polarity and waveform misfit---------------------------
+// If -X flag is specified sol.err will contain the total misfit
+ if ((int)pol_wt != 999){
+     misfit_pol_weight = pol_wt; // this should come as an input from cap.pl (-X flag)
+     misfit_wf_weight = 1 - misfit_pol_weight;
+     sol.polerr = (float)misfit_pol_weight * misfit_fmp/nfm;
+     sol.err = sol.polerr + misfit_wf_weight * sol.wferr;
+     //fprintf(stderr,"---> %f %f %f %f\n",sol.err/data2, (float)misfit_fmp/nfm, total_misfit, misfit_pol_weight);
+}
+\end{verbatim}
+\subsubsection*{Implement station reward factor}
+Three reward factors are implemented:
+\begin{verbatim}
+	    // Implement station reward factor
+	    // stn_rew = (float) (1.0 - ((2.0/pi)*atan(nda)))*5.0;
+	    stn_rew = (exp(((float)-nda/7.0))*1.5)+0.5;
+	    sol.err = stn_rew * sol.err;
+\end{verbatim}
+
+\subsubsection*{Compute VR}
+\begin{verbatim}
+            // Compute VR
+            VR = 100.0 * (1 - (sol.err * sol.err));
 \end{verbatim}
 
 TO DO: Add a figure
@@ -668,7 +679,7 @@ Pnl\_reward  = Pw \times Pband
 \end{minipage}
 }
 
-This is how is looks like in cap.c:
+This is how its implemented in cap.c:
 \begin{verbatim}
 ---------------------Line 327 (cap.c)---------------------------
 // Compute reward factors

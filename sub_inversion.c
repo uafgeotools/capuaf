@@ -483,7 +483,6 @@ SOLN searchMT(
             sol.wferr = sol.wferr/data2;    // normalize by data
 
             //---------------- combine polarity and waveform misfit---------------------------
-            // XXX: Ongoing
             // If -X flag is specified sol.err will contain the total misfit
             if ((int)pol_wt != 999){
                 misfit_pol_weight = pol_wt; // this should come as an input from cap.pl (-X flag)
