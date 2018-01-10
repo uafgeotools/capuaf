@@ -1,0 +1,91 @@
+\section{Waveform selection criteria}
+
+Here we are trying to establish some standards for excluding waveform fits produced by CAP. The motivation is toward publication-quality figures.
+
+\begin{enumerate}
+
+\item Before doing any manual selection, make sure that
+\begin{enumerate}
+\item you have the right source duration (manually specify -L for small events)
+\item you are using L1 norm
+\item the relative plotted amplitudes of body and surface waves are scaled correctly. This is just a plotting issue to make sure you can see the shapes of the waveforms. (But make sure you are looking at absolute amplitudes!)
+\item {\bf you have set the time shifts to the ``correct'' ranges}. This is specified in the -S flag and also influenced by entries in the weight.dat file. {\bf In the case of P waves, you may have to manually specify the onset time.} In the case of surface waves, you can specify a systematic time shift in the weights file if, for example, all time shifts appear to be systematically shifted from zero. This is equivalent to acknowledging that the structural model is uniformly slow (or fast) in all directions.
+\item you are pretty close to ``the answer''
+\end{enumerate}
+
+\item When throwing out stations:
+%
+\begin{enumerate}
+\item Start with the station having largest epicentral distance. Farthest station usually have poor SN ratio. 
+\end{enumerate}
+
+\item Figures in papers need to be ``perfect'' -- they can show the solution derived from a full ``messy'' set of waveforms, but the paper version can show a subset of fits, all of which are good. (Note: do not run the inversion with the subset -- just show the fits.)
+
+\item Selection criteria for using P polarities [Vipul Nenana and S. Alaska events]
+%
+\begin{enumerate}
+\item If there is no reliable solution, then use the best-quality P polarities. These tend to be stations that are closest to the event. (Nodal stations are avoided.)
+\item Currently, the inclusion of P polarities means we cannot generate $\Omega$ uncertainties. This can probably be fixed.
+\end{enumerate}
+
+\item Figures in a supplement do not need to be perfect. Here are our standards. {\bf Keep in mind that these will be most effective when you are in the ballpark of the solution. This fine-tuning should only be done for the ``final'' solution.} Also keep in mind that we may choose to plot the green waveform (keepBad in \verb+cap_plt.pl+) or not for a published supplement. (It is useful for us to see the waveforms that we turn off, but it may be distracting to others.) These criteria are driven by amplitude anomalies, since our misfit function is amplitude-based and will be most affected by spurious amplitudes (even when using L1).
+%
+\begin{enumerate}
+\item Set weight zero for all {\bf surface wave} waveforms whose amplitude differences are \makebox{$| \rmd\ln A | \ge A_s$}; these could be affecting the misfit function in a negative manner.
+\begin{itemize}
+\item $A_s = 1.5$ for regional Alaska inversions
+\end{itemize}
+
+\item Set weight zero for all {\bf body wave} waveforms whose amplitude differences are \makebox{$| \rmd\ln A | \ge A_b$}; these could be affecting the misfit function in a negative manner.
+\begin{itemize}
+\item $A_b = 2.5$ for regional Alaska inversions (or for 2012 Nenana triggered event, which is full waveforms at the ``body wave'' periods)
+\end{itemize}
+
+\item {\bf Set weight zero for all waveforms that max out the time shift.} (Or try to adjust the max allowable time shift to avoid this.) (Because surface waves are filtered at longer periods, we have a stronger criterion for fitting amplitudes.)
+
+\item Use a ``sensible'' distance range for selecting stations. For example, for small magnitude event ($\mw < 3$) one should set the maximum distance for selecting stations to 200~km. For intermediate magnitude ($\mw > 3.5$) events one can go up to 500~km. This range might also vary depending on the crustal structure and topography. Also keep track of the available green's function (most are premade upto 500~km - \verb+/store/wf/FK_synthetics/+)
+
+\item . [Ideally there should be some quality control prior to rotating components to RT. For example, a zeroed E component will lead to erroneous R and T components, but it will be very hard to identify that both R and T are erroneous.]
+
+\item If Surf V is set to weight zero, then set Surf R weight to zero. The idea here is that if you are not capturing the Rayleigh wave motion on one of the components, you should be cautious about what is being fit on the other component. [But note: We can get strong VR ratios that are caused by shallow structure.] 
+
+\item If PV is set to weight zero, then set PR weight to zero.
+
+\item If a Love window is set to weight zero, then set the other two Rayleigh wave windows to zero if they ``look bad''.
+
+\item If the Rayleigh wave windows are set to weight zero, then set the Love wave window to zero if it ``looks bad''.
+
+\item If only the Surf T window is matching then reject that station. If no other component is matching, then again it raises question on the quality of data. In general, from my (Vipul) experience, SH gives a good match for a variety of solution. Most of the time it is the Body and Rayleigh that nails down the solution. However, one can keep such station only if it is much needed (Number of stations $< 10$).
+
+\item If a station has no fits (that is, all weights set to zero) and is ``complete garbage,'' then cut it completely. We never need to look at it again. (Manually cut the row from the weight file.) This is probably an unusual occurrence.
+
+\item Ideally we would want to use both the body waves and surface waves, however, there might be cases when either most of the body waves or surface waves need to be thrown out. In case you can not use body waves at $\sim$90\% of the stations, then perform a surface waves only inversion. Same goes for the surface waves.
+
+\item Allowed time shifts depends on (examples given here are based on inversions in Alaska):
+%
+\begin{enumerate}
+\item Filter applied: For body waves (higher frequency content) you need to use a shorter time-shift compared to the surface wave. Example, 1--10 seconds body waves generally need $\sim$2 seconds of maximum shift; 16--50 seconds for surface waves can require upto 10 seconds of time-shift.
+\item Distance range: Absolute value of time-shifts generally increases with epicentral distance. For example, time-shifts for surface wave (16--40 sec) for stations upto 100 km would be less than 5 seconds, but for stations at 400--500 km shifts could be around 10--12 seconds.
+\item Source duration: In special cases, like VLFE (very low frequency earthquakes) which has much longer source duration (10-15 seconds for \magw{3.8} VLFE in interior Alaska as compared to 1 second duration for normal tectonic event of comparable magnitude) the time-shifts for surface wave (20--50 seconds) can go up to 18~seconds.
+\end{enumerate}
+
+\item If a station has no fits (that is, all weights set to zero) but the waveforms look ``in the ballpark,'' then perhaps we leave these in the plots. (So do not cut them from the weight file.)
+\item If the data and syn waveforms fit in a window, then it should be “on”. In other words, we should not see any green waveforms fitting red waveforms, unless there is some other reason to be suspicious. (Or unless it is Rayleigh wave window where the other component does not fit.)
+\item Time shifts for Love and Rayleigh waves should be ``similar''. Use this to decide whether to turn off certain waveforms. [NOTE THIS IS NOT A ``RULE''.]
+
+\item PHASE 2: after the first round of thresholding has been done, then use CC thresholding.
+\begin{enumerate}
+\item If a cross-correlation value is less than 10 in a Rayleigh wave window, then cut all surface waves.
+\item If a cross-correlation value is less than 10 in a Love wave window, then cut it.
+\end{enumerate}
+
+\end{enumerate}
+
+
+\end{enumerate}
+
+\subsubsection*{Things to think about}
+
+\begin{itemize}
+\item What about rejection based on correlation coefficient (this has been done by other CAP authors)? But with an L1 norm, these small differences shouldn’t impact the solutions.
+\end{itemize}
