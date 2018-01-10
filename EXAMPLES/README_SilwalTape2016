@@ -13,7 +13,7 @@ This will create the data directory 20090407201255351 inside ~/REPOSITORIES/pyse
 2. Copy input weight file into the data directory:
 Only the 'clean' stations are selected in this weight file
 
-> cp ~/REPOSITORIES/cap/EXAMPLES/20090407201255351_check/weight.dat ~/REPOSITORIES/GEOTOOLS/python_util/util_data_syn/20090407201255351/weight_test.dat
+> cp $CAPHOME/EXAMPLES/20090407201255351_check/weight.dat $PYSEIS/20090407201255351/weight_test.dat
 
 %------------------------------------------------------------------------------
 RUN CAP
@@ -22,5 +22,5 @@ RUN CAP
 > cap.pl -H0.02 -P1/15/60 -p1 -S2/10/0 -T15/150 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -Y1 -Zweight_test.dat -Mscak_39 -m4.5 -I50000 -R0/0 20090407201255351
 
 OR  use a parameter file
-> cp $CAPHOME/EXAMPLES/flags.pf ~/REPOSITORIES/pyseis/
+> cp $CAPHOME/EXAMPLES/flags.pf $PYSEIS
 > cap.pl flags.pf
