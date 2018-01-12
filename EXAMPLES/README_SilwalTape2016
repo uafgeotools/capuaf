@@ -33,5 +33,23 @@ Only the 'clean' stations are selected in this weight file
 
 OR use a parameter file
 
-> cp $CAPHOME/EXAMPLES/flags.pf .
+> cp $CAPHOME/EXAMPLES/20090407201255351_check/flags.pf .
 > cap.pl flags.pf
+
+-------------------------------------------------------------------
+5. Run CAP for multiple depths
+
+> cap.pl -H0.02 -P1/15/60 -p1 -S2/10/0 -T15/150 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -Y1 -Zweight_test.dat -Mscak_39 -m4.2/4.8/0.1 -I50000 -R0/0 20090407201255351 -A30/50/2
+
+OR use a parameter file
+
+> cp $CAPHOME/EXAMPLES/20090407201255351_check/flags_depth.pf .
+> cap.pl flags_depth.pf
+
+6. Run depth test
+
+> depth_test 20090407201255351 scak
+
+View results
+
+> gv OUTPUT_DIR/20090407201255351_scak_dep.ps
