@@ -13,11 +13,9 @@ This checkout takes awhile, since you get the full history of the repository.
 If you just want the latest version, then try this:
 git clone --depth=1 https://GITHUBUSERNAME@github.com/uafseismo/capuaf.git capuaf
 
-README_orig                -- original README with CAP (Lupei Zhu)
-README_EXAMPLE             -- step-by-step instructions for Illinois example
-README_EXAMPLE_uncertainty -- uncertainty analysis
-
-For more examples, see EXAMPLES/README
+EXAMPLES/README_SilwalTape2016  -- southern Alaska example earthquake
+EXAMPLES/README_EXAMPLE         -- example including FK calculations
+README_orig                     -- original README with CAP (Lupei Zhu)
 
 Reference:
 Zhu and Helmberger, 1996, BSSA 86, 1645-1641
