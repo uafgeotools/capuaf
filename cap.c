@@ -1071,17 +1071,26 @@ if (plot==1) {
    }
 
    // output timeshifts
+   // Example output file (note filename): HOYA_wes_001_tshift.out
+   //   sta.net.cmp.loc.cha     dist        azim    lat     lon         allow    static   t-min    t-max    ts-SV  w w   ts-SH  w
+   //   HOYA.LL.TPH..LH         116.9       323.5   38.0700 -117.2200   3.0000   3.0000   0.0000   6.0000   2.8500 1 1   1.3500 1
+   //   HOYA.LL.DAC..LH         148.4       224.7   36.2700 -117.5900   3.0000   2.1000  -0.9000   5.1000   1.5000 1 1   4.0000 1
+   //   HOYA.LL.MNV..BB         202.5       311.9   38.4320 -118.1540   3.0000   3.0000   0.0000   6.0000   4.9500 1 1   3.1500 1
+   // ...
    fprintf(f_tshift,"%38s %6.1f %6.1f %9.4f %9.4f %8.4f %8.4f %8.4f %8.4f %8.4f %d %d %8.4f %d\n",
+           // station info
            obs->stn, obs->dist, obs->az, obs->stla, obs->stlo,
-           Sshift_max,                  // allowable
-           Sshift_static[i],            // static (user input in weight file)
-           Sshift_static[i]-Sshift_max, // min shift
-           Sshift_static[i]+Sshift_max, // max shift
-           // best timeshifts found by cap, weights
-           // Rayleigh. Output both weights for SV and SR
-           shft0[i][1] + dt * sol.shft[i][1], obs->com[1].on_off, obs->com[2].on_off,
-           shft0[i][0] + dt * sol.shft[i][0], obs->com[0].on_off); // Love
-
+           // timeshifts calculated by cap
+           // VIPUL: these are the variables to check.
+           Sshift_max,                             // allowable
+           Sshift_static[i],                       // static (user input in weight file)
+           Sshift_static[i] - Sshift_max,          // min shift
+           Sshift_static[i] + Sshift_max,          // max shift
+           shft0[i][1] + dt * sol.shft[i][1],      // tshifts rayleigh SV (=SR)
+           obs->com[1].on_off, obs->com[2].on_off, // weights SV, SR
+           shft0[i][0] + dt * sol.shft[i][0],      // tshifts love SH
+           obs->com[0].on_off);                    // weights SH
+           // VIPUL: down to here
    // 
    fprintf(wt3,"%3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n", ppick[i], 0., 0., 0., 0.);
 
