@@ -2,10 +2,12 @@ DATA EXTRACTION and SETUP
 
 These instructions assume that the user is on the UAF seismo linux network, which has environmental variables $PYSEIS, $CAPHOME, etc.
 
-0. compile CAP
+0. compile CAP in parallel mode
 > cd $CAPHOME
 > make clean
-> make all >& make.log
+> make cap f=omp >& make.log
+
+note: see GIseis.pdf doc for number of cores on each machine
 
 1. Extract waveforms from IRIS:
 > cd $PYSEIS

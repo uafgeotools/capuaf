@@ -43,13 +43,28 @@ This requires having sufficient signal-to-noise levels within the chosen bandpas
 %==========================================
 
 \item Here are our standards for catalog figures. {\bf Keep in mind that these will be most effective when you are in the ballpark of the solution. This fine-tuning should only be done for the ``final'' solution.} Also keep in mind that we may choose to plot the green waveforms (\verb+keepBad+ in \verb+cap_plt.pl+) or not. (It is useful for us to see the waveforms that we turn off, but it may be distracting to others.) These criteria are driven by amplitude anomalies, since our misfit function is amplitude-based and will be most affected by spurious amplitudes (even when using L1).
+
+\medskip\noindent
+{\bf PHASE 1 (getting in the ballpark of the solution)}:
 %
 \begin{enumerate}
-\item Use a ``sensible'' distance range for selecting stations. For example, for small magnitude event ($\mw < 3$) one should set the maximum distance for selecting stations to 200~km. For intermediate magnitude ($\mw > 3.5$) events one can go up to 500~km. This range might also vary depending on the crustal structure and topography. Also keep track of the available green's function (most are premade upto 500~km - \verb+/store/wf/FK_synthetics/+)
+\item Fix the magnitude and depth to the earthquake-catalog-listed magnitude and depth.
+
+\item Use a ``sensible'' distance range for selecting stations. For example, for small magnitude event ($\mw < 3$) one should set the maximum distance for selecting stations to 200~km. For intermediate magnitude ($\mw > 3.5$) events one can go up to 500~km. This range might also vary depending on the crustal structure and topography. Also keep track of the available green's function (most are premade up to 500~km - \verb+/store/wf/FK_synthetics/+)
 
 \item Start by excluding the stations with the largest amplitude differences. Such differences may prevent you from viewing the waveform fits, since they are scaled by absolute amplitudes.
 
 \item Exclude the set of stations at the largest epicentral distance above which stations all have poor SNR.
+\end{enumerate}
+
+\medskip\noindent
+{\bf PHASE 2}:
+\begin{enumerate}
+\item Perform a magnitude search and depth search.
+
+Changing either one of these can have a major impact on the solution!
+
+\item Consider adjusting time shifts, including P arrival times, and P polarities.
 
 \item Exclude windows based on amplitude differences.
 %
@@ -102,8 +117,15 @@ Motivation: It looks odd to have a large set of body waves with a single surface
 \item Time shifts for Love and Rayleigh waves should be ``similar,'' since the propagation paths are sampling similar Earth structure (Love shallower than Rayleigh). 
 
 Use this to decide whether to turn off certain waveforms and whether to refine allowable time shifts. [NOTE THIS IS NOT A ``RULE''.] For a publication-quality solution, the time shifts should vary systematically as a function of azimuth. This can be detected from examination of the spider plot time shifts.
+\end{enumerate}
 
-\item PHASE 2: after the first round of thresholding has been done, then use CC thresholding.
+\medskip\noindent
+{\bf PHASE 3}:
+
+\begin{enumerate}
+\item Perform final magnitude and depth search.
+
+\item Use automatic CC thresholding.
 \begin{enumerate}
 \item If a cross-correlation value is less than 10 in a Rayleigh wave window, then cut all surface waves.
 \item If a cross-correlation value is less than 10 in a Love wave window, then cut it.

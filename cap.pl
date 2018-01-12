@@ -203,8 +203,12 @@ $usage =
     -B  FLAG NOT IN USE.
     -C  filters for Pnl and surface waves, specified by the corner
         frequencies of the band-pass filter. ($f1_pnl/$f2_pnl/$f1_sw/$f2_sw).
-    -D	weight for Pnl (w1) and distance scaling powers for Pnl (p1) and surface
-        waves (p2). If p1 or p2 is negative, all traces will be normalized. ($weight_of_pnl/$power_of_body/$power_of_surf).
+    -D	weight for Pnl (w1) and distance scaling powers for Pnl (p1) and surface waves (p2).
+        If p1 is 0 (or not an integer), then Pnl will be turned off.
+        Currently there is no option to turn off the surface waves with this command
+        or to upweight the surface waves; this must be done via the weight file.
+        If p1 or p2 is negative, all traces will be normalized.
+        ($weight_of_pnl/$power_of_body/$power_of_surf)
     -E  FLAG NOT IN USE.
     -F	include first-motion data in the search. thr is the threshold ($fm_thr).
     	The first motion data are specified in $weight. The polarities
