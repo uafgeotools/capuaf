@@ -22,6 +22,8 @@ all: $(CAP)
 # 	make cap d=WB
 # to compile cap so that it runs in parallel mode, run
 # 	make cap f=omp
+# for both options, run
+#       make cap d=WB f=omp
 cap cap_dir: %:%.o $(SUBS) cap_sub.o
 	$(LINK.f) -o $@ $^ -L$(SACHOME)/lib -lsac -lsacio
 
