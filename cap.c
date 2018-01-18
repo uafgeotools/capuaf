@@ -193,7 +193,7 @@ int main (int argc, char **argv) {
   char mod_dep[255]="-999";         /* for renaming .out file */
   char model[128];
   int depth=-999;
-  scanf("%s %d",model, &depth); 
+  scanf("%s %d",model, &depth);     // velocity model name, and event depth
   edep=depth;
   
   // WRITE POLARITY AND STATION DATA
@@ -211,15 +211,31 @@ int main (int argc, char **argv) {
   fidfmp = fopen(filename_fmpdata, "w");
   // end
 
-  scanf("%f%f%f%f%d%f%f",&x1,&y1,&Pshift_max,&Sshift_max,&repeat,&fm_thr,&tie);
+  scanf("%f%f%f%f%d%f%f",
+	&x1,                // P window length in seconds (Note: for nearby stations window length is less than this)
+	&y1,                // Surface window length in seconds
+	&Pshift_max,        // allowable P time-shift in seconds
+	&Sshift_max,        // allowable Surface time-shift in seconds
+	&repeat,            // repeat inversion and discard bad trace (OBSOLETE)
+	&fm_thr,            // first motion threshold
+	&tie);              // tie shifts between Rayleigh and Love
   if (repeat) for(j=0;j<NCP;j++) scanf("%f",rms_cut+4-j);
-  scanf("%f%f%f",&vp,&vs1,&vs2);
-  scanf("%f%f%f%f",&bs_body,&bs_surf,&x2,&nof_per_samp);
+  scanf("%f%f%f",
+	&vp,                // apparent velocity for Pnl (see cap.pl for more info)
+	&vs1,               // apparent velocity for Love
+	&vs2);              // apparent velocity for Rayleigh
+  scanf("%f%f%f%f",
+	&bs_body,           // distance scaling for body waves
+	&bs_surf,           // distance scaling for surface waves
+	&x2,                // weight for Pnl
+	&nof_per_samp);     // number of freedom for computing uncertainty (OBSOLETE)
   scanf("%d",&plot);
-  scanf("%d%f",&useDisp,&pol_wt);
-  scanf("%s",glib);
-  scanf("%d",&search_type);
-  scanf("%d",&norm);
+  scanf("%d%f",
+	&useDisp,           // to integrate (from velocity to disp)
+	&pol_wt);           // relative weight for polarity misfit
+  scanf("%s",glib);         // path to greens function library
+  scanf("%d",&search_type); // random or grid
+  scanf("%d",&norm);        // L1 or L2 norm for waveform misfit
   
 
   if (useDisp == 1) {
@@ -229,9 +245,11 @@ int main (int argc, char **argv) {
   fprintf(stderr, "search type = %d, norm = %d\n", search_type, norm);
 
   /*** input source functions and filters for pnl and sw ***/
-  scanf("%f",&dt);
+  scanf("%f",&dt);          // sampling interval
   if (dt>0.) {
-    scanf("%f%f",&tau0,&riseTime);
+    scanf("%f%f",
+	  &tau0,            // duration of source-time function
+	  &riseTime);       // rise-time of source-time function
     if ((src = trap(tau0, riseTime, dt, &ns)) == NULL) {
       fprintf(stderr,"fail to make a trapzoid stf\n");
       return -1;
@@ -254,18 +272,24 @@ int main (int argc, char **argv) {
   }
   fclose(fid_srcfile);
 
-  scanf("%lf%lf%lf%lf",&f1_pnl,&f2_pnl,&f1_sw,&f2_sw);
+  // filter bands for body and surface waves
+  scanf("%lf%lf%lf%lf",
+	&f1_pnl,            // minimum period for body waves
+	&f2_pnl,            // maximum period for body waves
+	&f1_sw,             // minimum period for surface waves
+	&f2_sw);            // maximum period for surface waves
   if (f1_pnl>0.) design(order, type, proto, 1., 1., f1_pnl, f2_pnl, (double) dt, pnl_sn, pnl_sd, &nsects);
   if (f1_sw>0.)  design(order, type, proto, 1., 1., f1_sw, f2_sw, (double) dt, sw_sn, sw_sd, &nsects);
 
   /** max. window length, shift, and weight for Pnl portion **/
-  mm[0]=rint(x1/dt);
-  max_shft[3]=max_shft[4]=2*rint(Pshift_max/dt);
-  w_pnl[3]=w_pnl[4]=x2;
+  mm[0]=rint(x1/dt);                                          // P window length in sample points
+  max_shft[3]=max_shft[4]=2*rint(Pshift_max/dt);              // allowable P time-shift in sample points
+  w_pnl[3]=w_pnl[4]=x2;                                       // weight for P waves
+
   /** max. window length, shift, and weight for P-SV, SH **/
-  mm[1]=rint(y1/dt);
-  max_shft[0]=max_shft[1]=max_shft[2]=2*rint(Sshift_max/dt);
-  w_pnl[0]=w_pnl[1]=w_pnl[2]=1;
+  mm[1]=rint(y1/dt);                                          // P window length in sample points
+  max_shft[0]=max_shft[1]=max_shft[2]=2*rint(Sshift_max/dt);  // allowable Surface time-shift in sample points
+  w_pnl[0]=w_pnl[1]=w_pnl[2]=1;                               // weight for surface waves
   /** and tie of time shifts between SH and P-SV **/
 
   /** begin -- get range of search parameters **/
@@ -304,16 +328,15 @@ int main (int argc, char **argv) {
     fprintf(stderr,"fail to allocate memory for storing misfit errors\n");
     return -1;
   }
-
-    fprintf(stderr,"Allocating memory for moment tensors (nsol = %10d) ... ", searchPar->nsol);
-    ARRAYMT * arrayMT = calloc(searchPar->nsol, sizeof(ARRAYMT));
-
-    if (arrayMT == NULL) {
-        fprintf(stderr,"Abort. unable to allocate.\n");
-        return 0;
-    } else {
-        fprintf(stderr,"done.\n\n");
-    }
+  fprintf(stderr,"Allocating memory for moment tensors (nsol = %10d) ... ", searchPar->nsol);
+  ARRAYMT * arrayMT = calloc(searchPar->nsol, sizeof(ARRAYMT));
+  
+  if (arrayMT == NULL) {
+    fprintf(stderr,"Abort. unable to allocate.\n");
+    return 0;
+  } else {
+    fprintf(stderr,"done.\n\n");
+  }
 
   /** end -- get range of search parameters **/
 
@@ -326,6 +349,7 @@ int main (int argc, char **argv) {
   scanf("%d",&nda);
 
   // Compute reward factors
+  // Reward for using longer time-windows and wider bandpass
   pnl_reward = (x1*(f2_pnl-f1_pnl));
   sw_reward = (y1*(f2_sw-f1_sw));
   //pnl_reward = 1;
@@ -361,18 +385,24 @@ int main (int argc, char **argv) {
     fprintf(stderr,"%d ", nwaveforms);
 
     /***** input station name and weighting factor ******/
+    /***************** Read weight file ****************/
     scanf("%s%s",tmp,dst);
     for(nup=0,j=0;j<NCP;j++) {
-      scanf("%d",&obs->com[4-j].on_off);
+      scanf("%d",&obs->com[4-j].on_off);   // weight for Pnl and Surface waves
       nup += obs->com[4-j].on_off;
     }
-    scanf("%f%f%f%f%f",&x1,&Pnl_win,&ts,&surf_win,&s_shft);
+    scanf("%f%f%f%f%f",
+	  &x1,                             // P arrival-time
+	  &Pnl_win,                        // P window length
+	  &ts,                             // Surface arrival time (same for both Rayleigh and Love)
+	  &surf_win,                       // Surface window length
+	  &s_shft);                        // Shift for surface waves
     Sshift_static[i] = s_shft;
 
-    tsurf[i]=ts;
+    tsurf[i]=ts;                           // Surface arrival time 
     tele = 0;
-    bs[0] = bs[1] = bs[2] = bs_surf;
-    bs[3] = bs[4] = bs_body;
+    bs[0] = bs[1] = bs[2] = bs_surf;       // distance scaling for surface waves
+    bs[3] = bs[4] = bs_body;               // distance scaling for body waves
     if (obs->com[3].on_off<0) {
       tele = 1;
       tstarS = obs->com[1].on_off;
@@ -401,32 +431,36 @@ int main (int argc, char **argv) {
     nup = sscanf(tmp,"%[^/]/%d/%d/%d",obs->stn,&up[0],&up[1],&up[2]);
     if ( fm_thr > 1 ) nup = 1;
 
-    /**************input waveforms************/
+    /**************input waveforms************/ 
     strcat(strcat(strcat(strcpy(tmp,eve),"/"),obs->stn), ".t");
     c_pt = strrchr(tmp,(int) 't');
+
+    // Loop over components (NRC = 3)
+    // See here for more info on sac headers:
+    // https://ds.iris.edu/files/sac-manual/manual/file_format.html 
     for(j=0;j<NRC;j++){
-      *c_pt = cm[j];
+      *c_pt = cm[j];                   // cm[NRC]={'t','r','z'};
       if ((data[j] = read_sac(tmp,&hd[j])) == NULL) return -1;
-      tb[j] = hd[j].b-hd[j].o;
-      npts[j] = hd[j].npts;
+      tb[j] = hd[j].b-hd[j].o;         // trace begining time - origin time
+      npts[j] = hd[j].npts;            // number of sample points
     }
-    obs->az = hd->az;
-    obs->dist = distance = hd->dist;
+    obs->az = hd->az;                  // azimuth
+    obs->dist = distance = hd->dist;   // distance
     obs->tele = tele;
-    if (x1<=0.) x1 = hd[2].a;
-    //if (ts<=0.) ts = hd[2].a;  // .a header is for P arrival time and not surface waves arrivals
-    x1 -= hd[2].o;
-    //ts -= hd[2].o;             // This would save P arrival times in 'ts' (bug?)
-    if (tele && s_shft>0.) s_shft -= hd[0].o;
+    if (x1<=0.) x1 = hd[2].a;          // P arrival time (from 'z' compoent header)
+    x1 -= hd[2].o;                     // P arrival time - origin time
+    if (tele && s_shft>0.) {
+      s_shft -= hd[0].o;}              // shift relative to origin
     t1 = hd[2].t1-hd[2].o;
     t2 = hd[2].t2-hd[2].o;
     t3 = hd[0].t3-hd[0].o;
     t4 = hd[0].t4-hd[0].o;
     if (dst[0]=='0' && dst[1]=='\0')
-      snprintf(dst,10,"%1.0f", rint(obs->dist));     /*if 0 distance given use the distance from header files*/
-    evla = hd->evla;
-    evlo = hd->evlo;
-    evdp = hd->evdp;
+      snprintf(dst,10,"%1.0f", rint(obs->dist));     // if 0 distance given use the distance from header files
+    evla = hd->evla;                   // event latitude 
+    evlo = hd->evlo;                   // event longitude
+    evdp = hd->evdp;                   // event depth
+
     /**************compute source time function***********/
 #ifdef DIRECTIVITY
     temp = hd->az*DEG2RAD-faultStr;
@@ -452,15 +486,16 @@ int main (int argc, char **argv) {
     // This section was used in previous CAP with flag only_first_motion=1
     // for generating  polarity misfit on the lune (Uturuncu FMT paper).
     // Now it's set to run for all inversions
-    fmpdata->azim = hd->az;
+    fmpdata->azim = hd->az;            // azimuth (should be same as earlier)
     strcpy(fmpdata->stname, obs->stn);
-    fmpdata->stlo = hd->stlo;
-    fmpdata->stla = hd->stla;
-    fmpdata->dist = hd->dist;
-    obs->stla = hd->stla;
-    obs->stlo = hd->stlo;
+    fmpdata->stlo = hd->stlo;          // station longitude
+    fmpdata->stla = hd->stla;          // station latitude
+    fmpdata->dist = hd->dist;          // distance
+    obs->stla = hd->stla;              // station latitude
+    obs->stlo = hd->stlo;              // station longitude
     // end
 
+    // Loop over greens function (NGR = 10)
     for(j=0;j<NGR;j++) {
       *c_pt = grn_com[j];
       indx = 0; if (j>1) indx = 1; if (j>=kk[2]) indx=2;
@@ -1081,7 +1116,6 @@ if (plot==1) {
            // station info
            obs->stn, obs->dist, obs->az, obs->stla, obs->stlo,
            // timeshifts calculated by cap
-           // VIPUL: these are the variables to check.
            Sshift_max,                             // allowable
            Sshift_static[i],                       // static (user input in weight file)
            Sshift_static[i] - Sshift_max,          // min shift

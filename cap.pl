@@ -35,23 +35,22 @@ $green = "/store/wf/FK_synthetics";               # UAF linux network
 #$green = "$caprun/models";                       # user testing
 #$green = " /home/alvizuri/PROJECTS/CAP/models";  # western US model (temporary location: move to /store)
 
-$repeat = 0;
-$fm_thr = 0.01;
-$dirct='';
-$disp=1;
-$mltp=0;
-$pol_wt=999;
-$weight="weight.dat";
-$fmt_flag="false";
+$repeat = 0;           # repeat inversion and discard bad trace (OBSOLETE)
+$fm_thr = 0.01;        # first motion threshold
+$dirct='';             # rupture directivity
+$rise = 0.5;
+$disp=1;               # integrate (velocity to displacment)
+$pol_wt=999;           # relative weight to polarity misfit
+$weight="weight.dat";  # deafult name for weight file
+$fmt_flag="false";     # use 'fmt' flag for full moment tensor search outputs
 
 # plotting
-$plot = 0;
-$amplify = 1;
-$spib = 40; # sec per inch, body waves
-$spis = 45; # spi, surface waves
-$keep = 0;
-$rise = 0.5;
-$ampfact = 1;
+$plot = 0;             # to generate plots (waveform misfit, beachballs)
+$amplify_P = 1;        # amplitude scaling for P wave
+$amplify_S = 2;        # amplitude scaling for Surf wave
+$spib = 40;            # sec per inch, body waves
+$spis = 45;            # sec per inch, surface waves
+$keep = 0;             # keep synthetics
 
 # filters and window lengths
 ($f1_pnl, $f2_pnl, $f1_sw, $f2_sw, $m1, $m2) = (0.02,0.2,0.02,0.1,35,70);
@@ -62,15 +61,16 @@ $max_shft2=5;		# max. shift for surface wave
 $tie = 0.5;		# tie between SV and SH
 
 # weights between different portions
-$weight_of_pnl=2;		# weight for pnl portions
-$power_of_body=1;		# distance scaling power for pnl waves
-$power_of_surf=0.5;
+$weight_of_pnl=2.0;	# weight for pnl portions
+$weight_of_surf=1.0;    # weight for surf portions (place holder - not implemented yet)
+$power_of_body=1;	# distance scaling power for pnl waves
+$power_of_surf=0.5;     # distance scaling power for surf waves
 
 # apparent velocities
 #($vp, $love, $rayleigh) = (7.8, 3.5, 3.1);
 ($vp, $love, $rayleigh) = (-1, -1, -1);
 
-# search types
+# search types (Random or grid)
 $grid_type = -1.0;
 
 # minimization (norm)
@@ -79,7 +79,7 @@ $norm = 1;
 # for sorting the output file by distance or azimuth
 $isort = 0;
 
-# Use parameter file instead
+# Use parameter file instead of command line input
 $parameter_file = '';
 
 #----------------------------------------------------------- 
@@ -410,12 +410,12 @@ foreach (grep(/^-/,@ARGV)) {
      $cmd = "cat";
    } elsif ($opt eq "P") {
      $plot = 1;
-     $amplify = $value[0] if $#value >= 0;
+     $amplify_P = $value[0] if $#value >= 0;
      $spib = $value[1] if $value[1] > 0;
      $spis = $value[2] if $value[2] > 0;
      $keep = 1 if $#value > 2;
    } elsif ($opt eq "p") {
-     $ampfact = $value[0];
+     $amplify_S = $value[0];
    } elsif ($opt eq "Q") {
      $nof = $value[0];
    } elsif ($opt eq "R") {
@@ -823,9 +823,9 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
       @dum = split('_', $md_dep);  # split mdl string
       $outfile = sprintf("%s_%s_%03d.out", @event, $model, int($dep));
       open(my $out,'>>',$outfile);
-      say $out "INPUT_PAR $md_dep P_win $m1 S_win $m2 P $amplify p $ampfact NCOM $ncom spiB $spib spiS $spis $filterBand FMT $fmt_flag";
+      say $out "INPUT_PAR $md_dep P_win $m1 S_win $m2 P $amplify_P p $amplify_S NCOM $ncom spiB $spib spiS $spis $filterBand FMT $fmt_flag";
 
-      &plot($md_dep, $m1, $m2, $amplify, $ampfact, $ncom, $spib, $spis, $filterBand, $fmt_flag, @event, $model, $dep, $dura, $riseTime, $pol_wt);
+      &plot($md_dep, $m1, $m2, $amplify_P, $amplify_S, $ncom, $spib, $spis, $filterBand, $fmt_flag, @event, $model, $dep, $dura, $riseTime, $pol_wt);
       unlink(<${md_dep}_*.?>) unless $keep;
       chdir("../");
       print STDERR "cap.pl: plotting finished.\n";
