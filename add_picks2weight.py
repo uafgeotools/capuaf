@@ -13,12 +13,16 @@ from read_cap_weight import *
 import math
 import string
 
+# name of file that contains the P arrivals
 file_w_Parrivals = "/home/ksmith/REPOSITORIES/capuaf/MTs/Dec10MT/V1/20171210122855089/weight.dat"
 
+# name of the output file
 outfile = "/home/ksmith/REPOSITORIES/capuaf/MTs/Dec10MT/V1/20171210122855089/weight_w_Parr.dat"
 
+# read in weight file
 stnm,edist,PV_wt,PR_wt,SV_wt,SR_wt,ST_wt,P_arrival,P_len,S_arrival,S_len,waveform_shft = read_cap_weight(file_w_Parrivals)
 
+# make new file
 f = open(outfile, "w")
 stfmt = '%34s %4.0f %4.0f %4.0f %4.0f %4.0f %4.0f %4.4f %4.0f %4.0f %4.0f %4.0f \n';
 filenumber = 1
