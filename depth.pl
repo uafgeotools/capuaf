@@ -93,99 +93,99 @@ while (@event)
 	$min=$min0;
 	$max=-100.;
 	foreach (grep(/$eve/,@aaa))
-    {
-        chop;   
-        # Split long names into 1, 2 or 3 strings
-        # 20130103 calvizuri - example input to chop:
-        # Event 20080418093700 Model cus_001 FM 291 51 -13 Mw 5.10 rms 3.748e-02   110 ERR   2   5   8 ISO 0.16 0.11 CLVD 0.14 0.08
-        # New format:
-        #   0           1          2               3                4   5    6         7  8   9   10   11        12    13   14  15     16      17  18   19    20
-        # Event 20160124123742054 Model 20160124123742054_scak_100 FM   50 59.063911   46 Mw 4.40 rms 7.310e-01  3660 CLVD 0.00 ISO   0.000000 VR 46.6 data2 1.297e-06
-        # OR
-        # Event Little_Skull_Main Model Little_Skull_Main_wes_001 FM  243 67.006607  -21 Mw 5.10 rms 8.262e-01  2880 CLVD 0.00 ISO   0.000000 VR 31.7 data2 1.986e-05
-        $line[$ii]=$_;
-        @bb=split;
-        $nwords = split('_',$bb[3]);
-        if ($nwords == 3) {
-            ($evname, $smodel, $dep[$ii]) = split('_',$bb[3]);
-            $evname_ = $evname;
-        }
-        elsif ($nwords == 4) {
-            ($evname1, $evname2, $smodel, $dep[$ii]) = split('_',$bb[3]); 
-            $evname = join '', $evname1, " ", $evname2;
-            $evname_ = join '', $evname1, "_", $evname2;
-        }
-        elsif ($nwords == 5) {
-            ($evname1, $evname2, $evname3,$smodel,$dep[$ii]) = split('_',$bb[3]);
-            $evname = join '', $evname1, " ", $evname2, " ", $evname3;
-            $evname_ = join '', $evname1, "_", $evname2, "_", $evname3;
-        }
-
-        $strike[$ii]=$bb[5];		   # not needed
-        $dip[$ii]=$bb[6];			   # not needed
-        $rake[$ii]=$bb[7];			   # not needed
-        $mw[$ii]=$bb[9];
-        #    printf STDERR "debug. mw[$ii]=%lf\n",$mw[$ii];
-        $rms[$ii]=$bb[11]; # this is the total misfit= polarity error + waveform error
-        $vr[$ii]=$bb[18];
-
-        if ($vr[$ii]>$max)
-        { 
-            $max=$vr[$ii]; $best=$ii;
-        }
-        $ii++;
-    }
-
-    # get the catalog depth from line #2 of the CAP output file
-    # # Hypocenter_sac_header elat 3.741330e+01 elon -1.170986e+02 edep 6.100000e+00
-    # | |                     |    |            |    |             |    |
-    $fcapout1 = "./${odir}/${evname}_${smodel}_$dep[${best}].out";
-    $fcapout2 = "./${evname_}_${smodel}_$dep[${best}].out";
-    if (-e $fcapout1) {
-        $fcapout = $fcapout1;
-    }
-    elsif (-e $fcapout2) {
-        $fcapout = $fcapout2;
-    }
-    else {
-        die "Stop. CAP out file not found\n$fcapout\n";
-    }
-    printf STDERR "Reading $fcapout\n";
-    open(OUT,$fcapout);
-    @outfile=<OUT>;
-    (undef,undef,undef,$elat,undef,$elon,undef,$edep)=split(" ",$outfile[1]);
-
-    # For each of the the Ford quakes replace the SAC header depths with those from the USGS catalog
-    # The best depths and their sources are in the USGS catalog (usgs.gov)
-    #       Little_Skull_Main "9070.0", " CI", "5.4 ", "ms ", "CI "], 
-    # Little_Skull_Aftershock "5070.0", " CI", "4.44", "ml ", "CI "], 
-    #         Timber_Mountain "4487.0", " CI", "4.0 ", "ml ", "CI "], 
-    #                Amargosa "9070.0", " CI", "3.7 ", "ml ", "CI "], 
-    #              Groom_Pass "5000.0", " US", "4.3 ", "ml ", "US "], 
-    #          Indian_Springs "5793.0", " CI", "3.81", "ml ", "CI "], 
-    #              Calico_Fan "6037.0", " CI", "4.05", "ml ", "CI "], 
-    #            Warm_Springs "0.0   ", "REN", "4.1 ", "mb ", "US "], 
-    #        Frenchman_Flat_1 "0.0   ", "REN", "3.7 ", "ml ", "US "], 
-    #        Frenchman_Flat_2 "5000.0", "US ", "4.8 ", "mwr", "BRK"], 
-    #            Little_Skull "9653.0", "CI ", "4.58", "mw ", "CI "], 
-    #                 Ralston "6100.0", "NN ", "4.1 ", "ml ", "NN "] 
-    if    ($evname_ eq "Little_Skull_Main")      {$edep="9070.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
-    elsif ($evname_ eq "Little_Skull_Aftershock"){$edep="5070.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
-    elsif ($evname_ eq "Timber_Mountain")        {$edep="4487.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
-    elsif ($evname_ eq "Amargosa")               {$edep="9070.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
-    elsif ($evname_ eq "Groom_Pass")             {$edep="5000.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
-    elsif ($evname_ eq "Indian_Springs")         {$edep="5793.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
-    elsif ($evname_ eq "Calico_Fan")             {$edep="6037.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
-    elsif ($evname_ eq "Warm_Springs")           {$edep="0.0";    $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
-    elsif ($evname_ eq "Frenchman_Flat_1")       {$edep="0.0";    $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
-    elsif ($evname_ eq "Frenchman_Flat_2")       {$edep="5000.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
-    elsif ($evname_ eq "Little_Skull")           {$edep="9653.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
-    elsif ($evname_ eq "Ralston")                {$edep="6100.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
-    else {
-        printf STDERR "Using catalog depth (from sac header) $edep\n";
-    }
-    close(OUT);
- 
+	{
+	    chop;   
+	    # Split long names into 1, 2 or 3 strings
+	    # 20130103 calvizuri - example input to chop:
+	    # Event 20080418093700 Model cus_001 FM 291 51 -13 Mw 5.10 rms 3.748e-02   110 ERR   2   5   8 ISO 0.16 0.11 CLVD 0.14 0.08
+	    # New format:
+	    #   0           1          2               3                4   5    6         7  8   9   10   11        12    13   14  15     16      17  18   19    20
+	    # Event 20160124123742054 Model 20160124123742054_scak_100 FM   50 59.063911   46 Mw 4.40 rms 7.310e-01  3660 CLVD 0.00 ISO   0.000000 VR 46.6 data2 1.297e-06
+	    # OR
+	    # Event Little_Skull_Main Model Little_Skull_Main_wes_001 FM  243 67.006607  -21 Mw 5.10 rms 8.262e-01  2880 CLVD 0.00 ISO   0.000000 VR 31.7 data2 1.986e-05
+	    $line[$ii]=$_;
+	    @bb=split;
+	    $nwords = split('_',$bb[3]);
+	    if ($nwords == 3) {
+		($evname, $smodel, $dep[$ii]) = split('_',$bb[3]);
+		$evname_ = $evname;
+	    }
+	    elsif ($nwords == 4) {
+		($evname1, $evname2, $smodel, $dep[$ii]) = split('_',$bb[3]); 
+		$evname = join '', $evname1, " ", $evname2;
+		$evname_ = join '', $evname1, "_", $evname2;
+	    }
+	    elsif ($nwords == 5) {
+		($evname1, $evname2, $evname3,$smodel,$dep[$ii]) = split('_',$bb[3]);
+		$evname = join '', $evname1, " ", $evname2, " ", $evname3;
+		$evname_ = join '', $evname1, "_", $evname2, "_", $evname3;
+	    }
+	    
+	    $strike[$ii]=$bb[5];		   # not needed
+	    $dip[$ii]=$bb[6];			   # not needed
+	    $rake[$ii]=$bb[7];			   # not needed
+	    $mw[$ii]=$bb[9];
+	    #    printf STDERR "debug. mw[$ii]=%lf\n",$mw[$ii];
+	    $rms[$ii]=$bb[11]; # this is the total misfit= polarity error + waveform error
+	    $vr[$ii]=$bb[18];
+	    
+	    if ($vr[$ii]>$max)
+	    { 
+		$max=$vr[$ii]; $best=$ii;
+	    }
+	    $ii++;
+	}
+	
+	# get the catalog depth from line #2 of the CAP output file
+	# Hypocenter_sac_header elat 3.741330e+01 elon -1.170986e+02 edep 6.100000e+00
+	# | |                     |    |            |    |             |    |
+	$fcapout1 = "./${odir}/${evname}_${smodel}_$dep[${best}].out";
+	$fcapout2 = "./${evname_}_${smodel}_$dep[${best}].out";
+	if (-e $fcapout1) {
+	    $fcapout = $fcapout1;
+	}
+	elsif (-e $fcapout2) {
+	    $fcapout = $fcapout2;
+	}
+	else {
+	    die "Stop. CAP out file not found\n$fcapout\n";
+	}
+	printf STDERR "Reading $fcapout\n";
+	open(OUT,$fcapout);
+	@outfile=<OUT>;
+	(undef,undef,undef,$elat,undef,$elon,undef,$edep)=split(" ",$outfile[1]);
+	
+	# For each of the the Ford quakes replace the SAC header depths with those from the USGS catalog
+	# The best depths and their sources are in the USGS catalog (usgs.gov)
+	#       Little_Skull_Main "9070.0", " CI", "5.4 ", "ms ", "CI "], 
+	# Little_Skull_Aftershock "5070.0", " CI", "4.44", "ml ", "CI "], 
+	#         Timber_Mountain "4487.0", " CI", "4.0 ", "ml ", "CI "], 
+	#                Amargosa "9070.0", " CI", "3.7 ", "ml ", "CI "], 
+	#              Groom_Pass "5000.0", " US", "4.3 ", "ml ", "US "], 
+	#          Indian_Springs "5793.0", " CI", "3.81", "ml ", "CI "], 
+	#              Calico_Fan "6037.0", " CI", "4.05", "ml ", "CI "], 
+	#            Warm_Springs "0.0   ", "REN", "4.1 ", "mb ", "US "], 
+	#        Frenchman_Flat_1 "0.0   ", "REN", "3.7 ", "ml ", "US "], 
+	#        Frenchman_Flat_2 "5000.0", "US ", "4.8 ", "mwr", "BRK"], 
+	#            Little_Skull "9653.0", "CI ", "4.58", "mw ", "CI "], 
+	#                 Ralston "6100.0", "NN ", "4.1 ", "ml ", "NN "] 
+	if    ($evname_ eq "Little_Skull_Main")      {$edep="9070.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+	elsif ($evname_ eq "Little_Skull_Aftershock"){$edep="5070.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+	elsif ($evname_ eq "Timber_Mountain")        {$edep="4487.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+	elsif ($evname_ eq "Amargosa")               {$edep="9070.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+	elsif ($evname_ eq "Groom_Pass")             {$edep="5000.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+	elsif ($evname_ eq "Indian_Springs")         {$edep="5793.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+	elsif ($evname_ eq "Calico_Fan")             {$edep="6037.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+	elsif ($evname_ eq "Warm_Springs")           {$edep="0.0";    $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+	elsif ($evname_ eq "Frenchman_Flat_1")       {$edep="0.0";    $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+	elsif ($evname_ eq "Frenchman_Flat_2")       {$edep="5000.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+	elsif ($evname_ eq "Little_Skull")           {$edep="9653.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+	elsif ($evname_ eq "Ralston")                {$edep="6100.0"; $edep = $edep/1000; printf STDERR "*** WARNING. Using depth $edep for event $evname ***\n";}
+	else {
+	    printf STDERR "Using catalog depth (from sac header) $edep\n";
+	}
+	close(OUT);
+	
 	# ------------------read MT parameters --------------------------
 	$jj=1;
 	foreach (grep(/tensor/,@data_fmt))
@@ -208,7 +208,7 @@ while (@event)
 	    #printf STDERR "debug. MT components: %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f M0_exp=%f\n",$mrr[$jj], $mtt[$jj], $mff[$jj], $mrt[$jj], $mrf[$jj], $mtf[$jj],$M0_exp[$jj];
 	    $jj++;
 	}
-    
+	
 	#===================== compute a relative measure of error ($lerr = log(misfit/misfit_min))
 	$max=-1000;		# unrealisticly low maximum value
 	for ($jj=1;$jj<$ii;$jj=$jj+1)
@@ -222,7 +222,7 @@ while (@event)
 	    }
 	}
 	$max = sprintf("%1.3f",$max); # suppress to 3 decimal places
-
+	
 	#====================== compute parabolic equation:  Y= aX^2 + bX + c (cleaner way to handle) Using best 3 points only
 	$x1 = $dep[$best-1]; $y1 = $lerr[$best-1]; #(x1,y1)
 	$x2 = $dep[$best]; $y2 = $lerr[$best];	   #(x2,y2)
@@ -273,7 +273,7 @@ while (@event)
 	} elsif ($smodel eq "wes") {
 	    @model=@wes;
 	}
-
+	
 	#================== PLot misfit parabola
 	$xinc = 0.1;
 	$tmp = 1000000;	# temporary variable (start with very large misfit value to find the uncertainty)
@@ -292,12 +292,12 @@ while (@event)
 	    {
 		$tmp = abs($ycord - $err_cent);
 		$unc = abs($l-$depth);
-		$xcord2 = $l;      
+		$xcord2 = $l;
 		$ycord2 = $ycord;
 	    }
 	}
 	close(PLT);
-
+	
 	# ==============Plot bars for uncertainty
 	open(PLT, "| psxy $J $R2 -K -O -W2p,0/0/0");
 	printf PLT "%f %f\n",$depth, $err_cent;
@@ -308,12 +308,12 @@ while (@event)
 	printf PLT "%f %f\n",$depth, $Ydepth;
 	printf PLT "%f %f\n",$depth, $err_cent;
 	close(PLT);
-    
+	
 	# open(PLT, "| psxy $J $R2 -K -O -W0.5p,0/0/0,-");
 	# printf PLT "%f %f\n",$xcord2, $ymin2;
 	# printf PLT "%f %f\n",$xcord2, $err_cent;
 	# close(PLT);
-
+	
 	# =============plot the log(err/min_err) with depth (perhaps don't need this)
 	$xy = "-K $B2 -P -O";
 	open(PLT, "| psxy $J $R2 $xy -Sc0.25c -Gred"); # key command that sets the scale (J) and region (R) - draws a circle
@@ -334,7 +334,7 @@ while (@event)
 	    printf PLT "%f %f\n",$l,$aa;
 	}
 	close(PLT);
-
+	
 	#=================== plot the VR (variance reduction) with depth
 	$xy = "-K -O $B3";
 	open(PLT, "| psxy $J $R $xy -Sc0.25c -G150"); # key command that sets the scale (J) and region (R) - draws a circle
@@ -353,7 +353,7 @@ while (@event)
 	    printf PLT "%f %f\n",$l,$aa;
 	}
 	close(PLT);
-    
+	
 	#================== Plot the bars where interface occurs in the structural model
 	if ($imodel==1)
 	{
@@ -365,33 +365,33 @@ while (@event)
 		close(PLT);
 	    }
 	}
-
+	
 	#================== Plot the depth(s) as inverted triangles
-    # offset the depth if there is a topography correction
-    if ($evname eq "20100516063454464") {
-        # NOTE Catalog depth for Uturuncu main event is 0.6 below sea level.
-        # The depth test for the main event gives a best depth of 4.4km, then rounded to 4km.
-        # But this is 4km from the surface, which is at elevation 4.6km. 
-        # Therefore the inversion is with respect to the elevation:
-        # 4.6 (elevation) - 4 (best depth) = 0.6 km above sea level.
-        $topocorr = 4.6;
-    }
-    elsif ($evname eq "XYZ") { # add corrections as needed
-        $topocorr = 0;
-    }
-    if (length $topocorr) {
-        printf STDERR "*** WARNING Applying topo correction: $topocorr km ***\n";
-    }
-    # plot the catalog depth ($edep) as a RED inverted triangle
-    open(PLT, "| psxy $J $R $xy -Si0.5c -G255/0/0 -W.05c");
-    printf PLT "%f %f\n", $edep + $topocorr, -7.5;
-    close(PLT);
+	# offset the depth if there is a topography correction
+	if ($evname eq "20100516063454464") {
+	    # NOTE Catalog depth for Uturuncu main event is 0.6 below sea level.
+	    # The depth test for the main event gives a best depth of 4.4km, then rounded to 4km.
+	    # But this is 4km from the surface, which is at elevation 4.6km. 
+	    # Therefore the inversion is with respect to the elevation:
+	    # 4.6 (elevation) - 4 (best depth) = 0.6 km above sea level.
+	    $topocorr = 4.6;
+	}
+	elsif ($evname eq "XYZ") { # add corrections as needed
+	    $topocorr = 0;
+	}
+	if (length $topocorr) {
+	    printf STDERR "*** WARNING Applying topo correction: $topocorr km ***\n";
+	}
+	# plot the catalog depth ($edep) as a RED inverted triangle
+	open(PLT, "| psxy $J $R $xy -Si0.5c -G255/0/0 -W.05c");
+	printf PLT "%f %f\n", $edep + $topocorr, -7.5;
+	close(PLT);
 
-    # plot the best-fitting depth ($depth) from the CAP grid search as a WHITE inverted triangle
-    open(PLT, "| psxy $J $R $xy -Si0.5c -G255/255/255 -W.05c");
-    printf PLT "%f %f\n",$depth, -7.5;
-    close(PLT);
-
+	# plot the best-fitting depth ($depth) from the CAP grid search as a WHITE inverted triangle
+	open(PLT, "| psxy $J $R $xy -Si0.5c -G255/255/255 -W.05c");
+	printf PLT "%f %f\n",$depth, -7.5;
+	close(PLT);
+	
 	#=============== plot the beach balls
 	#  open(PLT, "| psmeca -JX -R -O -K -Sa0.3");   # original
 	open(PLT, "| psmeca $J $R2 -O -K -Sm${ballsize} -G100 -W0.5p,0 -P"); # plot Moment tensors
@@ -425,18 +425,18 @@ while (@event)
 	{
 	    open(PLT, "| pstext -JX $R -N -O -S2p,white -N");
 	}
-
+	
 	# plot the title
 	$xtitle = $dep[1];
 	$ytitle = $ymax + ($ymax-$ymin)*0.05;
 	$fsizet = $fsize+2;
 
-    # $sigma gives much larger estimation of uncertainties
-    # NOTE  for figure in Uturuncu FMT paper replace 'h' with 'depth', 'utuhalf' with more descriptive 'halfspace'
-    #       Also follow comments #1 and #2 next
-    printf PLT "%f %f $fsizet 0 0 1 %s | Model %s | Best depth %4.1f \261 %.1f km\n",$xtitle,$ytitle,$evname,$smodel,$depth,$unc;       # 1. comment for Uturuncu FMT paper
-    #printf PLT "%f %f $fsizet 0 0 1 %s | halfspace | depth%4.1f \261 %.1f km\n",$xtitle,$ytitle, $evname,$depth,$unc; # 2. uncomment for Uturuncu FMT paper
-
+	# $sigma gives much larger estimation of uncertainties
+	# NOTE  for figure in Uturuncu FMT paper replace 'h' with 'depth', 'utuhalf' with more descriptive 'halfspace'
+	#       Also follow comments #1 and #2 next
+	printf PLT "%f %f $fsizet 0 0 1 %s | Model %s | Best depth %4.1f \261 %.1f km\n",$xtitle,$ytitle,$evname,$smodel,$depth,$unc;       # 1. comment for Uturuncu FMT paper
+	#printf PLT "%f %f $fsizet 0 0 1 %s | halfspace | depth%4.1f \261 %.1f km\n",$xtitle,$ytitle, $evname,$depth,$unc; # 2. uncomment for Uturuncu FMT paper
+	
 	close(PLT);
 	$xx = "-O -K -Y2 $B";	# shift up
 	$i++;
@@ -446,7 +446,7 @@ while (@event)
 	    #$xx = "-X3.5 -O -K -Y-8 ${Bscale}WSne";
 	    $xx = "-X3.5 -O -K -Y-8 $B"; # shift to a new column
 	}
-
+	
     }				# foreach $eve (@aa){
 }				# while(@event) {
 exit(0);
