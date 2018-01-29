@@ -130,7 +130,7 @@ while (@event)
 	    $vr[$ii]=$bb[18];
 	    
 	    if ($vr[$ii]>$max)
-	    { 
+	    {
 		$max=$vr[$ii]; $best=$ii;
 	    }
 	    $ii++;
@@ -221,7 +221,9 @@ while (@event)
 		$max=$lerr[$jj];
 	    }
 	}
-	$max = sprintf("%1.3f",$max); # suppress to 3 decimal places
+	# suppress to 3 decimal places
+	# this cause GMT to crash because -R turns out to be zero for small changes in VR
+	#$max = sprintf("%1.3f",$max);
 	
 	#====================== compute parabolic equation:  Y= aX^2 + bX + c (cleaner way to handle) Using best 3 points only
 	$x1 = $dep[$best-1]; $y1 = $lerr[$best-1]; #(x1,y1)
