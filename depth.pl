@@ -243,26 +243,26 @@ while (@event)
 	$ymin = -10; $ymax = 100;
 	$R = "-R$xmin/$xmax/$ymin/$ymax";
 
-    # define $R2
-    $ymin2 = -$max/10; $ymax2 = $max;
-    $R2 = "-R$xmin/$xmax/$ymin2/$ymax2";
-    $xtick1 = 5; $xtick2 = 1;
-
-    # show y-axis ticks up to 2 or 3 decimal places
-    $ytick1 = $ymax2/5.;    # annotations
-    $ytick2 = $ymax2/10.;   # locations
-    # ticks for log err
-    # y-axis ticks don't show for small log-err. This code handles those cases
-    if ($ymax2 < 0.1) {
-        $ytick1 = sprintf("%.3f", $ytick1);
-        $ytick2 = sprintf("%.3f", $ytick2);
-    }
-    else {
-        $ytick1 = sprintf("%.2f", $ytick1);
-        $ytick2 = sprintf("%.2f", $ytick2); 
-    }
-    $B2 = "-Ba${xtick1}f${xtick2}:\" \":/a${ytick1}f${ytick2}:\"ln(VR_max / VR)\":nW";
-    
+	# define $R2
+	$ymin2 = -$max/10; $ymax2 = $max;
+	$R2 = "-R$xmin/$xmax/$ymin2/$ymax2";
+	$xtick1 = 5; $xtick2 = 1;
+	
+	# show y-axis ticks up to 2 or 3 decimal places
+	$ytick1 = $ymax2/5.;    # annotations
+	$ytick2 = $ymax2/10.;   # locations
+	# ticks for log err
+	# y-axis ticks don't show for small log-err. This code handles those cases
+	if ($ymax2 < 0.1) {
+	    $ytick1 = sprintf("%.3f", $ytick1);
+	    $ytick2 = sprintf("%.3f", $ytick2);
+	}
+	else {
+	    $ytick1 = sprintf("%.2f", $ytick1);
+	    $ytick2 = sprintf("%.2f", $ytick2); 
+	}
+	$B2 = "-Ba${xtick1}f${xtick2}:\" \":/a${ytick1}f${ytick2}:\"ln(VR_max / VR)\":nW";
+	
 	# Set the model for plotting layer interface
 	if ($smodel eq "tactmod") {
 	    @model=@tactmod;
