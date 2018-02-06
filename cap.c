@@ -509,6 +509,7 @@ int main (int argc, char **argv) {
     if (!tele) {hd[0].t2 = hd[2].t2; hd[0].user2 = hd[2].user2;}
 
     /* generate first-motion polarity data */
+    // user1 = P take-off angle; user2 = S take-off angle (From greens function)
     if (nup>1 && (hd[2].user1<0. || hd[0].user2<0.)) {
       fprintf(stderr,"No P/S take-off angle in Greens' function %s\n",tmp);
     } else {
@@ -538,10 +539,10 @@ int main (int argc, char **argv) {
     // This section was used in previous CAP with flag only_first_motion=1
     // for generating  polarity misfit on the lune (Uturuncu FMT paper).
     // Now it's set to run for all inversions
-    fmpdata->pol = up[0];
-    fmpdata->toa = hd[2].user1;
-    fmpdata->tp = hd[2].t1;
-    fmpdata->ts = hd[2].t2;
+    fmpdata->pol = up[0];        // First motion polarity
+    fmpdata->toa = hd[2].user1;  // P take-off angle
+    fmpdata->tp = hd[2].t1;      // P arrival time
+    fmpdata->ts = hd[2].t2;      // S arrival
     // end
 
     /*** calculate time shift needed to align data and syn approximately ****/
@@ -557,6 +558,9 @@ int main (int argc, char **argv) {
     /** calculate time windows for Pnl and Surface wave portions **/
 
     /* for Pnl portion */
+    // t1 and t2 could be set in the data 
+    // t1 - P arrival time (used for cutting P window)
+    // t2 - S arrival time (used for cutting S window)
     if (t1 < 0 || t2 < 0 ) {
         /* no time window in the data trace. use default time window in syn */
 
