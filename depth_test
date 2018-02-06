@@ -9,7 +9,7 @@
 eve=$1;
 model=$2;
 
-grep -h Event OUTPUT_DIR/*"$model"*.out > OUTPUT_DIR/junk1.out
-grep -h tensor OUTPUT_DIR/*"$model"*.out > OUTPUT_DIR/junk2.out
+grep -h Event OUTPUT_DIR/*"$eve"*"$model"*.out > OUTPUT_DIR/junk1.out
+grep -h tensor OUTPUT_DIR/*"$eve"*"$model"*.out > OUTPUT_DIR/junk2.out
 
 depth.pl OUTPUT_DIR/junk1.out OUTPUT_DIR/junk2.out $1 > OUTPUT_DIR/${eve}_${model}_dep.ps
