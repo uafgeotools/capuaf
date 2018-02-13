@@ -49,7 +49,7 @@ Last compiled: \today
 \section{\cite{ZhaoHelm1994}}
 \subsection{time shift}
 {\bf Cross-correlation function}
-The relative time shift of the data f(t) from the synthetics g(t) can be estimated with the use of the cross-corrleation function:
+The relative time shift of the data f(t) from the synthetics g(t) can be estimated with the use of the cross-correlation function:
 \eq
 C(t) = \frac{\int_{-\infty}^{\infty} f(\tau)g(t+\tau)d\tau}{(\int_{-\infty}^{\infty}f^2(\tau)d\tau \int_{-\infty}^{\infty}g^2(\tau)d\tau )^{1/2}}
 \label{cor}
@@ -119,7 +119,7 @@ e =  \left ( \frac{r}{r_0} \right)^p  || u-s||_k
 \label{misfit_func}
 \en
 
-here p is a scaling factor to give the record at r the same weight as that at reference distance $r0=100$. Any kind of norm-$k$ {\bf L1 or L2} can be chosen for calculating the data misfit. 
+There p is a scaling factor to give the record at r the same weight as that at reference distance $r0=100$. Any kind of norm-$k$ {\bf L1 or L2} can be chosen for calculating the data misfit. 
 
 If we assume a spherical geometrical spreading for body waves and cylindrical geometrical spreading for surface waves, an appropriate choice of p would be p=1 for body waves and p=0.5 for surface waves.
 
@@ -167,7 +167,7 @@ Before computing the norm, both the data and the green's function are subjected 
 u(t)_i &=& w_i\times[f(t)_i];\,\,\,\,\,\,\,\,\,\,i=[Pnl, Surf]\\
 s(t)_i &=& w_i\times[g(t)_i];\,\,\,\,\,\,\,\,\,\,i=[Pnl, Surf]
 \ena
-here f(t) is the recorded seismogram and g(t) is the green's function. Individual components of the data and green's function are picked and then multipled with the suitable weighting factor depending it is the Pnl of Surface wave section. Each component (R,T,Z) of seismograms is choped into Pnl and Surface wave setion.
+here f(t) is the recorded seismogram and g(t) is the green's function. Individual components of the data and green's function are picked and then multipled with the suitable weighting factor depending it is the Pnl of Surface wave section. Each component (R,T,Z) of seismograms is chopped into Pnl and Surface wave section.
 
 Example for a particular station:
 \eqa
@@ -191,7 +191,7 @@ L2:||\bs||^2 &=& (\underline{\bs}^T)(\underline{\bs})
 \ena
 
 \subsection{Cross Correlation}
-The normalized cross correction function between u and s are computed using the same as equation \ref{cor}. 
+The normalized cross correlation function between u and s are computed using the same as equation \ref{cor}. 
 \eqa
 C(t) &=& \frac{\int_{-\infty}^{\infty} u(\xi)s(\xi-t)d\xi}{(||u||^2 \, ||s||^2)^{1/2}}\\
 &=& \frac{(u \star s)(t)} {(||u||^2 \, ||s||^2)^{1/2}}
@@ -289,7 +289,7 @@ A8 &=& 0
 To find the actual synthetics, these need to be multiplied by the scaled seismic moment $A$. \\
 $\bA = A * [A1\, A2\, A3\, A4\, A5\, A6\, A7\, A8]$.
 
-The synthetics can be computed using the 9 green's functions and these 6 radiation coffiients:
+The synthetics can be computed using the 9 green's functions and these 6 radiation coeffiients:
 \eqa
 d_z &=& ZSS\,\, A1 + ZDS\,\, A2 + ZDD\,\, A3 +ZEP\,\, A7\\
 d_r &=& RSS\,\, A1 + RDS\,\, A2 + RDD\,\, A3 +REP\,\, A7\\
@@ -332,7 +332,7 @@ After finding the point of maximum correlation, and shifting the synthetics, we 
 \eq
 s'(t) = s(t-\tau)\\
 \en
-The negaative sign is used because poistive time shift means, synthetics is earlier and needs to be shifted in positive $t$ direction. In vector form :
+The negative sign is used because positive time shift means, synthetics is earlier and needs to be shifted in positive $t$ direction. In vector form :
 \eqa
 \mbox{old synthetics}:& s(t) &= \bs\\
 \mbox{new synthetics}:& s'(t) &= \bs'\\
@@ -727,7 +727,7 @@ Note: Other similar functions could also be used. I first started by using an in
 \eq
 k = (1 - \frac{2}{\pi}*atan(N/CONST))
 \en
-But since this is just an ad-hoc function, using an inverse tangetial makes things look more complicated.
+But since this is just an ad-hoc function, using an inverse tangential makes things look more complicated.
 \end{minipage}
 }
 
@@ -787,7 +787,7 @@ polarity weight = 0.9 & polarity weight = 1.0 &  \\
 
 \caption{
 Effect of using different polarity weight factors. 
-Marked in green are upward polarities, blue are downward polaritites, and in red are mismatching polarities. Polarities are plotted at the lower-hemisphere piercing points on the beachball.
+Marked in green are upward polarities, blue are downward polarities, and in red are mismatching polarities. Polarities are plotted at the lower-hemisphere piercing points on the beachball.
 %(0.0 to 1.0 from left to right and top to bottom). 
 Solution for polarity weight = 0.0 is obtained by minimizing waveform misfit only; solution for polarity weight = 1.0 is obtained using polarity only.
 Poorer the quality of inversion, more drastic are the variability in beachball to the changes in weight factor.
