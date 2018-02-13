@@ -13,9 +13,13 @@
 $pwd = $ENV{PWD};
 $geotools = $ENV{GEOTOOLS};
 $home = $ENV{HOME};
+$caphome = $ENV{CAPHOME};
 
-# base directory (where to calculate the green's functions)
-$basedir = "/store/wf/FK_synthetics/";
+$iex = 0; # default = 0 (for testing)
+
+# Base directory for precreating the green's function directories (example: tactmod_all and scak_all) and csh file
+# $basedir = "/store/wf/FK_synthetics/";
+$basedir = "$home/Downloads/tempx";
 
 # specify what sets of Green's functions you want
 $idc = 1;    # Green's functions for double couple
@@ -23,28 +27,42 @@ $iiso = 1;   # additional Green's functions for full moment tensors
 
 # range of depths -- INCLUSIVE
 # note: the depth is computed every 1 km; depinc determines how many different version of fk you want to run at any time
-$depmax = 200; $depinc = 10;  # depinc = number of csh files = number of run directories (example: directories inside tactmod_all)
-# I
-
 # range of distances -- INCLUSIVE
 # WARNING: max number of distances is set in FK in model.h as ndis
-$distmin = 1; $distmax = 500; $distinc = 1; $nsamp=8192; $samplerate = .02;
+# depinc = number of csh files = number of run directories (example: directories inside tactmod_all)
 
 # FOR TESTING ONLY (Comment this line for full run)
-$idc=1; $iiso=1; $depmax = 100; $depinc = 100; $distmax = 101; $distinc = 100; $nsamp=512; $samplerate = .02;
+if ($iex == 0) {
+    $depmax = 100; $depinc = 100;
+    $distmax = 101; $distinc = 100;
+    $nsamp=512; $samplerate = .02;
+    $model = "scak";
 
+# STANDARD - For scak, tact, northak, aleut
+} elsif ($iex == 1) {
+    $depmax = 200; $depinc = 10;
+    $distmin = 1; $distmax = 500; $distinc = 1;
+    $nsamp=8192; $samplerate = .02;
+    $model = "tactmod";
+
+# for Kodiak offshore event (Gulf and scak model)
+} elsif ($iex == 2) {
+    $depmax = 50; $depinc = 1;
+    $distmin = 500; $distmax = 750; $distinc = 1;
+    $nsamp=16384; $samplerate = .02;  # NOTE: longer greens functions are required to avoid numerical artifacts for longer synthetics (needed at larger distances)
+    $model = "scak";
+}
+
+#---------------------------------------------
 # input model
 $iAK = 1; # Alaska specific model files are saved as ak_$model
-$model = "scak";
-$model = "tactmod";
+#$model = "scak";
+#$model = "tactmod";
 #$model = "aleut";
 #$model = "northak";
-#$model = "northak";
+#$model = "gulf";
 #$model = "prem_cont_no_water"; $iAK = 0; # PREM continental without water layer; and set iAK=0 since its not Alaska specific
-
-# Base directory for precreating the green's function directories (example: tactmod_all and scak_all) and csh file
-$basedir = "$home/Downloads/tempx";
-
+#---------------------------------------------
 print "pwd = $pwd\n";
 print "GEOTOOLS = $geotools\n";
 print "basedir = $basedir\n";
@@ -59,8 +77,9 @@ print CSHMAIN "mkdir $basedir\n";
 print CSHMAIN "cd $basedir\n";
 print CSHMAIN "mkdir ${model}_all\n";
 
+#---------------------------------------------
 # loop over the minimum starting depth
-for ($i = 0; $i < $depinc-1; $i = $i+1) {
+for ($i = 0; $i < $depinc; $i = $i+1) {
 
   $depmin = $i;
 
@@ -108,9 +127,9 @@ for ($i = 0; $i < $depinc-1; $i = $i+1) {
   print CSHMAIN "cp /usr/local/seismo/bin/fk ${model}_all/${model}_${slab}\n";
   # 1D model -- THIS WILL NEED TO BE CHANGED
   if ($iAK==1) {
-      print CSHMAIN "cp $geotools/tomo_util/fkmodels/ak_${model} ${model}_all/${model}_${slab}/${model}\n";}
+      print CSHMAIN "cp $caphome/UTILS/fkmodels/ak_${model} ${model}_all/${model}_${slab}/${model}\n";}
   else {
-      print CSHMAIN "cp $geotools/tomo_util/fkmodels/${model} ${model}_all/${model}_${slab}/${model}\n";}
+      print CSHMAIN "cp $caphome/UTILS/fkmodels/${model} ${model}_all/${model}_${slab}/${model}\n";}
 }
 
 print "done writing $depinc csh files, one for each set of depths\n";
