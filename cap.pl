@@ -33,7 +33,8 @@ $inp_cmd = "inp_cmd";
 $green = "/store/wf/FK_synthetics";               # UAF linux network
 #$green = "/import/c/d/ERTHQUAK/FK_synthetics ";  # UAF cluster
 #$green = "$caprun/models";                       # user testing
-#$green = " /home/alvizuri/PROJECTS/CAP/models";  # western US model (temporary location: move to /store)
+#$green = "/home/alvizuri/PROJECTS/CAP/models";  # western US model (temporary location: move to /store)
+$green = "/home/vipul/REPOSITORIES/capuaf/divider_things";
 
 $repeat = 0;           # repeat inversion and discard bad trace (OBSOLETE)
 $fm_thr = 0.01;        # first motion threshold
@@ -790,7 +791,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     print SRC "$model $dep\n";          # first input in regular cap run
     print SRC "$m1 $m2 $max_shft1 $max_shft2 $repeat $fm_thr $tie\n";
     print SRC "@thrshd\n" if $repeat;   # no value in regular cap run
-    print SRC "$vp $love $rayleigh\n";
+    print SRC "$vp $love $rayleigh\n";  # vp, vs1, vs2 (in cap.c)
     print SRC "$power_of_body $power_of_surf $weight_of_pnl $nof\n";
     print SRC "$plot\n";
     print SRC "$disp $pol_wt\n";

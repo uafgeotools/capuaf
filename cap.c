@@ -111,13 +111,13 @@ int LUNE_GRID_INSTEAD_OF_UV = 0;    // default = 0 (ie do not run old grid mode)
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search_type,norm;
   int	n1,n2,ns, mltp, nup, up[3], n_shft, nqP, nqS,isurf=0,ibody=0,istat=0,Nsurf=0,Nbody=0,Nstat=0;
-  int	mm[2],n[NCP],max_shft[NCP],npts[NRC];
+  int	win_len_Nsamp[2],n[NCP],max_shft[NCP],npts[NRC];
   int	repeat;
   char	tmp[255],glib[128],dep[32],dst[16],eve[32],*c_pt;
   float	x,x1,x2,y,y1,amp,dt,rad[6],arad[4][3],fm_thr,tie,mtensor[3][3],rec2=0.,VR,evla,evlo,evdp;
   float Pshift_max, Sshift_max,  Sshift_static[STN];
   float	rms_cut[NCP], t0[NCP], tb[NRC], t1, t2, t3, t4, srcDelay;
-  float	con_shft[STN], s_shft, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN],maxamp_syn[200][NCP],maxamp_obs[200][NCP],kcc,lamp_thresh, ppick[200];
+  float	dtP_pick[STN], s_shft, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN],maxamp_syn[200][NCP],maxamp_obs[200][NCP],kcc,lamp_thresh, ppick[200],fraction_before_P = 0.4,fraction_before_S = 0.3;
   float	tstarP, tstarS, attnP[NFFT], attnS[NFFT];
   float *data[NRC], *green[NGR];
   float	bs_body,bs_surf,bs[NCP],weight,nof_per_samp;
@@ -282,12 +282,12 @@ int main (int argc, char **argv) {
   if (f1_sw>0.)  design(order, type, proto, 1., 1., f1_sw, f2_sw, (double) dt, sw_sn, sw_sd, &nsects);
 
   /** max. window length, shift, and weight for Pnl portion **/
-  mm[0]=rint(x1/dt);                                          // P window length in sample points
+  win_len_Nsamp[0]=rint(x1/dt);                                          // P window length in sample points
   max_shft[3]=max_shft[4]=2*rint(Pshift_max/dt);              // allowable P time-shift in sample points
   w_pnl[3]=w_pnl[4]=x2;                                       // weight for P waves
 
   /** max. window length, shift, and weight for P-SV, SH **/
-  mm[1]=rint(y1/dt);                                          // P window length in sample points
+  win_len_Nsamp[1]=rint(y1/dt);                                          // P window length in sample points
   max_shft[0]=max_shft[1]=max_shft[2]=2*rint(Sshift_max/dt);  // allowable Surface time-shift in sample points
   w_pnl[0]=w_pnl[1]=w_pnl[2]=1;                               // weight for surface waves
   /** and tie of time shifts between SH and P-SV **/
@@ -379,8 +379,8 @@ int main (int argc, char **argv) {
   nfm = 0;
 
   fprintf(stderr,"Reading waveform data (nsta = %d) ... \n", nda);
- for(i=0;i<nda;i++) {
 
+  for(i=0;i<nda;i++) {
     nwaveforms++;
     fprintf(stderr,"%d ", nwaveforms);
 
@@ -447,7 +447,8 @@ int main (int argc, char **argv) {
     obs->az = hd->az;                  // azimuth
     obs->dist = distance = hd->dist;   // distance
     obs->tele = tele;
-    if (x1<=0.) x1 = hd[2].a;          // P arrival time (from 'z' compoent header)
+    if (x1<=0.) x1 = hd[2].a;          // P arrival time from 'z' component header 
+                                       // (if not inputted in weight file)
     x1 -= hd[2].o;                     // P arrival time - origin time
     if (tele && s_shft>0.) {
       s_shft -= hd[0].o;}              // shift relative to origin
@@ -479,8 +480,7 @@ int main (int argc, char **argv) {
     /************input green's functions***********/
     strcat(strcat(strcat(strcat(strcpy(tmp,glib),dep),"/"),dst),".grn.0");
     c_pt = strrchr(tmp,(int) '0');
-//    fprintf(stderr, "NOTE: convolving greens function with src time function (trapezoid) tau0=dura=%f riseTime=%f \n",
-//            tau0, riseTime);
+    //fprintf(stderr, "NOTE: convolving greens function with src time function (trapezoid) tau0=dura=%f riseTime=%f \n", tau0, riseTime);
 
     // WRITE POLARITY AND STATION DATA
     // This section was used in previous CAP with flag only_first_motion=1
@@ -547,14 +547,18 @@ int main (int argc, char **argv) {
 
     /*** calculate time shift needed to align data and syn approximately ****/
     /* positive shift means synthetic is earlier */
-    con_shft[i] = -srcDelay;
+    dtP_pick[i] = -srcDelay;            // srcDelay is 0 at this point (because dt > 0)
     if ( x1 > 0.) {			/* if first-arrival is specified */
-      con_shft[i] += x1 - hd[2].t1;	/* use it to align with greens' fn*/
+      // x1 = (User-defined Parrival time) - (origin time)
+      dtP_pick[i] += x1 - hd[2].t1;	/* use it to align with greens' fn*/
+      // Greens functions origin time is always 0
+      // dtP_pick = (Data P arrival from weight file) - (synthetic Parrival from green function)
     }
     if (tele && s_shft > x1 ) {
-      s_shft -= hd[0].t2+con_shft[i];	/* align teleseismic S */
+      s_shft -= hd[0].t2 + dtP_pick[i];	/* align teleseismic S */
     }
 
+    //-------------------------------------------------------------
     /** calculate time windows for Pnl and Surface wave portions **/
 
     /* for Pnl portion */
@@ -562,79 +566,86 @@ int main (int argc, char **argv) {
     // t1 - P arrival time (used for cutting P window)
     // t2 - S arrival time (used for cutting S window)
     if (t1 < 0 || t2 < 0 ) {
-        /* no time window in the data trace. use default time window in syn */
-
-        if (!tele && vp>0.) {
-            /* use vp to compute t1 */
-            t1 = sqrt(distance*distance+depSqr)/vp;
-        }
-        else {
-            /* use tp as t1 */
-            t1 = hd[2].t1;
-        }
-        /* 0.4 governs the length of waveform before the parrival */
-        t1 = t1 - 0.4*mm[0]*dt + con_shft[i];
-
-        /* ts plus some delay */
-        t2 = hd[0].t2 + 0.2*mm[0]*dt + con_shft[i];
-
-        if (Pnl_win != 0) {
-            /* for specific length of time window */
-            t2 = t1 + Pnl_win;
-        }
-        /* 20170730 these outputs are mainly for debugging. disabled for now 
-         * See also below for surface waves */
-        //fprintf(stderr,"WARNING ti<0 for SAC headers t1 and/or t2\n");
-        //fprintf(stderr,"Estimated new values: t1 %7.4f t2 %7.4f\n", t1, t2);
+      /* no time window in the data trace. use default time window in syn */
+      
+      if (!tele && vp>0.) { // OPTIONAL : we haven't used this
+	/* use vp to compute t1 */
+	t1 = sqrt(distance*distance+depSqr)/vp;
+      }
+      else {
+	/* use tp as t1 */
+	// This is from green's functions header (in sec)
+	t1 = hd[2].t1;
+      }
+      // fraction_before_P governs the length of waveform before the parrival 
+      // so that P window starts before the P arrival (flat line before P arrival)
+      t1 = t1 - fraction_before_P * win_len_Nsamp[0] * dt + dtP_pick[i];
+      
+      /* ts plus some delay */
+      // OPTIONAL : we haven't used this
+      t2 = hd[0].t2 + 0.2*win_len_Nsamp[0]*dt + dtP_pick[i];
+      
+      if (Pnl_win != 0) {
+	/* for specific length of time window */
+	// from -T flag of command line input (in sec)
+	t2 = t1 + Pnl_win;
+      }
+      /* 20170730 these outputs are mainly for debugging. disabled for now 
+       * See also below for surface waves */
+      //fprintf(stderr,"WARNING ti<0 for SAC headers t1 and/or t2\n");
+      //fprintf(stderr,"Estimated new values: t1 %7.4f t2 %7.4f\n", t1, t2);
     }
-
+    
+    //-------------------------------------------------------------
     /* do the same for the s/surface wave portion */
     if (ts<=0.) {
-        /*if S wave arrival is not specified */
-
-        // get S arrival time from green's functions header
-        ts= hd[0].t2;
+      /*if S wave arrival is not specified */
+      
+      // get S arrival time from green's functions header
+      ts= hd[0].t2;
     }
     else {
-        fprintf(stderr,"WARNING arrival time for surface waves not specified\n");
+      fprintf(stderr,"WARNING arrival time for surface waves not specified\n");
     }
-
+    
     if (t3 < 0 || t4 < 0 ) {
-        if (!tele && vs1>0. && vs2> 0.) {
-            t3 = sqrt(distance*distance+depSqr)/vs1 - 0.3*mm[1]*dt;
-            t4 = sqrt(distance*distance+depSqr)/vs2 + 0.7*mm[1]*dt;
+      if (!tele && vs1>0. && vs2> 0.) {  // OPTIONAL : we haven't used this
+	// only if vs is specified (default vs1=vs2=-1)
+	t3 = sqrt(distance*distance+depSqr)/vs1 - 0.3*win_len_Nsamp[1]*dt;
+	t4 = sqrt(distance*distance+depSqr)/vs2 + 0.7*win_len_Nsamp[1]*dt;
         }
-        else {
-            t3 = ts - 0.3*mm[1]*dt;
-            t4 = t3+mm[1]*dt;
-        }
-        if (ts > 0.) {
-            /* if surface wave arrival time is given */
-            t3 += s_shft;
-            t4 += s_shft;
-        }
-        else {
-            /* add con_shft only if surf arrival time is not specified*/
-            t3 += con_shft[i] + s_shft;
-            t4 += con_shft[i] + s_shft;
-            fprintf(stderr,"%f %f %f %f\n",t3,t4,hd[0].t2,con_shft[i]);
-        }
+      else { 
+	// if vp and vs are not input (see cap.pl)
+	t3 = ts - fraction_before_S * win_len_Nsamp[1] * dt;
+	t4 = t3 + win_len_Nsamp[1]*dt;
+      }
+      if (ts > 0.) {
+	/* if surface wave arrival time is given */
+	t3 += s_shft;
+	t4 += s_shft;
+      }
+      else {
+	/* add dtP_pick only if surf arrival time is not specified*/
+	t3 += dtP_pick[i] + s_shft;
+	t4 += dtP_pick[i] + s_shft;
+	fprintf(stderr,"%f %f %f %f\n",t3,t4,hd[0].t2,dtP_pick[i]);
+      }
 
-        /* for specific length of time window */
-        if (surf_win != 0) {
-            t4 = t3 + surf_win;
-        }
-        /* 20170730 these outputs are mainly for debugging. disabled for now 
-         * See also above for body waves */
-        //fprintf(stderr,"WARNING ti<0 for SAC headers t3 and/or t4\n");
-        //fprintf(stderr,"Estimated new values: t3 %7.4f t4 %7.4f\n", t3, t4);
+      /* for specific length of time window */
+      if (surf_win != 0) {
+	t4 = t3 + surf_win;
+      }
+      /* 20170730 these outputs are mainly for debugging. disabled for now 
+       * See also above for body waves */
+      //fprintf(stderr,"WARNING ti<0 for SAC headers t3 and/or t4\n");
+      //fprintf(stderr,"Estimated new values: t3 %7.4f t4 %7.4f\n", t3, t4);
     }
 
     /*calculate the time windows */
     n1 = rint((t2 - t1)/dt);	/*Pnl*/
     n2 = rint((t4 - t3)/dt);	/*PSV/SH*/
-    if (n1>mm[0]) n1=mm[0];
-    if (n2>mm[1]) n2=mm[1];
+    if (n1>win_len_Nsamp[0]) n1=win_len_Nsamp[0];
+    if (n2>win_len_Nsamp[1]) n2=win_len_Nsamp[1];
 
     /* storing in array so that later it could saved in weight_cap.dat ouput file */
     P_pick[i] = t1;
@@ -791,7 +802,7 @@ int main (int argc, char **argv) {
             // cut then filter
             else {
                 // prepare a window of the waveform, then taper it
-                f_pt = cutTrace(green[gindx+k], hd[indx].npts, (int) rint((t0[j]-con_shft[i]-shft0[i][j]-hd[indx].b)/dt), npt);
+                f_pt = cutTrace(green[gindx+k], hd[indx].npts, (int) rint((t0[j]-dtP_pick[i]-shft0[i][j]-hd[indx].b)/dt), npt);
                 taper(f_pt, npt);
                 if ( f_pt == NULL ) {
                     fprintf(stderr, "fail to window the Greens functions\n");
@@ -808,7 +819,7 @@ int main (int argc, char **argv) {
                     if(FTC_green){
                         // filter the whole waveform, then cut and taper it
                         apply(g_pt,(long int) hd[indx].npts, 0,sw_sn,sw_sd,nsects);
-                        f_pt = cutTrace(g_pt, hd[indx].npts, (int) rint((t0[j]-con_shft[i]-shft0[i][j]-hd[indx].b)/dt), npt);
+                        f_pt = cutTrace(g_pt, hd[indx].npts, (int) rint((t0[j]-dtP_pick[i]-shft0[i][j]-hd[indx].b)/dt), npt);
                         taper(f_pt, npt);
                         spt->syn[k] = f_pt;
                     }
@@ -829,7 +840,7 @@ int main (int argc, char **argv) {
                     if(FTC_green){
                         // filter the whole waveform, then cut and taper it
                         apply(g_pt,(long int) hd[indx].npts, 0,pnl_sn,pnl_sd,nsects);
-                        f_pt = cutTrace(g_pt, hd[indx].npts, (int) rint((t0[j]-con_shft[i]-shft0[i][j]-hd[indx].b)/dt), npt);
+                        f_pt = cutTrace(g_pt, hd[indx].npts, (int) rint((t0[j]-dtP_pick[i]-shft0[i][j]-hd[indx].b)/dt), npt);
                         taper(f_pt, npt);
                         spt->syn[k] = f_pt;
                     }
@@ -921,7 +932,7 @@ int main (int argc, char **argv) {
     VR = 100*(1.-sol.err);
 
 /***** output waveforms for both data and synthetics ****/
-  i = mm[1]; if(mm[0]>i) i=mm[0];
+  i = win_len_Nsamp[1]; if(win_len_Nsamp[0]>i) i=win_len_Nsamp[0];
   data_obs = (float *) malloc(i*sizeof(float));
   data_syn = (float *) malloc(i*sizeof(float));
 
@@ -991,7 +1002,7 @@ int main (int argc, char **argv) {
                                       mtensor[2][2]);
   fprintf(f_out,"# norm L%d    # Pwin %g Swin %g    # N %d Np %d Ns %d\n",
           norm,                 // misfit norm
-          mm[0]*dt, mm[1]*dt,   // Pwin, Swin
+          win_len_Nsamp[0]*dt, win_len_Nsamp[1]*dt,   // Pwin, Swin
           // y1,                // what?
           Nstat, Nbody, Nsurf);
 
@@ -1061,7 +1072,7 @@ if (plot==1) {
             }
             //kcc = log(maxamp_obs[i][j]/maxamp_syn[i][j]);
             //fprintf(stderr,"%.3f\t",kcc);
-            hd->b -= (shft0[i][j]+con_shft[i]);
+            hd->b -= (shft0[i][j]+dtP_pick[i]);
             hd->a = hd->b-sol.shft[i][j]*dt;
             write_sac(tmp,hd[0],data_syn);   // write synthetics to file
             (*c_pt)++;
@@ -1086,7 +1097,7 @@ if (plot==1) {
  for(obs=obs0,i=0;i<nda;i++,obs++) {
    //             stname /  distance / shift (what)
    //              1     2     3
-   fprintf(f_out,"%-9s %5.1f/%-5.2f",obs->stn, obs->dist, con_shft[i]);
+   fprintf(f_out,"%-9s %5.1f/%-5.2f",obs->stn, obs->dist, dtP_pick[i]);
    fprintf(wt3,"%s\t %d\t",obs->stn, dis[i]);
    for(j=0;j<NCP;j++) {
        k = NCP - 1 - j;
@@ -1170,7 +1181,7 @@ if (plot==1) {
  wt2 = fopen(strcat(strcat(strcpy(tmp,eve),"/"),"weight_capin.dat"),"w");
  for(obs=obs0,i=0;i<nda;i++,obs++){
    fprintf(wt,"%s\t %d\t %d\t %d\t %d\t %d\t %d\t %3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n",obs->stn, dis[i], obs->com[4].on_off, obs->com[3].on_off, obs->com[2].on_off, obs->com[1].on_off, obs->com[0].on_off, P_pick[i], P_win[i], S_pick[i], S_win[i], S_shft[i]);
-   fprintf(wt2,"%s\t %d\t %d\t %d\t %d\t %d\t %d\t %3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n",obs->stn, dis[i], obs->com[4].on_off, obs->com[3].on_off, obs->com[2].on_off, obs->com[1].on_off, obs->com[0].on_off, P_pick[i]+0.2*mm[0]*dt, P_win[i], S_pick[i]+0.3*mm[1]*dt, S_win[i], S_shft[i]);
+   fprintf(wt2,"%s\t %d\t %d\t %d\t %d\t %d\t %d\t %3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n",obs->stn, dis[i], obs->com[4].on_off, obs->com[3].on_off, obs->com[2].on_off, obs->com[1].on_off, obs->com[0].on_off, P_pick[i]+0.2*win_len_Nsamp[0]*dt, P_win[i], S_pick[i]+0.3*win_len_Nsamp[1]*dt, S_win[i], S_shft[i]);
  }
  fclose(wt);
  fclose(wt2);
