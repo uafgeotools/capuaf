@@ -136,8 +136,9 @@ int main (int argc, char **argv) {
   DATA	*obs, *obs0;
   FM	*fm, *fm0;
   FM *fm_copy;  /*  copy of all first motions entered in weight file */
-
   int nwaveforms=0; // print progress in reading seismograms
+
+  // dtP_pick[STN] was con_shft[STN] earlier
 
   //fprintf(stderr,"\n----------------------------------------------------------\n");
   fprintf(stderr,"\n==============================\n"); 
@@ -989,11 +990,11 @@ int main (int argc, char **argv) {
 for(obs=obs0,i=0;i<nda;i++,obs++) {
     for(j=0;j<NCP;j++) {
       k = NCP - 1 - j;
-      sol.shft[i][k] = sol.shft[i][k] - max_shft[k]/2;
+      sol.shft[i][k] = sol.shft[i][k] - max_shft[k]/2 + rint(dtP_pick[i]/dt);// time-shift (KEY!)
       stn_comp_misfit[i][k] = sol.error[i][k]*100/(Ncomp*sol.wferr*data2);   // percentage of total misfit
       stn_comp_CC[i][k] = sol.cfg[i][k];                                     // data-synthetic cross-correlation
       if (stn_comp_CC[i][k]<0) stn_comp_CC[i][k] = 0;
-      stn_comp_shift[i][k] =  shft0[i][k] + dt * sol.shft[i][k];             // time-shift of the component (CHECK ?)
+      stn_comp_shift[i][k] =  shft0[i][k] + dt * sol.shft[i][k];             // time-shift of the component
     }
  }
 
@@ -1107,9 +1108,9 @@ if (plot==1) {
            Sshift_static[i],                       // static (user input in weight file)
            Sshift_static[i] - Sshift_max,          // min shift
            Sshift_static[i] + Sshift_max,          // max shift
-           shft0[i][1] + dt * sol.shft[i][1],      // tshifts rayleigh SV (=SR)
+           stn_comp_shift[i][1],                   // tshifts rayleigh SV (=SR)
            obs->com[1].on_off, obs->com[2].on_off, // weights SV, SR
-           shft0[i][0] + dt * sol.shft[i][0],      // tshifts love SH
+           stn_comp_shift[i][0],                   // tshifts love SH
            obs->com[0].on_off);                    // weights SH
    // 
    fprintf(wt3,"%3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n", ppick[i], 0., 0., 0., 0.);
