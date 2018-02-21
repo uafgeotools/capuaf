@@ -33,8 +33,8 @@ $inp_cmd = "inp_cmd";
 $green = "/store/wf/FK_synthetics";               # UAF linux network
 #$green = "/import/c/d/ERTHQUAK/FK_synthetics ";  # UAF cluster
 #$green = "$caprun/models";                       # user testing
-#$green = "/home/alvizuri/PROJECTS/CAP/models";  # western US model (temporary location: move to /store)
-$green = "/home/vipul/REPOSITORIES/capuaf/divider_things";
+#$green = "/home/alvizuri/PROJECTS/CAP/models";   # western US model (temporary location: move to /store)
+#$green = "/home/vipul/REPOSITORIES/capuaf/divider_things";
 
 $repeat = 0;           # repeat inversion and discard bad trace (OBSOLETE)
 $fm_thr = 0.01;        # first motion threshold
