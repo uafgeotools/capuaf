@@ -111,13 +111,13 @@ int LUNE_GRID_INSTEAD_OF_UV = 0;    // default = 0 (ie do not run old grid mode)
 int main (int argc, char **argv) {
   int 	i,j,k,k1,l,m,nda,npt,plot,kc,nfm,useDisp,dof,tele,indx,gindx,dis[STN],tsurf[STN],search_type,norm;
   int	n1,n2,ns, mltp, nup, up[3], n_shft, nqP, nqS,isurf=0,ibody=0,istat=0,Nsurf=0,Nbody=0,Nstat=0;
-  int	win_len_Nsamp[2],n[NCP],max_shft[NCP],npts[NRC];
+  int	win_len_Nsamp[2],n[NCP],max_shft[NCP],npts[NRC],stn_comp_CC[200][NCP];
   int	repeat;
   char	tmp[255],glib[128],dep[32],dst[16],eve[32],*c_pt;
   float	x,x1,x2,y,y1,amp,dt,rad[6],arad[4][3],fm_thr,tie,mtensor[3][3],rec2=0.,VR,evla,evlo,evdp;
   float Pshift_max, Sshift_max,  Sshift_static[STN];
   float	rms_cut[NCP], t0[NCP], tb[NRC], t1, t2, t3, t4, srcDelay;
-  float	dtP_pick[STN], s_shft, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN],maxamp_syn[200][NCP],maxamp_obs[200][NCP],kcc,lamp_thresh, ppick[200],fraction_before_P = 0.4,fraction_before_S = 0.3;
+  float	dtP_pick[STN], s_shft, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN],max_amp_syn[200][NCP],max_amp_obs[200][NCP],log_amp_thresh,ppick[200],fraction_before_P = 0.4,fraction_before_S = 0.3,stn_comp_log_amp[200][NCP],stn_comp_misfit[200][NCP],stn_comp_shift[200][NCP];
   float	tstarP, tstarS, attnP[NFFT], attnS[NFFT];
   float *data[NRC], *green[NGR];
   float	bs_body,bs_surf,bs[NCP],weight,nof_per_samp;
@@ -131,7 +131,7 @@ int main (int argc, char **argv) {
   float pnl_reward, sw_reward;
   int npt_data, offset_h=0;
   GRID	grid;
-  MTPAR mt[3];  // DELETE
+  MTPAR mt[3];
   COMP	*spt;
   DATA	*obs, *obs0;
   FM	*fm, *fm0;
@@ -662,8 +662,8 @@ int main (int argc, char **argv) {
     t0[1]=t0[2]=t4-n2*dt;	/* rayleigh wave */
     t0[3]=t0[4]=t1;		/* Pnl */
     n[0]=n[1]=n[2]=n2;	n[3]=n[4]=n1;
-    shft0[i][0] = shft0[i][1] = shft0[i][2] = s_shft;
-    shft0[i][3] = shft0[i][4] = 0.;
+    shft0[i][0] = shft0[i][1] = shft0[i][2] = s_shft;   // static shift for surface 
+    shft0[i][3] = shft0[i][4] = 0.;                     // static shift for body
     if (obs->com[0].on_off>0) n_shft++;
     if (obs->com[1].on_off>0 || obs->com[2].on_off>0) n_shft++;
     if (obs->com[3].on_off>0 || obs->com[3].on_off>0) n_shft++;
@@ -674,7 +674,7 @@ int main (int argc, char **argv) {
         indx  = kd[j];
         gindx = kk[j];
         if (tele) {
-            if (j==2) {indx=1; gindx=2;}		/* no vertical S, use the radial */
+            if (j==2) {indx=1; gindx=2;}	/* no vertical S, use the radial */
             if (j==3) {indx=2; gindx=kk[2];}	/* no radial P, use the vertical */
         }
         spt->npt = npt = n[j];
@@ -910,14 +910,11 @@ int main (int argc, char **argv) {
   }
 
  INVERSION:
-  // call to old error function for reference. can be deleted
-  /* sol = error(3,nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,bootstrap,search_type,norm); */
-
   // call initSearchMT instead of "error". This call includes extra parameters (searchPar, arrayMT)
   sol = initSearchMT(nda,obs0,nfm,fm0,fm_thr,max_shft,tie,mt,grid,0,search_type,norm, searchPar, arrayMT, pol_wt);
 
   dof = nof_per_samp*total_n;
-  x2 = sol.wferr/dof;		/* data variance */
+  x2 = sol.wferr/dof;		/* data variance */ 
   //fprintf(stderr,"\n=========total_n=%d \t dof=%d \t error=%f\t nof=%f===========\n",total_n,dof,sol.err, nof_per_samp);
   /* repeat grid search if needed */
   if ( repeat && discard_bad_data(nda,obs0,sol,x2,rms_cut) ) {
@@ -931,7 +928,7 @@ int main (int argc, char **argv) {
   if (norm==2) 
     VR = 100*(1.-sol.err);
 
-/***** output waveforms for both data and synthetics ****/
+  /***** output waveforms for both data and synthetics ****/
   i = win_len_Nsamp[1]; if(win_len_Nsamp[0]>i) i=win_len_Nsamp[0];
   data_obs = (float *) malloc(i*sizeof(float));
   data_syn = (float *) malloc(i*sizeof(float));
@@ -942,36 +939,21 @@ int main (int argc, char **argv) {
   }
 
   /**************output the results***********************/
-  // START DELETE SECTION -- NOT APPLICABLE ANYMORE
-// if (sol.flag) fprintf(stderr,"\nWarning: flag=%d => the minimum %5.1f/%4.1f/%5.1f is at boundary\n",sol.flag,sol.meca.stk,sol.meca.dip,sol.meca.rak);
-// else principal_values(&(sol.dev[0]));
-// for(i=0; i<3; i++) rad[i] = sqrt(2*x2/sol.dev[i]);
-// if (sol.meca.dip>90.) {
-//   fprintf(stderr,"Warning: dip corrected by %f\n",sol.meca.dip-90);
-//   sol.meca.dip = 90.;
-// }
-// if (search_type) {
-//   rad[0]=0.0;
-//   rad[1]=0.0;
-//   rad[2]=0.0;
-//   sol.ms = 1;}
-  // END DELETE SECTION -- NOT APPLICABLE ANYMORE
-
   // output warning if best magnitude = magnitude limit in magnitude search.
-  if(1) {
-  if ( (sol.meca.mag <= searchPar->mw1 && searchPar->dmw != 0) || (sol.meca.mag >= searchPar->mw2 && searchPar->dmw != 0) ) {
-      fid_warn = fopen("capout_error.txt","w");
-      fprintf(stderr, "\n***********************************************************************\n");
-      fprintf(stderr, "\tINVERSION STOPPED. See file capout_error.txt\n");
-      fprintf(stderr, "***********************************************************************\n");
-      fprintf(fid_warn, "***********************************************************************\n");
-      fprintf(fid_warn, "INVERSION STOPPED. Best magnitude Mw = %4.1f is at a boundary.\n", sol.meca.mag);
-      fprintf(fid_warn, "Boundaries [Mw1, Mw2] = [%4.1f, %4.1f]\n", searchPar->mw1, searchPar->mw2);
-      fprintf(fid_warn, "Consider expanding the magnitude boundary.\n");
-      fprintf(fid_warn, "***********************************************************************\n");
-      fclose(fid_warn);
-      return(-1);
-  }}
+  if ( (sol.meca.mag <= searchPar->mw1 && searchPar->dmw != 0) 
+       || (sol.meca.mag >= searchPar->mw2 && searchPar->dmw != 0) ) {
+    fid_warn = fopen("capout_error.txt","w");
+    fprintf(stderr, "\n***********************************************************************\n");
+    fprintf(stderr, "\tINVERSION STOPPED. See file capout_error.txt\n");
+    fprintf(stderr, "***********************************************************************\n");
+    fprintf(fid_warn, "***********************************************************************\n");
+    fprintf(fid_warn, "INVERSION STOPPED. Best magnitude Mw = %4.1f is at a boundary.\n", sol.meca.mag);
+    fprintf(fid_warn, "Boundaries [Mw1, Mw2] = [%4.1f, %4.1f]\n", searchPar->mw1, searchPar->mw2);
+    fprintf(fid_warn, "Consider expanding the magnitude boundary.\n");
+    fprintf(fid_warn, "***********************************************************************\n");
+    fclose(fid_warn);
+    return(-1);
+  }
 
   fprintf(stderr,"Preparing out file ...\n");
   // sprintf(mod_dep,"%s_%s_%03d", eve, model, depth);                       // rename .out file
@@ -994,40 +976,28 @@ int main (int argc, char **argv) {
   // output the values to the cap out file.
   tt2cmt(sol.meca.gamma, sol.meca.delta, 1.0, sol.meca.stk, sol.meca.dip, sol.meca.rak, mtensor);
 
-  // mtensor saved in output file shoudl be in M00, M11, M22, M01, M02, M12 order. FIX HERE and then perhaps also in the cap_plt! (FUTURE WORK)
+  // mtensor saved in output file should be in M00, M11, M22, M01, M02, M12 order. FIX HERE and then perhaps also in the cap_plt! (FUTURE WORK)
   fprintf(f_out,"# tensor = %8.3e %7.4f %7.4f %7.4f %7.4f %7.4f %7.4f\n",
           amp*1.0e20,
           mtensor[0][0],mtensor[0][1],mtensor[0][2],
-                        mtensor[1][1],mtensor[1][2],
-                                      mtensor[2][2]);
+	  mtensor[1][1],mtensor[1][2], mtensor[2][2]);
   fprintf(f_out,"# norm L%d    # Pwin %g Swin %g    # N %d Np %d Ns %d\n",
           norm,                 // misfit norm
           win_len_Nsamp[0]*dt, win_len_Nsamp[1]*dt,   // Pwin, Swin
-          // y1,                // what?
           Nstat, Nbody, Nsurf);
-
-  // START DELETE SECTION -- DOES NOT EXECUTE
-// for(i=1;i<sol.ms;i++) {
-//   j = sol.others[i];
-//   if (grid.err[j]-grid.err[sol.others[0]]<mltp*x2) {
-//     k = j/(grid.n[0]*grid.n[1]);
-//     k1 = (j-k*grid.n[0]*grid.n[1])/grid.n[0];
-//     fprintf(f_out,"# DELETE %3d %2d %3d %4.2f %9.3e %3.1f\n",
-//         (int) rint(grid.x0[0]+(j-k1*grid.n[0]-k*grid.n[0]*grid.n[1])*grid.step[0]),
-//         (int) rint(grid.x0[1]+k1*grid.step[1]),
-//         (int) rint(grid.x0[2]+k*grid.step[2]),
-//         sol.meca.mag,grid.err[j],(grid.err[j]-grid.err[sol.others[0]])/x2);
-//   }
-// } 
-// // END DELETE SECTION -- DOES NOT EXECUTE
 
 for(obs=obs0,i=0;i<nda;i++,obs++) {
     for(j=0;j<NCP;j++) {
       k = NCP - 1 - j;
-      sol.shft[i][k]=sol.shft[i][k] - max_shft[k]/2;
+      sol.shft[i][k] = sol.shft[i][k] - max_shft[k]/2;
+      stn_comp_misfit[i][k] = sol.error[i][k]*100/(Ncomp*sol.wferr*data2);   // percentage of total misfit
+      stn_comp_CC[i][k] = sol.cfg[i][k];                                     // data-synthetic cross-correlation
+      if (stn_comp_CC[i][k]<0) stn_comp_CC[i][k] = 0;
+      stn_comp_shift[i][k] =  shft0[i][k] + dt * sol.shft[i][k];             // time-shift of the component (CHECK ?)
     }
  }
 
+//-----------------------SAVE WAVEFORMS FOR PLOT------------------------------
 if (plot==1) {
     fprintf(stderr,"Saving seismograms for stations ... \n");
     // generate synthetic and data waveforms for each 5 component (filtered and cut) 
@@ -1049,39 +1019,41 @@ if (plot==1) {
 
             // find the max amplitude from all stations [i], from all components [j]
             // OBSERVED
-            maxamp_obs[i][j]=0.;
+            max_amp_obs[i][j]=0.;
             for(l=0;l<npt;l++) {
-                data_obs[l] = spt->rec[l]; // amp is the scaled down M0
-                if (fabs(data_obs[l]) > maxamp_obs[i][j]) {
-                    maxamp_obs[i][j] = fabs(data_obs[l]); // OBSERVED maximum amplitude
+                data_obs[l] = spt->rec[l];                    // amp is the scaled down M0
+                if (fabs(data_obs[l]) > max_amp_obs[i][j]) {
+                    max_amp_obs[i][j] = fabs(data_obs[l]);    // OBSERVED maximum amplitude
                 }
             }
-            write_sac(tmp,hd[0],data_obs);   // write observed to file
+            write_sac(tmp,hd[0],data_obs);                    // write observed to file
             (*c_pt)++;
 
             // SYNTHETIC
-            maxamp_syn[i][j]=0.;
+            max_amp_syn[i][j]=0.;
             for(l=0;l<npt;l++) {
                 for(x2=0.,k=0;k<kc;k++) {
                     x2 += f_pt[k] * spt->syn[k][l];
                 }
-                data_syn[l] = sol.scl[i][j] * x2 *amp;    // x2 is the green's funciton norm
-                if (fabs(data_syn[l]) > maxamp_syn[i][j]) {
-                    maxamp_syn[i][j] = fabs(data_syn[l]);  // SYNTHETIC maximum amplitude
+                data_syn[l] = sol.scl[i][j] * x2 *amp;        // x2 is the green's funciton norm
+                if (fabs(data_syn[l]) > max_amp_syn[i][j]) {
+                    max_amp_syn[i][j] = fabs(data_syn[l]);    // SYNTHETIC maximum amplitude
                 }
             }
-            //kcc = log(maxamp_obs[i][j]/maxamp_syn[i][j]);
-            //fprintf(stderr,"%.3f\t",kcc);
-            hd->b -= (shft0[i][j]+dtP_pick[i]);
-            hd->a = hd->b-sol.shft[i][j]*dt;
-            write_sac(tmp,hd[0],data_syn);   // write synthetics to file
+            stn_comp_log_amp[i][j] = log(max_amp_obs[i][j]
+					 /max_amp_syn[i][j]);  // log amplitude ratio of data and syn
+            hd->b -= (shft0[i][j]+dtP_pick[i]); // XXX
+            hd->a = hd->b-sol.shft[i][j]*dt;    // XXX
+            write_sac(tmp,hd[0],data_syn);      // write synthetics to file
             (*c_pt)++;
         }
     }
     fprintf(stderr,"\tdone.\n");
-} else {
-    fprintf(stderr,"Option plot=%d. No plots to create for this inversion.\n", plot);
-}
+ } 
+ else {
+   fprintf(stderr,"Option plot=%d. No plots to create for this inversion.\n", plot);
+ }
+//---------------------------------------------------------------------
 
 // set fm_copy to start at beginning of array
  if (skip_zero_weights==0){
@@ -1092,7 +1064,7 @@ if (plot==1) {
  sprintf(tmp, "%s_tshift.out", filename_prefix);
  f_tshift = fopen(tmp,"w");
 
- // 
+ // Add time-shifts (and CC, etc - other station specific values) to *.out file
  wt3 = fopen(strcat(strcat(strcpy(tmp,eve),"/"),"weight_run.dat"),"w");
  for(obs=obs0,i=0;i<nda;i++,obs++) {
    //             stname /  distance / shift (what)
@@ -1101,23 +1073,23 @@ if (plot==1) {
    fprintf(wt3,"%s\t %d\t",obs->stn, dis[i]);
    for(j=0;j<NCP;j++) {
        k = NCP - 1 - j;
-       kc = sol.cfg[i][k]; if (kc<0) kc = 0;
+       // ------------------------------------------------------------
        //        on_off / station misfit % / kross-corr (what?) / t-shift / log(Aobs/Asyn) / Aobs / Asyn
        //               4    5    6    7     8     9     10 
        fprintf(f_out," %1d %6.2f %2d %5.2f %5.2f %8.2e %8.2e",
-               obs->com[k].on_off, 
-               sol.error[i][k]*100/(Ncomp*sol.wferr*data2), 
-               kc, 
-               shft0[i][k] + dt * sol.shft[i][k], 
-               log(maxamp_obs[i][k]/maxamp_syn[i][k]), 
-               maxamp_obs[i][k], 
-               maxamp_syn[i][k]);
-       if (k<3) lamp_thresh = 1.5;  // log(amplitude) threshold for surface waves
-       else lamp_thresh = 2.5;   // log(amplitude) threshold for body waves
-       if (abs(log(maxamp_obs[i][k]/maxamp_syn[i][k])) > lamp_thresh){
-           fprintf(wt3,"%d\t",0);}
+               obs->com[k].on_off,       // weight (on or off) 
+               stn_comp_misfit[i][k],    // percentage of total misfit
+               stn_comp_CC[i][k],        // data-synthetic cross-correlation
+               stn_comp_shift[i][k],     // time-shift of the component (CHECK ?)
+               stn_comp_log_amp[i][k],   // log amplitude ratio of data and syn
+               max_amp_obs[i][k],        // maximum amplitude of observed
+               max_amp_syn[i][k]);       // maximum amplitude of synthetic
+       if (k<3) log_amp_thresh = 1.5;    // log(amplitude) threshold for surface waves
+       else log_amp_thresh = 2.5;        // log(amplitude) threshold for body waves
+       if (abs(log(max_amp_obs[i][k]/max_amp_syn[i][k])) > log_amp_thresh){
+	 fprintf(wt3,"%d\t",0);}
        else{
-           fprintf(wt3,"%d\t",obs->com[k].on_off);} 
+	 fprintf(wt3,"%d\t",obs->com[k].on_off);} 
    }
 
    // output timeshifts
@@ -1139,7 +1111,6 @@ if (plot==1) {
            obs->com[1].on_off, obs->com[2].on_off, // weights SV, SR
            shft0[i][0] + dt * sol.shft[i][0],      // tshifts love SH
            obs->com[0].on_off);                    // weights SH
-           // VIPUL: down to here
    // 
    fprintf(wt3,"%3.1f\t %3.1f\t %3.1f\t %3.1f\t %3.1f\n", ppick[i], 0., 0., 0., 0.);
 
