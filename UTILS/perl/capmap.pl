@@ -389,8 +389,9 @@ for ($pp = 1; $pp <= $pmax; $pp++) {
     if ($elat >=62) {  # INTERIOR ALASKA (DENALI) - only one map ($pmax=1)
       $xmin = -157.0; $xmax = -140.0; $ymin = 58; $ymax = 68.0;
       $sbarinfo = "-L-144/58.7/58.7/200+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 6000000;
-      #$xmin = -154.0; $xmax = -146.0; $ymin = 59; $ymax = 64.0; # smaller region for NEHRP
-      #$sbarinfo = "-L-149/59.5/59.5/100+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 3000000; # smaller region for NEHRP
+      # smaller region for NEHRP
+      #$xmin = -154.0; $xmax = -146.0; $ymin = 59; $ymax = 64.0;
+      #$sbarinfo = "-L-149/59.5/59.5/100+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 3000000;
       $ibasementc = 0;
       $ititle = 1;     # publication
       $iscalecap = 1;
@@ -403,8 +404,10 @@ for ($pp = 1; $pp <= $pmax; $pp++) {
 
   } elsif ($pp==1) { # SOUTHERN ALASKA - map_1
       $xmin = -155.0; $xmax = -142.0; $ymin = 57; $ymax = 66.0;
-      $sbarinfo = "-L-146/57.5/57.5/100+p1.5p,0/0/0,solid+f255/255/255";
-      $Jbscale = 8000000;
+      $sbarinfo = "-L-146/57.5/57.5/100+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 8000000;
+      # For offshore Kodiak earthquake
+      $xmin = -160.0; $xmax = -140.0; $ymin = 55; $ymax = 64.0;
+      $sbarinfo = "-L-144/56/56/100+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 7500000;
       $ibasementc = 0;
       $ititle = 1;      # publication
       $iscalecap = 1;
@@ -646,17 +649,17 @@ print CSH "psbasemap $J $R $B -K -V -O >> $psfile\n";
 
   $cpt_cap = "color_cap.cpt";
   $colormap = "seis";
-  if($icc[$xx-1] == 1) {  # CC
+  if($icc[$xx-1] == 1) {          # Cross-correlation
     $dc = ($cmax-$cmin)/12;
     $Tcap = "-T$cmin/$cmax/$dc";
     print CSH "makecpt -C$colormap $Tcap > $cpt_cap\n";
 
-  } elsif($icc[$xx-1] == 0) {                # DT
+  } elsif($icc[$xx-1] == 0) {     # time-shift
     $dc = ($cmax-$cmin)/9;
     $Tcap = "-T$cmin/$cmax/$dc -D";   # -Z for continuous, -D
     print CSH "makecpt -C$colormap $Tcap > $cpt_cap\n";
 
-  } elsif($icc[$xx-1] == 2) {                # DT
+  } elsif($icc[$xx-1] == 2) {     # log(data/syn)
     $dc = ($cmax-$cmin)/9;
     $Tcap = "-T$cmin/$cmax/$dc -D";   # -Z for continuous, -D
     print CSH "makecpt -C$colormap $Tcap > $cpt_cap\n";
