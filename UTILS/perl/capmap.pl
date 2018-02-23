@@ -12,13 +12,13 @@
 #  2.  20090407201255351.out -- rename the CAP out file
 #
 # EXAMPLES:
-# > cd $GEOTOOLS/tomo_util/capsupp/examples/
+# > cd $CAPHOME/UTILS/perl/examples/
 # > cd 20090407201255351 ; ../../capmap.pl 20090407201255351
-# > cd $GEOTOOLS/tomo_util/capsupp/examples/
+# > cd $CAPHOME/UTILS/perl/examples/
 # > cd HOYA ; ../../capmap.pl HOYA
 #
 # OBSOLETE EXAMPLES:
-# > cd $GEOTOOLS/tomo_util/capsupp/examples/old_examples
+# > cd $CAPHOME/UTILS/perl/examples/old_examples
 # > capmap.pl 319605             # crustal MOOS event
 # > capmap.pl 289317             # slab MOOS event
 # > capmap.pl 20120411091837     # Nenana interior
@@ -67,6 +67,7 @@ $topocorr = 0;
 # default values
 $bmin = -7; $bmax = 0;        # basement
 $dmin = 0; $dmax = 160; $depinc = 40; $deptick = 10;
+$itopocolor = 1;                # 1-7 (default 2 or 7; 5-6=Jeff)
 
 #$origin_inset = "-Xa3.25 -Ya0.1";
 $Jbscalei = 50000000;
@@ -99,7 +100,7 @@ if($smodel eq "scak") {
    $pmax = 2;
    print "\nifkmod = $ifkmod: southern Alaska\n";
    $xtick1 = 2; $ytick1 = 1; $xtick2 = 1; $ytick2 = 0.5;
-   $emax = 3000; $emin = -$emax; $itopocolor = 4; 
+   $emax = 3000; $emin = -$emax; $itopocolor = 4;
    $ifmt = 0; $cmtsize = 0.4;
 
    #$coastinfo = "-N1/1p/0/0/0 $coast_res -S150/255/255 -C150/255/255 -Ia/1.5p,150/255/255";   # rivers and covered bathymetry
@@ -118,7 +119,7 @@ if($smodel eq "scak") {
    $pmax = 1;
    print "\nifkmod = $ifkmod: PLUTONS - Bolivia\n";
    $xtick1 = 0.2; $ytick1 = 0.2; $xtick2 = 0.1; $ytick2 = $xtick2;
-   $emax = 6000; $emin = 0; $itopocolor = 1; 
+   $emax = 6000; $emin = 0; $itopocolor = 1;
    $ifmt = 1; $cmtsize = 0.7;
    $topocorr = 4;
 
@@ -127,7 +128,7 @@ if($smodel eq "scak") {
    $pmax = 1;
    print "\nifkmod = $ifkmod: Western U.S.\n";
    $xtick1 = 5; $ytick1 = 5; $xtick2 = 1; $ytick2 = $xtick2;
-   $emax = 4161; $emin = -5097; $itopocolor = 1; 
+   $emax = 4161; $emin = -5097; $itopocolor = 4;
    $ifmt = 1; $cmtsize = 0.7;
    $topocorr = 0;
    $plot_unused_stations = 0;
@@ -288,7 +289,6 @@ print CSH "gmtset PAPER_MEDIA letter CHAR_ENCODING ISOLatin1+ MEASURE_UNIT inch 
 
 $iscaletopo = 0;
 $iscalebar = 1;                 # default 1
-$itopocolor = 1;                # 1-7 (default 2 or 7; 5-6=Jeff)
 $ibasements = 0; $iscalebase = 0;
 $islab = 0; $iscaleslab = 0;
 $ivolc = 0;
@@ -389,8 +389,9 @@ for ($pp = 1; $pp <= $pmax; $pp++) {
     if ($elat >=62) {  # INTERIOR ALASKA (DENALI) - only one map ($pmax=1)
       $xmin = -157.0; $xmax = -140.0; $ymin = 58; $ymax = 68.0;
       $sbarinfo = "-L-144/58.7/58.7/200+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 6000000;
-      #$xmin = -154.0; $xmax = -146.0; $ymin = 59; $ymax = 64.0; # smaller region for NEHRP
-      #$sbarinfo = "-L-149/59.5/59.5/100+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 3000000; # smaller region for NEHRP
+      # smaller region for NEHRP
+      #$xmin = -154.0; $xmax = -146.0; $ymin = 59; $ymax = 64.0;
+      #$sbarinfo = "-L-149/59.5/59.5/100+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 3000000;
       $ibasementc = 0;
       $ititle = 1;     # publication
       $iscalecap = 1;
@@ -403,8 +404,10 @@ for ($pp = 1; $pp <= $pmax; $pp++) {
 
   } elsif ($pp==1) { # SOUTHERN ALASKA - map_1
       $xmin = -155.0; $xmax = -142.0; $ymin = 57; $ymax = 66.0;
-      $sbarinfo = "-L-146/57.5/57.5/100+p1.5p,0/0/0,solid+f255/255/255";
-      $Jbscale = 8000000;
+      $sbarinfo = "-L-146/57.5/57.5/100+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 8000000;
+      # For offshore Kodiak earthquake
+      $xmin = -160.0; $xmax = -140.0; $ymin = 55; $ymax = 64.0;
+      $sbarinfo = "-L-144/56/56/100+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 7500000;
       $ibasementc = 0;
       $ititle = 1;      # publication
       $iscalecap = 1;
@@ -646,17 +649,17 @@ print CSH "psbasemap $J $R $B -K -V -O >> $psfile\n";
 
   $cpt_cap = "color_cap.cpt";
   $colormap = "seis";
-  if($icc[$xx-1] == 1) {  # CC
+  if($icc[$xx-1] == 1) {          # Cross-correlation
     $dc = ($cmax-$cmin)/12;
     $Tcap = "-T$cmin/$cmax/$dc";
     print CSH "makecpt -C$colormap $Tcap > $cpt_cap\n";
 
-  } elsif($icc[$xx-1] == 0) {                # DT
+  } elsif($icc[$xx-1] == 0) {     # time-shift
     $dc = ($cmax-$cmin)/9;
     $Tcap = "-T$cmin/$cmax/$dc -D";   # -Z for continuous, -D
     print CSH "makecpt -C$colormap $Tcap > $cpt_cap\n";
 
-  } elsif($icc[$xx-1] == 2) {                # DT
+  } elsif($icc[$xx-1] == 2) {     # log(data/syn)
     $dc = ($cmax-$cmin)/9;
     $Tcap = "-T$cmin/$cmax/$dc -D";   # -Z for continuous, -D
     print CSH "makecpt -C$colormap $Tcap > $cpt_cap\n";

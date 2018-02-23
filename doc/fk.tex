@@ -1,0 +1,969 @@
+% Vipul Silwal
+% Notes on F-K Synthetics notes
+
+\documentclass[11pt,titlepage,fleqn]{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage[round]{natbib}
+\usepackage{xspace}
+\usepackage{graphicx}
+\usepackage{fancybox}
+\usepackage{float}
+
+\textwidth 17cm
+\textheight 23.8cm
+\oddsidemargin -4.5mm
+\evensidemargin -4.5mm
+\topmargin -15mm
+
+
+\include{carlcommands}
+
+\newcommand{\tab}{\hspace*{2em}}
+\newcommand{\gt}{\textgreater}
+\newcommand{\lt}{\textless}
+\newcommand{\ux}{\frac{\partial ^2 u}{\partial x^2}}
+\newcommand{\uy}{\frac{\partial ^2 u}{\partial y^2}}
+\newcommand{\uz}{\frac{\partial ^2 u}{\partial x^2}}
+\newcommand{\ut}{\frac{\partial ^2 u}{\partial t^2}}
+%\newcommand{\brho}{\mbox{\boldmath $\bf \rho$}}
+\newcommand{\nb}{\mbox{$\nu_\beta$}}
+\newcommand{\na}{\mbox{$\nu_\alpha$}}
+\renewcommand*{\arraystretch}{1.4}
+
+\graphicspath{{/home/vipul/PROJECTS/FK/figures/}}
+%=======================
+\begin{document}
+
+\begin{center}
+\huge{\bf Generating green's functions and synthetics using fk}
+\end{center}
+
+\begin{center}
+\large{
+Vipul Silwal \\
+Geophysical Institute \\
+University of Alaksa\\
+Fairbanks, Alaska\\
+\today}
+\end{center}
+%========================
+
+%\pagebreak
+\tableofcontents
+%=======================
+
+\pagebreak
+
+\section{Content of the Package}
+\begin{verbatim}
+The fk package contains following main codes:
+
+  fk.f		compute the Green's functions of a layered medium from
+		explosion, single-force, and double-couple sources.
+
+  syn.c		compute synthetic seismogram using Green's functions
+ 		with a known source geometry.
+
+  fk.pl		a PERL script to simplify the use of fk.
+
+  trav.f	compute first arrival times in layered velocity model.
+
+  hk		the Hadley-Kanamori velocity model of southern California.
+\end{verbatim}
+
+%====================
+\section{fk\_usage}
+\begin{verbatim} Usage: fk.pl -Mmodel/depth[/f] [-D] [-Hf1/f2] [-Nnt/dt/smth/dk/taper] 
+[-Ppmin/pmax[/kmax]] [-Rrdep] [-SsrcType] [-Uupdn] [-Xcmd] distances ...
+-M: model name and source depth in km. f triggers earth flattening (off).
+    model has the following format (in units of km, km/s, g/cm3):
+	thickness vs vp_or_vp/vs_if_less_than_2 [rho Qs Qp]
+	rho=0.77 + 0.32*vp if not provided or the 4th column is larger than 20 (treated as Qs).
+	Qs=500, Qp=2*Qs, if they are not specified.
+	If the first layer thickness is zero, it represents the top elastic half-space.
+	Otherwise, the top half-space is assumed to be vacuum and does not need to be specified.
+	The last layer (i.e. the bottom half space) thickness should be always be zero.
+-D: use degrees instead of km (off).
+-H: apply a high-pass filter with a cosine transition zone between freq. 
+    f1 and f2 in Hz ($f1/$f2).
+-N: nt is the number of points, must be 2^n ($nft).
+    Note that nt=1 will compute static displacements (require st_fk compiled).
+              nt=2 will compute static displacements using the dynamic solution.
+    dt is the sampling interval ($dt sec).
+    smth makes the final sampling interval to be dt/smth, must be 2^n ($smth).
+    dk is the non-dimensional sampling interval of wavenumber ($dk).
+    taper applies a low-pass cosine filter at fc=(1-taper)*f_Niquest ($taper).
+-P: specify the min. and max. slownesses in term of 1/vs_at_the_source ($pmin/$pmax)
+    and optionally kmax at zero frequency in term of 1/hs ($kmax).
+-R: receiver depth ($r_depth).
+-S: 0=explosion; 1=single force; 2=double couple ($src).
+-U: 1=down-going wave only; -1=up-going wave only ($updn).
+-X: dump the input to cmd for debug ($fk).
+
+Examples
+* To compute Green's functions up to 5 Hz with a duration of 51.2 s and at a dt
+of 0.1 s every 5 kms for a 15 km deep source in the HK model, use
+fk.pl -Mhk/15 -N512/0.1 05 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80
+* To compute static Green's functions for the same source, use
+fk.pl -Mhk/15 -N2 05 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 > st.out
+or use
+fk.pl -Mhk/15 -N1 05 10 15 20 25 30 35 40 45 50 55 60 65 70 75 80 > st.out
+* To compute Green's functions every 10 degrees for a 10 km deep source in the PREM model.
+fk.pl -Mprem/10/f -D 10 20 30 40 50 60
+\end{verbatim}
+
+{\bf Values Used:}
+\begin{verbatim}
+my $fk = "fk";		# FK.
+my $dt = 0.05;		# sampling interval.
+my $smth = 1;		# densify the output samples by a factor of smth.
+my $nft = 4096;		# number of points.
+my $src = 2;		# source type, 2=dc; 1=sf; 0=ex.
+my $dk = 0.3;		# sampl. interval in wavenumber, in Pi/x, 0.1-0.4.
+my $sigma = 2;		# small imaginary frequency, in 1/T, 2-3.
+my $kmax = 15.;		# max wavenumber at w=0, in 1/h, 10-30.
+my $pmin = 0.;		# max. phase velocity, in 1/vs, 0 the best.
+my $pmax = 1.;		# min. phase velocity, in 1/vs.
+my $taper = 0.3;	# for low-pass filter, 0-1.
+my ($f1,$f2) = (0,0);	# for high-pass filter transition band, in Hz.
+my $tb=50;		# num. of samples before the first arrival.
+my $deg2km=1;
+my $flat=0;		# Earth flattening transformation.
+my $r_depth = 0.;	# receiver depth.
+my $rdep = "";
+my $updn = 0;		# 1=down-going wave only; -1=up-going wave only.
+
+***********
+fk.pl -Mak_model/8 -N4096/0.05 10 20 30 40 50 60 70 80 90 100 110 120 130 140 150 160 170 
+180 190 200
+***********
+\end{verbatim}
+
+%======================
+
+\section{Sample input}
+
+\begin{verbatim}
+# sample of input file for fk and st_fk:
+# 
+3 2 2 1 0	# number_of_layers src_layer src_type receiver_lay updn
+    10.0000  6.3000  3.5000  2.7860 1000.00 500.00	# 1st layer
+    25.0000  6.3000  3.5000  2.7860 1000.00 500.00	# 2nd layer
+     0.0000  8.1000  4.7000  3.3620 1600.00 800.00	# half-space
+2 512 0.2 0.5 25 2 1 1	# sigma nt dt taper nb smth wc1 wc2
+0.  1 0.3 15	# pmin pmax dk kmax
+    1		# number of distance ranges
+  200.00   20.00 200.grn.
+#distance  t0    output_file_name (2f8.2,1x,a)
+#
+# Notes about some parameters (the values in parenthesis are preferred):
+#
+# src_layer	The layer where the source is located on the top.
+#
+# src_type	0=explosion, 1=single force, 2=double couple.
+#
+# receiver_lay	The layer where receivers are located on the top.
+#
+# updn		1 = down-going wave only; -1 = up-going wave only; 0=whole.
+# 
+# sigma		in 1/trace_length, the small imaginary frequency (2-3).
+# 
+# nt	The number of points in the time domain, must be 2**N with N>=0.
+#	nt=1 will compute static disp. using static Haskell matrices.
+# 	nt=2 will compute static disp. using dynamic Haskell matrices at 0 freq.
+#	In this case, a large dt (e.g., 1000) should be used so that 1/dt = 0.
+# 
+# dt	in sec, sampling interval (see the smooth factor below).
+# 
+# taper	The tapering factor to suppress high frequencies (0-1, 0=off).
+# 
+# nb	Number of points to be saved before t0 (10-50).
+# 
+# smt	integer of 2**N, a smooth factor to increase the sampling rate
+#	of the output time sequence. The final output will be smt*nt
+#	points with a sampling interval of dt/smt.
+# 
+# wc1 wc2	Two integers that define a high-pass filter:
+# 		 0 for f < (wc1-1)*df,
+# 	  H(f) = cosine (wc1-1)*df <= f <= (wc2-1)*df
+# 		 1 for f > (wc2-1)*df
+# 
+# pmin pmax	in 1/Vs_at_source, minimum and maximum slowness.
+# 	[w*pmin, w*pmax] specifies the window for the
+#	the wavenumber integration (default: pmin=0; pmax=1-1.5).
+# 
+# dk	in pi/max(Xmax, source_depth), wavenumber sampling interval (0.2-0.5).
+# 
+# kmax	in 1/source_depth, the maximum wavenumber at zero frequency (10-30).
+# 
+# The output is the surface displacement (in SAC format for the dynamic case and
+# ASCII file for the static case), in the order of vertical (UP), radial,
+# and tangential (counterclockwise) for n=0, 1, 2 (i.e. Z0, R0, T0, Z1, ...).
+# Their units are (assume v in km/s, rho in g/cm^3, thickness in km):
+#        10^-20 cm/(dyne cm)     for double couple source and explosion;
+#        10^-15 cm/dyne          for single force.
+# For the dynamic case, the source time function is assumed to be a Dirac delta.
+# So the outputs actually correspond to velocities from a step function source.
+\end{verbatim}
+
+%===================
+
+\section{How to run}
+
+\begin{enumerate}
+\item
+Get the model files into the folder.\\
+\tab {\bf CAP \gt~ models \gt~ hk}
+\begin{verbatim}
+vipul@coyote:~/CAP/models/hk> ls
+hk
+\end{verbatim}
+
+\item
+ Now run it using command shown in fk usage:
+\begin{verbatim}
+vipul@coyote:~/CAP/models/hk> fk.pl -Mhk/15 -N512/0.4/2 05 10 15 20 25 30 35 40 45 50
+\end{verbatim}
+\tab {\bf OUTPUT:} (in terminal)
+\begin{verbatim}
+ Input number_of_layers layer_src_at_botom rcv_layer
+ Input thickness of each layer and velocity
+ Input the number of distance ranges
+ Input distance range (in km)
+ Input number_of_layers layer_src_at_botom rcv_layer
+ Input thickness of each layer and velocity
+ Input the number of distance ranges
+ Input distance range (in km)
+Input nlay src_layer src_type rcv_layer updn
+ Input thickness Vp Vs rho Qa Qb for layer           1
+   1   5.50   5.50   3.18   2.53 0.12E+04 0.60E+03
+ Input thickness Vp Vs rho Qa Qb for layer           2
+   2   9.50   6.30   3.64   2.79 0.12E+04 0.60E+03
+ Input thickness Vp Vs rho Qa Qb for layer           3
+   3   1.00   6.30   3.64   2.79 0.12E+04 0.60E+03
+ Input thickness Vp Vs rho Qa Qb for layer           4
+   4  16.00   6.70   3.87   2.91 0.12E+04 0.60E+03
+ Input thickness Vp Vs rho Qa Qb for layer           5
+   5   0.00   7.80   4.50   3.27 0.18E+04 0.90E+03
+source-station   15.000
+Input sigma NFFT dt lp nb smooth_factor wc1 wc2
+Input pmin pmax dk kc
+Input number of distance ranges to compute
+Input x t0 output_name (2f8.2,1x,a)
+Input x t0 output_name (2f8.2,1x,a)
+Input x t0 output_name (2f8.2,1x,a)
+Input x t0 output_name (2f8.2,1x,a)
+Input x t0 output_name (2f8.2,1x,a)
+Input x t0 output_name (2f8.2,1x,a)
+Input x t0 output_name (2f8.2,1x,a)
+Input x t0 output_name (2f8.2,1x,a)
+Input x t0 output_name (2f8.2,1x,a)
+Input x t0 output_name (2f8.2,1x,a)
+  dk =  0.01885  kmax =  1.00  pmax =0.2747     N =    20907
+  start F-K computation, iw-range:           1           1         179         256
+  10\% done
+  20\% done
+  30\% done
+  40\% done
+  50\% done
+  60\% done
+  70\% done
+  80\% done
+  90\% done
+    20616           100\% done, writing files ... 
+Processing sac file hk_15/05.grn.0 ...
+  Changing t1 header from         -12345 to           2.64
+  Changing t2 header from         -12345 to           4.57
+  Changing user1 header from         -12345 to         160.64
+  Changing user2 header from         -12345 to         160.66
+Processing sac file hk_15/05.grn.5 ...
+  Changing t1 header from         -12345 to           2.64
+  Changing t2 header from         -12345 to           4.57
+  Changing user1 header from         -12345 to         160.64
+  Changing user2 header from         -12345 to         160.66
+Processing sac file hk_15/10.grn.0 ...
+  Changing t1 header from         -12345 to           3.01
+  Changing t2 header from         -12345 to           5.21
+  Changing user1 header from         -12345 to         144.53
+  Changing user2 header from         -12345 to         144.53
+Processing sac file hk_15/10.grn.5 ...
+  Changing t1 header from         -12345 to           3.01
+  Changing t2 header from         -12345 to           5.21
+  Changing user1 header from         -12345 to         144.53
+  Changing user2 header from         -12345 to         144.53
+Processing sac file hk_15/15.grn.0 ...
+  Changing t1 header from         -12345 to           3.54
+  Changing t2 header from         -12345 to           6.12
+  Changing user1 header from         -12345 to         132.51
+  Changing user2 header from         -12345 to         132.48
+Processing sac file hk_15/15.grn.5 ...
+  Changing t1 header from         -12345 to           3.54
+  Changing t2 header from         -12345 to           6.12
+  Changing user1 header from         -12345 to         132.51
+  Changing user2 header from         -12345 to         132.48
+Processing sac file hk_15/20.grn.0 ...
+  Changing t1 header from         -12345 to           4.16
+  Changing t2 header from         -12345 to           7.21
+  Changing user1 header from         -12345 to         123.79
+  Changing user2 header from         -12345 to          123.8
+Processing sac file hk_15/20.grn.5 ...
+  Changing t1 header from         -12345 to           4.16
+  Changing t2 header from         -12345 to           7.21
+  Changing user1 header from         -12345 to         123.79
+  Changing user2 header from         -12345 to          123.8
+Processing sac file hk_15/25.grn.0 ...
+  Changing t1 header from         -12345 to           4.85
+  Changing t2 header from         -12345 to           8.39
+  Changing user1 header from         -12345 to         117.48
+  Changing user2 header from         -12345 to         117.49
+Processing sac file hk_15/25.grn.5 ...
+  Changing t1 header from         -12345 to           4.85
+  Changing t2 header from         -12345 to           8.39
+  Changing user1 header from         -12345 to         117.48
+  Changing user2 header from         -12345 to         117.49
+Processing sac file hk_15/30.grn.0 ...
+  Changing t1 header from         -12345 to           5.57
+  Changing t2 header from         -12345 to           9.63
+  Changing user1 header from         -12345 to         112.81
+  Changing user2 header from         -12345 to         112.83
+Processing sac file hk_15/30.grn.5 ...
+  Changing t1 header from         -12345 to           5.57
+  Changing t2 header from         -12345 to           9.63
+  Changing user1 header from         -12345 to         112.81
+  Changing user2 header from         -12345 to         112.83
+Processing sac file hk_15/35.grn.0 ...
+  Changing t1 header from         -12345 to           6.31
+  Changing t2 header from         -12345 to          10.92
+  Changing user1 header from         -12345 to          109.4
+  Changing user2 header from         -12345 to         109.42
+Processing sac file hk_15/35.grn.5 ...
+  Changing t1 header from         -12345 to           6.31
+  Changing t2 header from         -12345 to          10.92
+  Changing user1 header from         -12345 to          109.4
+  Changing user2 header from         -12345 to         109.42
+Processing sac file hk_15/40.grn.0 ...
+  Changing t1 header from         -12345 to           7.06
+  Changing t2 header from         -12345 to          12.22
+  Changing user1 header from         -12345 to         106.72
+  Changing user2 header from         -12345 to         106.73
+Processing sac file hk_15/40.grn.5 ...
+  Changing t1 header from         -12345 to           7.06
+  Changing t2 header from         -12345 to          12.22
+  Changing user1 header from         -12345 to         106.72
+  Changing user2 header from         -12345 to         106.73
+Processing sac file hk_15/45.grn.0 ...
+  Changing t1 header from         -12345 to           7.83
+  Changing t2 header from         -12345 to          13.55
+  Changing user1 header from         -12345 to         104.72
+  Changing user2 header from         -12345 to         104.64
+Processing sac file hk_15/45.grn.5 ...
+  Changing t1 header from         -12345 to           7.83
+  Changing t2 header from         -12345 to          13.55
+  Changing user1 header from         -12345 to         104.72
+  Changing user2 header from         -12345 to         104.64
+Processing sac file hk_15/50.grn.0 ...
+  Changing t1 header from         -12345 to            8.6
+  Changing t2 header from         -12345 to          14.88
+  Changing user1 header from         -12345 to         103.07
+  Changing user2 header from         -12345 to         102.99
+Processing sac file hk_15/50.grn.5 ...
+  Changing t1 header from         -12345 to            8.6
+  Changing t2 header from         -12345 to          14.88
+  Changing user1 header from         -12345 to         103.07
+  Changing user2 header from         -12345 to         102.99
+\end{verbatim}
+
+\item One new folder {\bf hk\_15} will be vreated and two junk files.
+\begin{verbatim}
+vipul@coyote:~/CAP/models/hk> ls
+hk  hk_15  junk.p  junk.s
+\end{verbatim}
+
+\item Inside this folder are green's function at every 5 kms for a 15 km deep source. \\ \\
+xxx.grn.[0-2] are the up, radial, and transverse (CCW) components for n=0 fundamental source (vertical single force or 45-dip-slip double couple),\\
+xxx.grn.[3-5] are for n=1 (horizontal single force or down-dip-slip double-couple),\\
+xxx.grn.[6-8] are for n=2 (strike-slip double-couple)
+\begin{verbatim}
+vipul@coyote:~/CAP/models/hk/hk_15> ls
+05.grn.0  10.grn.3  15.grn.6  25.grn.0  30.grn.3  35.grn.6  45.grn.0  50.grn.3
+05.grn.1  10.grn.4  15.grn.7  25.grn.1  30.grn.4  35.grn.7  45.grn.1  50.grn.4
+05.grn.2  10.grn.5  15.grn.8  25.grn.2  30.grn.5  35.grn.8  45.grn.2  50.grn.5
+05.grn.3  10.grn.6  20.grn.0  25.grn.3  30.grn.6  40.grn.0  45.grn.3  50.grn.6
+05.grn.4  10.grn.7  20.grn.1  25.grn.4  30.grn.7  40.grn.1  45.grn.4  50.grn.7
+05.grn.5  10.grn.8  20.grn.2  25.grn.5  30.grn.8  40.grn.2  45.grn.5  50.grn.8
+05.grn.6  15.grn.0  20.grn.3  25.grn.6  35.grn.0  40.grn.3  45.grn.6
+05.grn.7  15.grn.1  20.grn.4  25.grn.7  35.grn.1  40.grn.4  45.grn.7
+05.grn.8  15.grn.2  20.grn.5  25.grn.8  35.grn.2  40.grn.5  45.grn.8
+10.grn.0  15.grn.3  20.grn.6  30.grn.0  35.grn.3  40.grn.6  50.grn.0
+10.grn.1  15.grn.4  20.grn.7  30.grn.1  35.grn.4  40.grn.7  50.grn.1
+10.grn.2  15.grn.5  20.grn.8  30.grn.2  35.grn.5  40.grn.8  50.grn.2
+\end{verbatim}
+
+\item
+
+\pagebreak
+\noindent{\bf SAC headers}
+
+\begin{tabular}{rll}
+    NPTS & 2409		        & number of data points\\
+       B & -9.992996e+00	& begin time\\
+       E & 1.408700e+01		& end time\\
+  IFTYPE & TIME SERIES FILE	& file type\\
+   LEVEN & TRUE			& evenly sampled time series \\
+   DELTA & 1.000000e-02		& time increment \\
+  DEPMIN & -2.073471e+04	& minimum amplitude\\
+  DEPMAX & 1.584818e+04		& maximum amplitude\\
+  DEPMEN & 5.137106e+01		& mean amplitude\\
+ OMARKER & 0			& event origin marker\\
+T1MARKER & 1.848		& first arrival (P) marker\\
+T2MARKER & 3.192		& t0 (S) marker\\
+  IZTYPE & GMT DAY		& type of reference time\\
+   CMPAZ & 0.000000e+00		& component azimuth relative to north\\
+  CMPINC & 0.000000e+00		& component "incidence angle" reletive to the vertical\\
+    DIST & 4.994444e+00		& source receiver distance in km\\
+  LOVROK & TRUE			& TRUE if it is okay to overwrite this file on disk\\
+   NVHDR & 6			& Header version number. Current value is the integer 6.\\
+  LPSPOL & FALSE		& TRUE if station components have a positive polarity \\
+         &                      & (left-hand rule)\\
+  LCALDA & TRUE			& TRUE if DIST, AZ, BAZ, and GCARC are to be calculated \\
+         &                      & from station and event coordinates
+\end{tabular}
+CMPAZ is component azimuth: If the source to station azimuth is 30, then r component azimuth would be 30, transeverse component azimuth would be 120 and vertical azimuth would be 90.
+
+For teleseismic events (Far-field) influence of spherical earth is not ignorable, therefore flattened earth model cannot be used.
+
+\end{enumerate}
+
+%================
+
+\section{What are different functions used}
+
+\begin{enumerate}
+\item bessel.f and bessel.FF computes bessel function for n=0,1,2. If no intrinsic bessel functions are found then their approximations are used.
+\item complex.c
+\item fft.c computes fft, correlation, convolution etc
+\item futterman.f computes Q operator (considers only the dispersive nature of waves not the attenuation, improvement needed)
+\item haskell.f computes haskell propagator matrix. ($a_m={\rm D}_m\;{\rm E}_m^{-1}$); 4x4 haskell and 5x5 compund (W\&H)
+\item kernel.f 
+\item prop.f computes B and K
+\item radiats.c computes radiation coefficients for different kinds of sources
+\item source.f Displacement-stress vector jump across the source
+\item st\_haskell.f
+\item syn.c computes synthetic seismogram from green's function
+\item tau\_p.f
+\item trav.f calculate travel time for horizontal layered model
+\end{enumerate}
+
+\subsection{Synthetic seismogram}
+
+\begin{verbatim}
+Usage: syn -Mmag([[/Strike/Dip]/Rake]|/Mxx/Mxy/Mxz/Myy/Myz/Mzz) -Aazimuth 
+       ([-SsrcFunctionName | -Ddura[/rise]] [-Ff1/f2[/n]] [-I | -J] 
+       -OoutName.z -GFirstCompOfGreen | -P)
+
+   Compute displacement in cm produced by difference seismic sources
+   -M Specify source magnitude and orientation or moment-tensor
+      For double-couple, mag is Mw, strike/dip/rake are in A&R convention
+      For explosion; mag in in dyne-cm, no strike, dip, and rake needed
+      For single-force source; mag is in dyne, only strike and dip are needed
+      For moment-tensor; mag in dyne-cm, x=N,y=E,z=Down
+   -A Set station azimuth in degree measured from the North
+   -D Specify the source time function as a trapezoid,
+      give the total duration and rise-time (0-0.5, default 0.5=triangle)
+   -F apply n-th order Butterworth band-pass filter, SAC lib required 
+      (off, n=4, must be < 10)
+   -G Give the name of the first component of the FK Green function
+   -I Integration once
+   -J Differentiate the synthetics
+   -O Output SAC file name
+   -P Compute static displacement, input Green functions from stdin in the form
+	distance Z45 R45 T45 ZDD RDD TDD ZSS RSS TSS [distance ZEX REX TEX]
+      The displacements will be output to stdout in the form of
+	distance azimuth z r t
+   -Q Convolve a Futterman Q operator of tstar (no)
+   -S Specify the SAC file name of the source time function (its sum. must be 1)
+   Examples:
+   * To compute three-component velocity at N33.5E azimuth from a Mw 4.5
+earthquake (strike 355, dip 80, rake -70), use:
+	syn -M4.5/355/80/-70 -D1 -A33.5 -OPAS.z -Ghk_15/50.grn.0
+   * To compute the static displacements from the same earthquake, use:
+	nawk \'$1==50\' st.out | syn -M4.5/355/80/-70 -A33.5 -P
+   * To compute displacement from an explosion, use:
+   	syn -M3.3e20 -D1 -A33.5 -OPAS.z -Ghk_15/50.grn.a
+      or
+        syn -M3.3e20/1/0/0/1/0/1 -D1 -A33.5 -OPAS.z -Ghk_15/50.grn.0
+	\n",argv[0]);
+
+*************
+vipul@coyote:~/CAP/models/ak_cola/syn/283325> syn -M4.8232/31/84/73 -D1.34 
+-I -G../../cola_8/80.grn.0 -O80.syn..
+*************
+\end{verbatim}
+
+\subsection{Basic Information}
+{\bf Model input file for green's function} 
+
+It contains structural information: depth of each layer,$V_s$, $V_p$, density, $Q_\alpha$ and $Q_\beta$.
+
+If deinsity ($\rho$) is not given, it is computed by the relationship: $\rho = 0.77 + 0.32*V_p$.
+
+If  $Q_\alpha$ is not given it is taken to be twice of  $Q_\beta$.
+If both  $Q_\alpha$ and  $Q_\beta$ are not given,  $Q_\alpha= 1000$ and $Q_\beta=500$.
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\multicolumn{3}{|c|}{\bf Different green's files and their Herrmann equivalent} \\
+\hline
+grn.a & ZEP & Z-component of displacement due to explosive source\\
+grn.b & REP & R-component of displacement due to explosive source\\
+grn.c & TEP & T-component of displacement due to explosive source (empty)\\
+\hline
+grn.0 & ZDD & Z-component of displacement of a 45 dip-slip type source\\
+grn.1 & RDD & Radial component of displacement of a 45 dip-slip source\\
+grn.2 & TDD & Transverse component of displacement of a 45 dip-slip source(empty)\\
+\hline
+grn.3 & ZDS & Z-component of displacement of a dip-slip type source\\
+grn.4 & RDS & Radial component of displacement of a dip-slip source\\
+grn.5 & TDS & Transverse component of displacement of a dip-slip source\\
+\hline
+grn.6 & ZSS & Z-component of displacement of a strike-slip type source\\
+grn.7 & RSS & Radial component of displacement of a strike-slip source\\
+grn.8 & TSS & Transverse component of displacement of a strike-slip source\\
+\hline
+\end{tabular}
+\end{center}
+
+\noindent {\bf Getting the Synthetic Seismogram}\\
+It seems strange that the code does not ask for the type of source. But it identifies the source type on basis of type of input.
+
+\begin{verbatim}
+ case 'M':
+	      src_type = sscanf(&argv[i][2], "%f/%f/%f/%f/%f/%f/%f",&m0,
+&mt[0][0],&mt[0][1],&mt[0][2],&mt[1][1],&mt[1][2],&mt[2][2]);
+
+ switch (src_type) {
+  case 1:
+     nn = 1;
+     m0 = m0*1.0e-20;
+     break;
+  case 3:
+     nn = 2;
+     sf_radiat(az-mt[0][0],mt[0][1],rad);
+     m0 = m0*1.0e-15;
+     break;
+  case 4:
+     nn = 3;
+     dc_radiat(az-mt[0][0],mt[0][1],mt[0][2],rad);
+     m0 = pow(10.,1.5*m0+16.1-20);
+     break;
+  case 7:
+     nn = 4;
+     mt_radiat(az,mt,rad);
+     m0 = m0*1.0e-20;
+     break;
+  default:
+     error = 1;
+  }
+\end{verbatim}
+
+\begin{enumerate}
+\item If there is only one input moment argument, then it is considered to be a explosive source. It needs to be given in seismic moment $M_0$, ex: -M1.26e23, and unit should be in dyne-cm. It requires that *.grn.[a-c] must be present. The code itself multiplies $M_0$ with a factor of $10^{-20}$.
+\item If there are three input arguments, then it is considered to be single-force. These three arguments are magnitude in dyne, stike and slip of force. The code will look for *.grn.[0-5]. In this case the force is multiplied with a factor of $10^{-15}$. 
+\item If four input arguments are given, then it is considered to be a double couple source. All the green's function files *.grn.[0-8] must be present. The input should be in  following order; moment magnitude in $\mw$, strike, dip and rake of fault. ex: -M4.8/31/84/73. The moment magnitude in converted into seismic moment using the relation: 
+$\mw = \frac{1}{15}{\rm log}M_0 - \frac{16.1}{15}$. Once computed it is then cultiplied by the facor of $10^{-20}$.
+\item If there are seven input arguments then it is considered to be a general case and general synthetic seismogram is computed. The seven input arguements are; $M_0$/Mxx/Mxy/Mxz/Myy/Myz/Mzz. All the grrn's function files *.grn.[a-c,0-8] must be present. Seismic moment in this case also is multiplied by the factor  $10^{-20}$.
+\end{enumerate} 
+
+{\bf Calculating synthetic seismogram from green's fucntion}
+\eqa
+\bu_z(r,z=0,\om) &=& ZSS\ A_1 + ZDS\ A_2 + ZDD\ A_3\\
+\bu_r(r,z=0,\om) &=& RSS\ A_1 + RDS\ A_2 + RDD\ A_3\\
+\bu_\phi(r,z=0,\om) &=& RSS\ A_1 + TDS\ A_2
+\ena
+\begin{eqnarray*}
+\bu_z(r,\phi,0,\om) = &{\rm ZSS}&[(f_1n_1-f_2n_2){\rm cos}2\phi +(f_1n_1-f_2n_2){\rm sin}2\phi]\\
+ &+& {\rm ZDS}[(f_1n_3+f_3n_1){\rm cos}\phi +(f_2n_3+f_3n_2){\rm sin}\phi]+ {\rm ZDD}[f_3n_3]\\
+\bu_r(r,\phi,0,\om) = &{\rm RSS}&[(f_1n_1-f_2n_2){\rm cos}2\phi +(f_1n_1-f_2n_2){\rm sin}2\phi]\\
+ &+& {\rm RDS}[(f_1n_3+f_3n_1){\rm cos}\phi +(f_2n_3+f_3n_2){\rm sin}\phi]+ {\rm RDD}[f_3n_3]\\
+\bu_\phi(r,\phi,0,\om) = &{\rm TSS}&[(f_1n_1-f_2n_2){\rm cos}2\phi +(f_1n_1-f_2n_2){\rm sin}2\phi]\\
+ &+& {\rm TDS}[(f_1n_3+f_3n_1){\rm cos}\phi +(f_2n_3+f_3n_2){\rm sin}\phi]
+\end{eqnarray*}
+
+\begin{flushright}
+\citep{Herrmann_1980}
+\citep{Jost_Herrmann_1989}
+\end{flushright}
+
+{\bf Error Messages and Points to notice}
+\begin{enumerate}
+\item If tried to run fk.pl for -S0 before computing the *.grn.[0-8] files (i.e before computing for single force (-S1) or double couple case (-S2).
+\begin{verbatim}
+Error reading sac file */*.grn.0Unable to open */*.grn.0
+\end{verbatim}
+
+\item If tried to run syn by using any other file (present) of green's function except the first one (*.grn.a (for explosion or genral moment tensor) or *.grn.0 (for double-couple or single force))
+\begin{verbatim}
+Unable to open */*.grn.6
+Unable to open ../../../cola_8/10.grn.d
+\end{verbatim}
+No error msg when tried to run for double-couple.
+
+Both these error messages doesn't hinder the computation (i.e we will get the output), but {\bf {\em synthetic seismogram vary}}.
+\item If tried to run using any other file, *.grm.[9] or {\em notpresent}.grn[0], tht is not even present, fk\_usage file opens.
+
+
+\item Remember that when you see green's function in sac they appear in a, b, c order, i.e. up-radial-transverse.
+And when you see synthetic seismogram it appears in r, t, z order, i.e. radial-transverse-up.
+
+\item In case of explosion, there is no green's function *.grn.b for transverse component (*.grn.b). And also if you tried to obtain synthetic seismogram for explosive source. Green's function also doesn't exist for vertical-single force or 45-dip slip double couple (*.grn.1)
+
+\item $M_0$ should be entered in dynes-cm. 
+
+\item Moment-tensors are {\em not} normalized. eg: 1/0/0/1/0/1 is different from 0.5/0/0/0.5/0/0.5. But they are combined with $M_0$, such that, $M_0/1/0/0/1/0/1$ is same as $2M_0/0.5/0/0/0.5/0/0.5$
+
+\item The affect of number of sampling points for green's function affects the cost of computation more drastically than epicentral distances array.
+
+\item Source should not be kept at layer boundary.
+
+\item if no -D is given, it is considered to be an impulsive.
+
+\item If no -A is given, azimuth is taken to be zero.
+
+\item Last layer thickness will be always considered to be zero (elastic half space).
+
+\item If synthetic seismogram filename have (ri, ti or zi) at end, it means that the source time function is impulsive (delta function) (which is a default case). Otherwise the source time duration have been inputed.
+\end{enumerate}
+
+
+\pagebreak
+\noindent {\bf Event catalog}
+
+Each event has following has following information corresponding to the event name: time of event, time shift, half duration, origin (x,y,z), moment tensor.
+Example:
+\begin{verbatim}
+XXXX 2008  6 11 11 12 23.53  50.9784 -179.1750  29.9 5.0 5.0 297898
+event name:      297898
+time shift:      0.0000
+half duration:   0.8359
+latitude:       50.9784
+longitude:    -179.1750
+depth:          29.9473
+Mrr:       2.300000e+23
+Mtt:      -4.420000e+23
+Mpp:       2.120000e+23
+Mrt:       2.500000e+22
+Mrp:       1.740000e+23
+Mtp:       3.100000e+22
+\end{verbatim}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=15cm]{alaska_maps_ifig40.eps}
+\caption[]
+{{
+The area under study, with major earthquakes and the stations (under AEIC) whose observed seismogram had been used for checking the synthetics. 
+\label{fig:map}
+}}
+\end{center}
+\end{figure}
+
+\noindent {\bf Data Availability}
+Green's functions were computed using 7 different structural models available from past literatures. They were tested against 18 prominent earthquakes recorded at 34 station that comes under AEIC seismic array.
+
+%========================
+\pagebreak
+\section{Preparing Synthetics}
+\subsection{Model Used}
+SCAK:
+\begin{verbatim}
+Depth Layer thickness     V_s        V_p      density       Q_p       Q_s
+ 4     0.4000E+01     0.3010E+01 0.5300E+01 0.2520E+01    600.00    300.00
+ 9     0.5000E+01     0.3180E+01 0.5600E+01 0.2610E+01    600.00    300.00
+ 14    0.5000E+01     0.3520E+01 0.6200E+01 0.2780E+01    600.00    300.00
+ 19    0.5000E+01     0.3920E+01 0.6900E+01 0.2970E+01    600.00    300.00
+ 23    0.5000E+01     0.4200E+01 0.7400E+01 0.3120E+01    600.00    300.00
+ 32    0.9000E+01     0.4370E+01 0.7700E+01 0.3200E+01    600.00    300.00
+ 48    0.1600E+02     0.4490E+01 0.7900E+01 0.3260E+01    600.00    300.00
+ 65    0.1700E+02     0.4600E+01 0.8100E+01 0.3320E+01    600.00    300.00
+ 69    0.4000E+03     0.4720E+01 0.8300E+01 0.3370E+01    600.00    300.00
+\end{verbatim}
+
+\subsection{Azimuthal check}
+These following azimuthal check have been performed using the SCAK model for Alaska. A vertical strike slip fault have been taken for test, with strike along the North. The source depth have been taken to be 8 kms. The variation of synthetics has been shown at two epicentral distances of 20 km and 100 km. For test 5.4 Mw earthquake with source duration of .82 sec has been taken.
+Azimuthal change can be very small and should be plotted for atleast $180^o$. If it is an explosive source, that would cause independence on azimuth. For vertical strike-slip case we can see that it remains almost of similar kind (amplitude changes) for first $90^0$ but then it suddenly shifts by $\frac{\pi}{2}$ phase shift. This is because moving from compressional zone to tension zone.
+
+\subsection{Depth check}
+{\bf Vertical Strike-Slip Fault}
+First, at epicentral distance of 150 km and azimuth of $30^o$ we computed synthetics for 5 different source depths : 8, 20, 50, 90, 150 kms.
+
+For shallow sources (8 and 20km) the surface waves can be noted (rayleigh in radial and vertical component; whereas love in transeverse component)
+
+\subsection{Epicentral distance check}
+Keeping the depth of source constant at 20 km, and azimuth at $30^o$, epicentral distance was varied from 10 km to 200 kms. Some, of them have been shown here.
+
+\subsection{Compatibility of double couple and fault}
+An arbitrary fault of strike=20, dip=30, rake=40 were taken for test. Moment tensor for such an arbitrary fault was calculated:
+(Aki and Richard's format):
+\eq
+M= \left[\begin{array}{ccc}
+-0.3113 &   0.4723 &  -0.7333\\
+    0.4723 &  -0.2454  &  0.0751\\
+   -0.7333  &  0.0751  &  0.5567 \end{array} \right]
+\en
+
+It is an example of pure double couple source $(\gamma=0)$. M0 was taken to be $10^{27}$ dynes-cm and its corresponding Mw was calculated to be 7.266. 
+In the figure it has been shown that both forms of input gives same synthetics.
+
+When tested for an event (id-278678), which had the highest CLVD component. The result showed that synthetics of double-couple were similar to that of fault parameter (both normal and auxiliary), but the full moment tensor differed mostly in magnitude from the rest. This particular event had :
+\begin{verbatim}
+Mw     : 4.40
+M0     : 5.05e22
+M      : -.73/.21/-.14/-.36/-.07/1.09
+Plane1 : 60.8/42.2/82.2
+Plane2 : 251.3/48.3/97
+MDC    : -.829/.3721/-.1334/-.1570/-.0406/.9860
+Depth  : 100km
+epi dis: 50km
+\end{verbatim}
+
+
+\subsection{Testing different models}
+For this we need different observed seismograms, so that we can compare synthetics obtained by different models. Seven different models were tested using 18 events which were recorded at 34 different stations.
+
+{\bf Homogeneous SOCAL}
+The whole half homogeneous have properties of lower crust (above moho) of Southern California.
+
+Prefect test for looking at directivity pattern, seeing Rayleigh waves (no Love waves) . The source was assumed to be a vertical strike-slipe fault. It was tested for different depths (8 and 80) at different epicentral distances (20 and 150). We looked at different azimuthal points (0, 45, 90, 135, 180).
+
+\begin{center}
+%\begin{array}{cc}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\multicolumn{4}{|c|}{\bf Source Depth: 80Km} \\
+\hline
+Azimuth & r & t & z\\
+\hline
+0 & &SH& \\
+45 & P, SV & & P, SV\\
+90 & & SH & \\
+135 & P, SV & & P, SV\\
+180 & & SH & \\
+\hline
+\end{tabular}
+%& \hspace{0.5cm}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\multicolumn{4}{|c|}{\bf Source Depth: 8Km} \\
+\hline
+Azimuth & r & t & z\\
+\hline
+0 & &SH& \\
+45 & P, Rayleigh & & P, Rayleigh\\
+90 & & SH & \\
+135 & P, Rayleigh & & P, Rayleigh\\
+180 & & SH & \\ 
+\hline
+\end{tabular}
+%\end{array}
+\end{center}
+
+{\bf Conclusions}
+\begin{enumerate}
+\item Transeverse component is only composed of SH.
+\item Surface waves generated only my shallow source.
+\item Even for shallow source surface waves are visible only at large epicentral distances. At near source (20km) the seismogram is dominated by short period S waves.
+\item Shear component of waves is maximum along the strike plane and the auxilary plane. (max. SH is more than max. SV because of energy distribution between SV and P) 
+\item At epicentral distance of 150 shallow events generate Rayleigh waves (r and z component), whereas, deepr events do not do so. It is the SV that is present.
+\item Polarity reversal when moved from tension to pressure axis. (azimuthal variation).
+\item No love waves (which are in t-component for layered case).
+\end{enumerate}
+
+{\bf Single crustal layer SOCAL}
+
+For single layer case (Layer1 and Layer3 of SOCAL as half space) were test. Synthetic seismograms were generated at epicentral dist of 150 Km by 8 km deep source. We could see all the seismic waves cleary in this case (including the love waves). Directivity can also be tested.
+
+%===========================================================
+% FIGURES
+
+\pagebreak
+{\bf Azimuthal test}
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=15cm,height=18cm,angle=-90]{vertical_strike_slip_1.ps}
+\caption[]
+{{
+Top two are for 100 km epicentral distance and azimuthal angle of 30 and 120, (90 degree apart). Lower two are for 20 km epicentral distance and azimuthal angle of 30 and 120. Source have been taken at 8 km depth. Model: ak\_scak
+}}
+\end{center}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=22cm,height=18cm,angle=-90]{vertical_strike_slip_2.ps}
+\caption[]
+{{
+Azimuthal gradient of $15^o$ for 100km epicentral distance. It is understood that for azimuth 180-270 will be same as that of 0-90, and for 270-360 will be same as 90-180.
+}}
+\end{center}
+\end{figure}
+\pagebreak
+{\bf Source depth check}
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=10cm,height=18cm,angle=-90]{scak_depth_r.ps}
+\includegraphics[width=10cm,height=18cm,angle=-90]{scak_depth_t.ps}
+\caption[]
+{{
+Radial and transeverse Component of velocity for Vertical strike-slip fault. Azimuth: $45^o$ for radial and $0^o$ for transeverse; Epicentral distance: 150km; Source depth: 8, 20, 50, 90, 150, 200 km.
+}}
+\end{center}
+\end{figure}
+
+
+\pagebreak
+{\bf Epicentral distance check}
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=10cm,height=18cm,angle=-90]{SS_epi_r.ps}
+\includegraphics[width=10cm,height=18cm,angle=-90]{SS_epi_t.ps}
+\caption[]
+{{
+Radial and Transeverse Component of velocity for Vertical Strike-slip fault. Azimuth: $30^o$; Epicentral distance: 10, 20, 50, 90, 120, 150, 200km; Source depth: 20 km.
+}}
+\end{center}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=15cm,height=18cm,angle=-90]{SS_epi_z.ps}
+\caption[]
+{{
+Vertical Component of velocity for Vertical Strike-slip fault. Azimuth: $30^o$; Epicentral distance: 10, 20, 50, 90, 120, 150, 200km; Source depth: 20 km.
+}}
+\end{center}
+\end{figure}
+\pagebreak
+{\bf MDC and fault comparision}
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=15cm,height=20cm,angle=-90]{disp_fault_20_50_30.ps}
+\caption[]
+{{
+All component of displacement for a fault (Strike: 20; dip: 30; rake: 40). Azimuth: $30^o$; Epicentral distance: 50km; Source depth: 20 km; hdur: 0.5sec
+}}
+\end{center}
+\end{figure}
+
+\pagebreak
+{\bf Event id 278678}
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=6.5cm,height=20cm,angle=-90]{278678_r.ps}
+\includegraphics[width=6.5cm,height=20cm,angle=-90]{278678_t.ps}
+\includegraphics[width=6.5cm,height=20cm,angle=-90]{278678_z.ps}
+\caption[]
+{{
+Radial,transeverse and verical component of displacement for fault plane, full moment tensor and its double couple component. It can be seen that full moment part differs mainly in amplitude. Model:SCAK; Epi dist: 50km; Azimuth: 30. 
+}}
+\end{center}
+\end{figure}
+
+\pagebreak
+{\bf Homogeneous SOCAL}
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=6.5cm,height=20cm,angle=-90]{dir_8_150_r.ps}
+\includegraphics[width=6.5cm,height=20cm,angle=-90]{dir_8_150_t.ps}
+\includegraphics[width=6.5cm,height=20cm,angle=-90]{dir_8_150_z.ps}
+\caption[]
+{{
+Shows directivity for r, t and z component for a Strike-slip fault.Depth: 8km; epicental dist: 150 km
+}}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=7.5cm,height=20cm,angle=-90]{dir_8_20_r.ps}
+\caption[]
+{{
+Shows directivity for r component,Strike-slip fault. But surface
+waves cant be seen; dominance of short-period S waves at small epicentral distance. depth: 8km; epicental dist: 20 km
+
+}}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=7.5cm,height=20cm,angle=-90]{epi_8_45_r.ps}
+\caption[]
+{{
+shows surface dominance at large distance and short-period S wave dominance at small epi dist. Source depth: 8Km; epi dist: 20, 150; azimuth: 45
+
+}}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=7.5cm,height=20cm,angle=-90]{depth_45_r.ps}
+\caption[]
+{{
+Surface waves not generated by deep events; eg,for a strike slip fault
+Different depths: 8, 80km; epicentral distance: 150km; Azimuth: 45
+}}
+\end{center}
+\end{figure}
+\clearpage
+\pagebreak
+{\bf Single crustal layer: SOCAL}
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=9cm,height=20cm,angle=-90]{single_socal_r.ps}
+\includegraphics[width=9cm,height=20cm,angle=-90]{single_socal_t.ps}
+\caption[]
+{{
+Love waves generated in this single layer case (in transeverse component). We can also see the Rayleigh waves. The arrivals between P and S are combinedly called Pnl. epicentral distance: 150km. Source depth: 8km. Here we can also check the directivity of seismic arrivals.
+}}
+\end{center}
+\end{figure}
+%=================
+\clearpage
+\pagebreak
+
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{agu08}
+\bibliography{preamble,report_ref}
+
+%==================
+%=====================
+\iffalse
+\section{Questions}
+\begin{enumerate}
+\item uncertainty estimates from CAP (1-sigma values for strike, dip, and rake). How are they computed?
+\item pre-processing of data and synthetics for CAP. what processing is done inside CAP (or FK), and what is needed for the input format? sampling rate, time intervals, bandpass filtered, etc.
+\item what are ALL the different allowable formats of models for FK?
+\item what are ALL the different allowable formats of input moment tensors for "syn"? what is the convention of the moment tensors (up-south-east, east-north-down, etc)?
+\end{enumerate}
+
+%==================
+\pagebreak
+\section{Notes}
+W\&H eq 16
+This cannot be computed normally because of the poles present on real wavenumber axis. 
+To calculate such integrals, the Bessel funciton is expressed as sum of two Hankell funcitons and then integrated using contour integration. 
+%=================
+\clearpage
+\pagebreak
+\fi
+
+%\addcontentsline{toc}{section}{References}
+%\bibliographystyle{agu}
+%\bibliography{report_ref}
+
+\end{document}
