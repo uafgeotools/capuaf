@@ -62,8 +62,9 @@ $max_shft2=5;		# max. shift for surface wave
 $tie = 0.5;		# tie between SV and SH
 
 # weights between different portions
-$weight_of_pnl=2.0;	# weight for pnl portions
-$weight_of_surf=1.0;    # weight for surf portions (place holder - not implemented yet)
+$weight_of_pnl=2.0;	# weight for pnl window
+$weight_of_rayleigh=1.0;# weight for rayeligh window
+$weight_of_love=1.0;    # weight for love window
 $power_of_body=1;	# distance scaling power for pnl waves
 $power_of_surf=0.5;     # distance scaling power for surf waves
 
@@ -342,7 +343,9 @@ foreach (grep(/^-/,@ARGV)) {
    } elsif ($opt eq "C") {
      ($f1_pnl, $f2_pnl, $f1_sw, $f2_sw) = @value;
    } elsif ($opt eq "D") {
-     ($weight_of_pnl,$power_of_body,$power_of_surf)=@value;
+     ($weight_of_pnl,$power_of_body,$power_of_surf) = @value;
+   } elsif ($opt eq "E") {
+     ($weight_of_rayleigh,$weight_of_love) = @value;
    } elsif ($opt eq "F") {
      $fm_thr = $value[0] if $#value >= 0;
    } elsif ($opt eq "G") {
@@ -792,7 +795,8 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     print SRC "$m1 $m2 $max_shft1 $max_shft2 $repeat $fm_thr $tie\n";
     print SRC "@thrshd\n" if $repeat;   # no value in regular cap run
     print SRC "$vp $love $rayleigh\n";  # vp, vs1, vs2 (in cap.c)
-    print SRC "$power_of_body $power_of_surf $weight_of_pnl $nof\n";
+    print SRC "$power_of_body $power_of_surf $nof\n";
+    print SRC "$weight_of_pnl $weight_of_rayleigh $weight_of_love\n";
     print SRC "$plot\n";
     print SRC "$disp $pol_wt\n";
     print SRC "$green/$model/\n";

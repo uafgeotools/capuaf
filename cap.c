@@ -118,6 +118,7 @@ int main (int argc, char **argv) {
   float Pshift_max, Sshift_max,  Sshift_static[STN];
   float	rms_cut[NCP], t0[NCP], tb[NRC], t1, t2, t3, t4, srcDelay;
   float	dtP_pick[STN], s_shft, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN],max_amp_syn[200][NCP],max_amp_obs[200][NCP],log_amp_thresh,ppick[200],fraction_before_P = 0.4,fraction_before_S = 0.3,stn_comp_log_amp[200][NCP],stn_comp_misfit[200][NCP],stn_comp_shift[200][NCP];
+  float	wt_pnl,wt_rayleigh,wt_love;
   float	tstarP, tstarS, attnP[NFFT], attnS[NFFT];
   float *data[NRC], *green[NGR];
   float	bs_body,bs_surf,bs[NCP],weight,nof_per_samp;
@@ -225,11 +226,14 @@ int main (int argc, char **argv) {
 	&vp,                // apparent velocity for Pnl (see cap.pl for more info)
 	&vs1,               // apparent velocity for Love
 	&vs2);              // apparent velocity for Rayleigh
-  scanf("%f%f%f%f",
+  scanf("%f%f%f",
 	&bs_body,           // distance scaling for body waves
 	&bs_surf,           // distance scaling for surface waves
-	&x2,                // weight for Pnl
 	&nof_per_samp);     // number of freedom for computing uncertainty (OBSOLETE)
+  scanf("%f%f%f",
+	&wt_pnl,            // weight for Pnl
+	&wt_rayleigh,       // weight for Rayleigh
+	&wt_love);          // weight for Love
   scanf("%d",&plot);
   scanf("%d%f",
 	&useDisp,           // to integrate (from velocity to disp)
@@ -283,15 +287,15 @@ int main (int argc, char **argv) {
   if (f1_sw>0.)  design(order, type, proto, 1., 1., f1_sw, f2_sw, (double) dt, sw_sn, sw_sd, &nsects);
 
   /** max. window length, shift, and weight for Pnl portion **/
-  win_len_Nsamp[0]=rint(x1/dt);                                          // P window length in sample points
+  win_len_Nsamp[0]=rint(x1/dt);                               // P window length in sample points
   max_shft[3]=max_shft[4]=2*rint(Pshift_max/dt);              // allowable P time-shift in sample points
-  w_pnl[3]=w_pnl[4]=x2;                                       // weight for P waves
+  w_pnl[3]=w_pnl[4]=wt_pnl;                                   // weight for P waves (default = 2)
 
   /** max. window length, shift, and weight for P-SV, SH **/
-  win_len_Nsamp[1]=rint(y1/dt);                                          // P window length in sample points
+  win_len_Nsamp[1]=rint(y1/dt);                               // P window length in sample points
   max_shft[0]=max_shft[1]=max_shft[2]=2*rint(Sshift_max/dt);  // allowable Surface time-shift in sample points
-  w_pnl[0]=w_pnl[1]=w_pnl[2]=1;                               // weight for surface waves
-  /** and tie of time shifts between SH and P-SV **/
+  w_pnl[1]=w_pnl[2]=wt_rayleigh;                              // weight for rayleigh waves (default = 1)
+  w_pnl[0]=wt_love;                                           // weight for love waves (default = 1)
 
   /** begin -- get range of search parameters **/
   fprintf(stderr, "\nInput parameter ranges \n");
