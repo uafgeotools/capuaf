@@ -211,7 +211,7 @@ $usage =
         or to upweight the surface waves; this must be done via the weight file.
         If p1 or p2 is negative, all traces will be normalized.
         ($weight_of_pnl/$power_of_body/$power_of_surf)
-    -E  FLAG NOT IN USE.
+    -E  To up weight rayleigh and surface waves ($weight_of_rayleigh/$weight_of_love)
     -F	include first-motion data in the search. thr is the threshold ($fm_thr).
     	The first motion data are specified in $weight. The polarities
         can be specified using +-1 for P, +-2 for SV, and +-3 for SH after

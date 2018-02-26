@@ -994,11 +994,36 @@ int main (int argc, char **argv) {
 for(obs=obs0,i=0;i<nda;i++,obs++) {
     for(j=0;j<NCP;j++) {
       k = NCP - 1 - j;
-      sol.shft[i][k] = sol.shft[i][k] - max_shft[k]/2 + rint(dtP_pick[i]/dt);// time-shift (KEY!)
+      /* k = 0 (j = 4) Surf T 
+	 k = 1 (j = 3) Surf V 
+	 k = 2 (j = 2) Surf R 
+	 k = 3 (j = 1) P R 
+	 k = 4 (j = 0) P V*/ 
+      // time-shift (KEY!)
+      //sol.shft[i][k] = sol.shft[i][k] - max_shft[k]/2;
+      //stn_comp_shift[i][k] =  shft0[i][k] + dt * sol.shft[i][k];             // time-shift of the component
+
+      // SEE google doc for the impacts of each option
+      if (0) { // OLD
+	sol.shft[i][k] = sol.shft[i][k] - max_shft[k]/2;
+	stn_comp_shift[i][k] =  shft0[i][k] + dt * sol.shft[i][k];}
+      if (0) { // NEW 1.0 
+	sol.shft[i][k] = sol.shft[i][k] - max_shft[k]/2 + rint(dtP_pick[i]/dt);
+	stn_comp_shift[i][k] =  shft0[i][k] + dt * sol.shft[i][k];
+      }
+      if (0) { // NEW 2.0
+	if (k<3) sol.shft[i][k] = sol.shft[i][k] - max_shft[k]/2 + rint(dtP_pick[i]/dt); // surface waves
+	else sol.shft[i][k] = sol.shft[i][k] - max_shft[k]/2;                            // body waves
+	stn_comp_shift[i][k] =  shft0[i][k] + dt * sol.shft[i][k];}
+      if (1) { // NEW 3.0 
+	       // This is not same as NEW 1.0
+	       // The origin time of synthetics is different in that case (windows are offset in NEW 1.0) 
+	sol.shft[i][k] = sol.shft[i][k] - max_shft[k]/2;
+	stn_comp_shift[i][k] =  shft0[i][k] + dt * sol.shft[i][k] + dtP_pick[i];
+      }
       stn_comp_misfit[i][k] = sol.error[i][k]*100/(Ncomp*sol.wferr*data2);   // percentage of total misfit
       stn_comp_CC[i][k] = sol.cfg[i][k];                                     // data-synthetic cross-correlation
       if (stn_comp_CC[i][k]<0) stn_comp_CC[i][k] = 0;
-      stn_comp_shift[i][k] =  shft0[i][k] + dt * sol.shft[i][k];             // time-shift of the component
     }
  }
 
