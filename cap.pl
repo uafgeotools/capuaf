@@ -59,6 +59,7 @@ $keep = 0;             # keep synthetics
 # max. shifts
 $max_shft1=1;		# max. shift for Pnl
 $max_shft2=5;		# max. shift for surface wave
+$Sstatic_shift = 0;     # default static shift for surface waves
 $tie = 0.5;		# tie between SV and SH
 
 # weights between different portions
@@ -202,7 +203,7 @@ $usage =
                   [-Udirct] [-V<vp/vl/vr>] [-Wi] [-Y<norm>] [-Zstring] event_dirs
 
     -A  run cap for different depths. (dep_min/dep_max/dep_inc).
-    -B  FLAG NOT IN USE.
+    -B  apply same surface wave static shift to all stations. When used static_shift from weight file (last column) is ignored.
     -C  filters for Pnl and surface waves, specified by the corner
         frequencies of the band-pass filter. ($f1_pnl/$f2_pnl/$f1_sw/$f2_sw).
     -D	weight for Pnl (w1) and distance scaling powers for Pnl (p1) and surface waves (p2).
@@ -340,6 +341,8 @@ foreach (grep(/^-/,@ARGV)) {
      } else {
        $dep_inc=0;
        printf STDERR "Depth run flag -A not specified correctly\nUsing -Mdepth instead\n---------------------\n"; }
+   } elsif ($opt eq "B") {
+     ($Sstatic_shift) = @value;
    } elsif ($opt eq "C") {
      ($f1_pnl, $f2_pnl, $f1_sw, $f2_sw) = @value;
    } elsif ($opt eq "D") {
@@ -792,7 +795,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     open(SRC, "| $cmd") || die "can not run $cmd\n";
     print SRC "$pVel $sVel $riseTime $dura $rupDir\n",$riseTime if $dirct eq "_dir";
     print SRC "$model $dep\n";          # first input in regular cap run
-    print SRC "$m1 $m2 $max_shft1 $max_shft2 $repeat $fm_thr $tie\n";
+    print SRC "$m1 $m2 $max_shft1 $max_shft2 $repeat $fm_thr $tie $Sstatic_shift\n";
     print SRC "@thrshd\n" if $repeat;   # no value in regular cap run
     print SRC "$vp $love $rayleigh\n";  # vp, vs1, vs2 (in cap.c)
     print SRC "$power_of_body $power_of_surf $nof\n";

@@ -117,7 +117,7 @@ int main (int argc, char **argv) {
   float	x,x1,x2,y,y1,amp,dt,rad[6],arad[4][3],fm_thr,tie,mtensor[3][3],rec2=0.,VR,evla,evlo,evdp;
   float Pshift_max, Sshift_max,  Sshift_static[STN];
   float	rms_cut[NCP], t0[NCP], tb[NRC], t1, t2, t3, t4, srcDelay;
-  float	dtP_pick[STN], s_shft, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN],max_amp_syn[200][NCP],max_amp_obs[200][NCP],log_amp_thresh,ppick[200],fraction_before_P = 0.4,fraction_before_S = 0.3,stn_comp_log_amp[200][NCP],stn_comp_misfit[200][NCP],stn_comp_shift[200][NCP];
+  float	dtP_pick[STN], s_shft, s_shft_cmd, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN],max_amp_syn[200][NCP],max_amp_obs[200][NCP],log_amp_thresh,ppick[200],fraction_before_P = 0.4,fraction_before_S = 0.3,stn_comp_log_amp[200][NCP],stn_comp_misfit[200][NCP],stn_comp_shift[200][NCP];
   float	wt_pnl,wt_rayleigh,wt_love;
   float	tstarP, tstarS, attnP[NFFT], attnS[NFFT];
   float *data[NRC], *green[NGR];
@@ -213,14 +213,16 @@ int main (int argc, char **argv) {
   fidfmp = fopen(filename_fmpdata, "w");
   // end
 
-  scanf("%f%f%f%f%d%f%f",
+  scanf("%f%f%f%f%d%f%f%f",
 	&x1,                // P window length in seconds (Note: for nearby stations window length is less than this)
 	&y1,                // Surface window length in seconds
 	&Pshift_max,        // allowable P time-shift in seconds
 	&Sshift_max,        // allowable Surface time-shift in seconds
 	&repeat,            // repeat inversion and discard bad trace (OBSOLETE)
 	&fm_thr,            // first motion threshold
-	&tie);              // tie shifts between Rayleigh and Love
+	&tie,               // tie shifts between Rayleigh and Love
+	&s_shft_cmd);       // Surface wave static shift for all stations
+  
   if (repeat) for(j=0;j<NCP;j++) scanf("%f",rms_cut+4-j);
   scanf("%f%f%f",
 	&vp,                // apparent velocity for Pnl (see cap.pl for more info)
@@ -402,6 +404,11 @@ int main (int argc, char **argv) {
 	  &ts,                             // Surface arrival time (same for both Rayleigh and Love)
 	  &surf_win,                       // Surface window length
 	  &s_shft);                        // Shift for surface waves
+
+    // use static shift from command line input if it is non-zero
+    // Note: In that case same static shift is applied to all stations
+    if (s_shft_cmd != 0) s_shft = s_shft_cmd;
+
     Sshift_static[i] = s_shft;
 
     tsurf[i]=ts;                           // Surface arrival time 
