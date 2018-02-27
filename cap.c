@@ -570,6 +570,12 @@ int main (int argc, char **argv) {
       s_shft -= hd[0].t2 + dtP_pick[i];	/* align teleseismic S */
     }
 
+    // Change static shift when observed P arrival time is given
+    // otherwise the time-shift window becomes asymmetric
+    if (abs(dtP_pick[i]) > 0.) {
+      s_shft = s_shft - dtP_pick[i];
+    }
+
     //-------------------------------------------------------------
     /** calculate time windows for Pnl and Surface wave portions **/
 
@@ -1011,6 +1017,7 @@ for(obs=obs0,i=0;i<nda;i++,obs++) {
       //stn_comp_shift[i][k] =  shft0[i][k] + dt * sol.shft[i][k];             // time-shift of the component
 
       // SEE google doc for the impacts of each option
+      /*
       if (0) { // OLD
 	sol.shft[i][k] = sol.shft[i][k] - max_shft[k]/2;
 	stn_comp_shift[i][k] =  shft0[i][k] + dt * sol.shft[i][k];}
@@ -1021,13 +1028,14 @@ for(obs=obs0,i=0;i<nda;i++,obs++) {
       if (0) { // NEW 2.0
 	if (k<3) sol.shft[i][k] = sol.shft[i][k] - max_shft[k]/2 + rint(dtP_pick[i]/dt); // surface waves
 	else sol.shft[i][k] = sol.shft[i][k] - max_shft[k]/2;                            // body waves
-	stn_comp_shift[i][k] =  shft0[i][k] + dt * sol.shft[i][k];}
-      if (1) { // NEW 3.0 
+	stn_comp_shift[i][k] =  shft0[i][k] + dt * sol.shft[i][k];} 
+      */
+      //if (1) { // NEW 3.0 
 	       // This is not same as NEW 1.0
 	       // The origin time of synthetics is different in that case (windows are offset in NEW 1.0) 
 	sol.shft[i][k] = sol.shft[i][k] - max_shft[k]/2;
 	stn_comp_shift[i][k] =  shft0[i][k] + dt * sol.shft[i][k] + dtP_pick[i];
-      }
+      //}
       stn_comp_misfit[i][k] = sol.error[i][k]*100/(Ncomp*sol.wferr*data2);   // percentage of total misfit
       stn_comp_CC[i][k] = sol.cfg[i][k];                                     // data-synthetic cross-correlation
       if (stn_comp_CC[i][k]<0) stn_comp_CC[i][k] = 0;
