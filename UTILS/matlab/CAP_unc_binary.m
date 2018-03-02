@@ -1,11 +1,21 @@
 function [Mref, post_samples_info,unc_result]= CAP_unc_binary(eid,ddir,smodel,dep,nsamples,K,X,gmtdir)
 % script for doing posterior analysis and uncertainty estimate on MT
 % Input : Log files from CAP (contains MT info and misfit values)
-%   eid  - event id
-%   ddir - directory where the log files are stored
-%   Mref -  Reference moment tensor
-%   gmtdir - directory where you want to save the file fot GMT plotting
+%   eid     - event id
+%   ddir    - directory where the log files are stored
+%   smodel  - velocity model (eg: scak)
+%   dep     - depth
+%   nsmaples- Number of sample points (binary files need this as input)
+%   K       - Misfit scale factor
+%   X       - polarity misfit weight factor
+%   gmtdir  - (optional) directory where you want to save the file fot GMT plotting
+%   
 %
+% Also see:
+%   MTbrick_Csection_binary.m   : For getting misfit cross-secitons of
+%                                 strike-dip-rake grid
+%   CAP_summary_plot.pl         : For making summary plots using GMT
+%  
 % Vipul Silwal
 % 20 July, 2015
 
@@ -491,29 +501,50 @@ if 0
     % check 'smodel' and 'nsamples' above 
     %eid = '20090407201255351'; % AEC catalog id
     eid = '20090407201253480';  % IRIS catalog id
-    %ddir = '/home/vipul/CAP/inv/scak/';
     ddir = '/home/vipul/CAP/inv/scak/20090407201253480_save/OUTPUT_DIR_1/';    
     dep = 41;
-    nsamples = 49248;     % Number of samples (grid)
-    smodel = 'scak';        % velocity model
-    gmtdir = '~/CAP/inv/scak/20090407201255351_gmt_data/';
-    gmtdir = '/home/vipul/REPOSITORIES/cap/20090407201253480_gmt_data/';
-    gmtdir = '/home/vipul/CAP/inv/scak/20090407201253480_save/20090407201253480_gmt_data_1/';
-    %gmtdir = []; 
-    K = 40/1.8003; % 1.8003    1.0518    0.9147    0.5010
-    MTbrick_Csection_binary(eid,ddir,smodel,dep,nsamples,gmtdir,K);
+    smodel = 'scak';      % velocity model
+    %gmtdir = '/home/vipul/CAP/inv/scak/20090407201253480_save/20090407201253480_gmt_data/';
+    gmtdir = []; 
+    K = 40/1.8003;
+    X = 0;   % no polarity
     nsamples = 50000;     % Number of samples (random)
-    CAP_unc_binary(eid,ddir,smodel,dep,nsamples,gmtdir,K);
+    CAP_unc_binary(eid,ddir,smodel,dep,nsamples,K,X,gmtdir);
+    % Now get cross-section at minimum misfit (this is only for GMT plots)
+    % NOT for uncertainty estimate
+    nsamples = 49248;     % Number of samples (grid)
+    MTbrick_Csection_binary(eid,ddir,smodel,dep,nsamples,K,X,gmtdir)
+ 
+    % Kodiak offshore earthquake Aftershock
+    eid = '20180131200145000';
+    ddir = '/home/vipul/CAP/inv/scak/Kodiak_offshore/aftershocks/20180131200145000/OUTPUT_DIR/';    
+    dep = 10;
+    nsamples = 49248;     % Number of samples (random)
+    smodel = 'scak';      % velocity model
+    gmtdir = '/home/vipul/CAP/inv/scak/Kodiak_offshore/aftershocks/20180131200145000/20180131200145000_gmt_data/';
+    %gmtdir = [];
+    K = 20;
+    X = 0;
+    nsamples = 50000;
+    CAP_unc_binary(eid,ddir,smodel,dep,nsamples,K,X,gmtdir);
+    % Now get cross-section at minimum misfit (this is only for GMT plots)
+    % NOT for uncertainty estimate
+    nsamples = 49248;     % Number of samples (grid)
+    MTbrick_Csection_binary(eid,ddir,smodel,dep,nsamples,K,X,gmtdir);
+
     
     % Iniskin Aftershock
     eid='20160124123742054';
     nsamples = 50000;     % Number of samples
     smodel = 'scak';     % velocity model
-    ddir = '/home/vipul/PROJECTS/josh/';
+    ddir = '/home/vipul/PROJECTS/josh/20160124123742054/OUTPUT_DIR/';
     dep = 107;
+    K = 40/1.8003;
+    X = 0.2;
     gmtdir = '/home/vipul/PROJECTS/josh/20160124123742054/gmt_data/';
-    CAP_unc_binary(eid,ddir,smodel,dep,nsamples,gmtdir);
+    CAP_unc_binary(eid,ddir,smodel,dep,nsamples,K,X,gmtdir);
     
+    %% OBSOLETE EXAMPLES
     % 20090407201255351 for Celso's thesis
     % NOTE: Change the gmtdir
     eid = '20090407201255351';  % IRIS catalog id

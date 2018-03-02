@@ -1,22 +1,27 @@
 function [M, mag, misfit_wf, misfit_fmp] = MTbrick_Csection_binary(eid,ddir,smodel,dep,nsamples,K,X,gmtdir)
 % script to plot the cross section of strike-dip-rake space
-% INPUT: log file for grid search (May be just use the brick elements)
-% eid       event id 
-% ddir      data directory containing the 2 grid binary files 
-% gmtdir    gmt directory to save the cross-section (optional)
-% Mref      Cross-sections at the moment tensor other than the minimum
-%           misfit sample (optional)
 %
-% TASK THIS SCRIPT SHOULD PEFORM:
-% (1) Cross-sections of strike-dip-rake brick (Input: kappa0,theta0,sigma0 (or Mref))
-% (2) Contours of omega (from kappa0,theta0,sigma0 (or Mref)) on the cross-sections
-% See run_CAP_unc.m for example
-% Also see CAP_unc.m
+% Input : Log files from CAP (contains MT info and misfit values)
+%   eid     - event id
+%   ddir    - directory where the log files are stored
+%   smodel  - velocity model (eg: scak)
+%   dep     - depth
+%   nsmaples- Number of sample points (binary files need this as input)
+%   K       - Misfit scale factor
+%   X       - polarity misfit weight factor
+%   gmtdir  - (optional) directory where you want to save the file fot GMT plotting
+%   
+%
+% Also see:
+%   CAP_unc_binary.m    : For uncertainty estimate (and Examples)
+%   CAP_summary_plot.pl : For making summary plots using GMT
 %
 % Vipul Silwal
 % 27 July, 2015
 
-%clear all, % close all
+
+%clear all, 
+%close all
 
 if nargin<8
     igmt = 0;
@@ -114,9 +119,9 @@ whos
 
 % cross-sections at these values of strike, dip and rake
 if isempty(Mref) % Mref not specified
-    kappa0 = kappa(minindx)
-    sigma0 = sigma(minindx)
-    theta0 = theta(minindx)
+    kappa0 = kappa(minindx);
+    sigma0 = sigma(minindx);
+    theta0 = theta(minindx);
     Mref = M(:,minindx);
 else
     [gamma0,delta0,M00,kappa0,theta0,sigma0] = CMT2TT(Mref);
@@ -318,9 +323,22 @@ if 0
     dep = 41;
     nsamples = 50616;     % Number of samples (grid)
     smodel = 'scak';        % velocity model
-    gmtdir = '/home/vipul/REPOSITORIES/cap/20090407201253480_gmt_data/';
-    %gmtdir = []; 
-    MTbrick_Csection_binary(eid,ddir,dep,gmtdir);
+    %gmtdir = '/home/vipul/REPOSITORIES/cap/20090407201253480_gmt_data/';
+    gmtdir = []; 
+    K = 40;
+    X = 0;
+    MTbrick_Csection_binary(eid,ddir,smodel,dep,nsamples,K,X,gmtdir);
+    
+    % Kodiak offshore earthquake Aftershock
+    eid = '20180131200145000';
+    ddir = '/home/vipul/CAP/inv/scak/Kodiak_offshore/aftershocks/20180131200145000/OUTPUT_DIR/';    
+    dep = 10;
+    nsamples = 49248;     % Number of samples (grid)
+    smodel = 'scak';      % velocity model
+    gmtdir = ddir; 
+    K = 40/1.8003;        % 1.8003    1.0518    0.9147    0.5010
+    X = 0.2;
+    MTbrick_Csection_binary(eid,ddir,smodel,dep,nsamples,K,X,gmtdir)
     
     eid = '20160124123742054';  % IRIS catalog id
     ddir = '/home/vipul/PROJECTS/josh/';
