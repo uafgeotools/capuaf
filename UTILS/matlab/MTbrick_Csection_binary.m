@@ -29,6 +29,8 @@ elseif nargin==8
     igmt = 1;
 end
 
+iplot = true;
+
 % Reference moment tensor (instead of the minimum misfit solution)
 Mref = [];
 
@@ -89,13 +91,18 @@ Np = length(find(pPol~=0)); % Number of station at which polarity is predicted
 [F,misfit_wf,misfit_fmp] = total_misfit(misfit_wf,misfit_fmp,Np,misfit_pol_weight);
 F = F*misfit_fact; % scale misfit
 
-figure;
-subplot(2,2,1)
-hist(misfit_fmp,20)
-subplot(2,2,2)
-hist(misfit_wf,20)
-subplot(2,2,3)
-hist(F,20)
+if iplot
+    figure;
+    subplot(2,2,1)
+    hist(misfit_fmp,20)
+    title('First-motion polarity misfit');
+    subplot(2,2,2)
+    hist(misfit_wf,20)
+    title('Waveform misfit');
+    subplot(2,2,3)
+    hist(F,20)
+    title('Total scaled misfit');
+end
 
 % Get the moment tensors (Another Option - takes longer time)
 if iTT2CMT
@@ -162,24 +169,26 @@ W3 = [kappa(is) theta(is) misfit_wf(is)];
 P3 = [kappa(is) theta(is) misfit_fmp(is)];
 
 % Plot waveform misfit sections
-Msize = 30;
-figure
-subplot(2,2,1)
-scatter(W1(:,1),W1(:,2),Msize,W1(:,3),'filled');
-hold on; plot(sigma0,theta0,'p', 'MarkerSize',15,'MarkerFaceColor','w');
-axis tight
-subplot(2,2,2)
-scatter(W2(:,1),W2(:,2),Msize,W2(:,3),'filled');
-hold on; plot(sigma0,kappa0,'p', 'MarkerSize',15,'MarkerFaceColor','w');
-axis tight
-subplot(2,2,3)
-scatter(W3(:,1),W3(:,2),Msize,W3(:,3),'filled');
-hold on; plot(kappa0,theta0,'p', 'MarkerSize',15,'MarkerFaceColor','w');
-axis tight
-colorbar
-subplot(2,2,4)
-bb([kappa(minindx_wf) theta(minindx_wf) sigma(minindx_wf)]);
-suptitle(sprintf('Waveform Misfit; kappa= %3.0f theta= %3.0f sigma=%3.0f',kappa0,theta0,sigma0));
+if iplot
+    Msize = 30;
+    figure
+    subplot(2,2,1)
+    scatter(W1(:,1),W1(:,2),Msize,W1(:,3),'filled');
+    hold on; plot(sigma0,theta0,'p', 'MarkerSize',15,'MarkerFaceColor','w');
+    axis tight
+    subplot(2,2,2)
+    scatter(W2(:,1),W2(:,2),Msize,W2(:,3),'filled');
+    hold on; plot(sigma0,kappa0,'p', 'MarkerSize',15,'MarkerFaceColor','w');
+    axis tight
+    subplot(2,2,3)
+    scatter(W3(:,1),W3(:,2),Msize,W3(:,3),'filled');
+    hold on; plot(kappa0,theta0,'p', 'MarkerSize',15,'MarkerFaceColor','w');
+    axis tight
+    colorbar
+    subplot(2,2,4)
+    bb([kappa(minindx_wf) theta(minindx_wf) sigma(minindx_wf)]);
+    suptitle(sprintf('Waveform Misfit; kappa= %3.0f theta= %3.0f sigma=%3.0f',kappa0,theta0,sigma0));
+end
 
 if min(misfit_fmp)
     % Plot polarity misfit sections
@@ -228,41 +237,45 @@ if min(misfit_fmp)
 end
 
 % Plot total misfit sections
-Msize = 30;
-figure
-subplot(2,2,1)
-scatter(Z1(:,1),Z1(:,2),Msize,Z1(:,3),'filled');
-hold on; plot(sigma0,theta0,'p', 'MarkerSize',15,'MarkerFaceColor','w');
-axis tight
-subplot(2,2,2)
-scatter(Z2(:,1),Z2(:,2),Msize,Z2(:,3),'filled');
-hold on; plot(sigma0,kappa0,'p', 'MarkerSize',15,'MarkerFaceColor','w');
-axis tight
-subplot(2,2,3)
-scatter(Z3(:,1),Z3(:,2),Msize,Z3(:,3),'filled');
-hold on; plot(kappa0,theta0,'p', 'MarkerSize',15,'MarkerFaceColor','w');
-axis tight
-colorbar
-subplot(2,2,4)
-bb([kappa0 theta0 sigma0]);
-suptitle(sprintf('Total Misfit; kappa= %3.0f theta= %3.0f sigma=%3.0f',kappa0,theta0,sigma0));
+if iplot
+    Msize = 30;
+    figure
+    subplot(2,2,1)
+    scatter(Z1(:,1),Z1(:,2),Msize,Z1(:,3),'filled');
+    hold on; plot(sigma0,theta0,'p', 'MarkerSize',15,'MarkerFaceColor','w');
+    axis tight
+    subplot(2,2,2)
+    scatter(Z2(:,1),Z2(:,2),Msize,Z2(:,3),'filled');
+    hold on; plot(sigma0,kappa0,'p', 'MarkerSize',15,'MarkerFaceColor','w');
+    axis tight
+    subplot(2,2,3)
+    scatter(Z3(:,1),Z3(:,2),Msize,Z3(:,3),'filled');
+    hold on; plot(kappa0,theta0,'p', 'MarkerSize',15,'MarkerFaceColor','w');
+    axis tight
+    colorbar
+    subplot(2,2,4)
+    bb([kappa0 theta0 sigma0]);
+    suptitle(sprintf('Total Misfit; kappa= %3.0f theta= %3.0f sigma=%3.0f',kappa0,theta0,sigma0));
+end
 
 % Plot contours of omega
-figure
-subplot(2,2,1)
-scatter(C1(:,1),C1(:,2),Msize,C1(:,3),'filled');
-axis tight
-subplot(2,2,2)
-scatter(C2(:,1),C2(:,2),Msize,C2(:,3),'filled');
-axis tight
-subplot(2,2,3)
-scatter(C3(:,1),C3(:,2),Msize,C3(:,3),'filled');
-axis tight
-suptitle('Omega');
+if iplot
+    figure
+    subplot(2,2,1)
+    scatter(C1(:,1),C1(:,2),Msize,C1(:,3),'filled');
+    hold on; plot(sigma0,theta0,'p', 'MarkerSize',15,'MarkerFaceColor','w');
+    axis tight
+    subplot(2,2,2)
+    scatter(C2(:,1),C2(:,2),Msize,C2(:,3),'filled');
+    hold on; plot(sigma0,kappa0,'p', 'MarkerSize',15,'MarkerFaceColor','w');
+    axis tight
+    subplot(2,2,3)
+    scatter(C3(:,1),C3(:,2),Msize,C3(:,3),'filled');
+    hold on; plot(kappa0,theta0,'p', 'MarkerSize',15,'MarkerFaceColor','w');
+    axis tight
+    suptitle('Omega from minimum misfit solution');
+end
 
-kappa0*deg
-theta0*deg
-sigma0*deg
 
 %% script to save (Z's and C's) input file for gmt
 

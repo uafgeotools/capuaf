@@ -21,6 +21,9 @@ These binary files are needed in STEP 1
 > make clean 
 > make cap d=WB f=omp
 
+Note: No magnitude search
+Magnitude have to be kept constant for generating the binary files and performing the uncertainty tests.
+
 %-----------------------------------------------------------------
 
 STEP 1: Run CAP
@@ -30,11 +33,11 @@ Run CAP and generate the binary output files
 
 RANDOM SEARCH
 Random search over 100000 samples. This is needed for uncertainty estimate in CAP_unc_binary.m (See STEP 2)
-> cap.pl -H0.02 -P1/20/60 -p1 -S3/10/0 -T15/120 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -W1 -Zweight_test.dat -Mscak_39 -m4.5 -I100000 -R0/0  -Y1 20090407201255351
+> cap.pl -H0.02 -P1/20/60 -p1 -S3/10/0 -T15/120 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -W1 -Zweight_test.dat -Mscak_39 -m4.5 -I50000 -R0/0 -Y1 20090407201255351
 
 GRID SEARCH
 Run grid search over strike-dip-rake at ~5 degree increment. This is NOT needed for uncertainty estimate but only for generating strike-dip-rake cross sections and  summary plot (STEP 3)
-> cap.pl -H0.02 -P1/20/60 -p1 -S3/10/0 -T15/120 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -W1 -Zweight_test.dat -Mscak_39 -m4.5 -I1/1/72/20/38 -R0/0  -Y1 20090407201255351
+> cap.pl -H0.02 -P1/20/60 -p1 -S3/10/0 -T15/120 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -W1 -Zweight_test.dat -Mscak_39 -m4.5 -I1/1/72/18/38 -R0/0 -Y1 20090407201255351
 %-----------------------------------------------------------------
 
 STEP 2: Uncertainty analysis (in MATLAB)
@@ -47,17 +50,17 @@ See codes
 > open MTbrick_Csection_binary
 
 Run following commands in MATLAB command prompt
->> eid = '20090407201253480';  % IRIS catalog id
+>> eid = '20090407201255351';  % IRIS catalog id
 >> ddir = '/home/vipul/CAP/inv/scak/OUTPUT_DIR/';    
->> dep = 41;             % depth
+>> dep = 39;             % depth
 >> smodel = 'scak';      % velocity model
 >> %gmtdir = [];         % If you don't want summary plot and only uncertainty estimate
 >> gmtdir = '/home/vipul/CAP/inv/scak/20090407201255351_gmt_data/';        % directory for GMT input data
 >> K = 40;               % 
 >> X = 0;                % Polarity weight (same as -X flag of CAP input command)
->> nsamples = 50000;     % Number of samples (random)
 
 Estimate uncertainty 
+>> nsamples = 50000;     % Number of samples (random)
 >> CAP_unc_binary(eid,ddir,smodel,dep,nsamples,K,X,gmtdir);
 
 Get cross-section at minimum misfit (this is only for GMT plots)

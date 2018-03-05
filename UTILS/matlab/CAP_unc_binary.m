@@ -343,12 +343,22 @@ post_samples_info = [Mpost_subset' omega_subset misfit_subset];
 % 20 random samples from the posterior space
 Nbeach = 20;
 ikeep_beach  = randperm(Nsamp_reject,Nbeach);
-Mbeach = Mpost(:,ikeep_beach);
+Mbeach = Mpost(:,ikeep_beach)
 omega_beach = omega_deg(ikeep(ikeep_beach));
 misfit_beach = misfit(ikeep(ikeep_beach));
 kappa_beach = kappa(ikeep(ikeep_beach));
 theta_beach = theta(ikeep(ikeep_beach));
 sigma_beach = sigma(ikeep(ikeep_beach));
+if iplot
+    % plot 20 posterior beachballs
+    nc = 4; nr = Nbeach/nc;
+    [X,Y] = meshgrid(1:nc, 1:nr);
+    post_lat = reshape(X,1,Nbeach);
+    post_lon = reshape(Y,1,Nbeach);
+    figure; plot_beachballs(1e15*Mbeach,post_lat',post_lon');
+    axis equal
+    title('Beachballs for 20 randomly selected posterior samples')
+end
 
 % if you want to keep same 20 beachballs subset
 % ipost_beach_file = 1;
@@ -379,6 +389,7 @@ if iplot
     plot(omega_subset,misfit_subset,'.g')
     xlabel('Omega');
     ylabel('Misfit');
+    title('green - posterior samples; blue boundary - All samples used')
 end
 
 %% Output for GMT
@@ -516,20 +527,21 @@ if 0
     MTbrick_Csection_binary(eid,ddir,smodel,dep,nsamples,K,X,gmtdir)
  
     % Kodiak offshore earthquake Aftershock
-    eid = '20180131200145000';
-    ddir = '/home/vipul/CAP/inv/scak/Kodiak_offshore/aftershocks/20180131200145000/OUTPUT_DIR/';    
+    eid = '20180123232128000';
+    %eid = '20180131200145000';
+    ddir = strcat('/home/vipul/CAP/inv/scak/Kodiak_offshore/aftershocks/',eid,'/OUTPUT_DIR/')
     dep = 10;
     nsamples = 49248;     % Number of samples (random)
     smodel = 'scak';      % velocity model
-    gmtdir = '/home/vipul/CAP/inv/scak/Kodiak_offshore/aftershocks/20180131200145000/20180131200145000_gmt_data/';
+    gmtdir = strcat('/home/vipul/CAP/inv/scak/Kodiak_offshore/aftershocks/',eid,'/gmt_data/')
     %gmtdir = [];
     K = 20;
-    X = 0;
+    X = 0.4;
     nsamples = 50000;
     CAP_unc_binary(eid,ddir,smodel,dep,nsamples,K,X,gmtdir);
     % Now get cross-section at minimum misfit (this is only for GMT plots)
     % NOT for uncertainty estimate
-    nsamples = 49248;     % Number of samples (grid)
+    nsamples = 54720;     % Number of samples (grid)
     MTbrick_Csection_binary(eid,ddir,smodel,dep,nsamples,K,X,gmtdir);
 
     
