@@ -13,15 +13,15 @@ from read_cap_weight import *
 import math
 import string
 
-def add_picks2weight(file_w_Parrivals,outfile,methodnumber,scalewts)
+def add_picks2weight(file_w_Parrivals,outfile,methodnumber,scalewts):
     if 1 == 0:
         methodnumber = 2
         scalewts = 100 
-       # name of file that contains the P arrivals
-       file_w_Parrivals = "/home/ksmith/REPOSITORIES/capuaf/MTs/Dec10MT/V1/20171210122855089/weight_body_150.dat"
+        # name of file that contains the P arrivals
+        file_w_Parrivals = "/home/ksmith/REPOSITORIES/capuaf/MTs/Dec10MT/V1/20171210122855089/weight_body_150.dat"
 
-       # name of the output file
-       outfile = "/home/ksmith/REPOSITORIES/capuaf/MTs/Dec10MT/V1/20171210122855089/weight_body_150_sc.dat"
+        # name of the output file
+        outfile = "/home/ksmith/REPOSITORIES/capuaf/MTs/Dec10MT/V1/20171210122855089/weight_body_150_sc.dat"
 
     # read in weight file
     stnm,edist,PV_wt,PR_wt,SV_wt,SR_wt,ST_wt,P_arrival,P_len,S_arrival,S_len,waveform_shft = read_cap_weight(file_w_Parrivals)
