@@ -255,8 +255,8 @@ $usage =
     -U  directivity, specify rupture direction on the fault plane (off).
     -V	apparent velocities for Pnl, Love, and Rayleigh waves (off).
     -W  Integration.
-        W$disp => (default) Do not integrate. Uses data in its original form
-        W1 => Integrate
+        W0 => Do not integrate. Uses data in its original form
+        W1 => (default) Integrate
     -X  weight for normalized polarity misfit [0,1). This is combined with the waveform misfit. Don't use -X1 since there could be multiple solutions that could fit the observed polarity, use -X.99 instead in order to include atleast some waveform measure. Suggested value = 0.5 (Bug: Crashes when using -X flag and no polarity is available in the weight file)
     -Y  specify norm (1 - L1 norm; 2 - L2 norm)
     -Z  specify a different weight file name ($weight).
