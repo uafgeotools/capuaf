@@ -244,8 +244,8 @@ $usage =
         -p  (small p) For amplitude scaling of surface waves; example: If set to 2 surface waves amplitude will be multipled by twice 
     -Q  number of freedom per sample ($nof)
     -R	For double couple use -R0/0.
-        For point solution use -Rv/w/k/h/s
-        For search range use -Rv1/v2/w1/w2/k1/k2/h1/h2/s1/s2
+        For point solution use -Rv/w/strike/dip/rake
+        For search range use -Rv1/v2/w1/w2/s1/s2/d1/d2/r1/r2
         Note: This should come after -I flag in the command or it crashes sometimes! 
     -S	max. time shifts in sec for Pnl and surface waves ($max_shft1/$max_shift2) and
         tie between SH shift and SV shift:
