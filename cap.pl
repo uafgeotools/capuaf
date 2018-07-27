@@ -245,7 +245,7 @@ $usage =
     -Q  number of freedom per sample ($nof)
     -R	For double couple use -R0/0.
         For point solution use -Rv0/w0/strike0/dip0/rake0
-        For search range use -Rv1/v2/w1/w1/strike1/strike2/dip1/dip2/rake1/rake2
+        For search range use -Rv1/v2/w1/w2/strike1/strike2/dip1/dip2/rake1/rake2
         Note: This should come after -I flag in the command or it crashes sometimes! 
     -S	max. time shifts in sec for Pnl and surface waves ($max_shft1/$max_shift2) and
         tie between SH shift and SV shift:
