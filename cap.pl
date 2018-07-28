@@ -442,7 +442,7 @@ foreach (grep(/^-/,@ARGV)) {
            ($v1, $w1, $k1, $h1, $s1) = @value;
            ($v2, $w2, $k2, $h2, $s2) = @value;
            $h1 = $h2 = cos($value[3]*$deg2rad);  # read dip from command line and converts on-the-fly to h
-           #$h1 = $h2 = $value[3];         # read h from command line h
+           #$h1 = $h2 = $value[3];         # read h from command line
            $nsol = $nv = $nw = $nk = $nh = $ns = 1;
        } elsif ($#value==9) {
            $nR = 10;
