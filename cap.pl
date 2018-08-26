@@ -244,8 +244,8 @@ $usage =
         -p  (small p) For amplitude scaling of surface waves; example: If set to 2 surface waves amplitude will be multipled by twice 
     -Q  number of freedom per sample ($nof)
     -R	For double couple use -R0/0.
-        For point solution use -Rv/w/k/h/s
-        For search range use -Rv1/v2/w1/w2/k1/k2/h1/h2/s1/s2
+        For point solution use -Rv0/w0/strike0/dip0/rake0
+        For search range use -Rv1/v2/w1/w2/strike1/strike2/dip1/dip2/rake1/rake2
         Note: This should come after -I flag in the command or it crashes sometimes! 
     -S	max. time shifts in sec for Pnl and surface waves ($max_shft1/$max_shift2) and
         tie between SH shift and SV shift:
@@ -430,8 +430,8 @@ foreach (grep(/^-/,@ARGV)) {
        # Four options: 
        # 1. no flag  = FMT over full range
        # 2. Length 2 = fixed eigenvalue with grid search (v0/w0)
-       # 3. Length 5 = fixed moment tensor (v0/w0/k0/h0/s0)
-       # 4. Length 10 = subset case (v1/v2/w1/w2/k1/k2/h1/h2/s1/s2)
+       # 3. Length 5 = fixed moment tensor (v0/w0/strike0/dip0/rake0)
+       # 4. Length 10 = subset case (v1/v2/w1/w2/strike1/strike2/dip1/dip2/rake1/rake2)
        if ($#value==1) {
            $nR = 2;
            ($v1, $v2) = @value;
@@ -441,12 +441,14 @@ foreach (grep(/^-/,@ARGV)) {
            $nR = 5;
            ($v1, $w1, $k1, $h1, $s1) = @value;
            ($v2, $w2, $k2, $h2, $s2) = @value;
-           $h1 = $h2 = cos($value[3]*$deg2rad);  # cap expects h = cos(dip)
-           #$h1 = $h2 = $value[3];         # cap expects dip
+           $h1 = $h2 = cos($value[3]*$deg2rad);  # read dip from command line and converts on-the-fly to h
+           #$h1 = $h2 = $value[3];         # read h from command line
            $nsol = $nv = $nw = $nk = $nh = $ns = 1;
        } elsif ($#value==9) {
            $nR = 10;
-           ($v1, $v2, $w1, $w2, $k1, $k2, $h1, $h2, $s1, $s2) = @value;
+           ($v1, $v2, $w1, $w2, $k1, $k2, $dip1, $dip2, $s1, $s2) = @value;
+           $h1 = cos($dip1*$deg2rad);
+           $h2 = cos($dip2*$deg2rad);
        }
    } elsif ($opt eq "S") {
      ($max_shft1, $max_shft2) = @value;
