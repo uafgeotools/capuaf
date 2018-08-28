@@ -97,7 +97,7 @@ $plot_unused_stations = 1;
 # search ifkmod below to specify additional parameters for each region
 if($smodel eq "scak") {
    $ifkmod = 1;
-   $pmax = 2;
+   $pmax = 1;
    print "\nifkmod = $ifkmod: southern Alaska\n";
    $xtick1 = 2; $ytick1 = 1; $xtick2 = 1; $ytick2 = 0.5;
    $emax = 3000; $emin = -$emax; $itopocolor = 4;
@@ -339,15 +339,17 @@ $itopo = 1;
 @icc = (0,0,1,1,1,0,1,1,2,2,2,2,2);           # whether CC (1), tshift (0), data-syn ratio(2)
 
 # color limits
-$ccmin = 40;
+$ccmin = 30;
 $ccmax = 100;
 $ccinc = 10;
+# Surface wave min-max shift
 #$dtminsurf = -4.5;
 $dtminsurf = -8.5;
-#dtminsurf = -15;
+$dtmaxsurf = -$dtminsurf;
+#$dtminsurf = 0; $dtmaxsurf = 5;
+# P wave min-max shift
 #dtminpnl = -2.5;
 $dtminpnl = -2.2;
-$dtmaxsurf = -$dtminsurf;
 $dtmaxpnl = -$dtminpnl;
 $dtinc = 1;
 $P_amp_ratio_min = -3;
@@ -389,9 +391,6 @@ for ($pp = 1; $pp <= $pmax; $pp++) {
     if ($elat >=62) {  # INTERIOR ALASKA (DENALI) - only one map ($pmax=1)
       $xmin = -157.0; $xmax = -140.0; $ymin = 58; $ymax = 68.0;
       $sbarinfo = "-L-144/58.7/58.7/200+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 6000000;
-      # smaller region for NEHRP
-      #$xmin = -154.0; $xmax = -146.0; $ymin = 59; $ymax = 64.0;
-      #$sbarinfo = "-L-149/59.5/59.5/100+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 3000000;
       $ibasementc = 0;
       $ititle = 1;     # publication
       $iscalecap = 1;
@@ -406,8 +405,11 @@ for ($pp = 1; $pp <= $pmax; $pp++) {
       $xmin = -155.0; $xmax = -142.0; $ymin = 57; $ymax = 66.0;
       $sbarinfo = "-L-146/57.5/57.5/100+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 8000000;
       # For offshore Kodiak earthquake
-      $xmin = -160.0; $xmax = -140.0; $ymin = 55; $ymax = 64.0;
-      $sbarinfo = "-L-144/56/56/100+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 7500000;
+      #$xmin = -165.0; $xmax = -132.5; $ymin = 53; $ymax = 66.0;
+      #$sbarinfo = "-L-140/55/55/300+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 11000000;
+      # smaller region for NEHRP
+      #$xmin = -154.0; $xmax = -146.0; $ymin = 59; $ymax = 64.0;
+      #$sbarinfo = "-L-149/59.5/59.5/100+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 4000000;
       $ibasementc = 0;
       $ititle = 1;      # publication
       $iscalecap = 1;
@@ -667,7 +669,7 @@ print CSH "psbasemap $J $R $B -K -V -O >> $psfile\n";
 # PLOT COLORED RAY PATHS
  for ($i = 1; $i <= $nsta; $i++) {
     ($sta,$net,$lat,$lon,$dist,$az) = split(" ",$capstationlines[$i-1]);
-    print "-- STA = $sta; NET = $net\n";
+    #print "-- STA = $sta; NET = $net\n"; # for debugging
     # WARNING: THIS COULD RETURN MULTIPLE LINES
     #@capout1 = split(" ",`grep $sta $capout`);   # get ALL stations
     #$number_of_same_name_stations = @capout1;
@@ -675,7 +677,7 @@ print CSH "psbasemap $J $R $B -K -V -O >> $psfile\n";
     # THIS WILL RETURN MULTIPLE LINES AS ARRAYS
     @capout1 = `grep $sta $capout`;
     $number_of_same_name_stations = @capout1;
-    print("=======> @capout1  $number_of_same_name_stations\n");
+    #print("=======> @capout1  $number_of_same_name_stations\n"); # for debugging
 
     # LOOP OVER MULTIPLE LINES (MULTIPLE STATIONS WITH SAME NAME)
     for ($j = 0; $j < $number_of_same_name_stations; $j++) {
@@ -686,11 +688,11 @@ print CSH "psbasemap $J $R $B -K -V -O >> $psfile\n";
 	#($t1,$t2,$t3,$t4,$t5,$t6,$t7,$t8,$t9,$t10,$t11,$t12,$Zcc,$Zdt,$t15,$t16,$Rcc,$Rdt,$t19,$t20,$Tcc,$Tdt) = split(" ",`grep $sta $capout`);
 	$iplot = $capcols[$xx-1];
 	$fplot = $capout_stn[$iplot-1];
-	print "-- iplot = $iplot, fplot = $fplot --\n @capout_stn\n";
+	#print "-- iplot = $iplot, fplot = $fplot --\n @capout_stn\n"; # for debugging
 	if($capout_stn[0]) {
 	    $iplot2 = $wcols[$xx-1];
 	    $wplot = $capout_stn[$iplot2-1];
-	    print "-- xx = $xx -- iplot2 = $iplot2 -- wplot = $wplot\n";
+	    #print "-- xx = $xx -- iplot2 = $iplot2 -- wplot = $wplot\n"; # for debugging
 	    # only plot the colored ray path if the station was used in the inversion (nonzero weight)
 	    if($wplot > 0) {
 		print CSH "psxy $J $R -W3p,0/0/0 -K -O -V >>$psfile<<EOF\n$elon $elat\n$lon $lat\nEOF\n";

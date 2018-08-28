@@ -34,9 +34,10 @@ $iiso = 1;   # additional Green's functions for full moment tensors
 # FOR TESTING ONLY (Comment this line for full run)
 if ($iex == 0) {
     $depmax = 100; $depinc = 100;
-    $distmax = 101; $distinc = 100;
+    $distmin = 100; $distmax = 101; $distinc = 100;
     $nsamp=512; $samplerate = .02;
     $model = "scak";
+    $iAK = 1;
 
 # STANDARD - For scak, tact, northak, aleut
 } elsif ($iex == 1) {
@@ -44,6 +45,7 @@ if ($iex == 0) {
     $distmin = 1; $distmax = 500; $distinc = 1;
     $nsamp=8192; $samplerate = .02;
     $model = "tactmod";
+    $iAK = 1;
 
 # for Kodiak offshore event (Gulf and scak model)
 } elsif ($iex == 2) {
@@ -51,16 +53,26 @@ if ($iex == 0) {
     $distmin = 500; $distmax = 750; $distinc = 1;
     $nsamp=16384; $samplerate = .02;  # NOTE: longer greens functions are required to avoid numerical artifacts for longer synthetics (needed at larger distances)
     $model = "scak";
+    $iAK = 1;
+
+# SOCAL model
+} elsif ($iex == 3) {
+    $depmax = 30; $depinc = 5;
+    $distmin = 1; $distmax = 500; $distinc = 1;
+    $nsamp=8192; $samplerate = .02;
+    $model = "socal";
+    $iAK = 0;
 }
 
 #---------------------------------------------
 # input model
-$iAK = 1; # Alaska specific model files are saved as ak_$model
+#$iAK = 1; # Alaska specific model files are saved as ak_$model
 #$model = "scak";
 #$model = "tactmod";
 #$model = "aleut";
 #$model = "northak";
 #$model = "gulf";
+#$model = "socal"; $iAK = 0;
 #$model = "prem_cont_no_water"; $iAK = 0; # PREM continental without water layer; and set iAK=0 since its not Alaska specific
 #---------------------------------------------
 print "pwd = $pwd\n";
@@ -101,7 +113,7 @@ for ($i = 0; $i < $depinc; $i = $i+1) {
          print CSH " $dist";
          $dist = $dist + $distinc;
        }
-       print CSH " >& ${model}_${sdep}_ofile\n";
+       print CSH " | tee ${model}_${sdep}_ofile\n";
     }
     if($iiso==1) {
        $cmd = "-M${model}/$sdep -N${nsamp}/${samplerate} -S0";
@@ -112,7 +124,7 @@ for ($i = 0; $i < $depinc; $i = $i+1) {
          print CSH " $dist";
          $dist = $dist + $distinc;
        }
-       print CSH " >& ${model}_${sdep}_iso_ofile\n";
+       print CSH " | tee ${model}_${sdep}_iso_ofile\n";
     }
     # next depth
     $dep = $dep + $depinc;
@@ -133,7 +145,7 @@ for ($i = 0; $i < $depinc; $i = $i+1) {
 }
 
 print "done writing $depinc csh files, one for each set of depths\n";
-
+ 
 close CSHMAIN;
 
 print "see $cshfilemain\n";
