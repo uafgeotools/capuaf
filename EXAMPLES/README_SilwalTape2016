@@ -1,7 +1,7 @@
 DATA EXTRACTION and SETUP
 
-These instructions assume that the user is on the UAF seismo linux network, which has environmental variables $PYSEIS, $CAPHOME, etc.
-
+These instructions assume that the user is on the UAF seismo linux network, which has environmental variables $PYSEP, $CAPHOME, etc.
+XXX something wrong with this example code for me
 0. compile CAP in parallel mode
 > cd $CAPHOME
 > make clean
@@ -10,17 +10,17 @@ These instructions assume that the user is on the UAF seismo linux network, whic
 note: see GIseis.pdf doc for number of cores on each machine
 
 1. Extract waveforms from IRIS:
-> cd $PYSEIS
+> cd $PYSEP
 > python run_getwaveform.py
 
-This will create the data directory 20090407201255351 inside $PYSEIS
+This will create the data directory 20090407201255351 inside $PYSEP
 
 2. prepare for running cap
 
 > cd $CAPRUN
 > mkdir -p inv/scak
 > cd $CAPRUN/inv/scak
-> rsync -av $PYSEIS/20090407201255351 .
+> rsync -av $PYSEP/20090407201255351 .
 
 3. Copy input weight file into the data directory:
 Only the 'clean' stations are selected in this weight file
