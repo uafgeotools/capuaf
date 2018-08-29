@@ -231,7 +231,7 @@ $usage =
         Use only when LUNE_GRID_INSTEAD_OF_UV = 0 (and recompile cap)
     -L  source duration (estimate from mw, can put a sac file name here).
     -M	specify the model and source depth.
-    -m	specify point magnitude: -m<mw0> OR magnitude range: -n<mw1>/<mw2>/<dmw>
+    -m	specify point magnitude: -m<mw0> OR magnitude range: -m<mw1>/<mw2>/<dmw>
     -N  repeat the inversion n times and discard bad traces ($repeat).
     -O  output CAP input (off).
     -P	generate waveform-fit plot with plotting scale. ([-P<Yscale>/<XscaleBody>/<XscaleSurf>](/k))
