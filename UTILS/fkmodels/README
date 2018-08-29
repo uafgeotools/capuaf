@@ -1,4 +1,4 @@
-/seismo-util/grp-utils/fkmodels/README
+capuaf/UTILS/fkmodels/README
 
 1D models used as input for FK code
 
@@ -7,9 +7,9 @@ INPUT FORMAT:
 
 density, Qs and Qp are optional.
 	If third column is less 2 it is assumed to Vp/Vs
-	If density is not given it is computed by relation: rho = -.77 + 0.32*Vp
+	If density is not given it is computed by relation: rho = -0.77 + 0.32*Vp
 	Fourth column is considered to be density, only if it is less than 20. If greater, fourth column is taken as Qs.
-	If neither of Qs and Qp are given deafult values are 500 and 1000 respectively.
+	If neither of Qs and Qp are given, the default values are 500 and 1000.
 	If Qp is not given it taken to be twice of Qs.
 
 Bottom layer thickness is always considered to be zero, which means considering it as elastic half-sapce.
@@ -18,17 +18,17 @@ Otherwise, it is considered as vaccum (free space).
 
 EXAMPLE MODELS:
 
-cus   -- Central United States (Lupei Zhu)
-hk    -- "Hadley-Kanamori model" (but does not match the publications)
+cus   -- central United States (Lupei Zhu)
+hk    -- Hadley-Kanamori model (but does not match the publications)
       -- probably Dreger and Helmberger (1990) is best reference
-socal -- Qinya modification of hk model (?)
+socal -- socal1D reference model (see ./doc/socal_1D_notes.pdf)
+      -- probably best refs. are Dreger and Helmberger (1990) and L. Wald et al. (1995)
 
---------------------------------------------------------------------- 
-ALASKA MODELS
+==================================================================== 
+ALASKA MODELS (see ./doc/README_Natalia_ak1D)
 - see Ratchkovski and Roger A. Hansen, BSSA 2002,
   "New Constraints on Tectonics of Interior Alaska: Earthquake Locations, Source Mechanisms, and Stress Regime"
   Figure 5 shows four of these models (two versions of TACT).
-- see email from Natasha in the file 'Email_Natalia_ak1D'
 --------------------------------------------------------------------- 
 ak_scak     -- Southern Alaska model (SCAK)
             -- The same for moment tensors and earthquake locations. Used south of 62.5N, except for Aleutians.
@@ -73,18 +73,26 @@ Holbrook, W.S., D. Lizarralde, S. McGeary, N. Bangs, and J. Diebold, Structure a
 crustal growth, Geology, 27, 31-34, 1999.
 
 ------------------------------------------------------------------------
-ak_cola     -- Based on Searcy1996, email from Natasha on 16-June-2011
+ak_cola     -- Based on Searcy1996, email from Natalia on 2011-06-16
+
 ------------------------------------------------------------------------
 ak_eberhart -- Based on Eberhart2006
 ak_eberhart_mod -- remove the shallowest slow layer, which is too slow
 
---------------------------------------------------------------------- 
-UTURUNCU MODEL
+------------------------------------------------------------------------
+ak_gulf
+
+(Vipul Silwal analysis of 2018 offshore Kodiak earthquake)
+
+==================================================================== 
+MISC MODELS
+==================================================================== 
+Uturuncu volcano, Bolivia (see ./doc/README_utu)
 
 utu06       -- AGU2012 Mike West poster
             -- adjusted to land surface level of 4 km above sea level
 
-Mike West email 7/8/2013
+Mike West email 2013-07-08
 
 % MODEL_06
 % VpVs = 1.7;
@@ -127,5 +135,10 @@ thick   Vs      Vp      rho     Qbeta   Qalpha
 Ford, S. R., Dreger, D. S., & Walter, W. R. (2009). Identifying isotropic
 events using a regional moment tensor inversion. Journal of Geophysical
 Research: Solid Earth, 114(B1).
---------------------------------------------------------------------- 
 
+--------------------------------------------------------------------- 
+MDJ2 model (used in Alvizuri and Tape, 2018)
+
+Based on MDJ model of Nguyen1994 (see ./doc/Nguyen1994abstract_mdj_scan.pdf)
+
+--------------------------------------------------------------------- 
