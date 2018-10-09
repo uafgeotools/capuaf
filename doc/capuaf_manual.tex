@@ -10,6 +10,7 @@
 \usepackage{graphicx}
 \usepackage{fancybox}
 \usepackage{url}
+\usepackage{color}
 
 \textwidth 17cm
 \textheight 23.8cm
@@ -26,12 +27,22 @@
 %\newcommand{\brho}{\mbox{\boldmath $\bf \rho$}}
 \newcommand{\nb}{\mbox{$\nu_\beta$}}
 \newcommand{\na}{\mbox{$\nu_\alpha$}}
+
+%\newcommand{\angstr}{\Phi}
+%\newcommand{\angdip}{\delta}
+%\newcommand{\angrak}{\lambda}
+\newcommand{\angstr}{\kappa}
+\newcommand{\angdip}{\theta}
+\newcommand{\angrak}{\sigma}
+
 \newcommand{\bdes}{\begin{description}}
 \newcommand{\edes}{\end{description}}
 \renewcommand*{\arraystretch}{1.4}
 
-\graphicspath{{/home/vipul/manuscripts/2016/nehrp/figures/cap/}
-{/home/vipul/manuscripts/2016/nehrp/figures/cap/misfit_tests/}}
+\graphicspath{
+{/home/vipul/manuscripts/2016/nehrp/figures/cap/}
+{/home/vipul/manuscripts/2016/nehrp/figures/cap/misfit_tests/}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -75,7 +86,7 @@ paper  & DC & FMT & UNC & FMP & notes \\ \hline
 \citet{AlvizuriTape2016} & -- & Y   & (Y) & Y  & misfit function plotted on lune \\ \hline
 \citet{Alvizuri2018}     & -- & Y   & Y   & Y  & confidence curve for full moment tensors; probability density functions for moment tensor source type ($vw$ rectangle) \\ \hline
 \citet{Silwal2018}       & Y  & --  & --  & Y  & documentation of modified misfit function that includes polarities and also reward/penalty terms \\ \hline
-\citet{AlvizuriTape2018} & -- & Y   & Y   & -- & interpretation in terms of crack-plus-double-couple model \\ \hline
+\citet{AlvizuriTape2018} & -- & Y   & Y   & -- & different static time shifts for Love and Rayleigh waves; interpretation in terms of crack-plus-double-couple model \\ \hline
 \hline
 \citet{Tape2015}         & Y & -- & -- & Y  & Minto Flats fault zone \\ \hline
 \citet{Tape1904}         & Y & -- & -- & -- & 2000-02-03 Kaltag earthquake \\ \hline
@@ -116,8 +127,8 @@ M_0 = \frac{Max(|f(t)|)}{Max(|g(t)|)}
 \subsection{Misfit}
 The error estimation in this earlier version of code involved both L1 and L2 norm. 
 \eqa
-L1:||f||_1^1 &=& \int_{t1}^{t2}|f(t)|dt\\
-L2:||f||_2^2 &=& \int_{t1}^{t2}f^2(t)dt
+L1:||f||_1^1 &=& \int_{t1}^{t2} |f(t)| dt \\
+L2:||f||_2^2 &=& \int_{t1}^{t2} f^2(t) dt
 \ena
 in which [t1, t2] is the time interval, in which the seismogram is used. {\bf The L1 norm emphasizes the high frequencies of the data, whereas the L2 emphasizes the low frequency}.
 Using \refEq{moment}, the synthetics are defined as
@@ -331,17 +342,17 @@ CAUTION: Using a wrong source duration can cause error in magnitude estimates. T
 
 \subsection{Fault plane solution to Moment tensor}
 \eqa
-M_{xx} &=& -(\sin \delta\, \cos \lambda\, \sin 2\Phi + \sin 2\delta \,\sin \lambda\, \sin^2\Phi)\\
-M_{yy} &=& (\sin \delta\, \cos \lambda\, \sin 2\Phi - \sin 2\delta\, \sin \lambda\, \cos^2\Phi)\\
-M_{zz} &=& (\sin 2\delta\, \cos \lambda)\\
-M_{xy} &=& (\sin \delta\, \cos \lambda\, \sin 2\Phi + 0.5 \sin 2\delta\, \sin \lambda\, \sin2\Phi)\\
-M_{xz} &=& -(\cos \delta\, \cos \lambda\, \cos \Phi + \cos 2\delta\, \sin \lambda\, \sin\Phi)\\
-M_{yz} &=& -(\cos \delta\, \cos \lambda\, \sin \Phi - \cos 2\delta\, \sin \lambda\, \cos\Phi)
+M_{xx} &=& -(\sin \angdip\, \cos \angrak\, \sin 2\angstr + \sin 2\angdip \,\sin \angrak\, \sin^2\angstr)\\
+M_{yy} &=& (\sin \angdip\, \cos \angrak\, \sin 2\angstr - \sin 2\angdip\, \sin \angrak\, \cos^2\angstr)\\
+M_{zz} &=& (\sin 2\angdip\, \cos \angrak)\\
+M_{xy} &=& (\sin \angdip\, \cos \angrak\, \sin 2\angstr + 0.5 \sin 2\angdip\, \sin \angrak\, \sin2\angstr)\\
+M_{xz} &=& -(\cos \angdip\, \cos \angrak\, \cos \angstr + \cos 2\angdip\, \sin \angrak\, \sin\angstr)\\
+M_{yz} &=& -(\cos \angdip\, \cos \angrak\, \sin \angstr - \cos 2\angdip\, \sin \angrak\, \cos\angstr)
 \ena
 \bdes
-\item $\Phi$, strike of the fault
-\item $\delta$, dip angle of the fault plane
-\item $\lambda$, slip angle
+\item $\angstr$, strike of the fault
+\item $\angdip$, dip angle of the fault plane
+\item $\angrak$, slip angle
 \edes
 
 \subsection{Green's function to Synthetics}
@@ -518,28 +529,36 @@ E\% = f \times \left ( \frac{E_d}{E_{min}} -1 \right )
 \edes
 The default value of degree of freedom per sample $n =0.01$. Changing this by order of 10, we can also control the steepness of the depth curve.
 
+%------------------------------------------------
+
 \section{Changes}
+
 \subsection{Changes in grid search}
-For homogeneous parameterization over dip, $\delta$, and isotropic parameter, $\zeta$, \citep{TapeTape2012beach}, we sample the parameters homogeneously in their cosine space, and then use the arccosine of those equally spaced value. Subsequently, it appears that spacing is larger near equator ($\delta$=0 and densely sampled near the pole ($\delta$=90).
+
+Uniform orientations provide a homogeneous distribution of double couple moment tensors. To achieve this, we use the coordinate $h = \cos\angdip$ instead of dip angle $\angdip$ \citep{TapeTape2012beach}.
+%we sample the parameters homogeneously in their cosine space, and then use the arccosine of those equally spaced value. Subsequently, it appears that spacing is larger near equator ($\angdip$=0 and densely sampled near the pole ($\angdip$=90).
 
 \bdes
-\item $\delta_0$, be the first element of search range in dip
-\item $\delta_d$, be the search increment
+\item $\angdip_0$, first element of search range in dip
+\item $\Delta\angdip_d$, search increment
 \item $N$, number of samples to be generated
-\item $\delta_1 = \delta_0 + (N-1)\delta_d$, would be the final element of search range in dip
+\item $\angdip_1 = \angdip_0 + (N-1)\Delta\angdip_d$, would be the final element of search range in dip
 \edes
 
 Then
 \eq
-\delta_i = \cos^{-1}\left ({\cos(\delta_0)} - i \left[ \frac{\cos(\delta_0 - \cos(\delta_1)}{N}\right] \right)
+\angdip_i = \cos^{-1}\left ({\cos(\angdip_0)}
+- i \left[ \frac{\cos(\angdip_0 - \cos\angdip_1)}{N}\right] \right)
 \en
 
-Similarly for Isotropic components:
+For the full moment tensor grid search, to obtain uniform spacing of points on the lune, we perform a similar transformation for the lune longitude $\delta$:
 \eq
-\zeta_i = \sin^{-1}\left ({\sin(\zeta_0)} + i \left[ \frac{\sin(\zeta_1 - \sin(\zeta_0)}{N}\right] \right)
+\delta_i = \sin^{-1}\left ({\sin(\delta_0)}
++ i \left[ \frac{\sin(\delta_1 - \sin\delta_0)}{N}\right] \right)
 \en
 
 \subsection{Changes in misfit function}
+
 \begin{enumerate}
 \item Normalized the misfit error by number of components used. Error may now actually decrease by addition of `good' stations.
 {\bf normalization method}
@@ -547,7 +566,7 @@ Similarly for Isotropic components:
 ||E_1(\bem)||_2^2 = \frac{1}{(P_{comp}+S_{comp})} \left [ \sum_{i=1}^{P_{comp}} \frac{\int W_i||(\bu_p)_i - (\bs_p)_i||_2^2 dt}{(N_p)_i} + \sum_{i=1}^{S_{comp}} \frac{\int W_i||(\bu_s)_i - (\bs_s)_i||_2^2 dt}{(N_s)_i} \right ]
 \en
 \bdes
-\item $\bem$, Model parameters (Strike $\Phi$,Dip $\delta$,Rake $\lambda$)
+\item $\bem$, Model parameters (Strike $\angstr$,Dip $\angdip$,Rake $\angrak$)
 \item $u_p$, observed P waveform
 \item $P_{comp}$, number of P components used
 \item $(N_p)_i$, number of sampling points for P (may vary from station to station)
@@ -607,7 +626,7 @@ To overcome this we scale the misfit by:
 \end{enumerate}
 Our final misfit function which is used for creating posterior pdf is:
 \eq
-E_2(\bem)=E(\phi,\delta,\lambda) = \frac{\ln \left ( \frac{E}{E_{min}} \right )}{\ln \left (\frac{E_{max}}{E_{min}} \right)} \times T
+E_2(\bem)=E(\angstr,\angdip,\angrak) = \frac{\ln \left ( \frac{E}{E_{min}} \right )}{\ln \left (\frac{E_{max}}{E_{min}} \right)} \times T
 \label{err4prob}
 \en
 where $T$ is any multiplication factor. This $T$ could be thought of as temperature in the energy function for {\it simulated annealing}.
@@ -621,24 +640,24 @@ The scaled logarithmic variation Eq.\ref{err4prob} of misfit could be used to ge
 \eq
 \sigma(\bem) = \frac {\exp \left (-E_2(\bem) \right )}{k}
 \en
-where $k = \int \exp (-E_2(\bem)\ d\bem$ is the normalization factor and $\bem$ are our model parameters ($\phi,\delta,\lambda$). $\bsigma(\bem)$ is the posterior probability density function. However, this is does not include any knowledge of the {\it shape} of the space in itself, \ie the information about the homogeneous probability of model space parameters. \citep{Tarantola2006}. To get 'the' solution, homogeneous state of information ($\bmu(\bem)$) must be introduced in order to achieve the actual likelihood of solution. This could be done by:
+where $k = \int \exp (-E_2(\bem)\ d\bem$ is the normalization factor and $\bem$ are our model parameters ($\angstr,\angdip,\angrak$). $\bsigma(\bem)$ is the posterior probability density function. However, this is does not include any knowledge of the {\it shape} of the space in itself, \ie the information about the homogeneous probability of model space parameters. \citep{Tarantola2006}. To get 'the' solution, homogeneous state of information ($\bmu(\bem)$) must be introduced in order to achieve the actual likelihood of solution. This could be done by:
 \eq
 L(\bem)=\frac{\bsigma(\bem)}{\bmu(\bem)}
 \en
-In case of double couple, homogeneous state of information $\bmu(\bem) = \bmu(\phi,\delta,\lambda)$ is given by:
+In case of double couple, homogeneous state of information $\bmu(\bem) = \bmu(\angstr,\angdip,\angrak)$ is given by:
 \eqa
-\mu(\phi) &=& c_1\\
-\mu(\delta) &=& \cos^{-1}c_2\\
-\mu(\lambda) &=& c_3
+\mu(\angstr) &=& c_1\\
+\mu(\angdip) &=& \cos^{-1}c_2\\
+\mu(\angrak) &=& c_3
 \ena
 where $c_1, c_2$ and $c_3$ are constants.
 The importance of likelihood function is that it is the ratio of probabilities (not the probability in itself) which makes it invariant of transformation of variables. A property similar to volumetric probability $V(\bem)$.
 
 For a double couple source, the shape of beachball always remains the same. What changes is the orientation of it. Keeping this in mind, it would be more sensible to estimate the uncertainty in terms of rotation of beachball from its minimum misfit (maximum likelihood) orientation rather that separately evaluating the uncertainties for different parameters (whether strike-dip-rake or moment-tensors elements). Also we can't do this in strike-dip-rake space because of the complications of clearly defining the domain. Parameterization would definitely have a great impact on uncertainty estimation. Here even though we are only using one rotation angle (minimum), in reality we should using the whole rotation matrix in order to clearly understand and quantify the misfit variation in parameter space.
 
-We transform our parameter space from ($\phi,\delta,\lambda$) to ($\omega$ or $\xi$). 
+We transform our parameter space from ($\angstr,\angdip,\angrak$) to ($\omega$ or $\xi$). 
 
-Let the orientation of minimum misfit solution be $\bem_0 = {\phi_0, \delta_0, \lambda_0}$. Distance between all the samples, $\bem$, and minimum misfit solution $\bem_0$ can be written as:
+Let the orientation of minimum misfit solution be $\bem_0 = {\angstr_0, \angdip_0, \angrak_0}$. Distance between all the samples, $\bem$, and minimum misfit solution $\bem_0$ can be written as:
 \eq
 [\bem, \bem_0] = \bxi
 \en
@@ -808,20 +827,20 @@ But since this is just an ad-hoc function, using an inverse tangential makes thi
 \end{minipage}
 }
 
-\clearpage\pagebreak
+\clearpage
 %=================
 \addcontentsline{toc}{section}{Bibliography}
 \bibliographystyle{agu08}
 \bibliography{carl_abbrev,carl_main,carl_him,carl_source,refs_vipul}
 %=================
 
-\clearpage\pagebreak
+\clearpage
 \appendix
 
 %-------------------------
 
 \input{time_shifts_input}
-
+\clearpage
 \input{waveform_selection_input}
 
 %===========================================================================================
