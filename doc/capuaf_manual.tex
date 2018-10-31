@@ -6,9 +6,11 @@
 \usepackage{latexsym}
 \usepackage[round]{natbib}
 \usepackage{xspace}
+\usepackage{setspace}
 \usepackage{graphicx}
 \usepackage{fancybox}
 \usepackage{url}
+\usepackage{color}
 
 \textwidth 17cm
 \textheight 23.8cm
@@ -25,29 +27,87 @@
 %\newcommand{\brho}{\mbox{\boldmath $\bf \rho$}}
 \newcommand{\nb}{\mbox{$\nu_\beta$}}
 \newcommand{\na}{\mbox{$\nu_\alpha$}}
+
+%\newcommand{\angstr}{\Phi}
+%\newcommand{\angdip}{\delta}
+%\newcommand{\angrak}{\lambda}
+\newcommand{\angstr}{\kappa}
+\newcommand{\angdip}{\theta}
+\newcommand{\angrak}{\sigma}
+
 \newcommand{\bdes}{\begin{description}}
 \newcommand{\edes}{\end{description}}
 \renewcommand*{\arraystretch}{1.4}
 
-\graphicspath{{/home/vipul/manuscripts/2016/nehrp/figures/cap/}
-{/home/vipul/manuscripts/2016/nehrp/figures/cap/misfit_tests/}}
+\graphicspath{
+{/home/vipul/manuscripts/2016/nehrp/figures/cap/}
+{/home/vipul/manuscripts/2016/nehrp/figures/cap/misfit_tests/}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
-\begin{center}
-{\Large \bf CAP Moment Tensor Inversion} \\ \medskip
+\begin{spacing}{1.2}
+\centering
+{\Large \bf User manual for {\tt capuaf}: moment tensor inversion} \\ \medskip
 Vipul Silwal, Celso Alvizuri, Carl Tape \\
 Geophysical Institute, University of Alaska, Fairbanks, Alaska \\
 Last compiled: \today
-\end{center}
+\end{spacing}
 %==================================================================
+
+\vspace{-0.5cm}
+\subsection*{Overview}
+
+This code is a modified version of the ``cut-and-paste'' (\verb+cap+) code of \citet{ZhaoHelm1994} and \citet{ZhuHelm1996}. As requested in the \verb+cap+ documentation, any code that modifies \verb+cap+ should use a different name; hence, we refer to our version as \verb+capuaf+. \refTab{tab:pubs} lists publications with results obtained from \verb+capuaf+. Moment tensor catalogs for these studies can be found in Scholarworks collections, as cited from within the published papers.
+
+\medskip\noindent
+{\bf WARNING TO USER:} This user manual is a work in progress and is probably not be up-to-date with the latest changes in the code.
+
+\medskip\noindent
+{\bf REQUEST FOR FEEDBACK:} If you detect bugs, have suggestions, or have questions, please post an issue on github. (Or email Carl Tape (\verb+ctape@alaska.edu+), who will forward the request to \verb+capuaf+ developers.)
+
+\begin{table}[h]
+\centering
+\caption[]
+{
+Summary of studies using {\tt capuaf}.
+DC = double couple moment tensors considered.
+FMT = full moment tensors considered.
+UNC = moment tensor uncertainties estimated.
+FMP = first-motion polarities used.
+\label{tab:pubs}
+}
+\begin{tabular}{|l|c|c|c|c|p{7cm}|}
+\hline
+paper  & DC & FMT & UNC & FMP & notes \\ \hline
+\hline
+\citet{SilwalTape2016}   & Y  & --  & Y   & -- & numerous comparison tests; confidence curve of \citet{TapeTape2016} \\ \hline
+\citet{AlvizuriTape2016} & -- & Y   & (Y) & Y  & misfit function plotted on lune \\ \hline
+\citet{Alvizuri2018}     & -- & Y   & Y   & Y  & confidence curve for full moment tensors; probability density functions for moment tensor source type ($vw$ rectangle) \\ \hline
+\citet{Silwal2018}       & Y  & --  & --  & Y  & documentation of modified misfit function that includes polarities and also reward/penalty terms \\ \hline
+\citet{AlvizuriTape2018} & -- & Y   & Y   & -- & different static time shifts for Love and Rayleigh waves; interpretation in terms of crack-plus-double-couple model \\ \hline
+\hline
+\citet{Tape2015}         & Y & -- & -- & Y  & Minto Flats fault zone \\ \hline
+\citet{Tape1904}         & Y & -- & -- & -- & 2000-02-03 Kaltag earthquake \\ \hline
+\citet{Tape2018}         & Y & -- & -- & -- & 2~very-low-frequency earthquakes, 4~earthquakes in Minto Flats fault zone; testing source duration and choice of bandpass \\ \hline
+\hline
+\end{tabular}
+\end{table}
+
+%\section{Examples}
+%\cite{SilwalTape2016,AlvizuriTape2016,Silwal2015catalog_SAK,Silwal2015catalog_MFFZ,Alvizuri2015catalog,Alvizuri2017catalog,Alvizuri2018}
+
+%---------------------------------------
+
+\clearpage
 \tableofcontents
 
-%\clearpage
+%---------------------------------------
 
 \section{\cite{ZhaoHelm1994}}
-\subsection{time shift}
+
+\subsection{Time shift}
 {\bf Cross-correlation function}
 The relative time shift of the data f(t) from the synthetics g(t) can be estimated with the use of the cross-correlation function:
 \eq
@@ -57,25 +117,26 @@ C(t) = \frac{\int_{-\infty}^{\infty} f(\tau)g(t+\tau)d\tau}{(\int_{-\infty}^{\in
 This is the normalized form of $C(t)$.
 
 \subsection{Seismic Moment}
-The moement is the ratio of the peak of the amplitude of the data to that of the synthetics
+The moment is the ratio of the peak of the amplitude of the data to that of the synthetics
 \eq
 M_0 = \frac{Max(|f(t)|)}{Max(|g(t)|)}
 \label{moment}
 \en
+% XXX Carl: In what way is this 'the moment'?
 
 \subsection{Misfit}
 The error estimation in this earlier version of code involved both L1 and L2 norm. 
 \eqa
-L1:||f||_1^1 &=& \int_{t1}^{t2}|f(t)|dt\\
-L2:||f||_2^2 &=& \int_{t1}^{t2}f^2(t)dt
+L1:||f||_1^1 &=& \int_{t1}^{t2} |f(t)| dt \\
+L2:||f||_2^2 &=& \int_{t1}^{t2} f^2(t) dt
 \ena
-un which [t1, t2] is the time interval, in which the seismogram is used. {\bf The L1 norm emphasizes the high frequencies of the data, whereas the L2 emphasizes the low frequency}.
-Using equation \ref{moment}, the synthetics is defined as:
+in which [t1, t2] is the time interval, in which the seismogram is used. {\bf The L1 norm emphasizes the high frequencies of the data, whereas the L2 emphasizes the low frequency}.
+Using \refEq{moment}, the synthetics are defined as
 \eq
-d(t) = M_0g(t)
+d(t) = M_0 g(t)
 \label{data}
 \en
-The error is defined as (using either L1 or L2 norm):
+The error is defined as (using either L1 or L2 norm)
 \eq
 e_{Lk} = \frac{||f - d||_k}{(||f||_k \times||d||_k)^{1/2}}
 \en
@@ -87,7 +148,7 @@ e_1 = \frac{(e_{L1} + e_{L2} + (2e_{L1}^2 + 2e_{L2}^2)^{1/2})}{4}
 
 For one station $e_2$ is defined the same way as $e_1$, except that the $M_0$ used in the equation \ref{data} is the average moment $(1/n\sum_1^n M_0)$ of all the components used from the station. $e_2$ is a measure of the consistency of all components of one station, i.e. a minimum of $e_2$ gives closest ratios of the different components, say $SH/P_nl$ of the synthetics to data. {\bf In short, $e_1$ emphasizes the fit of the individual components, whereas $e_2$ emphasizes the consistency of all the components of one station}.
 
-In the equation \ref{misfit1} equal weightage have been given to the low frequency and high frequency components of the data.
+In the equation \ref{misfit1} equal weights have been given to the low frequency and high frequency components of the data.
 
 The best solution is obtained by conducting the grid search in strike, dip and rake space, and finding the minimum of:
 \eq
@@ -96,22 +157,31 @@ SOL: \min(E) = \frac{1}{n} \sum_{i=1}^{n} (e_{1i} + e_{2i})
 
 %----------------------------------------------------------------------
 \section{\cite{ZhuHelm1996}}
-The equations used in this paper are implemented in CAP. 
+
+The equations used in this paper are implemented in CAP. In this section, we copy text excerpts from \citet{ZhuHelm1996}.
+
 \subsection{Misfit}
+
 We define an object function to measure the misfit error between u and s and search through the parameter space to find the global minimum of the object function.
 Misfit error is defined as the norm-$k$ (L1 or L2) of the difference between u and s normalized by the norms of both u and s.
 \eq
 e= \frac{||u-s||_k}{||u||_k \times ||s||_k}
 \en
 
-Because Pnl usually has smaller amplitude than surface waves, this normalization helps to weight Pnl and surface waves equally. It also prevents the inversion from being completely dominated by the strongest station, which is usually the nearest station, if several stations at different distance ranges are used. However, the amplitude information is lost during the normalization. Some of this information, such as amplitude ratios of Pnl-to-surface waves and SV-to-SH, provide important constraints on the source orientation and depth. A more severe problem with this normalization is that it introduces singularities in the source parameter space at those points where source orientation generates nodal synthetics (where the norm of synthetics vanishes). In the case when the data include nodal records, the grid search will miss the true minimum. The misfit error using true amplitudes without normalization:
+Because Pnl usually has smaller amplitude than surface waves, this normalization helps to weight Pnl and surface waves equally. It also prevents the inversion from being completely dominated by the strongest station, which is usually the nearest station, if several stations at different distance ranges are used. However, the amplitude information is lost during the normalization. Some of this information, such as amplitude ratios of Pnl-to-surface waves and SV-to-SH, provide important constraints on the source orientation and depth. A more severe problem with this normalization is that it introduces singularities in the source parameter space at those points where source orientation generates nodal synthetics (where the norm of synthetics vanishes). In the case when the data include nodal records, the grid search will miss the true minimum.
+
+The misfit error using true amplitudes without normalization:
 \eq
 e= {||u-s||_k}
 \en
 
-
 \subsection{Distance scaling factor}
-Using true-amplitude waveforms for source inversion usually leads to the problem of the closest station dominating the inversion when stations are distributed over a large distance range. The misfits of surface waves have larger scatter than body waves, which are expected because surface waves are more easily affected by shallow heterogeneity. It has been shown that Pnl at a range of 300 to 1000 km is quite stable (Helmberger and Engen, 1980) and easily inverted for source mechanisms (Wallace and Helmberger, 1982). At closer range, the details of the Moho transition plays a more important role as well as the PL waves trapped in the shallow crust (Song and Helmberger, 1996). Since both of these features show strong local variation, we should expect the large scatter.  The misfit errors show a rapid decay with distance. Since radiation patterns have been taken out, this decay is related to the amplitude decay due to geometrical spreading and attenuation. To compensate for this decay, we introduce a distance range scaling factor and define the misfit error for a record at a distance r as:
+
+Using true-amplitude waveforms for source inversion usually leads to the problem of the closest station dominating the inversion when stations are distributed over a large distance range.
+
+The misfits of surface waves have larger scatter than body waves, which are expected because surface waves are more easily affected by shallow heterogeneity. It has been shown that Pnl at a range of 300 to 1000 km is quite stable (Helmberger and Engen, 1980) and easily inverted for source mechanisms (Wallace and Helmberger, 1982). At closer range, the details of the Moho transition plays a more important role as well as the PL waves trapped in the shallow crust (Song and Helmberger, 1996). Since both of these features show strong local variation, we should expect the large scatter.
+
+The misfit errors show a rapid decay with distance. Since radiation patterns have been taken out, this decay is related to the amplitude decay due to geometrical spreading and attenuation. To compensate for this decay, we introduce a distance range scaling factor and define the misfit error for a record at a distance r as:
 \eq
 \boxed{
 e =  \left ( \frac{r}{r_0} \right)^p  || u-s||_k
@@ -125,13 +195,16 @@ If we assume a spherical geometrical spreading for body waves and cylindrical ge
 
 %----------------------------------------------------------------
 \section{Implementation: CAP}
+
 The same misfit function as equation \ref{misfit_func} is used and the {\bf L2 norm} is chosen.
+
 \subsection{Distance weighting factor}
+
 First the distance weighting factor is computed
 \eq
 \mu = \left( \frac{r}{r_0} \right)^p
 \en
-where r is the diatance and $r_0$ is the reference distance = 100. Usually p=1 for body waves and p=0.5 for surface waves.
+where r is the distance and $r_0 = 100$~km is the reference distance. Usually $p=1$ for body waves and $p=0.5$ for surface waves.
 \eqa
 \mu_{pnl} &=& \left( \frac{r}{r_0} \right)^1\\
 \mu_{surf} &=& \left( \frac{r}{r_0} \right)^{0.5}
@@ -142,32 +215,41 @@ At this point body and surface wave weight are imposed to evaluate the overall w
 w_{pnl}  &=& (\mu_{pnl})\times weight_{pnl}\\
 w_{surf} &=& (\mu_{surf})\times weight_{surf}
 \ena
-P.S. This weight is given in the input cap command and not the weight file.
+%
+This weight is given in the input cap command and not the weight file.
 
-\subsubsection*{Notes from Carl 10/13/2016}
-\begin{align*}
-A_{corr}(r) &= A_{raw}(r) \left( \frac{r}{r_0} \right)^p \\
-\frac{A_{corr}(r)}{A_{raw}(r)} &= \left( \frac{r}{r_0} \right)^p \\
-\ln \left(\frac{A_{corr}(r)}{A_{raw}(r)} \right) &= ln \left( \frac{r}{r_0} \right)^p \\
-\ln \left(\frac{A_{corr}(r)}{A_{raw}(r)} \right) &= p \cdot ln \left( \frac{r}{r_0} \right)
-\end{align*}
-
-In CAP $r_0$ = 100 km. Most probably reference distance is chosen as 100 km because its easier to take the square root ! (= 10 km).
-
-For distant stations ($r > r_0$):\\
+We can examine how the parameters $p$ and $r_0$ will influence the amplitudes of the waveforms used in the moment tensor inversions. Note that $\ln(A/B)$ provides a fractional difference bewteen positive quantities $A$ and $B$.
+%
+\begin{eqnarray*}
+A_{corr}(r) &=& A_{raw}(r) \left( \frac{r}{r_0} \right)^p
+\\
+\frac{A_{corr}(r)}{A_{raw}(r)} &=& \left( \frac{r}{r_0} \right)^p
+\\
+\ln \left(\frac{A_{corr}(r)}{A_{raw}(r)} \right) &=& \ln \left( \frac{r}{r_0} \right)^p
+= p \, \ln \left( \frac{r}{r_0} \right)
+\end{eqnarray*}
+%
+\begin{enumerate}
+\item For distant stations ($r > r_0$):\\
 $p > 0$ will increase the amplitude\\
-$p < 0$ will decrease the amplitude\\
-For nearby stations ($r < r_0$):\\
+$p < 0$ will decrease the amplitude
+
+\item For nearby stations ($r < r_0$):\\
 $p > 0$ will decrease the amplitude\\
-$p < 0$ will increase the amplitude\\
+$p < 0$ will increase the amplitude
+
+\item In CAP $r_0$ = 100 km.
+%Most probably reference distance is chosen as 100 km because its easier to take the square root ! (= 10 km).
+\end{enumerate}
 
 \subsection{L2 norm of data and green's function}
+
 Before computing the norm, both the data and the green's function are subjected to the weighting factor:
 \eqa
 u(t)_i &=& w_i\times[f(t)_i];\,\,\,\,\,\,\,\,\,\,i=[Pnl, Surf]\\
 s(t)_i &=& w_i\times[g(t)_i];\,\,\,\,\,\,\,\,\,\,i=[Pnl, Surf]
 \ena
-here f(t) is the recorded seismogram and g(t) is the green's function. Individual components of the data and green's function are picked and then multipled with the suitable weighting factor depending it is the Pnl of Surface wave section. Each component (R,T,Z) of seismograms is chopped into Pnl and Surface wave section.
+here f(t) is the recorded seismogram and g(t) is the green's function. Individual components of the data and green's function are picked and then multiplied with the suitable weighting factor depending it is the Pnl of Surface wave section. Each component (R,T,Z) of seismograms is chopped into Pnl and Surface wave section.
 
 Example for a particular station:
 \eqa
@@ -186,22 +268,22 @@ L2:||s||^2 &=& \int_{t1}^{t2}s^2(t)dt
 \ena
 For a vector signal, it is the inner product of the vector with itself.
 \eqa
-L2:||\bu||^2 &=& (\underline{\bu}^T)(\underline{\bu})\\
-L2:||\bs||^2 &=& (\underline{\bs}^T)(\underline{\bs})
+L2:||\bu||^2 &=& \bu^T \bu \\
+L2:||\bs||^2 &=& \bs^T \bs
 \ena
 
 \subsection{Cross Correlation}
-The normalized cross correlation function between u and s are computed using the same as equation \ref{cor}. 
+The normalized cross correlation function between u and s are computed using the same as \refEq{cor}. 
 \eqa
 C(t) &=& \frac{\int_{-\infty}^{\infty} u(\xi)s(\xi-t)d\xi}{(||u||^2 \, ||s||^2)^{1/2}}\\
 &=& \frac{(u \star s)(t)} {(||u||^2 \, ||s||^2)^{1/2}}
 \ena
-This correlation function is the correlation between data and green's function. This is the normalized correlation function (or the {\bf correlation coeffcient} whose value is between 0 and 1. For find the actual actual correlation between two function (unnormalized):
+This correlation function is the correlation between data and green's function. This is the normalized correlation function (or the {\bf correlation coefficient} whose value is between 0 and 1. For find the actual actual correlation between two function (unnormalized):
 \eqa
 C(t) &=& (u \star s)(t)\\
 &=& \int_{-\infty}^{\infty} u(\xi)s(\xi-t)d\xi
 \ena
-This is like convolution in some sense. To find the correlation of two functions, one function is slided over the another function.
+This is like convolution in some sense. To find the correlation of two functions, one function is slid over the another function.
 At some particular value of time $\tau_{max}$ this function $C(t)$ will have it maximum. This maximum correlation point is what we are interested inn matching the wave forms. And the shift $\tau_{max}$ is the relative shift between synthetics and data.
 \eqa
 C_{max} = C(\tau_{max}) &=& \max\left [corr(u(t),s(t)) \right]\\
@@ -220,7 +302,7 @@ Thus for the maximum correlation of two functions $u(t)$ and $s(t)$, we are mult
 M_w = \frac{2}{3}(\log_{10}M_0) + k'
 \en
 Actual numbers are cited in Hanks and Kanamori 1979
-GCMT catlaog, \cite{AkiRichardsE1}, and \cite{ShearerE1} uses the following equation:
+GCMT catalog, \cite{AkiRichardsE1}, and \cite{ShearerE1} uses the following equation:
 \eq
 M_w = \frac{2}{3}(\log_{10}M_0) - \frac{2}{3}(16.1)
 \en
@@ -260,17 +342,17 @@ CAUTION: Using a wrong source duration can cause error in magnitude estimates. T
 
 \subsection{Fault plane solution to Moment tensor}
 \eqa
-M_{xx} &=& -(\sin \delta\, \cos \lambda\, \sin 2\Phi + \sin 2\delta \,\sin \lambda\, \sin^2\Phi)\\
-M_{yy} &=& (\sin \delta\, \cos \lambda\, \sin 2\Phi - \sin 2\delta\, \sin \lambda\, \cos^2\Phi)\\
-M_{zz} &=& (\sin 2\delta\, \cos \lambda)\\
-M_{xy} &=& (\sin \delta\, \cos \lambda\, \sin 2\Phi + 0.5 \sin 2\delta\, \sin \lambda\, \sin2\Phi)\\
-M_{xz} &=& -(\cos \delta\, \cos \lambda\, \cos \Phi + \cos 2\delta\, \sin \lambda\, \sin\Phi)\\
-M_{yz} &=& -(\cos \delta\, \cos \lambda\, \sin \Phi - \cos 2\delta\, \sin \lambda\, \cos\Phi)
+M_{xx} &=& -(\sin \angdip\, \cos \angrak\, \sin 2\angstr + \sin 2\angdip \,\sin \angrak\, \sin^2\angstr)\\
+M_{yy} &=& (\sin \angdip\, \cos \angrak\, \sin 2\angstr - \sin 2\angdip\, \sin \angrak\, \cos^2\angstr)\\
+M_{zz} &=& (\sin 2\angdip\, \cos \angrak)\\
+M_{xy} &=& (\sin \angdip\, \cos \angrak\, \sin 2\angstr + 0.5 \sin 2\angdip\, \sin \angrak\, \sin2\angstr)\\
+M_{xz} &=& -(\cos \angdip\, \cos \angrak\, \cos \angstr + \cos 2\angdip\, \sin \angrak\, \sin\angstr)\\
+M_{yz} &=& -(\cos \angdip\, \cos \angrak\, \sin \angstr - \cos 2\angdip\, \sin \angrak\, \cos\angstr)
 \ena
 \bdes
-\item $\Phi$, strike of the fault
-\item $\delta$, dip angle of the fault plane
-\item $\lambda$, slip angle
+\item $\angstr$, strike of the fault
+\item $\angdip$, dip angle of the fault plane
+\item $\angrak$, slip angle
 \edes
 
 \subsection{Green's function to Synthetics}
@@ -303,7 +385,7 @@ P.S. No Transverse components from vertical dip-slip fault and explosive source 
 WARNING: The above information may be inaccurate (?).  For double-couple searches, there appear to be 5 unique coefficients and 8 Green's functions.  For general moment tensor searches there appear to be 6 unique coefficients and 10 Green's functions.  If these details are important to you, please double check the source code yourself to be sure. -Ryan
 
 \subsubsection{time shift}
-However instead of using the green's function the correlation function $C(t)$ is used. Correlation between the data and corresponding green's function. (i.e. instead of green's func ZSS, the correlation of ZSS and vertical component of data is used.
+However instead of using the green's function the correlation function $C(t)$ is used. Correlation between the data and corresponding green's function. (i.e. instead of green's function ZSS, the correlation of ZSS and vertical component of data is used.
 \eqa
 v_z &=& corr(ZSS,u_z)\,\, A1 + corr(ZDS,u_z)\,\, A2 + corr(ZDD,u_z)\,\, A3 + corr(ZEP,u_z)\,\, A7\\
 v_r &=& corr(RSS,u_r)\,\, A1 + corr(RDS,u_r)\,\, A2 + corr(RDD,u_r)\,\, A3 + corr(REP,u_r)\,\, A7\\
@@ -342,7 +424,7 @@ The negative sign is used because positive time shift means, synthetics is earli
 \ena
 
 \subsection{L2 norm synthetics}
-Compute synthetics as in equation \ref{syn} and find the L2 norm using the same formula as equation \ref{l2}. 
+Compute synthetics as in \refEq{syn} and find the L2 norm using the same formula as \refEq{l2}. 
 \eqa
 s_z &=& ZSS\,\, A1 + ZDS\,\, A2 + ZDD\,\, A3 +ZEP\,\, A7\\
 s_r &=& RSS\,\, A1 + RDS\,\, A2 + RDD\,\, A3 +REP\,\, A7\\
@@ -359,7 +441,7 @@ L2 norm
 
 
 \subsection{Correlation between data and synthetics}
-The correlation between data $u(t)$ and synthetics $s'(t) = s(t-\tau)$ (new syntheics shifted by $\tau$ which gives maximum correlation), can be found by using equation \ref{cor_max}
+The correlation between data $u(t)$ and synthetics $s'(t) = s(t-\tau)$ (new synthetics shifted by $\tau$ which gives maximum correlation), can be found by using \refEq{cor_max}
 \eqa
 corr(u(t),s(t))_{max}= C_{max}=C(\tau_{max}) &=& \int_{t1}^{t2} u(t)s(t- \tau_{max})dt\\
 &=& \int_{t1}^{t2} u(t)s'(t)dt\\
@@ -408,7 +490,7 @@ SOL: \min(E) &=& \min( ||u||^2 + ||s||^2 - 2\, corr(u(t),s(t)))\\
 \ena
 
 \subsection{Correlation percentage}
-Cross-correlation coefficent are computed using the normalized form. For a particular component, the correlation percentage is computed as follows:
+Cross-correlation coefficient are computed using the normalized form. For a particular component, the correlation percentage is computed as follows:
 \eqa
 cp_i &=& 100 * \left(\frac{\max[corr(u(t),s(t))]}{\sqrt{||u||^2  \, ||s||^2}} \right)\\
 %&=&  100 * \frac{(||u\cdot s||)_{\tau}}{\sqrt{||u||^2 \cdot ||s||^2}}
@@ -432,7 +514,8 @@ VR = 100 * \left (1 - \frac{\sqrt{||u-s||^2}}{\sqrt{||u||^2}} \right )
 For an acceptable solution, variance reduction is usually greater than 70\%.
 
 \subsection{Depth Test}
-To obtain the best depth solution, inversion is performed at differnet depths and the minimum is found. To further get a better estimate, the minimum of the best fittng parabola is used.
+
+To obtain the best depth solution, inversion is performed at different depths and the minimum is found. To further get a better estimate, the minimum of the best fitting parabola is used.
 
 However, for error-depth plot, a different measure is taken instead of misfit error, and then plotted against depth.
 \eq
@@ -446,28 +529,36 @@ E\% = f \times \left ( \frac{E_d}{E_{min}} -1 \right )
 \edes
 The default value of degree of freedom per sample $n =0.01$. Changing this by order of 10, we can also control the steepness of the depth curve.
 
+%------------------------------------------------
+
 \section{Changes}
+
 \subsection{Changes in grid search}
-For homogeneous parameterization over dip, $\delta$, and isotropic parameter, $\zeta$, \citep{TapeTape2012beach}, we sample the parameters homogeneously in their cosine space, and then use the arccosine of those equally spaced value. Subsequently, it appears that spacing is larger near equator ($\delta$=0 and densely sampled near the pole ($\delta$=90).
+
+Uniform orientations provide a homogeneous distribution of double couple moment tensors. To achieve this, we use the coordinate $h = \cos\angdip$ instead of dip angle $\angdip$ \citep{TapeTape2012beach}.
+%we sample the parameters homogeneously in their cosine space, and then use the arccosine of those equally spaced value. Subsequently, it appears that spacing is larger near equator ($\angdip$=0 and densely sampled near the pole ($\angdip$=90).
 
 \bdes
-\item $\delta_0$, be the first element of search range in dip
-\item $\delta_d$, be the search increment
+\item $\angdip_0$, first element of search range in dip
+\item $\Delta\angdip_d$, search increment
 \item $N$, number of samples to be generated
-\item $\delta_1 = \delta_0 + (N-1)\delta_d$, would be the final element of search range in dip
+\item $\angdip_1 = \angdip_0 + (N-1)\Delta\angdip_d$, would be the final element of search range in dip
 \edes
 
 Then
 \eq
-\delta_i = \cos^{-1}\left ({\cos(\delta_0)} - i \left[ \frac{\cos(\delta_0 - \cos(\delta_1)}{N}\right] \right)
+\angdip_i = \cos^{-1}\left ({\cos(\angdip_0)}
+- i \left[ \frac{\cos(\angdip_0 - \cos\angdip_1)}{N}\right] \right)
 \en
 
-Similarly for Isotropic components:
+For the full moment tensor grid search, to obtain uniform spacing of points on the lune, we perform a similar transformation for the lune longitude $\delta$:
 \eq
-\zeta_i = \sin^{-1}\left ({\sin(\zeta_0)} + i \left[ \frac{\sin(\zeta_1 - \sin(\zeta_0)}{N}\right] \right)
+\delta_i = \sin^{-1}\left ({\sin(\delta_0)}
++ i \left[ \frac{\sin(\delta_1 - \sin\delta_0)}{N}\right] \right)
 \en
 
 \subsection{Changes in misfit function}
+
 \begin{enumerate}
 \item Normalized the misfit error by number of components used. Error may now actually decrease by addition of `good' stations.
 {\bf normalization method}
@@ -475,7 +566,7 @@ Similarly for Isotropic components:
 ||E_1(\bem)||_2^2 = \frac{1}{(P_{comp}+S_{comp})} \left [ \sum_{i=1}^{P_{comp}} \frac{\int W_i||(\bu_p)_i - (\bs_p)_i||_2^2 dt}{(N_p)_i} + \sum_{i=1}^{S_{comp}} \frac{\int W_i||(\bu_s)_i - (\bs_s)_i||_2^2 dt}{(N_s)_i} \right ]
 \en
 \bdes
-\item $\bem$, Model parameters (Strike $\Phi$,Dip $\delta$,Rake $\lambda$)
+\item $\bem$, Model parameters (Strike $\angstr$,Dip $\angdip$,Rake $\angrak$)
 \item $u_p$, observed P waveform
 \item $P_{comp}$, number of P components used
 \item $(N_p)_i$, number of sampling points for P (may vary from station to station)
@@ -509,10 +600,13 @@ V.R. &=& (1 - ||E_r(\bem)||_2^2) \times 100\\
 &=& \ln \left (\frac{||E_1(\bem)||_2}{||d||_2} \right) \times 100
 \ena
 Since variation reduction is only good for comparing 
-\item If higher weight is given to a good station whose waveform is matcing well (higher correlation value), then overall misfit value reduces. vice versa, if higher weight is given to a bad station whose waveform is not matcing well (low correlation value), then overall misfit value increases.
+\item If higher weight is given to a good station whose waveform is matching well (higher correlation value), then overall misfit value reduces. vice versa, if higher weight is given to a bad station whose waveform is not matching well (low correlation value), then overall misfit value increases.
 \end{enumerate}
 
-\section {Creating posterior samples}
+%--------------------------------------------------------------------
+
+\section {Creating posterior samples \citep{SilwalTape2016}}
+
 Our misfit function needs to be modified because of two following reasons:
 \begin{enumerate}
 \item Low misfit value\\
@@ -532,13 +626,13 @@ To overcome this we scale the misfit by:
 \end{enumerate}
 Our final misfit function which is used for creating posterior pdf is:
 \eq
-E_2(\bem)=E(\phi,\delta,\lambda) = \frac{\ln \left ( \frac{E}{E_{min}} \right )}{\ln \left (\frac{E_{max}}{E_{min}} \right)} \times T
+E_2(\bem)=E(\angstr,\angdip,\angrak) = \frac{\ln \left ( \frac{E}{E_{min}} \right )}{\ln \left (\frac{E_{max}}{E_{min}} \right)} \times T
 \label{err4prob}
 \en
-where $T$ is any multiplication factor. This $T$ could be thought of as temparature in the energy function for {\it simulated annealing}.
+where $T$ is any multiplication factor. This $T$ could be thought of as temperature in the energy function for {\it simulated annealing}.
 
 %------------------------------------------
-\subsection{Misfit to Posterior pdf}
+\subsection{Misfit function to posterior probability density function}
 See \cite{SilwalTape2016,TapeTape2016}
 \iffalse
 XXX: THIS SECTION NEEDS TO BE UPDATED (SEE SilwalTape2016) \\ 
@@ -546,24 +640,24 @@ The scaled logarithmic variation Eq.\ref{err4prob} of misfit could be used to ge
 \eq
 \sigma(\bem) = \frac {\exp \left (-E_2(\bem) \right )}{k}
 \en
-where $k = \int \exp (-E_2(\bem)\ d\bem$ is the normalization factor and $\bem$ are our model parameters ($\phi,\delta,\lambda$). $\bsigma(\bem)$ is the posterior probability density function. However, this is does not include any knowledge of the {\it shape} of the space in itself, \ie the information about the homoegenous probability of model space parameters. \citep{Tarantola2006}. To get 'the' solution, homogenous state of information ($\bmu(\bem)$) must be introduced in order to achieve the actual likelihood of solution. This could be done by:
+where $k = \int \exp (-E_2(\bem)\ d\bem$ is the normalization factor and $\bem$ are our model parameters ($\angstr,\angdip,\angrak$). $\bsigma(\bem)$ is the posterior probability density function. However, this is does not include any knowledge of the {\it shape} of the space in itself, \ie the information about the homogeneous probability of model space parameters. \citep{Tarantola2006}. To get 'the' solution, homogeneous state of information ($\bmu(\bem)$) must be introduced in order to achieve the actual likelihood of solution. This could be done by:
 \eq
 L(\bem)=\frac{\bsigma(\bem)}{\bmu(\bem)}
 \en
-In case of double couple, homogeneous state of information $\bmu(\bem) = \bmu(\phi,\delta,\lambda)$ is given by:
+In case of double couple, homogeneous state of information $\bmu(\bem) = \bmu(\angstr,\angdip,\angrak)$ is given by:
 \eqa
-\mu(\phi) &=& c_1\\
-\mu(\delta) &=& \cos^{-1}c_2\\
-\mu(\lambda) &=& c_3
+\mu(\angstr) &=& c_1\\
+\mu(\angdip) &=& \cos^{-1}c_2\\
+\mu(\angrak) &=& c_3
 \ena
 where $c_1, c_2$ and $c_3$ are constants.
-The importance of likelihood function is that it is the ratio of probabilites (not the probability in itself) which makes it invariant of transformation of variables. A property similar to volumetric proability $V(\bem)$.
+The importance of likelihood function is that it is the ratio of probabilities (not the probability in itself) which makes it invariant of transformation of variables. A property similar to volumetric probability $V(\bem)$.
 
-For a double couple source, the shape of beachball always remains the same. What changes is the orientation of it. Keeping this in mind, it would be more sensible to estimate the uncertainity in terms of rotation of beachball from its minimum misfit (maximum likelihood) orientation rather that separately evaluating the uncertainities for different parameters (whether strike-dip-rake or moment-tensors elements). Also we can't do this in strike-dip-rake space because of the complications of clearly defining the domain. Parameterization would definately have a great impact on uncertainty estimation. Here even though we are only using one roatation angle (minimum), in reality we should using the whole rotation matrix in order to clearly understand and quantify the misfit variation in parameter space.
+For a double couple source, the shape of beachball always remains the same. What changes is the orientation of it. Keeping this in mind, it would be more sensible to estimate the uncertainty in terms of rotation of beachball from its minimum misfit (maximum likelihood) orientation rather that separately evaluating the uncertainties for different parameters (whether strike-dip-rake or moment-tensors elements). Also we can't do this in strike-dip-rake space because of the complications of clearly defining the domain. Parameterization would definitely have a great impact on uncertainty estimation. Here even though we are only using one rotation angle (minimum), in reality we should using the whole rotation matrix in order to clearly understand and quantify the misfit variation in parameter space.
 
-We transform our parameter space from ($\phi,\delta,\lambda$) to ($\omega$ or $\xi$). 
+We transform our parameter space from ($\angstr,\angdip,\angrak$) to ($\omega$ or $\xi$). 
 
-Let the orientation of minimum misfit solution be $\bem_0 = {\phi_0, \delta_0, \lambda_0}$. Distance between all the samples, $\bem$, and minimum misfit solution $\bem_0$ can be written as:
+Let the orientation of minimum misfit solution be $\bem_0 = {\angstr_0, \angdip_0, \angrak_0}$. Distance between all the samples, $\bem$, and minimum misfit solution $\bem_0$ can be written as:
 \eq
 [\bem, \bem_0] = \bxi
 \en
@@ -578,7 +672,7 @@ L(\bem)&=& L'(\bxi)
 \fi
 
 \pagebreak
-\section{Combining Polarity and Waveform misfit}
+\section{Combining polarity and waveform misfi \citep{Silwal2018}}
 \cite{Zahradnik2015} - We are NOT using the same approach. They used polarity as a constraint and searched for the possible solution  \\
 -X flag specifies the weight for combining polarity and waveform misfit.
 
@@ -653,7 +747,7 @@ Three reward factors are implemented:
 
 TO DO: Add a figure
 
-\section{Adding reward factor}
+\section{Adding reward factor \citep{Silwal2018}}
 
 \begin{enumerate}
 \item longer time-window for Pnl and surface waves
@@ -708,14 +802,14 @@ This is how its implemented in cap.c:
 \subsection{Reward when using more stations}
 While fitting the data with the synthetics we frequently encounter a case where the total normalized misfit when using more data is larger than the one obtained when using fewer data. This happens because it is much easier to fit a single waveform (or waveforms for a single/few stations) and could easily be done using a wrong MT solution (\refFig{fig:wf_fits_1}). 
 
-Also the variance reduction (VR) is not an actual reprentation of the `goodness' of the solution, since usually the VR decreases as we use more stations. In order to solve this issue we had to apply an exponential penalty function such that the fewer station inversions are penalized and the more data inversion is rewarded. 
+Also the variance reduction (VR) is not an actual representation of the `goodness' of the solution, since usually the VR decreases as we use more stations. In order to solve this issue we had to apply an exponential penalty function such that the fewer station inversions are penalized and the more data inversion is rewarded. 
 
 (Functions tested here are saved in: cap/test\_station\_reward.m)
 
 \eq
 k = (\exp (-N/CONST)*1.5) + 0.5
 \en 
-where $k$ is the station penalty factor, $N$ is the number of stations, and $CONST$ defines the shape of the penatly curve (see \refFig{fig:Nstn_reward}). The shape of the curve ($CONST$) governs how severly the fewer station inversion needs to be penalized. An inverse exponential function scales between 0 and 1. For the test cases (\refFig{fig:wf_fits_1} and \refFig{fig:wf_fits_2}) it was soon observed that scaling needs to be done in a wider range in order to reasonably scale the misfit values across wider range of stations. However, the number 1.5 in the above equation could possibly be event dependent and maybe removed by combining with the $CONST$. An additional constant 0.5 was added at the end to prevent the misfit from going to zero in case of a large number of stations. 
+where $k$ is the station penalty factor, $N$ is the number of stations, and $CONST$ defines the shape of the penalty curve (see \refFig{fig:Nstn_reward}). The shape of the curve ($CONST$) governs how severely the fewer station inversion needs to be penalized. An inverse exponential function scales between 0 and 1. For the test cases (\refFig{fig:wf_fits_1} and \refFig{fig:wf_fits_2}) it was soon observed that scaling needs to be done in a wider range in order to reasonably scale the misfit values across wider range of stations. However, the number 1.5 in the above equation could possibly be event dependent and maybe removed by combining with the $CONST$. An additional constant 0.5 was added at the end to prevent the misfit from going to zero in case of a large number of stations. 
 
 Therefore the final scaled misfit is:
 \eq
@@ -733,21 +827,20 @@ But since this is just an ad-hoc function, using an inverse tangential makes thi
 \end{minipage}
 }
 
-\section{Examples}
-\cite{SilwalTape2016,AlvizuriTape2016,Silwal2015catalog_SAK,Silwal2015catalog_MFFZ,Alvizuri2015catalog,Alvizuri2017catalog,Alvizuri2018}
-
-\clearpage\pagebreak
+\clearpage
 %=================
 \addcontentsline{toc}{section}{Bibliography}
-\bibliographystyle{agu}
+\bibliographystyle{agu08}
 \bibliography{carl_abbrev,carl_main,carl_him,carl_source,refs_vipul}
 %=================
 
-\clearpage\pagebreak
+\clearpage
 \appendix
 
 %-------------------------
 
+\input{time_shifts_input}
+\clearpage
 \input{waveform_selection_input}
 
 %===========================================================================================
@@ -755,7 +848,7 @@ But since this is just an ad-hoc function, using an inverse tangential makes thi
 % Figures
 \begin{figure}
 \includegraphics{cap_dur_2.eps}
-\caption{Source duration vs magnitude realtion used in CAP (red) and by GCMT (green). Using a wrong source duration can make a big difference in the magnitude estimate. (ADD A FIGURE TO SHOW THIS).
+\caption{Source duration vs magnitude relation used in CAP (red) and by GCMT (green). Using a wrong source duration can make a big difference in the magnitude estimate. (ADD A FIGURE TO SHOW THIS).
 \label{fig:cap_dur}
 }
 \end{figure}

@@ -1,6 +1,8 @@
 \section{Waveform selection criteria}
 
-Here we are trying to establish some standards for excluding waveform fits produced by CAP. The motivation is toward publication-quality figures.
+Here we are trying to establish some standards for excluding waveform fits produced by CAP.
+The motivation is toward publication-quality figures.
+Time shifts play a major role in waveform selection, so please first read \refApp{sec:tshift}.
 
 \begin{enumerate}
 
@@ -14,15 +16,16 @@ If your magnitude is above 4, then you do not need to do this.
 
 \item the relative plotted amplitudes of body and surface waves are scaled correctly. This is just a plotting issue to make sure you can see the shapes of the waveforms. (But make sure you are looking at absolute amplitudes!)
 
-\item {\bf you have set the time shifts to the ``correct'' ranges}. This is specified in the -S flag and also influenced by entries in the weight.dat file. {\bf In the case of P waves, you may have to manually specify the onset time.}
-
+\item {\bf you have set the time shifts to the ``correct'' ranges}. This requires careful understanding of the options in \refApp{sec:tshift}. {\bf In the case of P waves, you may have to manually specify the onset time in the input weights file.}
 In the case of surface waves, you can specify a systematic time shift in the weights file if, for example, all time shifts appear to be systematically shifted from zero. This is equivalent to acknowledging that the structural model is uniformly slow (or fast) in all directions.
 
 Allowed time shifts depends on (examples given here are based on inversions in Alaska):
 %
 \begin{enumerate}
 \item Filter applied: For body waves (higher frequency content) you need to use a shorter time-shift compared to the surface wave. Example, 1--10 seconds body waves generally need $\sim$2 seconds of maximum shift; 16--50 seconds for surface waves can require upto 10 seconds of time-shift.
+
 \item Distance range: Absolute value of time-shifts generally increases with epicentral distance (longer paths mean longer accumulation of time shift between 1D model and actual earth model). For example, time-shifts for surface wave (16--40 sec) for stations upto 100 km would be less than 5 seconds, but for stations at 400--500 km shifts could be around 10--12 seconds.
+
 \item Source duration: In special cases, like VLFE (very low frequency earthquakes) which has much longer source duration (10-15 seconds for \magw{3.8} VLFE in interior Alaska as compared to 1 second duration for normal tectonic event of comparable magnitude) the time-shifts for surface wave (20--50 seconds) can go up to 18~seconds.
 \end{enumerate}
 
