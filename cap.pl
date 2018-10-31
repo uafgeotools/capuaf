@@ -751,16 +751,19 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
             # no polarity information
             if ($pol eq ''){
                 $ipol = 0;
+		#die "Into this loop!";
             }  
             # If pol or weight checks fail then keep the station
             # Skip IF and(pol checks) and(weight checks)
             if (($ipol==0 || $pol_wt==0 || $pol_wt==999) && $pv==0 && $pr==0 && $sv==0 && $sr==0 && $st==0) {
                 print STDERR "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";
+		#die "Into this loop!";
                 next;
             } 
             # save in new weight file
             else {
                 print OUT "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";
+		#die "Into this loop!";
             }
         }
         close(OUT);
