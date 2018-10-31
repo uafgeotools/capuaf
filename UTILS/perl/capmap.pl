@@ -10,6 +10,10 @@
 #  The following need to be in the current working directory
 #  1.  20090407201255351_station_list_ALL.dat -- (station, network, lat, lon)
 #  2.  20090407201255351.out -- rename the CAP out file
+
+# capmap.pl is in /home/ksmith/REPOSITORIES/capuaf/UTILS/perl/
+# To Run:
+# /home/ksmith/REPOSITORIES/capuaf/UTILS/perl/capmap.pl eventID
 #
 # EXAMPLES:
 # > cd $CAPHOME/UTILS/perl/examples/
