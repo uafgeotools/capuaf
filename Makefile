@@ -1,5 +1,9 @@
 # make clean cap d=WB f=omp
-FFLAGS = -O
+# #
+# UPDATE 2018-11-08. CAP doesn't compile unless using flag `no-pie` 
+# gcc version: (Ubuntu 7.3.0-27ubuntu1~18.04) 7.3.0.
+# Check if this causes issues in other systems.
+FFLAGS = -O -no-pie	
 FC = gfortran
 CFLAGS = ${FFLAGS}
 
