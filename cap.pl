@@ -706,8 +706,12 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
             close(IN);
 
             # Read specific columns from the weight file
-            for ($i = 0; $i < $nsta; $i++){
-                ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift)=split(" ",@weightlines[$i]);
+            print STDERR "Sorting weight file ...\n";
+            for ($i = 0; $i < $nsta; $i++) {
+                # NOTE the split command will not complain if the weight file
+                # doesn't have a column for shift2. split will still output the
+                # other values.
+                ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift,$shift2)=split(" ",@weightlines[$i]);
                 ($stnm,$pol) = split("/",$name);
                 ($eve1,$net1,$name1,$loc1,$chan1) = split(/\./,$stnm);
 
@@ -746,12 +750,24 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
             for ($i = 0; $i < $nsta; $i++) {
                 $ipol = 1;
 
-                # **** CHECK HERE ****
-                #   NOTE sort_indx comes from station_list_ALL.dat, not from the weight files.
-                #   NOTE the following sort is done on the weight files, but the
-                #        sort index comes from a different file which may be sorted
-                #        differently. Does this work?
-                ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift) = split(" ",@weightlines[$sort_indx[$i]]);
+                # Copy tshifts surf-->love if love empty.
+                $ncol_weight = split(" ",@weightlines[$sort_indx[$i]]);
+                if ($ncol_weight == 12) {
+                    print STDERR "WARNING. Weight input has 12 columns (OLD). ";
+                    ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift) = split(" ",@weightlines[$sort_indx[$i]]);
+                    $shift2 = $shift;
+                    print STDERR "Copying col12-->col13 (surf-->love). tshift $shift2 sec (CHECK!)\n";
+                } elsif ($ncol_weight == 13) {
+                    # **** CHECK HERE ****
+                    #   NOTE sort_indx comes from station_list_ALL.dat, not from the weight files.
+                    #   NOTE the following sort is done on the weight files, but the
+                    #        sort index comes from a different file which may be sorted
+                    #        differently. Does this work?
+                    ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift,$shift2) = split(" ",@weightlines[$sort_indx[$i]]);
+                } else {
+                    die "ERROR. Weight file has $ncol_weight columns. Expecting 12 or 13.\n";
+                }
+
                 ($stnm,$pol) = split("/",$name);
 
                 # no polarity information
