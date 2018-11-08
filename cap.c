@@ -998,9 +998,9 @@ int main (int argc, char **argv) {
 
   /**************output the results***********************/
   // Stop if the best magnitude is at a boundary. Except for a point search.
-  if(searchPar->dmw > TOLMAG) {
-      if (fabs(sol.meca.mag - searchPar->mw1) <= TOLMAG 
-              || fabs(sol.meca.mag - searchPar->mw2) <= TOLMAG) {
+  if(searchPar->dmw > TOLNMAG) {
+      if (fabs(sol.meca.mag - searchPar->mw1) <= TOLNMAG 
+              || fabs(sol.meca.mag - searchPar->mw2) <= TOLNMAG) {
           fprintf(stderr, "\n********************************************\n");
           fprintf(stderr, "cap.c error: Inversion stopped. See file capout_error.txt");
           fprintf(stderr, "\n********************************************\n");
