@@ -656,195 +656,195 @@ $filterBand = sprintf("Body:%.2f-%.2f. Surf:%.2f-%.2f",$Tf2,$Tf1,$Tf4,$Tf3);
 #-----------------------------------------------------------
 
 for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
-  foreach $eve (@event) {
+    foreach $eve (@event) {
 
-    $md_dep = $model.'_'.$dep;
-    next unless -d $eve;
-    print STDERR "EVENT ID = $eve | EVENT DEPTH = $dep |  SOURCE DURATION = $dura\n";
-    print STDERR "GRID TYPE = $grid_type ($grid_type_label search) | NSOL = $nsol\n";
-    print STDERR "-------------------------------------------------------------\n\n";
+        $md_dep = $model.'_'.$dep;
+        next unless -d $eve;
+        print STDERR "EVENT ID = $eve | EVENT DEPTH = $dep |  SOURCE DURATION = $dura\n";
+        print STDERR "GRID TYPE = $grid_type ($grid_type_label search) | NSOL = $nsol\n";
+        print STDERR "-------------------------------------------------------------\n\n";
 
-# --------------------------
-# Sort weight file by distance or azimuth
-# Default is to use the weight file as it is
-    $input_weight_file = "$eve/$weight";
-    $clean_weight_file = "$eve/WEIGHT_CLEAN.dat";
-    $station_info_file = "$eve/${eve}_station_list_ALL.dat";
+        # --------------------------
+        # Sort weight file by distance or azimuth
+        # Default is to use the weight file as it is
+        $input_weight_file = "$eve/$weight";
+        $clean_weight_file = "$eve/WEIGHT_CLEAN.dat";
+        $station_info_file = "$eve/${eve}_station_list_ALL.dat";
 
-    open(IN,$input_weight_file) || die "weight file not present\n";
-    @weightlines = <IN>; $nsta = @weightlines;
-    close(IN);
-
-    # THIS SECTION DOES NOT RUN IF K IS NOT SPECIFIED
-    # BUG: VR changes whether K is used or not.
-    #      To avoid this we might have to run this section by default.
-    if ($isort != 0){
-
-        if ($isort == 1){
-            print "Ouput file will be sorted by distance";
-        }
-        elsif ($isort == 2){
-            print "Ouput file will be sorted by azimuth";
-        }
-        else {
-            die "sorting can only be by distance (-K1) or azimuth (-K2)";
-        }
-
-        # Get data from station_list_ALL.dat
-        # sta net   lat     lon         dist      azim
-        # BKS BK 37.876200 -122.235600 518.062577 279.769407
-        # CMB BK 38.034500 -120.386500 360.643229 285.609184
-        # MHC BK 37.341600 -121.642600 462.460019 273.168208
-        open(IN, $station_info_file) || die "STOP. {eid}/{eid}_station_list_ALL.dat file not present\n";
-        @stnlines = <IN>;
-        $nstn = @stnlines;
+        open(IN,$input_weight_file) || die "weight file not present\n";
+        @weightlines = <IN>; $nsta = @weightlines;
         close(IN);
 
-        # Read specific columns from the weight file
-        for ($i = 0; $i < $nsta; $i++){
-            ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift)=split(" ",@weightlines[$i]);
-            ($stnm,$pol) = split("/",$name);
-            ($eve1,$net1,$name1,$loc1,$chan1) = split(/\./,$stnm);
+        # THIS SECTION DOES NOT RUN IF K IS NOT SPECIFIED
+        # BUG: VR changes whether K is used or not.
+        #      To avoid this we might have to run this section by default.
+        if ($isort != 0){
 
-            # sort by distance, azimuth, or leave as is
-            for ($j = 0; $j < $nstn; $j++) {
-                # read columns from station_list_ALL.dat
-                ($name2, $net2, $lat2, $lon2, $dist2, $az2) = split(" ",@stnlines[$j]);
-                if (($name1 eq $name2) && ($net1 eq $net2)) {
-                    # by distance
-                    if ($isort == 1) {
-                        $col_to_sort[$i] = $dist2;
-                    }
-                    # by azimuth
-                    elsif ($isort == 2) {
-                        $col_to_sort[$i] = $az2;
-                    }
-                    # THIS CODE IS NEVER REACHED
-                    # do nothing
-                    else {
-                        $col_to_sort[$i] = $i;
+            if ($isort == 1){
+                print "Ouput file will be sorted by distance";
+            }
+            elsif ($isort == 2){
+                print "Ouput file will be sorted by azimuth";
+            }
+            else {
+                die "sorting can only be by distance (-K1) or azimuth (-K2)";
+            }
+
+            # Get data from station_list_ALL.dat
+            # sta net   lat     lon         dist      azim
+            # BKS BK 37.876200 -122.235600 518.062577 279.769407
+            # CMB BK 38.034500 -120.386500 360.643229 285.609184
+            # MHC BK 37.341600 -121.642600 462.460019 273.168208
+            open(IN, $station_info_file) || die "STOP. {eid}/{eid}_station_list_ALL.dat file not present\n";
+            @stnlines = <IN>;
+            $nstn = @stnlines;
+            close(IN);
+
+            # Read specific columns from the weight file
+            for ($i = 0; $i < $nsta; $i++){
+                ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift)=split(" ",@weightlines[$i]);
+                ($stnm,$pol) = split("/",$name);
+                ($eve1,$net1,$name1,$loc1,$chan1) = split(/\./,$stnm);
+
+                # sort by distance, azimuth, or leave as is
+                for ($j = 0; $j < $nstn; $j++) {
+                    # read columns from station_list_ALL.dat
+                    ($name2, $net2, $lat2, $lon2, $dist2, $az2) = split(" ",@stnlines[$j]);
+                    if (($name1 eq $name2) && ($net1 eq $net2)) {
+                        # by distance
+                        if ($isort == 1) {
+                            $col_to_sort[$i] = $dist2;
+                        }
+                        # by azimuth
+                        elsif ($isort == 2) {
+                            $col_to_sort[$i] = $az2;
+                        }
+                        # THIS CODE IS NEVER REACHED
+                        # do nothing
+                        else {
+                            $col_to_sort[$i] = $i;
+                        }
                     }
                 }
             }
-        }
-        # GET INDICES OF SORTED ELEMENTS IN station_list_ALL.dat
-        @sort_indx = sort{$col_to_sort[$a] <=> $col_to_sort[$b]} 0 .. $#col_to_sort;
+            # GET INDICES OF SORTED ELEMENTS IN station_list_ALL.dat
+            @sort_indx = sort{$col_to_sort[$a] <=> $col_to_sort[$b]} 0 .. $#col_to_sort;
 
-        #-----------------------------------------------------------
-        # Remove stations that have no information. 
-        # DO THIS REGARDLESS. AT PRESENT THE SCRIPT SEEMS TO TAKE A STATION
-        # INTO ACCOUNT WHETHER THE STATION IS USED OR NOT
-        #-----------------------------------------------------------
-        # NO polarity, NO P weight, NO S weight
-        open(OUT,'>',$clean_weight_file);
-        for ($i = 0; $i < $nsta; $i++) {
-            $ipol = 1;
+            #-----------------------------------------------------------
+            # Remove stations that have no information. 
+            # DO THIS REGARDLESS. AT PRESENT THE SCRIPT SEEMS TO TAKE A STATION
+            # INTO ACCOUNT WHETHER THE STATION IS USED OR NOT
+            #-----------------------------------------------------------
+            # NO polarity, NO P weight, NO S weight
+            open(OUT,'>',$clean_weight_file);
+            for ($i = 0; $i < $nsta; $i++) {
+                $ipol = 1;
 
-            # **** CHECK HERE ****
-            #   NOTE sort_indx comes from station_list_ALL.dat, not from the weight files.
-            #   NOTE the following sort is done on the weight files, but the
-            #        sort index comes from a different file which may be sorted
-            #        differently. Does this work?
-            ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift) = split(" ",@weightlines[$sort_indx[$i]]);
-            ($stnm,$pol) = split("/",$name);
+                # **** CHECK HERE ****
+                #   NOTE sort_indx comes from station_list_ALL.dat, not from the weight files.
+                #   NOTE the following sort is done on the weight files, but the
+                #        sort index comes from a different file which may be sorted
+                #        differently. Does this work?
+                ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift) = split(" ",@weightlines[$sort_indx[$i]]);
+                ($stnm,$pol) = split("/",$name);
 
-            # no polarity information
-            if ($pol eq ''){
-                $ipol = 0;
-		#die "Into this loop!";
-            }  
-            # If pol or weight checks fail then keep the station
-            # Skip IF and(pol checks) and(weight checks)
-            if (($ipol==0 || $pol_wt==0 || $pol_wt==999) && $pv==0 && $pr==0 && $sv==0 && $sr==0 && $st==0) {
-                print STDERR "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";
-		#die "Into this loop!";
-                next;
-            } 
-            # save in new weight file
-            else {
-                print OUT "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";
-		#die "Into this loop!";
+                # no polarity information
+                if ($pol eq ''){
+                    $ipol = 0;
+                    #die "Into this loop!";
+                }  
+                # If pol or weight checks fail then keep the station
+                # Skip IF and(pol checks) and(weight checks)
+                if (($ipol==0 || $pol_wt==0 || $pol_wt==999) && $pv==0 && $pr==0 && $sv==0 && $sr==0 && $st==0) {
+                    print STDERR "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";
+                    #die "Into this loop!";
+                    next;
+                } 
+                # save in new weight file
+                else {
+                    print OUT "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";
+                    #die "Into this loop!";
+                }
             }
+            close(OUT);
+
+            ## Clean this weight file by removing stations that have no information (no polarity, no P weight, no S weight)
+            #open(OUT,'>',$clean_weight_file);
+            #@sort_indx = sort{$col_to_sort[$a] <=> $col_to_sort[$b]} 0 .. $#col_to_sort;
+            #for ($i = 0; $i < $nsta; $i++){
+            #    $ipol = 1;
+            #    ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift)=split(" ",@weightlines[$sort_indx[$i]]);
+            #    ($stnm,$pol) = split("/",$name);
+            #
+            #    if ($pol eq ''){$ipol = 0;}  # no polarity information
+            #    if (($ipol==0 || $pol_wt==0 || $pol_wt==999) && $pv==0 && $pr==0 && $sv==0 && $sr==0 && $st==0){
+            #        print STDERR "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";
+            #        next;} # No information available - skip this station
+            #    else {     # save in new weight file
+            #        print OUT "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";
+            #    }
+            #}
+            #close(OUT);
         }
-        close(OUT);
+        else {
+            copy $input_weight_file, $clean_weight_file;
+        }
+        # --------------------------
 
-#        # Clean this weight file by removing stations that have no information (no polarity, no P weight, no S weight)
-#        open(OUT,'>',$clean_weight_file);
-#        @sort_indx = sort{$col_to_sort[$a] <=> $col_to_sort[$b]} 0 .. $#col_to_sort;
-#        for ($i = 0; $i < $nsta; $i++){
-#            $ipol = 1;
-#            ($name,$dist,$pv,$pr,$sv,$sr,$st,$ptime,$plen,$stime,$slen,$shift)=split(" ",@weightlines[$sort_indx[$i]]);
-#            ($stnm,$pol) = split("/",$name);
-        #
-#            if ($pol eq ''){$ipol = 0;}  # no polarity information
-#            if (($ipol==0 || $pol_wt==0 || $pol_wt==999) && $pv==0 && $pr==0 && $sv==0 && $sr==0 && $st==0){
-#                print STDERR "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";
-#                next;} # No information available - skip this station
-#            else {     # save in new weight file
-#                print OUT "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";
-#            }
-#        }
-#        close(OUT);
+        open(WEI,$clean_weight_file);
+        @wwf=<WEI>;
+        close(WEI);
+        $ncom = 2 if $wwf[0] =~ / -1 /;
+
+        $cmd = "cap$dirct $eve $md_dep" unless $cmd eq "cat";    
+        open(SRC, "| $cmd") || die "can not run $cmd\n";
+        print SRC "$pVel $sVel $riseTime $dura $rupDir\n",$riseTime if $dirct eq "_dir";
+        print SRC "$model $dep\n";          # first input in regular cap run
+        print SRC "$m1 $m2 $max_shft1 $max_shft2 $repeat $fm_thr $tie $Sstatic_shift\n";
+        print SRC "@thrshd\n" if $repeat;   # no value in regular cap run
+        print SRC "$vp $love $rayleigh\n";  # vp, vs1, vs2 (in cap.c)
+        print SRC "$power_of_body $power_of_surf $nof\n";
+        print SRC "$weight_of_pnl $weight_of_rayleigh $weight_of_love\n";
+        print SRC "$plot\n";
+        print SRC "$disp $pol_wt\n";
+        print SRC "$green/$model/\n";
+        print SRC "$grid_type\n";
+        print SRC "$norm\n";
+        print SRC "$dt $dura $riseTime\n";
+        print SRC "$f1_pnl $f2_pnl $f1_sw $f2_sw\n";
+        print SRC "$mw1 $mw2 $nmw $dm\n";
+        print SRC "$v1 $v2 $nv $dv\n";
+        print SRC "$w1 $w2 $nw $dw\n";
+        print SRC "$k1 $k2 $nk $dk\n";
+        print SRC "$h1 $h2 $nh $dh\n";
+        print SRC "$s1 $s2 $ns $ds\n";
+        print SRC "$nsol\n";
+        printf SRC "%d\n",$#wwf + 1;
+        print SRC @wwf;
+        close(SRC);
+
+        #-----save a copy of inpur command and weight file in the OUTPUT_DIR
+        system("cp", $input_weight_file, './OUTPUT_DIR/weight.dat');
+        system("cp", $inp_cmd, "./OUTPUT_DIR/${eve}_${model}_${dep}_caprun");
+        system("git log | head -12 > ./OUTPUT_DIR/last_2git_commits.txt");
+
+        plot:
+        if ( $plot > 0 && ($? >> 8) == 0 ) {
+            print STDERR "\n\ncap.pl: plot results ... \n";
+            $odir = "./OUTPUT_DIR";
+            chdir($odir);
+            @dum = split('_', $md_dep);  # split mdl string
+            $outfile = sprintf("%s_%s_%03d.out", @event, $model, int($dep));
+            open(my $out,'>>',$outfile);
+            say $out "INPUT_PAR $md_dep P_win $m1 S_win $m2 P $amplify_P p $amplify_S NCOM $ncom spiB $spib spiS $spis $filterBand FMT $fmt_flag";
+
+            &plot($md_dep, $m1, $m2, $amplify_P, $amplify_S, $ncom, $spib, $spis, $filterBand, $fmt_flag, @event, $model, $dep, $dura, $riseTime, $pol_wt);
+            unlink(<${md_dep}_*.?>) unless $keep;
+            chdir("../");
+            print STDERR "cap.pl: plotting finished.\n";
+        } else {
+            print STDERR "cap.pl: no plots generated.\n";
+        }
     }
-    else {
-        copy $input_weight_file, $clean_weight_file;
-    }
-# --------------------------
-
-    open(WEI,$clean_weight_file);
-    @wwf=<WEI>;
-    close(WEI);
-    $ncom = 2 if $wwf[0] =~ / -1 /;
-
-    $cmd = "cap$dirct $eve $md_dep" unless $cmd eq "cat";    
-    open(SRC, "| $cmd") || die "can not run $cmd\n";
-    print SRC "$pVel $sVel $riseTime $dura $rupDir\n",$riseTime if $dirct eq "_dir";
-    print SRC "$model $dep\n";          # first input in regular cap run
-    print SRC "$m1 $m2 $max_shft1 $max_shft2 $repeat $fm_thr $tie $Sstatic_shift\n";
-    print SRC "@thrshd\n" if $repeat;   # no value in regular cap run
-    print SRC "$vp $love $rayleigh\n";  # vp, vs1, vs2 (in cap.c)
-    print SRC "$power_of_body $power_of_surf $nof\n";
-    print SRC "$weight_of_pnl $weight_of_rayleigh $weight_of_love\n";
-    print SRC "$plot\n";
-    print SRC "$disp $pol_wt\n";
-    print SRC "$green/$model/\n";
-    print SRC "$grid_type\n";
-    print SRC "$norm\n";
-    print SRC "$dt $dura $riseTime\n";
-    print SRC "$f1_pnl $f2_pnl $f1_sw $f2_sw\n";
-    print SRC "$mw1 $mw2 $nmw $dm\n";
-    print SRC "$v1 $v2 $nv $dv\n";
-    print SRC "$w1 $w2 $nw $dw\n";
-    print SRC "$k1 $k2 $nk $dk\n";
-    print SRC "$h1 $h2 $nh $dh\n";
-    print SRC "$s1 $s2 $ns $ds\n";
-    print SRC "$nsol\n";
-    printf SRC "%d\n",$#wwf + 1;
-    print SRC @wwf;
-    close(SRC);
-
-    #-----save a copy of inpur command and weight file in the OUTPUT_DIR
-    system("cp", $input_weight_file, './OUTPUT_DIR/weight.dat');
-    system("cp", $inp_cmd, "./OUTPUT_DIR/${eve}_${model}_${dep}_caprun");
-    system("git log | head -12 > ./OUTPUT_DIR/last_2git_commits.txt");
-
-  plot:
-    if ( $plot > 0 && ($? >> 8) == 0 ) {
-      print STDERR "\n\ncap.pl: plot results ... \n";
-      $odir = "./OUTPUT_DIR";
-      chdir($odir);
-      @dum = split('_', $md_dep);  # split mdl string
-      $outfile = sprintf("%s_%s_%03d.out", @event, $model, int($dep));
-      open(my $out,'>>',$outfile);
-      say $out "INPUT_PAR $md_dep P_win $m1 S_win $m2 P $amplify_P p $amplify_S NCOM $ncom spiB $spib spiS $spis $filterBand FMT $fmt_flag";
-
-      &plot($md_dep, $m1, $m2, $amplify_P, $amplify_S, $ncom, $spib, $spis, $filterBand, $fmt_flag, @event, $model, $dep, $dura, $riseTime, $pol_wt);
-      unlink(<${md_dep}_*.?>) unless $keep;
-      chdir("../");
-      print STDERR "cap.pl: plotting finished.\n";
-    } else {
-      print STDERR "cap.pl: no plots generated.\n";
-    }
-  }
 }
 exit(0);
