@@ -997,20 +997,23 @@ int main (int argc, char **argv) {
   }
 
   /**************output the results***********************/
-  // output warning if best magnitude = magnitude limit in magnitude search.
-  if ( (sol.meca.mag <= searchPar->mw1 && searchPar->dmw != 0) 
-       || (sol.meca.mag >= searchPar->mw2 && searchPar->dmw != 0) ) {
-    fid_warn = fopen("capout_error.txt","w");
-    fprintf(stderr, "\n***********************************************************************\n");
-    fprintf(stderr, "\tINVERSION STOPPED. See file capout_error.txt\n");
-    fprintf(stderr, "***********************************************************************\n");
-    fprintf(fid_warn, "***********************************************************************\n");
-    fprintf(fid_warn, "INVERSION STOPPED. Best magnitude Mw = %4.1f is at a boundary.\n", sol.meca.mag);
-    fprintf(fid_warn, "Boundaries [Mw1, Mw2] = [%4.1f, %4.1f]\n", searchPar->mw1, searchPar->mw2);
-    fprintf(fid_warn, "Consider expanding the magnitude boundary.\n");
-    fprintf(fid_warn, "***********************************************************************\n");
-    fclose(fid_warn);
-    return(-1);
+  // Stop if the best magnitude is at a boundary. Except for a point search.
+  if(searchPar->dmw > TOLMAG) {
+      if (fabs(sol.meca.mag - searchPar->mw1) <= TOLMAG 
+              || fabs(sol.meca.mag - searchPar->mw2) <= TOLMAG) {
+          fprintf(stderr, "\n********************************************\n");
+          fprintf(stderr, "cap.c error: Inversion stopped. See file capout_error.txt");
+          fprintf(stderr, "\n********************************************\n");
+
+          fid_warn = fopen("capout_error.txt","a");
+          fprintf(fid_warn, "***********************************************************************\n");
+          fprintf(fid_warn, "INVERSION STOPPED. Event model depth: %s %s %d\n", eve, model, depth); 
+          fprintf(fid_warn, "Best magnitude Mw = %5.2f is at a boundary.\n", sol.meca.mag);
+          fprintf(fid_warn, "Boundaries [Mw1, Mw2] = [%5.2f, %5.2f]\n", searchPar->mw1, searchPar->mw2);
+          fprintf(fid_warn, "Consider expanding the magnitude boundary.\n");
+          fclose(fid_warn);
+          return(-1);
+      }
   }
 
   fprintf(stderr,"Preparing out file ...\n");
