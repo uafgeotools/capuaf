@@ -84,7 +84,7 @@ $isort = 0;
 
 # Use parameter file instead of command line input
 $parameter_file = '';
-
+$capver = ""; # default uses "cap"
 #----------------------------------------------------------- 
 # DEFAULT VALUES FOR SEARCH PARAMETERS
 use Math::Trig ':pi';
@@ -225,7 +225,9 @@ $usage =
     -I  specify number of solutions (random mode) OR number of points per parameter.
         RAND: -I<nsol>  e.g. -I10000  --- will generate 10,000 random solutions.
         GRID: -I<Nv>/<Nw>/<Nstrike>/<Ndip>/<Nrake> where Nx = number of poits for parameter x
-    -J  FLAG NOT IN USE.
+    -J  Specify cap version to run, eg: `cap.pl -Jlala ...` expects a binary called `caplala`
+        This is useful when using multiple cap versions (eg one that writes a binary file)
+        If not specified this defaults to `cap`.
     -K  sort output file by distance (=1) or azimuth (=2). default (=0) does nothing.
     -k  Specify k1 to build a lune grid, not a UV grid.
         Use only when LUNE_GRID_INSTEAD_OF_UV = 0 (and recompile cap)
@@ -384,6 +386,8 @@ foreach (grep(/^-/,@ARGV)) {
 #    $clvd2 = $value[3] if $value[3];
 #    $fmt_flag="true";     # used later for renaming output figures with fmt
 #  }
+   } elsif ($opt eq "J") {
+     $capver = @value[0];
    } elsif ($opt eq "K") {
      $isort = $value[0];
    } elsif ($opt eq "k") {
@@ -818,7 +822,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
         close(WEI);
         $ncom = 2 if $wwf[0] =~ / -1 /;
 
-        $cmd = "cap$dirct $eve $md_dep" unless $cmd eq "cat";    
+        $cmd = "cap$capver$dirct $eve $md_dep" unless $cmd eq "cat";
         open(SRC, "| $cmd") || die "can not run $cmd\n";
         print SRC "$pVel $sVel $riseTime $dura $rupDir\n",$riseTime if $dirct eq "_dir";
         print SRC "$model $dep\n";          # first input in regular cap run
