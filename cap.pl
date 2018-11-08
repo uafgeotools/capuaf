@@ -655,6 +655,9 @@ $filterBand = sprintf("Body:%.2f-%.2f. Surf:%.2f-%.2f",$Tf2,$Tf1,$Tf4,$Tf3);
 # END prepare additional parameters for CAP input
 #-----------------------------------------------------------
 
+#-----------------------------------------------------------
+# LOOP INVERSIONS BY DEPTH
+#-----------------------------------------------------------
 for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
     foreach $eve (@event) {
 
@@ -664,7 +667,10 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
         print STDERR "GRID TYPE = $grid_type ($grid_type_label search) | NSOL = $nsol\n";
         print STDERR "-------------------------------------------------------------\n\n";
 
-        # --------------------------
+        #-----------------------------------------------------------
+        # copy, sort, cleanup input weight file
+        #-----------------------------------------------------------
+        print STDERR "Sort,clean up weight file...\n";
         # Sort weight file by distance or azimuth
         # Default is to use the weight file as it is
         $input_weight_file = "$eve/$weight";
@@ -679,12 +685,11 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
         # BUG: VR changes whether K is used or not.
         #      To avoid this we might have to run this section by default.
         if ($isort != 0){
-
             if ($isort == 1){
-                print "Ouput file will be sorted by distance";
+                print STDERR "Ouput file will be sorted by distance\n";
             }
             elsif ($isort == 2){
-                print "Ouput file will be sorted by azimuth";
+                print STDERR "Ouput file will be sorted by azimuth\n";
             }
             else {
                 die "sorting can only be by distance (-K1) or azimuth (-K2)";
@@ -735,6 +740,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
             # DO THIS REGARDLESS. AT PRESENT THE SCRIPT SEEMS TO TAKE A STATION
             # INTO ACCOUNT WHETHER THE STATION IS USED OR NOT
             #-----------------------------------------------------------
+            print STDERR "Removing unused rows in the weight file ...\n";
             # NO polarity, NO P weight, NO S weight
             open(OUT,'>',$clean_weight_file);
             for ($i = 0; $i < $nsta; $i++) {
@@ -756,7 +762,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
                 # If pol or weight checks fail then keep the station
                 # Skip IF and(pol checks) and(weight checks)
                 if (($ipol==0 || $pol_wt==0 || $pol_wt==999) && $pv==0 && $pr==0 && $sv==0 && $sr==0 && $st==0) {
-                    print STDERR "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";
+                    print STDERR "DISCARDING: $name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \t $shift2 \n\n";
                     #die "Into this loop!";
                     next;
                 } 
@@ -785,6 +791,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
             #    }
             #}
             #close(OUT);
+            print STDERR "Done sorting/cleaning input weight file.\n";
         }
         else {
             copy $input_weight_file, $clean_weight_file;
