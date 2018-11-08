@@ -784,8 +784,7 @@ for($dep=$dep_min;$dep<=$dep_max;$dep=$dep+$dep_inc) {
                 } 
                 # save in new weight file
                 else {
-                    print OUT "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \n";
-                    #die "Into this loop!";
+                    print OUT "$name \t $dist \t $pv \t $pr \t $sv \t $sr \t $st \t $ptime \t $plen \t $stime \t $slen \t $shift \t $shift2 \n";
                 }
             }
             close(OUT);
