@@ -1,44 +1,8 @@
 README_EXAMPLE
 
 Test examples for CAP.
-The default example should always be run, prior to committing any changes to the code.
-
-====================================================================================
-EXTRA START-UP INSTRUCTIONS FOR UAF CLUSTER
-
-0. By default, do not run cap on a cluster (skip this step).
-The following instructions apply to the UAF cluster.
-
-0a. check modules:
-
-> module list
-
-pacman12 % module list
-Currently Loaded Modulefiles:
-  1) git/1.8.2.3               3) openmpi-gnu-4.7.3/1.4.3   5) netcdf/4.3.0.gnu-4.7.3
-  2) gcc/4.7.3                 4) PrgEnv-gnu/4.7.3
-
-0b. set up your directories
-
-> cd $CENTER
-> mkdir -p CAP
-> cd CAP
-
-0c. check out a local copy of CAP
-
-git clone https://USERNAME@github.com/uafseismo/cap.git src
-
-0d. assign $CAPHOME in your .bashrc, e.g., 
-
-export CAPHOME=$CENTER/CAP/src
-
-0e. load environmental variables with this command (add it to your .bashrc file if you want):
-
-> source /import/unsupported/erthquak/bashrc_seismo_util
-
-note that $CAPHOME must be assigned prior to sourcing bashrc_seismo_util
-
-0f. uncomment $green in cap.pl to point to FK_synthetics on UAF cluster
+The default example should always be run at UAF, prior to committing any changes to the code.
+Please see also the capuaf pdf manual ($CAPHOME/doc/capuaf_manual.pdf)
 
 ====================================================================================
 START-UP INSTRUCTIONS FOR UAF LINUX NETWORK
@@ -79,12 +43,17 @@ If you make any changes to your .bashrc variables, be sure to source the file:
 > cd $CAPRUN
 > mkdir -p models/cus inv/cus
 
-3. compile cap.c
+3a. check gfortran version
+[carltape@grizzly capuaf]$ gfortran --version
+GNU Fortran (GCC) 4.8.5 20150623 (Red Hat 4.8.5-28)
+
+3b. compile cap.c
 
 > cd $CAPHOME
 > make all >& make.log
 
 note: "make clean" before compilation if you have a previously compiled cap
+note: you may need the compilation flag -no-pie (see Makefile)
 
 4. check path to utilities
 
@@ -208,3 +177,42 @@ TIPS
 1. If running in debug mode, remember to remove all the log files otherwise they will be appended (not overwritten!).
 2. When running in random seach mode and it doesn't create as many sample points as specified, 
    then retry by giving reduced orientation increment (example: if -I5/0 doesn't work, try -I2/0).
+
+====================================================================================
+EXTRA START-UP INSTRUCTIONS FOR UAF CLUSTER
+
+0. By default, do not run cap on a cluster (skip this step).
+The following instructions apply to the UAF cluster.
+
+0a. check modules:
+
+> module list
+
+pacman12 % module list
+Currently Loaded Modulefiles:
+  1) git/1.8.2.3               3) openmpi-gnu-4.7.3/1.4.3   5) netcdf/4.3.0.gnu-4.7.3
+  2) gcc/4.7.3                 4) PrgEnv-gnu/4.7.3
+
+0b. set up your directories
+
+> cd $CENTER
+> mkdir -p CAP
+> cd CAP
+
+0c. check out a local copy of CAP
+
+git clone https://USERNAME@github.com/uafseismo/cap.git src
+
+0d. assign $CAPHOME in your .bashrc, e.g., 
+
+export CAPHOME=$CENTER/CAP/src
+
+0e. load environmental variables with this command (add it to your .bashrc file if you want):
+
+> source /import/unsupported/erthquak/bashrc_seismo_util
+
+note that $CAPHOME must be assigned prior to sourcing bashrc_seismo_util
+
+0f. uncomment $green in cap.pl to point to FK_synthetics on UAF cluster
+
+====================================================================================
