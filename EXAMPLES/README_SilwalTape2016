@@ -42,6 +42,10 @@ OR use a parameter file
 > cp $CAPHOME/EXAMPLES/20090407201255351_check/flags.pf .
 > cap.pl flags.pf
 
+note: In most cases you want to estimate the magnitude by searching
+      a range of magnitudes centered on the reported magnitude.
+      This can be achieved with a flag like -m3.5/5.5/0.1
+
 -------------------------------------------------------------------
 5. Run CAP for multiple depths (-A flag: from 30 to 50 km, increments of 2 km)
 
