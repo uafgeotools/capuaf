@@ -1,6 +1,6 @@
 DATA EXTRACTION and SETUP
 
-These instructions assume that the user is on the UAF seismo linux network, which has environmental variables $PYSEIS, $CAPHOME, etc.
+These instructions assume that the user is on the UAF seismo linux network, which has environmental variables $PYSEP, $CAPHOME, etc.
 
 0. compile CAP in parallel mode
 > cd $CAPHOME
@@ -8,19 +8,25 @@ These instructions assume that the user is on the UAF seismo linux network, whic
 > make cap f=omp >& make.log
 
 note: see GIseis.pdf doc for number of cores on each machine
+note: you may need the compilation flag -no-pie (see Makefile)
 
 1. Extract waveforms from IRIS:
-> cd $PYSEIS
+> cd $PYSEP
 > python run_getwaveform.py
 
-This will create the data directory 20090407201255351 inside $PYSEIS
+note: You must be within the sln environment (source activate sln)
+note: This will create the data directory 20090407201255351 inside $PYSEP
 
 2. prepare for running cap
 
 > cd $CAPRUN
 > mkdir -p inv/scak
 > cd $CAPRUN/inv/scak
-> rsync -av $PYSEIS/20090407201255351 .
+> rsync -av $PYSEP/20090407201255351 .
+
+check that there are 54 sets of files:
+
+> ls -1 20090407201255351/*.t | wc ; ls -1 20090407201255351/*.r | wc ; ls -1 20090407201255351/*.z | wc
 
 3. Copy input weight file into the data directory:
 Only the 'clean' stations are selected in this weight file
@@ -29,12 +35,16 @@ Only the 'clean' stations are selected in this weight file
 
 4. run cap
 
-> cap.pl -H0.02 -P1/15/60 -p1 -S2/10/0 -T15/150 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -Y1 -Zweight_test.dat -Mscak_39 -m4.5 -I50000 -R0/0 20090407201255351
+> cap.pl -H0.02 -K1 -P1/15/60 -p1 -S2/10/0 -T15/150 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -Y1 -Zweight_test.dat -Mscak_39 -m4.5 -I50000 -R0/0 20090407201255351
 
 OR use a parameter file
 
 > cp $CAPHOME/EXAMPLES/20090407201255351_check/flags.pf .
 > cap.pl flags.pf
+
+note: In most cases you want to estimate the magnitude by searching
+      a range of magnitudes centered on the reported magnitude.
+      This can be achieved with a flag like -m3.5/5.5/0.1
 
 -------------------------------------------------------------------
 5. Run CAP for multiple depths (-A flag: from 30 to 50 km, increments of 2 km)

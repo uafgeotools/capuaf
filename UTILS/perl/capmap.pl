@@ -2,20 +2,20 @@
 
 #==========================================================
 #  capmap.pl
-#  Plotting script for CAP results
-#
-#  Many accessory files for basemap plotting are available (e.g., $itopo).
-#
-#  For each example, you need TWO output files:
-#  The following need to be in the current working directory
-#  1.  20090407201255351_station_list_ALL.dat -- (station, network, lat, lon)
-#  2.  20090407201255351.out -- rename the CAP out file
+#  plot maps of misfit for CAP moment tensor inversion results
+#  location of this script: $CAPHOME/UTILS/perl/capmap.pl
 #
 # EXAMPLES:
-# > cd $CAPHOME/UTILS/perl/examples/
-# > cd 20090407201255351 ; ../../capmap.pl 20090407201255351
-# > cd $CAPHOME/UTILS/perl/examples/
-# > cd HOYA ; ../../capmap.pl HOYA
+# > cd $CAPHOME/UTILS/perl/examples/20090407201255351
+# > $CAPHOME/UTILS/perl/capmap.pl 20090407201255351
+# > cd $CAPHOME/UTILS/perl/examples/HOYA
+# > $CAPHOME/UTILS/perl/capmap.pl HOYA
+#
+# FOR A NEW EXAMPLE:
+# 1. You need the following files in your current working directory:
+#    20090407201255351_station_list_ALL.dat -- from pysep
+#    20090407201255351.out -- from cap output (needs to be renamed)
+# 2. Search capmap.pl for "KEY COMMAND" to see where to make changes ($USECUSTOM = 1)
 #
 # OBSOLETE EXAMPLES:
 # > cd $CAPHOME/UTILS/perl/examples/old_examples
@@ -28,6 +28,9 @@
 # > capmap.pl 20100516063454     # Uturuncu event
 #
 # FUTURE WORK
+#   This script is a monster and probably ought to be rewritten from scratch.
+#   Have this script automatically run when cap is run.
+#   Eliminate the need to rename the cap out file.
 #   Need to have capmap.pl automatically identify if .out examples are for FMT or DC.
 #
 #==========================================================
@@ -35,7 +38,12 @@
 if (@ARGV < 1) {die("Usage: capmap.pl eid\n")}
 ($eid) = @ARGV;
 
-# read event information. This is only for old output files. 
+# KEY COMMANDS
+$USECUSTOM = 0;
+# color scale for time shifts
+$dtminS = -1; $dtmaxS = 4; $dtminP = -1; $dtmaxP = 3;  # 20181027
+
+# read event information. This is only for old output files.
 $capevent = "${eid}_event_info.dat";
 open(IN,$capevent); @capeventlines = <IN>;
 (undef,$elat,$elon,$edep)  = split(" ",$capeventlines[0]);
@@ -53,7 +61,7 @@ open(IN,$capout); @linescap = <IN>;
 # from cap.c, conversion between M0 and Mw
 # amp = pow(10.,1.5*m0+16.1-20);    # Mw to M0 in CAP
 (undef,undef,undef,$smodeldep,undef,$strike,$dip,$rake,undef,$Mw,undef,$rms,undef,undef,$gamma,undef,$delta,undef,$vr,undef,undef) = split(" ",$linescap[0]);
-if (not -f $capsevent){(undef,undef,undef,$elat,undef,$elon,undef,$edep)  =split(" ",$linescap[1]);}
+if (not -f $capsevent){(undef,undef,undef,$elat,undef,$elon,undef,$edep) = split(" ",$linescap[1]);}
 (undef,undef,undef,$M0dyne,$ma,$mb,$mc,$md,$me,$mf) = split(" ",$linescap[2]);
 (undef,$smodel,$edepcap) = split("_",$smodeldep);
 @Mcmt = ($mf,$ma,$md,$mc,-$me,-$mb);  # convert from CAP(AkiRichards) to psmeca(GCMT)
@@ -193,14 +201,6 @@ $dir_sources = "/home/carltape/results/SOURCES/alaska_16";
 $cities = "$dir0/cities/alaska_cities";
 
 #==================================================================================
-
-# scale for plots
-@Bopts = ("WESN","Wesn","wesN","wEsn","weSn","WesN","wEsN","wESn","WeSn","WEsn","weSN","wESN","WESn","WeSN","WEsN","wesn");
-$B0 = sprintf("-Ba%3.3ff%3.3fd:\" \":/a%3.3ff%3.3fd:\" \"::.\" \":",$xtick1,$xtick2,$ytick1,$ytick2);
-#$B0 = "-Ba${xtick}f${xtick}g${xtick}:.\" \":";   # with gridlines
-
-$B = "$B0".$Bopts[$iB];
-#$B = "$B0"."wesn";   # temp
 
 if($iportrait == 1){$orient = "-P"; $rotangle = 0}
 else {$orient = " "; $rotangle = 90}
@@ -342,15 +342,22 @@ $itopo = 1;
 $ccmin = 30;
 $ccmax = 100;
 $ccinc = 10;
+
 # Surface wave min-max shift
-#$dtminsurf = -4.5;
-$dtminsurf = -8.5;
-$dtmaxsurf = -$dtminsurf;
+#$dtmaxsurf = 4.5;
+$dtmaxsurf = 8.5;
+$dtminsurf = -$dtmaxsurf;
 #$dtminsurf = 0; $dtmaxsurf = 5;
 # P wave min-max shift
-#dtminpnl = -2.5;
-$dtminpnl = -2.2;
-$dtmaxpnl = -$dtminpnl;
+#dtmaxpnl = 2.5;
+$dtmaxpnl = 2.2;
+$dtminpnl = -$dtmaxpnl;
+if($USECUSTOM) {
+  $dtminsurf = $dtminS;
+  $dtmaxsurf = $dtmaxS;
+  $dtminpnl = $dtminP;
+  $dtmaxpnl = $dtmaxP;
+}
 $dtinc = 1;
 $P_amp_ratio_min = -3;
 $P_amp_ratio_max = -$P_amp_ratio_min;
@@ -366,9 +373,9 @@ $S_amp_ratio_inc = 1;
 #==================================================================================
 # LOOP OVER DIFFERENT SCALAR QUANTITIES TO PLOT
 
-# min and max indices for plotting the maps listed above
-$xpmin = 1; $xpmax = @caplabs;
-#$xpmin = 1; $xpmax = 1;   # testing
+# KEY COMMAND: min and max indices for plotting the maps listed above
+#$xpmin = 1; $xpmax = @caplabs;  # for full set of figures
+$xpmin = 1; $xpmax = $xpmin;    # for testing
 
 print "\n PLOTTING MAPS FROM $xpmin TO $xpmax\n";
 
@@ -388,7 +395,7 @@ for ($pp = 1; $pp <= $pmax; $pp++) {
   if ($ifkmod==1) {    # SOUTHERN ALASKA + INTERIOR ALASKA
     $icities = 0;
     $iroads = 1;
-    if ($elat >=62) {  # INTERIOR ALASKA (DENALI) - only one map ($pmax=1)
+    if ($elat >= 62) {  # INTERIOR ALASKA (DENALI) - only one map ($pmax=1)
       $xmin = -157.0; $xmax = -140.0; $ymin = 58; $ymax = 68.0;
       $sbarinfo = "-L-144/58.7/58.7/200+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 6000000;
       $ibasementc = 0;
@@ -467,18 +474,54 @@ for ($pp = 1; $pp <= $pmax; $pp++) {
     $rotangle = 0;
     $iplates = 0;
 }
+
+  # centered on epicenter
+  if ($USECUSTOM) {
+    print "\n CUSTOM REGION CENTERED ON EPICENTER\n";
+    $srad_km = 300;       # KEY COMMAND: max distance to stations
+    $Jbscale = 5000000;   # KEY COMMAND: size of basemap (increase number to decrease size)
+    $dy = $srad_km/100;   # degrees
+    $fac = cos($elat*3.14159/180.0);
+    $xmin = $elon - $dy/$fac;
+    $xmax = $elon + $dy/$fac;
+    $ymin = $elat - $dy;
+    $ymax = $elat + $dy;
+
+    $xran = $xmax - $xmin;
+    $yran = $ymax - $ymin;
+    $xL = $xmin + 0.9*$xran;
+    $yL = $ymin + 0.1*$yran;
+    $sbarinfo = "-L$xL/$yL/$yL/100+p1.5p,0/0/0,solid+f255/255/255";
+    $icities = 0;
+    $ititle = 1;
+    $iscalecap = 1;
+
+    $xtick1 = 2; $ytick1 = 1; $xtick2 = 0.5; $ytick2 = $xtick2;
+    $emax = 3000; $emin = -$emax; $itopocolor = 4;
+    $ifmt = 0; $cmtsize = 0.4;
+  }
+
   $xcen = ($xmin + $xmax)/2;
   $ycen = ($ymin + $ymax)/2;
   $J = "-Jb$xcen/$ycen/$ymin/$ymax/1:$Jbscale";
   $R = "-R$xmin/$xmax/$ymin/$ymax";
 
-  if ($pp==1) {
-      print CSH "psbasemap $J $R $B -K -V $orient $origin > $psfile\n";
-  } else {
-    print CSH "psbasemap $J $R $B -K -O -V $origin_pp2 >> $psfile\n";
-  }
 #==================================================================================
 # BASEMAP OPTIONS
+
+# scale for plots
+@Bopts = ("WESN","Wesn","wesN","wEsn","weSn","WesN","wEsN","wESn","WeSn","WEsn","weSN","wESN","WESn","WeSN","WEsN","wesn");
+$B0 = sprintf("-Ba%3.3ff%3.3fd:\" \":/a%3.3ff%3.3fd:\" \"::.\" \":",$xtick1,$xtick2,$ytick1,$ytick2);
+#$B0 = "-Ba${xtick}f${xtick}g${xtick}:.\" \":";   # with gridlines
+
+$B = "$B0".$Bopts[$iB];
+#$B = "$B0"."wesn";   # temp
+
+if ($pp==1) {
+    print CSH "psbasemap $J $R $B -K -V $orient $origin > $psfile\n";
+} else {
+  print CSH "psbasemap $J $R $B -K -O -V $origin_pp2 >> $psfile\n";
+}
 
 if ($itopo==1) {
   $colordir = "/home/carltape/gmt/color_maps/";
@@ -595,7 +638,7 @@ if ($ifaults==1 || $iinset==1) {
   if (not -f $faultfile) {
     die("Check if faultfile $faultfile exist or not\n");
   }
-} 
+}
 
 if ($ifaults==1) {
   $faultcol = "255/0/0";

@@ -14,6 +14,12 @@ import math
 import string
 
 def add_picks2weight(file_w_Parrivals,outfile,methodnumber,scalewts):
+    '''
+    file_w_Parrivals: CAP weight input file that has P arrival tims in it
+    outfile: name of your new fle to create
+    methodnumber: type of file to create
+    scalewts:  weights to scale up the station waveforms 
+    '''
     if 1 == 0:
         methodnumber = 2
         scalewts = 100 

@@ -117,7 +117,29 @@ int main (int argc, char **argv) {
   float	x,x1,x2,y,y1,amp,dt,rad[6],arad[4][3],fm_thr,tie,mtensor[3][3],rec2=0.,VR,evla,evlo,evdp;
   float Pshift_max, Sshift_max,  Sshift_static[STN];
   float	rms_cut[NCP], t0[NCP], tb[NRC], t1, t2, t3, t4, srcDelay;
-  float	dtP_pick[STN], s_shft, s_shft_cmd, shft0[STN][NCP],Pnl_win,ts, surf_win, P_pick[STN], P_win[STN], S_pick[STN], S_win[STN], S_shft[STN],max_amp_syn[200][NCP],max_amp_obs[200][NCP],log_amp_thresh,ppick[200],fraction_before_P = 0.4,fraction_before_S = 0.3,stn_comp_log_amp[200][NCP],stn_comp_misfit[200][NCP],stn_comp_shift[200][NCP];
+  float	dtP_pick[STN];
+  float tshift_static_body = 0;         //
+  float tshift_static_surf_rayl;        // weight file col 12
+  float tshift_static_surf_love;        // weight file col 13
+  float tshift_static_surf_rayl_input;  // command line input
+  float shft0[STN][NCP];                //
+  float Pnl_win;                        //
+  float ts;                             // Surface arrival time
+  float surf_win;                       //
+  float P_pick[STN];                    //
+  float P_win[STN];                     //
+  float S_pick[STN];                    //
+  float S_win[STN];                     //
+  float S_shft[STN];                    //
+  float fraction_before_P = 0.4;        // seconds?
+  float fraction_before_S = 0.3;        // seconds?
+  float stn_comp_log_amp[200][NCP];
+  float stn_comp_misfit[200][NCP];
+  float stn_comp_shift[200][NCP];
+  float max_amp_syn[200][NCP]; 
+  float max_amp_obs[200][NCP]; 
+  float log_amp_thresh;
+  float ppick[200];
   float	wt_pnl,wt_rayleigh,wt_love;
   float	tstarP, tstarS, attnP[NFFT], attnS[NFFT];
   float *data[NRC], *green[NGR];
@@ -221,7 +243,7 @@ int main (int argc, char **argv) {
 	&repeat,            // repeat inversion and discard bad trace (OBSOLETE)
 	&fm_thr,            // first motion threshold
 	&tie,               // tie shifts between Rayleigh and Love
-	&s_shft_cmd);       // Surface wave static shift for all stations
+	&tshift_static_surf_rayl_input); // Surface wave static shift for all stations
   
   if (repeat) for(j=0;j<NCP;j++) scanf("%f",rms_cut+4-j);
   scanf("%f%f%f",
@@ -391,25 +413,34 @@ int main (int argc, char **argv) {
     nwaveforms++;
     fprintf(stderr,"%d ", nwaveforms);
 
-    /***** input station name and weighting factor ******/
-    /***************** Read weight file ****************/
+    //-----------------------------------------------------------
+    // Read weight file
+    //-----------------------------------------------------------
+    // input station name and weighting factor 
     scanf("%s%s",tmp,dst);
     for(nup=0,j=0;j<NCP;j++) {
       scanf("%d",&obs->com[4-j].on_off);   // weight for Pnl and Surface waves
       nup += obs->com[4-j].on_off;
     }
-    scanf("%f%f%f%f%f",
-	  &x1,                             // P arrival-time
-	  &Pnl_win,                        // P window length
-	  &ts,                             // Surface arrival time (same for both Rayleigh and Love)
-	  &surf_win,                       // Surface window length
-	  &s_shft);                        // Shift for surface waves
+
+    // arrival times, time windows, static shifts
+    scanf("%f %f %f %f %f %f",
+            &x1,                        // P arrival-time
+            &Pnl_win,                   // P window length
+            &ts,                        // Surface arrival time (same for both Rayleigh and Love)
+            &surf_win,                  // Surface window length
+            &tshift_static_surf_rayl,   // Allow different tshifts for Rail, love
+            &tshift_static_surf_love);  // 
 
     // use static shift from command line input if it is non-zero
     // Note: In that case same static shift is applied to all stations
-    if (s_shft_cmd != 0) s_shft = s_shft_cmd;
+    // XXX verify static shift
+    if (tshift_static_surf_rayl_input != 0) {
+        tshift_static_surf_rayl = tshift_static_surf_rayl_input;
+    }
 
-    Sshift_static[i] = s_shft;
+    // XXX chech if applied for surface only or the entire waveform
+    Sshift_static[i] = tshift_static_surf_rayl;
 
     tsurf[i]=ts;                           // Surface arrival time 
     tele = 0;
@@ -462,8 +493,10 @@ int main (int argc, char **argv) {
     if (x1<=0.) x1 = hd[2].a;          // P arrival time from 'z' component header 
                                        // (if not inputted in weight file)
     x1 -= hd[2].o;                     // P arrival time - origin time
-    if (tele && s_shft>0.) {
-      s_shft -= hd[0].o;}              // shift relative to origin
+    // shift relative to origin
+    if (tele && tshift_static_surf_rayl>0.) {
+      tshift_static_surf_rayl -= hd[0].o;
+    }
     t1 = hd[2].t1-hd[2].o;
     t2 = hd[2].t2-hd[2].o;
     t3 = hd[0].t3-hd[0].o;
@@ -566,14 +599,15 @@ int main (int argc, char **argv) {
       // Greens functions origin time is always 0
       // dtP_pick = (Data P arrival from weight file) - (synthetic Parrival from green function)
     }
-    if (tele && s_shft > x1 ) {
-      s_shft -= hd[0].t2 + dtP_pick[i];	/* align teleseismic S */
+    // align teleseismic S
+    if (tele && tshift_static_surf_rayl > x1 ) {
+      tshift_static_surf_rayl -= hd[0].t2 + dtP_pick[i];	
     }
 
     // Change static shift when observed P arrival time is given
     // otherwise the time-shift window becomes asymmetric
     if (abs(dtP_pick[i]) > 0.) {
-      s_shft = s_shft - dtP_pick[i];
+      tshift_static_surf_rayl = tshift_static_surf_rayl - dtP_pick[i];
     }
 
     //-------------------------------------------------------------
@@ -627,36 +661,39 @@ int main (int argc, char **argv) {
     }
     
     if (t3 < 0 || t4 < 0 ) {
-      if (!tele && vs1>0. && vs2> 0.) {  // OPTIONAL : we haven't used this
-	// only if vs is specified (default vs1=vs2=-1)
-	t3 = sqrt(distance*distance+depSqr)/vs1 - 0.3*win_len_Nsamp[1]*dt;
-	t4 = sqrt(distance*distance+depSqr)/vs2 + 0.7*win_len_Nsamp[1]*dt;
+        if (!tele && vs1>0. && vs2> 0.) {
+            // OPTIONAL : we haven't used this
+            // only if vs is specified (default vs1=vs2=-1)
+            t3 = sqrt(distance*distance+depSqr)/vs1 - 0.3*win_len_Nsamp[1]*dt;
+            t4 = sqrt(distance*distance+depSqr)/vs2 + 0.7*win_len_Nsamp[1]*dt;
         }
-      else { 
-	// if vp and vs are not input (see cap.pl)
-	t3 = ts - fraction_before_S * win_len_Nsamp[1] * dt;
-	t4 = t3 + win_len_Nsamp[1]*dt;
-      }
-      if (ts > 0.) {
-	/* if surface wave arrival time is given */
-	t3 += s_shft;
-	t4 += s_shft;
-      }
-      else {
-	/* add dtP_pick only if surf arrival time is not specified*/
-	t3 += dtP_pick[i] + s_shft;
-	t4 += dtP_pick[i] + s_shft;
-	fprintf(stderr,"%f %f %f %f\n",t3,t4,hd[0].t2,dtP_pick[i]);
-      }
+        else { 
+            // if vp and vs are not input (see cap.pl)
+            t3 = ts - fraction_before_S * win_len_Nsamp[1] * dt;
+            t4 = t3 + win_len_Nsamp[1]*dt;
+        }
+        if (ts > 0.) {
+            /* if surface wave arrival time is given */
+            // XXX verify static shift
+            t3 += tshift_static_surf_rayl;
+            t4 += tshift_static_surf_rayl;
+        }
+        else {
+            /* add dtP_pick only if surf arrival time is not specified*/
+            // XXX verify static shift
+            t3 += dtP_pick[i] + tshift_static_surf_rayl;
+            t4 += dtP_pick[i] + tshift_static_surf_rayl;
+            fprintf(stderr,"%f %f %f %f\n",t3,t4,hd[0].t2,dtP_pick[i]);
+        }
 
-      /* for specific length of time window */
-      if (surf_win != 0) {
-	t4 = t3 + surf_win;
-      }
-      /* 20170730 these outputs are mainly for debugging. disabled for now 
-       * See also above for body waves */
-      //fprintf(stderr,"WARNING ti<0 for SAC headers t3 and/or t4\n");
-      //fprintf(stderr,"Estimated new values: t3 %7.4f t4 %7.4f\n", t3, t4);
+        /* for specific length of time window */
+        if (surf_win != 0) {
+            t4 = t3 + surf_win;
+        }
+        /* 20170730 these outputs are mainly for debugging. disabled for now 
+         * See also above for body waves */
+        //fprintf(stderr,"WARNING ti<0 for SAC headers t3 and/or t4\n");
+        //fprintf(stderr,"Estimated new values: t3 %7.4f t4 %7.4f\n", t3, t4);
     }
 
     /*calculate the time windows */
@@ -670,7 +707,7 @@ int main (int argc, char **argv) {
     P_win[i] = n1*dt;
     S_pick[i] = t3;
     S_win[i] = n2*dt;
-    S_shft[i] = s_shft;
+    S_shft[i] = tshift_static_surf_rayl;
     dis[i]=atoi(dst);
     Psamp[i] = n1;
     Ssamp[i] = n2;
@@ -680,8 +717,11 @@ int main (int argc, char **argv) {
     t0[1]=t0[2]=t4-n2*dt;	/* rayleigh wave */
     t0[3]=t0[4]=t1;		/* Pnl */
     n[0]=n[1]=n[2]=n2;	n[3]=n[4]=n1;
-    shft0[i][0] = shft0[i][1] = shft0[i][2] = s_shft;   // static shift for surface 
-    shft0[i][3] = shft0[i][4] = 0.;                     // static shift for body
+    shft0[i][0] = tshift_static_surf_love;  // Surf transverse
+    shft0[i][1] = tshift_static_surf_rayl;  // Surf radial
+    shft0[i][2] = tshift_static_surf_rayl;  // Surf vertical
+    shft0[i][3] = tshift_static_body;       // P radial
+    shft0[i][4] = tshift_static_body;       // P vertical
     if (obs->com[0].on_off>0) n_shft++;
     if (obs->com[1].on_off>0 || obs->com[2].on_off>0) n_shft++;
     if (obs->com[3].on_off>0 || obs->com[3].on_off>0) n_shft++;
@@ -957,20 +997,23 @@ int main (int argc, char **argv) {
   }
 
   /**************output the results***********************/
-  // output warning if best magnitude = magnitude limit in magnitude search.
-  if ( (sol.meca.mag <= searchPar->mw1 && searchPar->dmw != 0) 
-       || (sol.meca.mag >= searchPar->mw2 && searchPar->dmw != 0) ) {
-    fid_warn = fopen("capout_error.txt","w");
-    fprintf(stderr, "\n***********************************************************************\n");
-    fprintf(stderr, "\tINVERSION STOPPED. See file capout_error.txt\n");
-    fprintf(stderr, "***********************************************************************\n");
-    fprintf(fid_warn, "***********************************************************************\n");
-    fprintf(fid_warn, "INVERSION STOPPED. Best magnitude Mw = %4.1f is at a boundary.\n", sol.meca.mag);
-    fprintf(fid_warn, "Boundaries [Mw1, Mw2] = [%4.1f, %4.1f]\n", searchPar->mw1, searchPar->mw2);
-    fprintf(fid_warn, "Consider expanding the magnitude boundary.\n");
-    fprintf(fid_warn, "***********************************************************************\n");
-    fclose(fid_warn);
-    return(-1);
+  // Stop if the best magnitude is at a boundary. Except for a point search.
+  if(searchPar->dmw > TOLNMAG) {
+      if (fabs(sol.meca.mag - searchPar->mw1) <= TOLNMAG 
+              || fabs(sol.meca.mag - searchPar->mw2) <= TOLNMAG) {
+          fprintf(stderr, "\n********************************************\n");
+          fprintf(stderr, "cap.c error: Inversion stopped. See file capout_error.txt");
+          fprintf(stderr, "\n********************************************\n");
+
+          fid_warn = fopen("capout_error.txt","a");
+          fprintf(fid_warn, "***********************************************************************\n");
+          fprintf(fid_warn, "INVERSION STOPPED. Event model depth: %s %s %d\n", eve, model, depth); 
+          fprintf(fid_warn, "Best magnitude Mw = %5.2f is at a boundary.\n", sol.meca.mag);
+          fprintf(fid_warn, "Boundaries [Mw1, Mw2] = [%5.2f, %5.2f]\n", searchPar->mw1, searchPar->mw2);
+          fprintf(fid_warn, "Consider expanding the magnitude boundary.\n");
+          fclose(fid_warn);
+          return(-1);
+      }
   }
 
   fprintf(stderr,"Preparing out file ...\n");

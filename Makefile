@@ -1,5 +1,7 @@
 # make clean cap d=WB f=omp
-FFLAGS = -O
+# 
+#FFLAGS = -O -no-pie    # needed for gcc version 7.3.0 (Ubuntu 7.3.0-27ubuntu1~18.04)
+FFLAGS = -O	
 FC = gfortran
 CFLAGS = ${FFLAGS}
 

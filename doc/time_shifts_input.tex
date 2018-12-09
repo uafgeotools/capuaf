@@ -1,0 +1,163 @@
+\section{Time shifts}
+\label{sec:tshift}
+
+Layered (1D) models are often used as an approximation for Earth's heterogeneous structure for several reasons:
+%
+\begin{enumerate}
+\item 1D Earth models allow for computational efficiency in thre form of rapid calculation of synthetic waveforms; this in turn allows uncertainties of model parameters to be throughly examined.
+\item In some regions, the true Earth's structure is not far from 1D.
+\item In some regions, the true/3D Earth's structure is not well known.
+\end{enumerate}
+%
+Using a 1D Earth model leads to challenges when trying to align (or `time shift')  synthetic waveforms with observed waveforms. Misalignment of waveforms---referred to as `cycle skipping'---can lead to errors in estimating other source parameters, such as the moment tensor.
+
+Time shifts are critical output information for a moment tensor inversion. We have explicity discussed time shifts in several studies \citep{SilwalTape2016,AlvizuriTape2016,Alvizuri2018,AlvizuriTape2018}; these papers may provided a better starting point for this topic than this user manual.
+
+\subsection*{Technical notes}
+
+There are three key categories related to time shifts:
+\begin{enumerate}
+\item measured time shifts (\refTab{tab:tshift_meas})
+\item allowable time shifts (\refTab{tab:tshift_allow})
+\item start and end times of time windows
+\end{enumerate}
+
+In \refTabii{tab:tshift_meas}{tab:tshift_allow} we try to adopt variable names that allow us to convey the key choices. In general, these names do not appear within the code itself (though perhaps in the future they should).
+
+The onset time of the P wave (\verb+Pobs+) is used to calculate time shifts. CAP looks in this order for (\verb+Pobs+):
+%
+\begin{enumerate}
+\item a value in a station's row-entry in the cap input weight file
+\item the \verb+A+ SAC header in the data file
+\item the SAC header on the Green's functions calculated from \verb+fk+
+% XXX which sac headers are they?
+\end{enumerate}
+%
+These are three very different places to access \verb+Pobs+, and it's important to note that some waveform extraction tools (\eg the LLNL client database) may add headers unbeknownst to the user.
+
+%---------------------------------------------
+
+\begin{table}[h]
+\caption[]
+{
+Glossary of {\bf measured time shifts} in {\tt capuaf}.
+The tag of `rel' refers to a relative time shift; all other time shifts are true/absolute.
+\label{tab:tshift_meas}
+}
+\hspace{-0.5cm}
+\begin{tabular}{|c|p{2.2cm}|p{5.5cm}|p{3cm}|p{3cm}|}
+\hline
+name & formula & description & where found in capuaf & where displayed \\ \hline
+\hline
+\verb+Pobs+
+& 
+& arrival time of observed P wave, relative to origin time in SAC file
+& weight file OR \verb+A+ header on SAC data file
+& 
+\\ \hline
+\verb+Psyn+
+& 
+& arrival time of P wave calculated from a 1D model; this is done in fk when the 1D Green's functions are computed
+& sac header on fk Green's functions
+&
+\\ \hline
+\verb+dtP_pick+ 
+& \texttt{Psyn - Pobs}
+& travel time difference between Psyn and Pobs; based on picks from raw waveforms
+& e.g., -1.9 s (TUC)
+& beneath station name (when \verb+Pobs+ is used)
+\\ \hline
+\verb+dtP_CCrel+
+& 
+& cross correlation traveltime difference between shifted Psyn and Pobs
+& 
+& \textcolor{red}{formerly} displayed beneath P waveforms (consistent with \verb+dtP_CC_rel_max+)
+\\ \hline
+\verb+dtP+
+& \texttt{dtP\_pick + dtP\_CCrel}
+& net time shift between Psyn and Pobs; based on cross-correlation of waveforms
+&
+& beneath P waveforms; capmap spider plots; station scatterplots
+\\ \hline
+\verb+dtR_CCrel+
+&
+& cross correlation between shifted-syn and obs Rayleigh wave
+&
+& \textcolor{red}{formerly} beneath R waveforms \\ \hline
+\verb+dtL_CCrel+
+&
+& cross correlation between shifted-syn and obs Love wave
+&
+& \textcolor{red}{formerly} beneath L waveforms \\ \hline
+\verb+dtR+
+& \texttt{dtP\_pick + dtR\_CCrel}
+& actual time shift between syn and obs Rayleigh wave (on Z and R components)
+& 
+& beneath R waveforms
+\\ \hline
+\verb+dtL+
+& \texttt{dtP\_pick + dtL\_CCrel}
+& actual time shift between syn and obs Love wave (on T component)
+&
+& beneath L waveforms
+\\ \hline
+\verb+Sobs+
+&
+& arrival time of observed S wave, relative to origin time in SAC file; aka start time of Love/Rayleigh wave window (we have never used non-zero \verb+Sobs+)
+& weight file
+&
+\\ \hline
+\end{tabular}
+\end{table}
+
+%---------------------------------------------
+
+\begin{table}[h]
+\caption[]
+{
+Glossary of {\bf allowable time shifts} in {\tt capuaf}.
+The tag on the variable is either `min', `max', or `static'. The example numbers are for the case where a user wants allowable surface wave time shifts in the range of -2 s to +8 s, but also having an initial shift between waveforms (\texttt{dt\_Ppick}) of -1.9 s. The net allowable time shift is then between -0.1 s and 9.9 s.
+\label{tab:tshift_allow}
+}
+\hspace{-0.5cm}
+\begin{tabular}{|c|p{3cm}|p{6cm}|p{4cm}|}
+\hline
+name & formula & description & where found in capuaf \\ \hline
+\hline
+\verb+dtP_CC_rel_max+
+& 
+& allowed time shift for P, after syn has been shifted by \verb+dtP_pick+
+& cap command line input
+\\ \hline
+\verb+dtR_static+
+&
+& static time shift (default=0) so that min/max allowed time shifts will not be centered on 0
+& weight file (last column) \linebreak e.g., 3 s
+\\ \hline
+\verb+dtR_CC_rel_max+
+&
+& allowed time shift relative to \verb+dtR_static+, after syn has been shifted by \verb+dtP_pick+
+& cap command line input; \linebreak e.g., 5 s
+\\ \hline
+\verb+dtR_min_rel+
+& \texttt{dtR\_static - dtR\_CC\_rel\_max}
+& minimum allowed surface wave time shift, after syn has been shifted by \verb+dtP_pick+
+& not explicitly used; \linebreak e.g., -2 s (= 3 - 5)
+\\ \hline
+\verb+dtR_max_rel+
+& \texttt{dtR\_static + dtR\_CC\_rel\_max}
+& maximum allowed surface wave time shift, after syn has been shifted by \verb+dtP_pick+
+& not explicitly used; \linebreak e.g., 8 s (= 3 + 5)
+\\ \hline
+\verb+dtR_min+
+& \texttt{dtR\_min\_rel - dtP\_pick}
+& minimum allowed surface wave time shift
+& not explicitly used; \linebreak e.g., -0.1 = -2 - -1.9
+\\ \hline
+\verb+dtR_max+
+& \texttt{dtR\_max\_rel - dtP\_pick}
+& maximum allowed surface wave time shift
+& not explicitly used; \linebreak e.g., 9.9 = 8 - -1.9
+\\ \hline
+\end{tabular}
+\end{table}
