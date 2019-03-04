@@ -137,7 +137,8 @@ $oldgrid = 0;   # default is oldgrid=0 (ie do not use old grid)
 
 # number of freedom per sample for estimating uncertainty
 $nof = 0.01;
-$dt = 0.1;
+# seconds per sample of input data
+$dt = 0.02;
 
 # rms thresholds for discarding bad traces
 @thrshd = (10., 10., 10., 10., 10.);
@@ -221,7 +222,7 @@ $usage =
         header.
         threshold should be NEGATIVE if polarities are allowed to conflict expected polarity (as mentioned in weight file).
     -G  Green's function library location ($green).
-    -H  dt ($dt).
+    -H  dt ($dt). Sampling interval (seconds per sample). This should match the sampling interval of the input SAC files!
     -I  specify number of solutions (random mode) OR number of points per parameter.
         RAND: -I<nsol>  e.g. -I10000  --- will generate 10,000 random solutions.
         GRID: -I<Nv>/<Nw>/<Nstrike>/<Ndip>/<Nrake> where Nx = number of poits for parameter x
