@@ -1,3 +1,5 @@
+README_dc_short
+
 DATA EXTRACTION and SETUP
 
 These instructions assume that the user is on the UAF seismo linux network, which has environmental variables $PYSEP, $CAPHOME, etc.
@@ -27,20 +29,20 @@ note: set imin=0 and imax=0 in check_getwaveform.bash if this is not done alread
 3. Copy input weight file into the data directory:
 Only the 'clean' stations are selected in this weight file
 
-> cp $CAPHOME/EXAMPLES/20090407201255351_dc_short_check/weight_dc_short_check.dat ./20090407201255351
+> cp $CAPHOME/EXAMPLES/20090407201255351_dc_short/weight_dc_short.dat ./20090407201255351
 
 4. run cap
 
-> cap.pl -K1 -H0.02 -P1/15/60 -p1 -S2/10/0 -T15/120 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -Y1 -Zweight_dc_short_check.dat -Mscak_39 -m4.2/4.7/0.1 -A30/50/3 -I50000 -R0/0 20090407201255351
+> cap.pl -K1 -H0.02 -P1/15/60 -p1 -S2/10/0 -T15/120 -D1/1/0.5 -C0.25/0.6667/0.025/0.0625 -Y1 -Zweight_dc_short.dat -Mscak_39 -m4.2/4.7/0.1 -A30/50/3 -I50000 -R0/0 20090407201255351
 
 OR use a parameter file
 
-> cp $CAPHOME/EXAMPLES/20090407201255351_dc_short_check/flags_depth_dc_short_check.pf .
-> cap.pl flags_depth_dc_short_check.pf
+> cp $CAPHOME/EXAMPLES/20090407201255351_dc_short/flags_depth_dc_short.pf .
+> cap.pl flags_depth_dc_short.pf
 
 OR use an input command
-> cp $CAPHOME/EXAMPLES/20090407201255351_dc_short_check/inp_cmd_dc_short_check .
-> inp_cmd_dc_short_check
+> cp $CAPHOME/EXAMPLES/20090407201255351_dc_short/inp_cmd_dc_short .
+> inp_cmd_dc_short
 
 -------------------------------------------------------------------
 
@@ -49,11 +51,11 @@ OR use an input command
 > depth_test 20090407201255351
 > ev OUTPUT_DIR/20090407201255351__dep.ps &
 
-7. compare your files ($CAPHOME/OUTPUT_DIR) with the example files ($CAPHOME/EXAMPLES/20090407201255351_dc_short_check)
+7. compare your files ($CAPHOME/OUTPUT_DIR) with the example files ($CAPHOME/EXAMPLES/20090407201255351_dc_short)
 
 -------------------------------------------------------------------
 
-To run the extended DC example, try 20090407201255351_dc_check
-To run the FMT example, try 20090407201255351_fmt_check
+To run the extended DC example, try 20090407201255351_dc
+To run the FMT example, try 20090407201255351_fmt
 
 -------------------------------------------------------------------
