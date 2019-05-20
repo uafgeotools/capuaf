@@ -50,3 +50,10 @@ OR use an input command
 > ev OUTPUT_DIR/20090407201255351__dep.ps &
 
 7. compare your files ($CAPHOME/OUTPUT_DIR) with the example files ($CAPHOME/EXAMPLES/20090407201255351_dc_short_check)
+
+-------------------------------------------------------------------
+
+To run the extended DC example, try 20090407201255351_dc_check
+To run the FMT example, try 20090407201255351_fmt_check
+
+-------------------------------------------------------------------
