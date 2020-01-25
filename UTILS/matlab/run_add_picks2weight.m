@@ -1,6 +1,4 @@
-clear all
-close all
-clc
+clear all, close all, clc
 
 % Nenana basin study
 % evid = '20181113152641907';
@@ -14,8 +12,11 @@ clc
 % evid = '20190624090423301';
 % evid = '20170527163305640';
 % evid = '20180825181551481';
-evid = 'Apr29MT/V1/20170429111548898';
-cap_path = '/home/ksmith/REPOSITORIES/capuaf/';
+
+% Carl testing
+evid = '20170429111548898';
+cap_path = '/home/carltape/PROJECTS/CAP/picks/';
+
 case_no = 4;
 switch case_no 
     case 1 
@@ -28,9 +29,8 @@ switch case_no
     	weight_input = [cap_path evid '/weight_surf.dat'];
     	weight_output = [cap_path evid '/weight_surf_wpicks_and_pol.dat']
     case 4 
-    	weight_input = [cap_path evid '/weight_body_nobasin.dat'];
-	cap_path = '/home/carltape/REPOSITORIES/capuaf/';
-	weight_output = [cap_path evid '/weight_body_nobasin_wpicks_and_pol.dat']
+    	weight_input  = [cap_path evid '/weight_body_nobasin.dat'];
+        weight_output = [cap_path evid '/weight_body_nobasin_wpicks_and_pol.dat']
 end
 
 idb = 1;            % Use AEC db

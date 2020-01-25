@@ -8,6 +8,8 @@ iPonly = 1;         % Get only P arrival time
 spdy = 86400;
 
 % Read the weight file
+weight_input
+if ~exist(weight_input,'file'), error('file does not exist'); end
 [stn_tag, pol, edist, PV_wt, PR_wt, SV_wt, SR_wt, ST_wt, P_arrival, P_len, S_arrival, S_len, waveform_shft] = read_cap_weight(weight_input);
 
 % Get the origin time and add the time range (HWIN_SEC) to match with the AEC otime

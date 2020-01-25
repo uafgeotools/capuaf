@@ -11,6 +11,7 @@ for ii = 1:length(pol)
 end
 
 % Write everything to a weight file
+weight_filename
 fid = fopen(weight_filename,'w');
 stfmt = '%34s %4.0f %4.0f %4.0f %4.0f %4.0f %4.0f %4.4f %4.0f %4.0f %4.0f %4.0f \n';
 
