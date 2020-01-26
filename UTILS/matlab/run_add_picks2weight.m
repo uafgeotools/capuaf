@@ -11,17 +11,16 @@ clear all, close all, clc
 % evid = '20190624090423301';
 % evid = '20190624090423301';
 % evid = '20170527163305640';
-% evid = '20180825181551481';
-
-% Carl testing
+% evid = '20180825181551595';
 evid = '20170429111548898';
-cap_path = '/home/carltape/PROJECTS/CAP/picks/';
+cap_path = '/home/ksmith/REPOSITORIES/capuaf/MTs/Apr29MT/V1/';
 
 case_no = 4;
 switch case_no 
-    case 1 
+    case 1
     	weight_input = [cap_path evid '/weight.dat'];
     	weight_output = [cap_path evid '/weight_wpicks_and_pol.dat'];
+        weight_output = '~/weight_wpicks_and_pol.dat';  % testing
     case 2
     	weight_input = [cap_path evid '/weight_body.dat'];
     	weight_output = [cap_path evid '/weight_body_wpicks_and_pol.dat']
@@ -30,7 +29,9 @@ switch case_no
     	weight_output = [cap_path evid '/weight_surf_wpicks_and_pol.dat']
     case 4 
     	weight_input  = [cap_path evid '/weight_body_nobasin.dat'];
-        weight_output = [cap_path evid '/weight_body_nobasin_wpicks_and_pol.dat']
+        weight_output = [cap_path evid '/weight_body_nobasin_wpicks_and_pol.dat'];
+        % TESTING
+        weight_output = '~/weight_body_nobasin_wpicks_and_pol.dat'
 end
 
 idb = 1;            % Use AEC db
