@@ -15,28 +15,31 @@ clear all, close all, clc
 % evid = '20170429111548898';
 evid = '20190326212718519';
 
+ftag0 = 'weight';
+ftag0 = 'weight_orig';
+%ftag0 = 'WEIGHT_CLEAN';
+
 %'/home/ksmith/REPOSITORIES/capuaf/MTs/Apr29MT/V1/';
-cap_path = '/home/ksmith/REPOSITORIES/capuaf/'
-case_no = 4;
+cap_path = '/home/ksmith/REPOSITORIES/capuaf/';
+case_no = 1;
 switch case_no 
-    case 1
-    	weight_input = [cap_path evid '/weight.dat'];
-    	weight_output = [cap_path evid '/weight_wpicks_and_pol.dat'];
-        weight_output = '~/weight_wpicks_and_pol.dat';  % testing
-    case 2
-    	weight_input = [cap_path evid '/weight_body.dat'];
-    	weight_output = [cap_path evid '/weight_body_wpicks_and_pol.dat']
-    case 3 
-    	weight_input = [cap_path evid '/weight_surf.dat'];
-    	weight_output = [cap_path evid '/weight_surf_wpicks_and_pol.dat']
-    case 4 
-    	weight_input  = [cap_path evid '/weight_body_nobasin.dat'];
-        weight_output = [cap_path evid '/weight_body_nobasin_wpicks_and_pol.dat'];
-        % TESTING
-        weight_output = '~/weight_body_nobasin_wpicks_and_pol.dat'
+    case 1, ftag = '';
+    case 2, ftag = '_body';
+    case 3, ftag = '_surf';
+    case 4, ftag = '_body_nobasin';
 end
+
+weight_input = sprintf('%s%s/%s%s.dat',cap_path,evid,ftag0,ftag)
+weight_output = sprintf('%s%s/%s%s_picks_and_pol.dat',cap_path,evid,ftag0,ftag)
+% testing
+weight_output = sprintf('~/%s%s_picks_and_pol.dat',ftag0,ftag)
+
+% testing
+%[stn_tag, pol, edist, PV_wt, PR_wt, SV_wt, SR_wt, ST_wt, P_arrival, P_len, S_arrival, S_len, waveform_shft] = read_cap_weight(weight_input);
 
 idb = 1;            % Use AEC db
 HWIN_SEC = 2;       % this is really important because otime is different for AEC and IRIS
-iUseReviewed = 1;   % Analyst reviewed or unreviewed polarity
-add_picks2weight(weight_input,weight_output,idb,iUseReviewed,HWIN_SEC)
+iUseReviewed = 0;   % Analyst reviewed or unreviewed polarity
+add_picks2weight(weight_input,weight_output,idb,iUseReviewed,HWIN_SEC);
+
+%==========================================================================
