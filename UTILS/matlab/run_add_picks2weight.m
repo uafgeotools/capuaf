@@ -12,9 +12,11 @@ clear all, close all, clc
 % evid = '20190624090423301';
 % evid = '20170527163305640';
 % evid = '20180825181551595';
-evid = '20170429111548898';
-cap_path = '/home/ksmith/REPOSITORIES/capuaf/MTs/Apr29MT/V1/';
+% evid = '20170429111548898';
+evid = '20190326212718519';
 
+%'/home/ksmith/REPOSITORIES/capuaf/MTs/Apr29MT/V1/';
+cap_path = '/home/ksmith/REPOSITORIES/capuaf/'
 case_no = 4;
 switch case_no 
     case 1
