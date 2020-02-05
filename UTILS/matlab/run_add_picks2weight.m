@@ -24,7 +24,7 @@ ftag0 = 'weight';
 %cap_path = '/home/ksmith/REPOSITORIES/capuaf/';
 cap_path = '/home/ksmith/REPOSITORIES/capuaf/Mar06MT/V1/';
 
-case_no = 2;
+case_no = 1;
 switch case_no 
     case 1, ftag = '';
     case 2, ftag = '_body';
