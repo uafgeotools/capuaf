@@ -13,15 +13,18 @@ clear all, close all, clc
 % evid = '20170527163305640';
 % evid = '20180825181551595';
 % evid = '20170429111548898';
-evid = '20190326212718519';
+% evid = '20190326212718519';
+evid = '20190306213313991';
 
 ftag0 = 'weight';
-ftag0 = 'weight_orig';
+% ftag0 = 'weight_orig';
 %ftag0 = 'WEIGHT_CLEAN';
 
 %'/home/ksmith/REPOSITORIES/capuaf/MTs/Apr29MT/V1/';
-cap_path = '/home/ksmith/REPOSITORIES/capuaf/';
-case_no = 1;
+%cap_path = '/home/ksmith/REPOSITORIES/capuaf/';
+cap_path = '/home/ksmith/REPOSITORIES/capuaf/Mar06MT/V1/';
+
+case_no = 2;
 switch case_no 
     case 1, ftag = '';
     case 2, ftag = '_body';
