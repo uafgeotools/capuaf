@@ -3,8 +3,8 @@ clear all
 clc
     
 dircaprun = '/home/ksmith/REPOSITORIES/capuaf/nenanabasin_MTs/input_files/';
-    
-a = ls([dircaprun '*caprun']);
+delete([dircaprun 'ordered_MT_meta.txt'])
+a = ls([dircaprun 'unordered_caprun/20*caprun']);
 files = textscan(a,'%s','delimiter','\n');
 files = files{1};
 n = length(files);
@@ -26,20 +26,34 @@ for ii = 1:n
     	    preC{c_i} = C{c_i}(1:2);
 	end
     end
-    [K,~,IC] = intersect(capruntags,preC,'stable');
+    [K,ID,IC] = intersect(capruntags,preC,'stable');
+    J2 = cell(length(capruntags),1);
     K2 = cell(length(capruntags),1);
-    K2(IC) = preC(IC);
-    
-    %[K2,OIC,IC2] = union(capruntags,preC,'stable');
-    %K2 = K2(1:length(capruntags));
+    J2(ID) = capruntags(ID);
+    %K2(ID) = preC(IC);
+    L_i = find(strcmp(capruntags,'-L'));
+    Y_i = find(strcmp(capruntags,'-Y'));
+    A_i = find(strcmp(capruntags,'-A'));
+    M_i = find(strcmp(capruntags,'-M'));
+    EID_i = find(strcmp(capruntags,'20'));
+    K2{L_i} = '-L1.0'; 
+    K2{Y_i} = '-Y1'; 
+    K2{A_i} = '-A0/0/0'; 
+    K2(ID) = C(IC);
 
     if length(preC) == length(capruntags)
-	error('stopping')
+	%error('stopping')
     end
-    orderedC = {C{1},C{IC}};
-    fid2 = fopen([dircaprun 'reorder_MT_meta.txt'],'a');
+    %orderedC = {C{1},C{IC}};
+    orderedC = {C{1},K2{:}}
+
+    fid2 = fopen([dircaprun 'ordered_MT_meta.txt'],'a');
     fprintf(fid2,[strjoin(orderedC) '\n'])
     fclose(fid2);
+
+    fid3 = fopen([dircaprun K2{EID_i} '_' K2{M_i}(3:end) '_caprun'],'w');
+    fprintf(fid3,[strjoin(orderedC) '\n'])
+    fclose(fid3);
 end
 
 %fopen(files)
