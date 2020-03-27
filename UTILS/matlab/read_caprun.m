@@ -24,22 +24,22 @@ for ii=1:n
         continue
     end
     [~,K,H,P,p,S,T,D,C,Y,Z,M,m,I,L,R,A,eidx] = textread(filename,'%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s');
-    K = char(K); Kf(ii) = str2num(K(3));
+    K = char(K); Kf(ii) = str2num(K(3:end));
     H = char(H); Hf(ii) = str2num(H(3:end));
-    Px = strsplit(P{1},'/'); P1 = Px{1}; Pf(ii,:) = [str2num(P1(3)) str2num(Px{2}) str2num(Px{3})];
+    Px = strsplit(P{1},'/'); P1 = Px{1}; Pf(ii,:) = [str2num(P1(3:end)) str2num(Px{2}) str2num(Px{3})];
     p = char(p); pf(ii) = str2num(p(3:end));
-    Sx = strsplit(S{1},'/'); S1 = Sx{1}; Sf(ii,:) = [str2num(S1(3)) str2num(Sx{2}) str2num(Sx{3})];
-    Tx = strsplit(T{1},'/'); T1 = Tx{1}; Tf(ii,:) = [str2num(T1(3)) str2num(Tx{2})];
-    Dx = strsplit(D{1},'/'); D1 = Dx{1}; Df(ii,:) = [str2num(D1(3)) str2num(Dx{2}) str2num(Dx{3})];
-    Cx = strsplit(C{1},'/'); C1 = Cx{1}; Cf(ii,:) = [str2num(C1(3)) str2num(Cx{2}) str2num(Cx{3}) str2num(Cx{4})];
-    Y = char(Y); Yf(ii) = str2num(Y(3));
+    Sx = strsplit(S{1},'/'); S1 = Sx{1}; Sf(ii,:) = [str2num(S1(3:end)) str2num(Sx{2}) str2num(Sx{3})];
+    Tx = strsplit(T{1},'/'); T1 = Tx{1}; Tf(ii,:) = [str2num(T1(3:end)) str2num(Tx{2})];
+    Dx = strsplit(D{1},'/'); D1 = Dx{1}; Df(ii,:) = [str2num(D1(3:end)) str2num(Dx{2}) str2num(Dx{3})];
+    Cx = strsplit(C{1},'/'); C1 = Cx{1}; Cf(ii,:) = [str2num(C1(3:end)) str2num(Cx{2}) str2num(Cx{3}) str2num(Cx{4})];
+    Y = char(Y); Yf(ii) = str2num(Y(3:end));
     Z = char(Z); Zf(ii) = cellstr(Z(3:end));
     M = strsplit(M{1},'_'); Mmod = M{1}; Mfmod(ii) = cellstr(Mmod(3:end)); capdep(ii) = str2num(M{2});
-    mx = strsplit(m{1},'/'); m1 = mx{1}; mf(ii,:) = [str2num(m1(3)) str2num(mx{2}) str2num(mx{3})];
+    mx = strsplit(m{1},'/'); m1 = mx{1}; mf(ii,:) = [str2num(m1(3:end)) str2num(mx{2}) str2num(mx{3})];
     I = char(I); If(ii) = str2num(I(3:end));
     L = char(L); Lf(ii) = str2num(L(3:end));
-    Rx = strsplit(R{1},'/'); R1 = Rx{1}; Rf(ii,:) = [str2num(R1(3)) str2num(Rx{2})];
-    Ax = strsplit(A{1},'/'); A1 = Ax{1}; Af(ii,:) = [str2num(A1(3)) str2num(Ax{2}) str2num(Ax{3})];
+    Rx = strsplit(R{1},'/'); R1 = Rx{1}; Rf(ii,:) = [str2num(R1(3:end)) str2num(Rx{2})];
+    Ax = strsplit(A{1},'/'); A1 = Ax{1}; Af(ii,:) = [str2num(A1(3:end)) str2num(Ax{2}) str2num(Ax{3})];
     eidout(ii) = eidx;
 end
 
