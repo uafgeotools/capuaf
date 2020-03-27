@@ -1,0 +1,10 @@
+#!/bin/tcsh
+
+rm MT_meta.txt
+foreach file ( 20*caprun)
+  more $file >> MT_meta.txt
+  head -1 dummyfile.txt >> MT_meta.txt
+  echo "$file"
+end
+#ls 20*out | head -1 >> MT_meta.txt
+#ls 20*out | tail -1 >> MT_meta.txt

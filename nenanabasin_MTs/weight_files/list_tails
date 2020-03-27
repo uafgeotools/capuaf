@@ -1,0 +1,7 @@
+#!/bin/tcsh
+rm tail_file.txt
+foreach file ( 20*weight.dat)
+  #echo "$file" >> tail_file.txt
+  tail -1 $file >> tail_file.txt
+  #tail -1 $file | awk '{print $1 " " $2}' >> tail_file.txt
+end

@@ -1,0 +1,6 @@
+#!/bin/tcsh
+
+foreach file ( 20*weight.dat)
+  echo "$file"
+  head $file 
+end
