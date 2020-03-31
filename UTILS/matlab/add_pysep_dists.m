@@ -34,7 +34,7 @@ for ii = 1:n
     if ~isempty(nd_i)
     	newedist = edistmax(nd_i);
     else
-    	newedist = 1000;
+    	newedist = 999;
     end 
     % note: depth is in meters
     fprintf(fid,[stfmt '\n'],...
