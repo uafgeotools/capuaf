@@ -1,14 +1,11 @@
 rm -rf *out
 
-ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jun24MT/V1/OUTPUT_DIR_PREFER/20190624090423301_tactmod_019.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/May27MT/V1/OUTPUT_DIR_PREFER/20170527163305640_tactmod_017.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Aug25MT/V2/OUTPUT_DIR_depth_test_nopol_Prefer/20180825181551481_tactmod_017.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/Nov27MT/V1/OUTPUT_DIR_PREFER/20171127221830467_scak_030.out
-ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Sep06MT/V1/OUTPUT_DIR_PREFER/20190906233228501_tactmod_006.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Dec02MT/V1/OUTPUT_DIR_ddepth_1km_30-45km_PREFER/20151202100525798_scak_039.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/May15MT/V1/OUTPUT_DIR_PREFER/20160515055100219_tactmod_135.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Nov06MT/V1/OUTPUT_DIR_PREFER/20161106092910579_tactmod_021.out
-ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jan17MT/V1/OUTPUT_DIR_PREFER/20190117121355727_tactmod_017.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jun13MT/V1/OUTPUT_DIR_PREFER/20170613073936181_tactmod_106.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Mar26MT/V1/OUTPUT_DIR_DC_wpicks/20190326212718519_tactmod_006.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Mar06MT/V1/OUTPUT_DIR_DC/20190306213313991_tactmod_002.out
@@ -17,7 +14,6 @@ ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jul11MT/V1/OUTPUT_DIR_PREFER/20160711
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Dec08MT/V1/OUTPUT_DIR_PREFER/20161208101813868_tactmod_021.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Feb13MT/V1/OUTPUT_DIR_PREFER/20170213071712642_scak_012.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Dec30MT/V2/OUTPUT_DIR_PREFER/20171230114316278_tactmod_006.out
-ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Sep25MT/V1/OUTPUT_DIR_PREFER/20190925134513809_tactmod_010.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Apr29MT/V1/OUTPUT_DIR_PREFER/20170429111548898_tactmod_016.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Sep16MT/V1/OUTPUT_DIR_PREFER/20180916191154565_tactmod_012.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jun28MT/V1/OUTPUT_DIR_body_and_surf/20170628125851897_tactmod_019.out
@@ -26,10 +22,15 @@ ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/May21MT/V1/OUTPUT_DIR_PREFER/20160521
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jan19MT/V1/OUTPUT_DIR_PREFER/20180119235505310_tactmod_137.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jan18MT/V1/OUTPUT_DIR_Prefer_dM_0P05/20160118040556098_scak_018.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Nov08MT/V1/OUTPUT_DIR_PREFER/20171108064911318_tactmod_016.out
-ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Apr11MT/V1/OUTPUT_DIR_distsort_E7/20190411104245000_tactmod_017.out
-ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Aug28MT/V1/OUTPUT_DIR_PREFER_dM0P05/20180828151844000_tactmod_016.out
-ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Oct14MT/V1/OUTPUT_DIR_Body_and_Surf_Prefer/20181014235314000_tactmod_017.out
-ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Mar09MT/V2/OUTPUT_DIR_New_Prefer/20190309233958804_tactmod_027.out
-ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Oct27MT/V2/OUTPUT_DIR_Body_and_Surf_Prefer/20181027165727000_tactmod_016.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Oct03MT/V1/E3_0P05_body_and_surf/20181003032937544_tactmod_019.out
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/May18MT/V2/OUTPUT_DIR_Body_and_Surf/20160518032548320_tactmod_012.out
+
+ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jan17MT/V2/OUTPUT_DIR_PREFER/20190117121355493_tactmod_017.out
+ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Aug28MT/V2/OUTPUT_DIR_PREFER_dM0P05/20180828151843464_tactmod_016.out
+ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Apr11MT/V2/OUTPUT_DIR_distsort_E7/20190411104245609_tactmod_017.out
+ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jun24MT/V2/OUTPUT_DIR_PREFER/20190624090423195_tactmod_019.out
+ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Sep06MT/V2/OUTPUT_DIR_PREFER/20190906233228461_tactmod_006.out
+ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Sep25MT/V2/OUTPUT_DIR_PREFER/20190925134513442_tactmod_010.out
+ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Oct27MT/V3/OUTPUT_DIR_Body_and_Surf_Prefer/20181027165728350_tactmod_016.out
+ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Mar09MT/V3/OUTPUT_DIR_New_Prefer/20190309233958332_tactmod_027.out
+ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Oct14MT/V2/OUTPUT_DIR_Body_and_Surf_Prefer/20181014235314769_tactmod_017.out
