@@ -24,8 +24,17 @@ bplot=0;            % multuiple plots
 write_meca = 0;     % write and psmeca file for GMT plot    
 idep = 1;           % 0=use AEC dep; 1=use CAP dep
 
+otime=[];elat=[];elon=[];edep=[];strike=[];dip=[];rake=[];M=[];Mw=[];eid={};
+capmod=[];capdep=[];rms=[];vr=[];Pwin=[];Swin=[];Nstn=[];Pstn=[];Sstn=[];
+stnm={};lampPV=[];lampPR=[];lampSV=[];lampSR=[];lampSH=[];
+corrPV=[];corrPR=[];corrSV=[];corrSR=[];corrSH=[];pPol=[];ePol=[];shiftSavg=[];shiftPavg=[];
+
 % check if file exists
-if ~exist(filename,'file'), error(sprintf('%s does not exist',filename)); end
+if ~exist(filename,'file')
+    warning('%s does not exist',filename)
+    return
+    %error(sprintf('%s does not exist',filename));
+end
 
 % read in concatenated CMTSOLUTION files
 lines = textread(filename,'%s','delimiter','\n');
@@ -81,7 +90,7 @@ M = Mcap;
 
 errsum=0;
 % READ station info
-for ii=1:Nstn
+for ii = 1:Nstn
     iline = ii+4;
     [stnm(ii),~,wtPV(ii),errPV(ii),corrPV(ii),shiftPV(ii),lampPV(ii),DampPV(ii),SampPV(ii),...
         wtPV(ii),errPR(ii),corrPR(ii),shiftPR(ii),lampPR(ii),DampPR(ii),SampPR(ii),...
