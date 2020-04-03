@@ -39,9 +39,12 @@ if (@ARGV < 1) {die("Usage: capmap.pl eid\n")}
 ($eid) = @ARGV;
 
 # KEY COMMANDS
-$USECUSTOM = 0;
-# color scale for time shifts
-$dtminS = -1; $dtmaxS = 4; $dtminP = -1; $dtmaxP = 3;  # 20181027
+$USECUSTOM = 1;
+# srad_km:  max distance to stations
+# Jbscale:  size of basemap (increase number to decrease size)
+# color scale for time shifts for surface waves (dtminS, dtmaxS) and P (dtminP, dtmaxP)
+$srad_km = 450; $Jbscale = 7500000; $dtminS = -6; $dtmaxS = 14; $dtminP = -2; $dtmaxP = 2;  # 20190326
+#$srad_km = 300; $Jbscale = 5000000; $dtminS = -1; $dtmaxS = 4; $dtminP = -1; $dtmaxP = 3;  # 20181027
 
 # read event information. This is only for old output files.
 $capevent = "${eid}_event_info.dat";
@@ -102,6 +105,8 @@ $origin_inset = "-Xa4.5 -Ya6.2";
 
 $plot_unused_stations = 1;
 
+# THE 1D MODEL USED IN THE CAP INVERSION WILL DETERMINE THE PLOTTING REGION
+
 # search ifkmod below to specify additional parameters for each region
 if($smodel eq "scak") {
    $ifkmod = 1;
@@ -145,6 +150,8 @@ if($smodel eq "scak") {
   print "\n smodel: $smodel\n";
   die("MODEL IS NOT ALLOWED");
 }
+
+if($USECUSTOM==1) {$ifkmod=5;}
 
 # correction for high elevation stations
 $edepcap = $edepcap - $topocorr;
@@ -374,8 +381,8 @@ $S_amp_ratio_inc = 1;
 # LOOP OVER DIFFERENT SCALAR QUANTITIES TO PLOT
 
 # KEY COMMAND: min and max indices for plotting the maps listed above
-#$xpmin = 1; $xpmax = @caplabs;  # for full set of figures
-$xpmin = 1; $xpmax = $xpmin;    # for testing
+$xpmin = 1; $xpmax = @caplabs;  # for full set of figures
+#$xpmin = 1; $xpmax = $xpmin;    # for testing
 
 print "\n PLOTTING MAPS FROM $xpmin TO $xpmax\n";
 
@@ -392,94 +399,89 @@ $psfile = "$fname.ps";
 for ($pp = 1; $pp <= $pmax; $pp++) {
 #==================================================================================
 
-  if ($ifkmod==1) {    # SOUTHERN ALASKA + INTERIOR ALASKA
-    $icities = 0;
-    $iroads = 1;
-    if ($elat >= 62) {  # INTERIOR ALASKA (DENALI) - only one map ($pmax=1)
-      $xmin = -157.0; $xmax = -140.0; $ymin = 58; $ymax = 68.0;
-      $sbarinfo = "-L-144/58.7/58.7/200+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 6000000;
-      $ibasementc = 0;
-      $ititle = 1;     # publication
-      $iscalecap = 1;
-      $pmax = 1;
-      $otitle1 = "-Xa0.0 -Ya9.1";
-      $otitle2 = "-Xa0.0 -Ya8.7";
-      $obar3 = "-Xa2.2 -Ya7.5";  # scale bar
-      $orient = "-P"; $rotangle = 0;
-      $iinset = 1;
-
-  } elsif ($pp==1) { # SOUTHERN ALASKA - map_1
-      $xmin = -155.0; $xmax = -142.0; $ymin = 57; $ymax = 66.0;
-      $sbarinfo = "-L-146/57.5/57.5/100+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 8000000;
-      # For offshore Kodiak earthquake
-      #$xmin = -165.0; $xmax = -132.5; $ymin = 53; $ymax = 66.0;
-      #$sbarinfo = "-L-140/55/55/300+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 11000000;
-      # smaller region for NEHRP
-      #$xmin = -154.0; $xmax = -146.0; $ymin = 59; $ymax = 64.0;
-      #$sbarinfo = "-L-149/59.5/59.5/100+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 4000000;
-      $ibasementc = 0;
-      $ititle = 1;      # publication
-      $iscalecap = 1;
-      $origin = "-X0.6 -Y1";
-      $origin_inset = "-Xa4.5 -Ya6.2";
-      $orient = '-P'
-    } else {         # SOUTHERN ALASKA ZOOMED into MOOS - map_2
-      $xmin = -151.5; $xmax = -147.75; $ymin = 59.5; $ymax = 62.0;
-      $sbarinfo = "-L-149/59.7/59.7/100+p1.5p,0/0/0,solid+f255/255/255";
-      $Jbscale = 2500000;
-      $ibasementc = 1;
-      $ititle = 0;
-      $iscalecap = 0;
-      $origin_pp2 = "-X4.2 -Y0";
-  }
-
-} elsif ($ifkmod==2) {   # INTERIOR ALASKA (NENANA)
-    $icities = 1;
-    $iroads = 1;
-    if ($pp==1){
-	$xmin = -153.0; $xmax = -144.0; $ymin = 63; $ymax = 66.5;
-	$sbarinfo = "-L-147/63.3/63.3/100+p1.5p,0/0/0,solid+f255/255/255";
-	$Jbscale = 3000000;
-	$ibasementc = 0;
-	$ititle = 1;     # publication
-	$iscalecap = 1;
-    }
-    if ($pp==2){
-	$xmin = -150.2; $xmax = -148.5; $ymin = 64.5; $ymax = 65;
-	$sbarinfo = "-L-148.5/64.6/64.6/10+p1.5p,0/0/0,solid+f255/255/255";
+    if ($ifkmod==1) {   # SOUTHERN ALASKA + INTERIOR ALASKA
+	$icities = 0;
+	$iroads = 1;
+	if ($elat >= 62) {   # INTERIOR ALASKA (DENALI) - only one map ($pmax=1)
+	    $xmin = -157.0; $xmax = -140.0; $ymin = 58; $ymax = 68.0;
+	    $sbarinfo = "-L-144/58.7/58.7/200+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 6000000;
+	    $ibasementc = 0;
+	    $ititle = 1;	# publication
+	    $iscalecap = 1;
+	    $pmax = 1;
+	    $otitle1 = "-Xa0.0 -Ya9.1";
+	    $otitle2 = "-Xa0.0 -Ya8.7";
+	    $obar3 = "-Xa2.2 -Ya7.5"; # scale bar
+	    $orient = "-P"; $rotangle = 0;
+	    $iinset = 1;
+	} elsif ($pp==1) {   # SOUTHERN ALASKA - map_1
+	    $xmin = -155.0; $xmax = -142.0; $ymin = 57; $ymax = 66.0;
+	    $sbarinfo = "-L-146/57.5/57.5/100+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 8000000;
+	    # For offshore Kodiak earthquake
+	    #$xmin = -165.0; $xmax = -132.5; $ymin = 53; $ymax = 66.0;
+	    #$sbarinfo = "-L-140/55/55/300+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 11000000;
+	    # smaller region for NEHRP
+	    #$xmin = -154.0; $xmax = -146.0; $ymin = 59; $ymax = 64.0;
+	    #$sbarinfo = "-L-149/59.5/59.5/100+p1.5p,0/0/0,solid+f255/255/255"; $Jbscale = 4000000;
+	    $ibasementc = 0;
+	    $ititle = 1;	# publication
+	    $iscalecap = 1;
+	    $origin = "-X0.6 -Y1";
+	    $origin_inset = "-Xa4.5 -Ya6.2";
+	    $orient = '-P'
+	} else {   # SOUTHERN ALASKA ZOOMED into MOOS - map_2
+	    $xmin = -151.5; $xmax = -147.75; $ymin = 59.5; $ymax = 62.0;
+	    $sbarinfo = "-L-149/59.7/59.7/100+p1.5p,0/0/0,solid+f255/255/255";
+	    $Jbscale = 2500000;
+	    $ibasementc = 1;
+	    $ititle = 0;
+	    $iscalecap = 0;
+	    $origin_pp2 = "-X4.2 -Y0";
+	}
+    } elsif ($ifkmod==2){   # INTERIOR ALASKA (NENANA)
+	$icities = 1;
+	$iroads = 1;
+	if ($pp==1) {
+	    $xmin = -153.0; $xmax = -144.0; $ymin = 63; $ymax = 66.5;
+	    $sbarinfo = "-L-147/63.3/63.3/100+p1.5p,0/0/0,solid+f255/255/255";
+	    $Jbscale = 3000000;
+	    $ibasementc = 0;
+	    $ititle = 1;	# publication
+	    $iscalecap = 1;
+	}
+	if ($pp==2) {
+	    $xmin = -150.2; $xmax = -148.5; $ymin = 64.5; $ymax = 65;
+	    $sbarinfo = "-L-148.5/64.6/64.6/10+p1.5p,0/0/0,solid+f255/255/255";
+	    $Jbscale = 800000;
+	    $ibasementc = 0;
+	    $ititle = 0;	# publication
+	    $iscalecap = 1;
+	}
+    } elsif ($ifkmod==3){   # UTURUNCU BOLIVIA
+	$xmin = -67.8; $xmax = -66.7; $ymin = -22.8; $ymax = -21.8;
+	$sbarinfo = "-L-67/-22.7/-22.7/20+p1.5p,0/0/0,solid+f255/255/255";
 	$Jbscale = 800000;
 	$ibasementc = 0;
-	$ititle = 0;     # publication
+	$ititle = 1;		# publication
 	$iscalecap = 1;
+
+    } elsif ($ifkmod==4) {
+	#$xmin = -125.5; $xmax = -104; $ymin = 30; $ymax = 47;
+	$xmin = -124; $xmax = -110; $ymin = 32; $ymax = 42;
+	#$sbarinfo = "-L-107.0/46.0/40/100+p1.5p,0/0/0,solid+f255/255/255";
+	$sbarinfo = "-L-122.5/33.8/33.8/100+p1.5p,0/0/0,solid+f255/255/255";
+	$Jbscale = 8000000;
+	$ibasementc = 0;
+	$ititle = 1;		# publication
+	$iscalecap = 1;
+	$orient = "-P";
+	$rotangle = 0;
+	$iplates = 0;
     }
-
-} elsif ($ifkmod==3) {   # UTURUNCU BOLIVIA
-    $xmin = -67.8; $xmax = -66.7; $ymin = -22.8; $ymax = -21.8;
-    $sbarinfo = "-L-67/-22.7/-22.7/20+p1.5p,0/0/0,solid+f255/255/255";
-    $Jbscale = 800000;
-    $ibasementc = 0;
-    $ititle = 1;     # publication
-    $iscalecap = 1;
-
-} elsif ($ifkmod==4) {
-    #$xmin = -125.5; $xmax = -104; $ymin = 30; $ymax = 47;
-    $xmin = -124; $xmax = -110; $ymin = 32; $ymax = 42;
-    #$sbarinfo = "-L-107.0/46.0/40/100+p1.5p,0/0/0,solid+f255/255/255";
-    $sbarinfo = "-L-122.5/33.8/33.8/100+p1.5p,0/0/0,solid+f255/255/255";
-    $Jbscale = 8000000;
-    $ibasementc = 0;
-    $ititle = 1;     # publication
-    $iscalecap = 1;
-    $orient = "-P";
-    $rotangle = 0;
-    $iplates = 0;
-}
 
   # centered on epicenter
   if ($USECUSTOM) {
     print "\n CUSTOM REGION CENTERED ON EPICENTER\n";
-    $srad_km = 300;       # KEY COMMAND: max distance to stations
-    $Jbscale = 5000000;   # KEY COMMAND: size of basemap (increase number to decrease size)
     $dy = $srad_km/100;   # degrees
     $fac = cos($elat*3.14159/180.0);
     $xmin = $elon - $dy/$fac;
@@ -495,6 +497,8 @@ for ($pp = 1; $pp <= $pmax; $pp++) {
     $icities = 0;
     $ititle = 1;
     $iscalecap = 1;
+    $ibasementc = 0;
+    $islab_extent = 0;
 
     $xtick1 = 2; $ytick1 = 1; $xtick2 = 0.5; $ytick2 = $xtick2;
     $emax = 3000; $emin = -$emax; $itopocolor = 4;
@@ -809,12 +813,12 @@ if($ifmt==0) {
 }
 
   if ($iscalecap==1) {
-    $Dscale_dt = "-D$Dx/$Dy/3/${Dwid}h";
+    $Dscale_dt = "-D$Dx/$Dy/3.5/${Dwid}h";
     if ($icc[$xx-1] == 1) {
       $E = "-Eb10p";
     } else {
       $E = "-E10p";
-    } 
+    }
     $Bscale_dt = "-B${ctick}f${ctick2}:\"$capvals[$xx-1]\": $E";
     print CSH "psscale -C$cpt_cap $Dscale_dt $Bscale_dt $obar3 -V -K -O >> $psfile\n";
   }
