@@ -16,10 +16,13 @@ function [Kf,Hf,Pf,pf,Sf,Tf,Df,Cf,Yf,Zf,Mfmod,capdep,mf,If,Lf,Rf,Af,eidout] = re
 n = length(filenames);
 eidout = repmat(cellstr(''),n,1);
 
+imissing = [];
+
 for ii=1:n
     ii
     filename = filenames{ii}
     if ~exist(filename,'file')
+        imissing = [imissing ii];
         warning('file does not exist');
         continue
     end
@@ -41,6 +44,11 @@ for ii=1:n
     Rx = strsplit(R{1},'/'); R1 = Rx{1}; Rf(ii,:) = [str2num(R1(3:end)) str2num(Rx{2})];
     Ax = strsplit(A{1},'/'); A1 = Ax{1}; Af(ii,:) = [str2num(A1(3:end)) str2num(Ax{2}) str2num(Ax{3})];
     eidout(ii) = eidx;
+end
+
+if ~isempty(imissing)
+    disp('these files are missing:');
+    for ii=1:length(imissing); disp(filenames{imissing(ii)}); end
 end
 
 %==========================================================================
