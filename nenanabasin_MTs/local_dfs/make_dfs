@@ -42,10 +42,9 @@ ps2pdf $CAPHOME/nenanabasin_MTs/out_dir_ln/20190306*/20190306213313991__dep.ps
 ps2pdf $CAPHOME/nenanabasin_MTs/out_dir_ln/20190306*/20190306213313991_tactmod_002_beach.ps 20190306213313991_beach.pdf
 ps2pdf $CAPHOME/nenanabasin_MTs/out_dir_ln/20190306*/20190306213313991_tactmod_002.ps 20190306213313991_wf.pdf
 
-# notice the paths are a little different
-ps2pdf /home/ksmith/REPOSITORIES/capuaf/MTs/Jan13MT/V1/OUTPUT_DIR/20190113164555437__dep.ps
-ps2pdf /home/ksmith/REPOSITORIES/capuaf/MTs/Jan13MT/V1/OUTPUT_DIR_Prefer/20190113164555437_scak_048.ps 20190113164555437_wf.pdf 
-ps2pdf /home/ksmith/REPOSITORIES/capuaf/MTs/Jan13MT/V1/OUTPUT_DIR_Prefer/20190113164555437_scak_048_beach.ps 20190113164555437_beach.pdf
+ps2pdf $CAPHOME/nenanabasin_MTs/out_dir_ln/20190113*/20190113164555437__dep.ps
+ps2pdf $CAPHOME/nenanabasin_MTs/out_dir_ln/20190113*/20190113164555437_scak_048.ps 20190113164555437_wf.pdf 
+ps2pdf $CAPHOME/nenanabasin_MTs/out_dir_ln/20190113*/20190113164555437_scak_048_beach.ps 20190113164555437_beach.pdf
 
 ps2pdf $CAPHOME/nenanabasin_MTs/out_dir_ln/20160711*/20160711200557702__dep.ps
 ps2pdf $CAPHOME/nenanabasin_MTs/out_dir_ln/20160711*/20160711200557702_tactmod_120.ps 20160711200557702_wf.pdf

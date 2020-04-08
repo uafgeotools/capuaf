@@ -5,10 +5,10 @@ ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20170527*/20170527163305640_tactmod_01
 ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20170527*/20170527163305640__dep.ps
 
 #ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20180825*/20180825181551481_tactmod_017_nopol.ps 20180825181551481_tactmod_017.ps
-ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20180825*/20180825181551481_tactmod_017.ps 20180825181551481_wf.ps
 #ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20180825*/20180825181551481_tactmod_017_beach_nopol.ps 20180825181551481_tactmod_017_beach.ps
-ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20180825*/20180825181551481_tactmod_017_beach.ps 20180825181551481_beach.ps
 #ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20180825*/20180825181551481__dep_nopol.ps 20180825181551481__dep.ps
+ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20180825*/20180825181551481_tactmod_017.ps 20180825181551481_wf.ps
+ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20180825*/20180825181551481_tactmod_017_beach.ps 20180825181551481_beach.ps
 ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20180825*/20180825181551481__dep.ps 20180825181551481__dep.ps
 
 ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20171127*/20171127221830467__dep.ps
@@ -32,10 +32,10 @@ ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20170613*/20170613073936181_tactmod_10
 ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20170613*/20170613073936181_tactmod_106.ps 20170613073936181_wf.ps
 
 #ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190326*/20190326212718519__dep_DC_wpicks.ps 20190326212718519__dep.ps
-ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190326*/20190326212718519__dep.ps 20190326212718519__dep.ps
 #ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190326*/20190326212718519_tactmod_006_beach_DC_wpicks.ps 20190326212718519_tactmod_006_beach.ps
-ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190326*/20190326212718519_tactmod_006_beach.ps 20190326212718519_beach.ps
 #ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190326*/20190326212718519_tactmod_006_DC_wpicks.ps 20190326212718519_tactmod_006.ps
+ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190326*/20190326212718519__dep.ps 20190326212718519__dep.ps
+ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190326*/20190326212718519_tactmod_006_beach.ps 20190326212718519_beach.ps
 ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190326*/20190326212718519_tactmod_006.ps 20190326212718519_wf.ps
 
 ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190306*/20190306213313991__dep.ps
@@ -43,9 +43,9 @@ ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190306*/20190306213313991_tactmod_00
 ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190306*/20190306213313991_tactmod_002.ps 20190306213313991_wf.ps
 
 # notice the paths are a little different
-ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jan13MT/V1/OUTPUT_DIR/20190113164555437__dep.ps
-ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jan13MT/V1/OUTPUT_DIR_Prefer/20190113164555437_scak_048.ps 20190113164555437_wf.ps 
-ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jan13MT/V1/OUTPUT_DIR_Prefer/20190113164555437_scak_048_beach.ps 20190113164555437_beach.ps
+ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190113*/20190113164555437__dep.ps
+ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190113*/20190113164555437_scak_048.ps 20190113164555437_wf.ps 
+ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190113*/20190113164555437_scak_048_beach.ps 20190113164555437_beach.ps
 
 ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20160711*/20160711200557702__dep.ps
 ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20160711*/20160711200557702_tactmod_120.ps 20160711200557702_wf.ps

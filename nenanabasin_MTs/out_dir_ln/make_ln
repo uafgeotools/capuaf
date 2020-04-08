@@ -20,7 +20,7 @@ ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Mar26MT/V1/OUTPUT_DIR_DC_wpicks/ 2019
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Mar06MT/V1/OUTPUT_DIR_DC/ 20190306213313991
 
 # notice the paths are a little different
-ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jan13MT/V1/OUTPUT_DIR/ 20190113164555437
+ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jan13MT/V1/OUTPUT_DIR_Prefer/ 20190113164555437
 
 ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jul11MT/V1/OUTPUT_DIR_PREFER/ 20160711200557702
 

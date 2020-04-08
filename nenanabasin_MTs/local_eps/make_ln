@@ -42,9 +42,9 @@ ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190306*/20190306213313991_tactmod_00
 ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190306*/20190306213313991_tactmod_002.eps 20190306213313991_wf.eps
 
 # notice the paths are a little different
-ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jan13MT/V1/OUTPUT_DIR/20190113164555437__dep.eps
-ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jan13MT/V1/OUTPUT_DIR_Prefer/20190113164555437_scak_048.eps 20190113164555437_wf.eps 
-ln -s /home/ksmith/REPOSITORIES/capuaf/MTs/Jan13MT/V1/OUTPUT_DIR_Prefer/20190113164555437_scak_048_beach.eps 20190113164555437_beach.eps
+ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190113*/20190113164555437__dep.eps
+ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190113*/20190113164555437_scak_048.eps 20190113164555437_wf.eps 
+ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20190113*/20190113164555437_scak_048_beach.eps 20190113164555437_beach.eps
 
 ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20160711*/20160711200557702__dep.eps
 ln -s $CAPHOME/nenanabasin_MTs/out_dir_ln/20160711*/20160711200557702_tactmod_120.eps 20160711200557702_wf.eps

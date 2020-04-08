@@ -47,9 +47,12 @@ for ii = 1:n
     %orderedC = {C{1},C{IC}};
     orderedC = {C{1},K2{:}}
 
+    if 1 == 0
+    % use get_meta in path to make this file
     fid2 = fopen([dircaprun 'ordered_MT_meta.txt'],'a');
     fprintf(fid2,[strjoin(orderedC) '\n'])
     fclose(fid2);
+    end
 
     fid3 = fopen([dircaprun K2{EID_i} '_' K2{M_i}(3:end) '_caprun'],'w');
     fprintf(fid3,[strjoin(orderedC) '\n'])

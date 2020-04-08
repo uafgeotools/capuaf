@@ -3,7 +3,7 @@ close all
 clc
 
 % obtaining MT distances retrospectively and writing to new obspy like file but specifies max stn dist grabs
-aggwtfile = '/home/ksmith/REPOSITORIES/capuaf/nenanabasin_MTs/weight_files/tail_file.txt';
+aggwtfile = '/home/ksmith/REPOSITORIES/capuaf/nenanabasin_MTs/weight_files/old_wts/tail_file.txt';
 
 [stnm, pol, edist, PV_wt, PR_wt, SV_wt, SR_wt, ST_wt, P_arrival, P_len, S_arrival, S_len, waveform_shft] = read_cap_weight(aggwtfile);
 eidlength = 4+2+2+2+2+2+3; % corresponds to yyyy mm dd ...
@@ -15,14 +15,21 @@ end
 edistmax = ceil(edist/25)*25;
 
 obspy_evs = '/home/ksmith/REPOSITORIES/manuscripts/kyle/papers/nenanabasin/data/nenanabasin';
-[otime,lon,lat,dep,mag,eid] = read_seis_obspy(obspy_evs);
+
+[~,eid,~,lon,lat,dep_m,mag] = textread([obspy_evs '_catalogMdep_obspy.txt'],'%f%s%s%f%f%f%f');
+dep = dep_m / 1000;
+otime = eid2otime(eid);
+
+%[otime,lon,lat,dep,mag,eid] = read_seis_obspy(obspy_evs);
+
 for e_i = 1:length(eid) 
     eid_day{e_i} = eid{e_i}(1:eiddaylength); 
 end
 % start writing new file
 n = length(lon);
 
-filename = [obspy_evs '_obspy_pysep_dwnld.txt'];
+%filename = [obspy_evs '_obspy_pysep_dwnld.txt'];
+filename = [obspy_evs '_catalogMdep_obspy_pysep_dwnld.txt'];
 
 disp(['writing ' filename]);
 
