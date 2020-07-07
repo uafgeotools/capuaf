@@ -39,7 +39,7 @@ if (@ARGV < 1) {die("Usage: capmap.pl eid\n")}
 ($eid) = @ARGV;
 
 # KEY COMMANDS
-$USECUSTOM = 1;
+$USECUSTOM = 0;
 # srad_km:  max distance to stations
 # Jbscale:  size of basemap (increase number to decrease size)
 # color scale for time shifts for surface waves (dtminS, dtmaxS) and P (dtminP, dtmaxP)
@@ -117,7 +117,8 @@ if($smodel eq "scak") {
    $ifmt = 0; $cmtsize = 0.4;
 
    #$coastinfo = "-N1/1p/0/0/0 $coast_res -S150/255/255 -C150/255/255 -Ia/1.5p,150/255/255";   # rivers and covered bathymetry
-   $coastinfo = "-N0/1p/0/0/0 $coast_res -S150/255/255";
+   $coastinfo = "-N1/1p/0/0/0 $coast_res -S150/255/255";
+   $coastinfo = "-N1/1p/0/0/0 $coast_res";
 
 } elsif($smodel eq "tactmod") {
    $ifkmod = 2;
@@ -381,8 +382,8 @@ $S_amp_ratio_inc = 1;
 # LOOP OVER DIFFERENT SCALAR QUANTITIES TO PLOT
 
 # KEY COMMAND: min and max indices for plotting the maps listed above
-$xpmin = 1; $xpmax = @caplabs;  # for full set of figures
-#$xpmin = 1; $xpmax = $xpmin;    # for testing
+#$xpmin = 1; $xpmax = @caplabs;  # for full set of figures
+$xpmin = 1; $xpmax = $xpmin;    # for testing
 
 print "\n PLOTTING MAPS FROM $xpmin TO $xpmax\n";
 
