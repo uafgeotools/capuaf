@@ -20,6 +20,7 @@ note: you may need the compilation flag -no-pie (see Makefile)
 note: You must be within the sln environment (source activate sln)
 note: This will create the data directory 20090407201255351 inside $PYSEP
 note: set imin=0 and imax=0 in check_getwaveform.bash if this is not done already
+note: run_getwaveform.py reads the file event_input.py, NOT the directory event_input
 
 2. prepare for running cap
 
