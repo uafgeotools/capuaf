@@ -1,5 +1,26 @@
 README_dc_short
 
+-------------------------------------------------------------------
+UAF TIPS
+
++ Ensure you are in the sln01 conda environment - if needed, type [source activate sln01]
+  This is needed for pysep to get data.
+
++ Run the default example in README_dc_short (below). Type [more README_dc_short] to view the instructions. I recommend having a different terminal open for reading it.
+
++ After having run the example, keep the README open and learn what all the flags do - type [cap.pl] to read the user instructions. See also CAP_default_example in the UAF GROUP Google Drive. See also https://scholarworks.alaska.edu/handle/11122/10984 for detailed explanation of what all the numbers in the header and under each waveform are (you will need this for the waveform selection criteria later)
+
++ Repeat pysep steps for your new earthquake (you do not need to run check_getwaveform.bash again - that was for the specific example) by modifying event_input.py in the $PYSEP directory. 
+
++ Run cap for new earthquake. Make sure you know what all the flags do in the example and change them accordingly for your new earthquake
+
++ Things specifically to watch out for: depth, magnitude, Green’s function (navigate to /store/waveform/FK_synthetics to see what 1D models are premade; typically use tactmod for the interior and scak for southern Alaska), filters, weight file. Get into the ballpark solution by fixing depth + magnitude to what is listed in the AEC catalog
+
++ Once you are sure that you have changed all the flags you need to, perform the waveform selection criteria as per the capuaf_manual Appendix B - go to capuaf/doc and type [compile]. Open the resulting pdf.
+
++ Pay close attention to Figure 1 of Appendix B - use this to help figure out what to set the -L flag to.
+
+-------------------------------------------------------------------
 DATA EXTRACTION and SETUP
 
 These instructions assume that the user is on the UAF seismo linux network, which has environmental variables $PYSEP, $CAPHOME, etc.
