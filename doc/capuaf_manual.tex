@@ -1,4 +1,4 @@
-% dvips -t letter misfit.dvi -o misfit.ps ; ps2pdf misfit.ps
+% dvips -t letter capuaf_manual.dvi -o capuaf_manual.ps ; ps2pdf capuaf_manual.ps
 \documentclass[11pt,titlepage,fleqn]{article}
 
 \usepackage{amsmath}
@@ -194,6 +194,7 @@ There p is a scaling factor to give the record at r the same weight as that at r
 If we assume a spherical geometrical spreading for body waves and cylindrical geometrical spreading for surface waves, an appropriate choice of p would be p=1 for body waves and p=0.5 for surface waves.
 
 %----------------------------------------------------------------
+\pagebreak
 \section{Implementation: CAP}
 
 The same misfit function as equation \ref{misfit_func} is used and the {\bf L2 norm} is chosen.
@@ -531,7 +532,7 @@ The default value of degree of freedom per sample $n =0.01$. Changing this by or
 
 %------------------------------------------------
 
-\section{Changes}
+\section{Changes made to CAP by UAF group}
 
 \subsection{Changes in grid search}
 
@@ -834,7 +835,7 @@ But since this is just an ad-hoc function, using an inverse tangential makes thi
 \bibliography{carl_abbrev,carl_main,carl_him,carl_source,refs_vipul}
 %=================
 
-\clearpage
+%\clearpage
 \appendix
 
 %-------------------------

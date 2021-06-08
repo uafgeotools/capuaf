@@ -8,9 +8,21 @@ Time shifts play a major role in waveform selection, so please first read \refAp
 
 \item Before doing any manual selection, make sure that
 \begin{enumerate}
-\item you have the right source duration (\refFig{fig:cap_dur}); you may need to manually specify -L, especially for small events
+\item You have excluded the surface waves (and perhaps also body waves) for any stations that exhibit clipping. One straightforward assessment of clipping is to check if any of the three components have raw amplitudes that exceed a certain count level. From \citet{Tape2017report}:
+%
+\begin{quote}
+To assess clipping, we examine the raw, unfiltered waveforms and list the maximum of the absolute value counts on each channel for each station (\eg \refTab{tab:badstepI}). For each station, the max value across all components is compared against a threshold value for the digitizer. We have assumed that all stations use a 24-bit digitizer except for GSN stations (COLA, KDAK), which use 26-bit digitizers. The threshold value is $q = \pm 2^{N-1}$, where $N$ is the number of bits in the digitizer. We also list the number of time steps that a seismogram exceeds $0.8 q$; this provides a quantification of square-like waves.
+\end{quote}
+%
+The three components should be the unrotated components, which are written out to the RAW folder when running \verb+pysep+. PROBABLY THIS STEP SHOULD BE PERFORMED AUTOMATICALLY IN PYSEP OR WHEN THE CAP INPUT FILE IS PREPARED.
 
-If your magnitude is above 4, then you do not need to do this.
+See also \citet{Tape2016iniskin}.
+
+\label{item:clip}
+
+\item you have the right source duration (\refFig{fig:cap_dur}); you may need to manually specify -L to obtain a shorter-than-default duration, especially for using body waves for small events
+
+%If your magnitude is above 4, then you do not need to do this.
 
 \item you are using L1 norm (this is the default)
 
@@ -55,9 +67,11 @@ This requires having sufficient signal-to-noise levels within the chosen bandpas
 
 \item Use a ``sensible'' distance range for selecting stations. For example, for small magnitude event ($\mw < 3$) one should set the maximum distance for selecting stations to 200~km. For intermediate magnitude ($\mw > 3.5$) events one can go up to 500~km. This range might also vary depending on the crustal structure and topography. Also keep track of the available green's function (most are premade up to 500~km - \verb+/store/wf/FK_synthetics/+)
 
-\item Start by excluding the stations with the largest amplitude differences. Such differences may prevent you from viewing the waveform fits, since they are scaled by absolute amplitudes.
+\item Start by excluding the stations with the largest amplitude differences. (See also Point~\ref{item:clip} above) Such differences may prevent you from viewing the waveform fits, since they are scaled by absolute amplitudes.
 
 \item Exclude the set of stations at the largest epicentral distance above which stations all have poor SNR.
+
+\item For some events with low SNR, you may be only able to use the vertical-component surface waves, since tilt tends to contaminate the horizontal components.
 \end{enumerate}
 
 \medskip\noindent
@@ -105,13 +119,15 @@ Do this incrementally: remove the largest amplitude anomalies, then rerun, etc.
 
 %The motivation is that the problem that affected the prior-removed window also affects the remaining windows.
 
-\item If, among the 5 windows, only the Surf T window is matching, then reject that station. If no other component is matching, then again it raises question on the quality of data. In general, from my (Vipul) experience, SH gives a good match for a variety of solution. Most of the time it is the Body and Rayleigh that nails down the solution. However, one can keep such station only if it is much needed (Number of stations $< 10$).
+\item If, among the 3 surface wave windows, only Surf R is matching, then exclude this window.
+
+%\item If, among the 5 windows, only the Surf T window is matching, then reject that station. If no other component is matching, then again it raises question on the quality of data. In general, from my (Vipul) experience, SH gives a good match for a variety of solution. Most of the time it is the Body and Rayleigh that nails down the solution. However, one can keep such station only if it is much needed (Number of stations $< 10$).
 
 %\item If a station has no fits (that is, all weights set to zero) and is ``complete garbage,'' then cut it completely. We never need to look at it again. (Manually cut the row from the weight file.) This is probably an unusual occurrence.
 
 %\item If a station has no fits (that is, all weights set to zero) but the waveforms look ``in the ballpark,'' then perhaps we leave these in the plots. (So do not cut them from the weight file.)
 
-\item Ideally we would want to use both the body waves and surface waves, however, there might be cases when either most of the body waves or surface waves need to be thrown out. In case you can not use body waves at $\sim$90\% of the stations, then perform a surface waves only inversion. Same goes for the surface waves.
+\item Ideally we would want to use both the body waves and surface waves, but there might be cases when either most of the body waves or surface waves need to be thrown out. In case you cannot use body waves at $\sim$90\% of the stations, then perform a surface-wave-only inversion. Same goes for the surface waves.
 
 Motivation: It looks odd to have a large set of body waves with a single surface wave (and vice versa).
 
