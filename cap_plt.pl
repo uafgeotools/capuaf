@@ -469,7 +469,7 @@ $only_pol = 0;
             else { 
                 printf PLT "%f %f 10 0 0 1 %d km\n", $x-0.8*$spis, $y-0.2, $dist_km;
                 printf PLT "%f %f 10 0 0 1 %d\260 \n", $x-0.8*$spis, $y-0.4, $az[$i];  # azimuth (see az above)
-                printf PLT "%f %f 10 0 0 1 %.1f s\n", $x-0.8*$spis, $y-0.6, $tshift_all;  # tshift = Green_P_arrival - Input_P_arrival_weight_file
+                printf PLT "%f %f 10 0 0 1 %.2f s\n", $x-0.8*$spis, $y-0.6, $tshift_all;  # tshift = Green_P_arrival - Input_P_arrival_weight_file
             }
             # azimuth
             # printf PLT "%f %f 10 0 0 1 %d\260 \n", $x-0.8*$spis, $y-0.6, $az[$i];  # azimuth (see az above)
