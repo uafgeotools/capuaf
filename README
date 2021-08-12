@@ -1,21 +1,17 @@
 capuaf
 https://github.com/uafgeotools/capuaf
 "cut-and-paste" seismic moment tensor inversion code
-a private github repository within the organization uafgeotools
 contact: Carl Tape (ctape@alaska.edu)
 
-This repository started as cap2.0, a software package by Lupei Zhu, who emailed it to Carl Tape on 12/15/2012. This repository shows the developments made by Vipul Silwal and Celso Alvizuri since the first commit on 12/28/2012. The official version of CAP is available for download from the website of Lupei Zhu (http://www.eas.slu.edu/People/LZhu/home.html -- last accessed 12/3/2015).
+This repository started as cap2.0, a software package by Lupei Zhu, who emailed it to Carl Tape on 12/15/2012. This repository shows the developments made by Vipul Silwal and Celso Alvizuri since the first commit on 12/28/2012. The official version of CAP is available for download from the website of Lupei Zhu (http://www.eas.slu.edu/People/LZhu/home.html).
 
-Example check-out command from UAF linux network:
-git clone https://GITHUBUSERNAME@github.com/uafgeotools/capuaf.git capuaf
-You need to have (1) a github account and (2) permission to read the repository.
-This checkout takes awhile, since you get the full history of the repository.
-If you just want the latest version, then try this:
+UAF has pursued the development of mtuq, an alternative software package to capuaf:
+https://github.com/uafgeotools/mtuq
+
+Check-out command for developers:
 git clone --depth=1 https://GITHUBUSERNAME@github.com/uafgeotools/capuaf.git capuaf
 
-EXAMPLES/README_SilwalTape2016  -- southern Alaska example earthquake
-EXAMPLES/README_EXAMPLE         -- example including FK calculations
-README_orig                     -- original README with CAP (Lupei Zhu)
+See EXAMPLES/README for examples to run.
 
 Reference:
 Zhu and Helmberger, 1996, BSSA 86, 1645-1641
